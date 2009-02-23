@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../lib/http-machine.rb'
 require 'sax-machine'
 
 class YahooBOSS < HTTPMachine::Remote  
-  API_ID = "fSMqdK_V34H9bI8GtgrxKWE9WAnX9QFk26Lakdvbi35k1wTzRZ0UVm2_ZSvxuRU-"
+  API_ID = "..."
   
   remote_server "http://boss.yahooapis.com"
   remote_method :web_search,  {
