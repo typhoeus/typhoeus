@@ -1,16 +1,18 @@
 # just a brainstorming area where I can play around with different looks for the API
-@results = []
-@pages = []
-HTTPMachine.service_access do
-  YahooBOSS.web_search("paul dix") do |results|
-    @results = results
-    results.map do |result| 
-      Page.get(result.url) {|page| @pages << page}
-    end
+
+results = HTTPMachine.service_access(:web_search => ["paul dix"], :web_search => ["ruby", "nyc"])
+results[:web_search] # => [[return_results, pages], [return_results, pages]]
+
+def self.web_search(*args)
+  return_results = []
+  pages = []
+  YahooBOSS.web_search(*args) do |results|
+    Page.get {|page| pages << page}
   end
+  return [return_results, pages]
 end
 
-@results = {}
+@results = []
 @pages = []
 HTTPMachine.service_access do
   YahooBOSS.web_search("paul dix") do |results|
@@ -29,3 +31,4 @@ HTTPMachine.service_access do
     end
   end
 end
+
