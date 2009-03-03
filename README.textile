@@ -46,6 +46,8 @@ h2. Next Steps
 
 * Add support for error handling. Automatic retry, exponential back-off, queuing for later
 * Add server test suite
+* Add put support
+* Add support to get to pass in params in the options hash (instead of just as part of the url)
 
 h2. LICENSE
 
