@@ -1,11 +1,67 @@
 require 'curb'
 
 module HTTPMachine
+  USER_AGENT = "HTTPMachine - http://github.com/pauldix/http-machine/tree/master"
+  
   def self.included(base)
     base.extend ClassMethods
   end
     
   module ClassMethods
+    def get(url, options = {}, &block)
+      if HTTPMachine.multi_running?
+        HTTPMachine.add_easy_request(base_easy_object(url, options, block))
+      else
+        HTTPMachine.service_access do
+          get(url, options, &block)
+        end
+      end
+    end
+    
+    def post(url, options = {}, &block)
+      base_easy_object(url, options, block).http_post(params_to_curl_post_fields(options[:params]))
+    end
+    
+    # def put(url, options = {}, &block)
+    #   easy = Curl::Easy.new(url) do |curl|
+    #     curl.on_success do |c|
+    #       block.call(c.response_code, c.body_str)
+    #     end
+    #     curl.on_failure do |c|
+    #       block.call(c.response_code, c.body_str)
+    #     end
+    #   end
+    #   put_data = params_to_curl_post_fields(options[:params]).collect{|p| p.to_s}.join("&")
+    #   easy.http_put(put_data)
+    # end
+    
+    def delete(url, options = {}, &block)
+      base_easy_object(url, options, block).http_delete
+    end
+    
+    def base_easy_object(url, options, block)
+      easy = Curl::Easy.new(url) do |curl|
+        curl.headers["User-Agent"] = (options[:user_agent] || HTTPMachine::USER_AGENT)
+        curl.on_success do |c|
+          block.call(c.response_code, c.body_str)
+        end
+        curl.on_failure do |c|
+          block.call(c.response_code, c.body_str)
+        end        
+      end
+    end
+    
+    def params_to_curl_post_fields(params)
+      params.keys.collect do |k|
+        value = params[k]
+        if value.is_a? Hash
+          value.keys.collect {|sk| Curl::PostField.content("#{k}[#{sk}]", value[sk])}
+        else
+          Curl::PostField.content(k.to_s, params[k].to_s)
+        end
+      end.flatten
+    end
+    
     def remote_server(server)
       @server = server
     end
@@ -17,7 +73,7 @@ module HTTPMachine
       easy = Curl::Easy.new(url) do |curl|
         curl.headers["User-Agent"] = "HTTPMachine - http://github.com/pauldix/http-machine/tree/master"
         curl.on_success do |c|
-          block.call(send(@methods[method_name][:response_handler], c.body_str))
+          block.functionally.call(send(@methods[method_name][:response_handler], c.body_str))
         end
       end
       Thread.current[:curl_multi].add(easy)
