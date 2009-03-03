@@ -1,4 +1,5 @@
 require 'curb'
+require 'cgi'
 
 module HTTPMachine
   USER_AGENT = "HTTPMachine - http://github.com/pauldix/http-machine/tree/master"
@@ -10,6 +11,7 @@ module HTTPMachine
   module ClassMethods
     def get(url, options = {}, &block)
       if HTTPMachine.multi_running?
+        url = add_params_to_url(url, options[:params]) if options[:params]
         HTTPMachine.add_easy_request(base_easy_object(url, options, block))
       else
         HTTPMachine.service_access do
@@ -49,6 +51,25 @@ module HTTPMachine
           block.call(c.response_code, c.body_str)
         end        
       end
+    end
+    
+    def add_params_to_url(url, params)
+      if url.include?("?")
+        url + "&" + params_to_query_string(params)
+      else
+        url + "?" + params_to_query_string(params)
+      end
+    end
+    
+    def params_to_query_string(params)
+      params.keys.collect do |k|
+        value = params[k]
+        if value.is_a? Hash
+          value.keys.collect {|sk| CGI.escape("#{k}[#{sk}]") + "=" + CGI.escape(value[sk].to_s)}
+        else
+          "#{CGI.escape(k.to_s)}=#{CGI.escape(params[k].to_s)}"
+        end
+      end.flatten.join("&")
     end
     
     def params_to_curl_post_fields(params)

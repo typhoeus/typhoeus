@@ -7,20 +7,33 @@ describe HTTPMachine do
     end
   end
   
-  it "should add a get method" do
-    response_block = mock("response_block")
-    response_block.should_receive(:called)
+  describe "get" do
+    before(:each) do
+      @response_block = mock("response_block")
+      @response_block.should_receive(:called)
+    end
     
-    run_method_server(3001) do
-      @klass.get("http://localhost:3001/posts.xml") do |response_code, response|
-        response_block.called
-        response_code.should == 200
-        response.should include("REQUEST_METHOD=GET")
-        response.should include("REQUEST_URI=/posts.xml")
+    it "should add a get method" do
+      run_method_server(3001) do
+        @klass.get("http://localhost:3001/posts.xml") do |response_code, response|
+          @response_block.called
+          response_code.should == 200
+          response.should include("REQUEST_METHOD=GET")
+          response.should include("REQUEST_URI=/posts.xml")
+        end
+      end
+    end
+
+    it "should take passed in params and add them to the query string" do
+      run_method_server(3001) do
+        @klass.get("http://localhost:3001", {:params => {:foo => :bar}}) do |response_code, response|
+          @response_block.called
+          response.should include("QUERY_STRING=foo=bar")
+        end
       end
     end
   end
-  
+
   it "should add a post method" do
     response_block = mock("response_block")
     response_block.should_receive(:called)
@@ -29,7 +42,9 @@ describe HTTPMachine do
       @klass.post("http://localhost:3001/posts.xml", {:params => {:post => {:author => "paul", :title => "a title", :body => "a body"}}}) do |response_code, response|
         response_block.called
         response_code.should == 200
-        response.should include("post%5Bbody%5D=a%20body&post%5Bauthor%5D=paul&post%5Btitle%5D=a%20title")
+        response.should include("post%5Bbody%5D=a%20body")
+        response.should include("post%5Bauthor%5D=paul")
+        response.should include("post%5Btitle%5D=a%20title")
         response.should include("REQUEST_METHOD=POST")
       end
     end
@@ -53,9 +68,8 @@ describe HTTPMachine do
   describe "#params_to_curl_post_fields" do
     it "should return a post field with a proper name and value" do
       post_fields = @klass.params_to_curl_post_fields({:foo => :bar, :asdf => :jkl})
-      post_field = post_fields.first
-      post_field.name.should == "foo"
-      post_field.content.should == "bar"
+      post_fields.detect {|p| p.name == "foo" && p.content == "bar"}.should be
+      post_fields.detect {|p| p.name == "asdf" && p.content == "jkl"}.should be
     end
     
     it "should return a post field for nested params" do
