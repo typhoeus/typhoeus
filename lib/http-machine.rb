@@ -2,8 +2,6 @@ $LOAD_PATH.unshift(File.dirname(__FILE__)) unless $LOAD_PATH.include?(File.dirna
 
 require 'curb'
 
-require 'core_ext/proc'
-
 require 'http-machine/remote'
 
 module HTTPMachine
