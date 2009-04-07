@@ -12,13 +12,16 @@ module HTTPMachine
   end
   
   def self.add_easy_request(easy_object)
+    Thread.current[:curl_multi_added] = true
     Thread.current[:curl_multi].add(easy_object)
   end
   
   def self.service_access(&block)
     Thread.current[:curl_multi] ||= Curl::Multi.new
     block.call
-    Thread.current[:curl_multi].perform
-    Thread.current[:curl_multi] = nil
+    while Thread.current[:curl_multi_added]
+      Thread.current[:curl_multi_added] = nil
+      Thread.current[:curl_multi].perform
+    end
   end
 end

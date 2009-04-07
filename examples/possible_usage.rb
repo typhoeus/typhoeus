@@ -25,12 +25,22 @@ HTTPMachine.service_access do
     end
   end
   
+  Twitter.search("whatev") do |results|
+    # do stuff here
+  end
+  
   YahooBOSS.web_search("joe") do |results|
     @results += results
     @
     results.each do |result|
       Page.get(result.url) {|page| @pages << page}
     end
+  end
+end
+
+YahooBOSS.web_search("http-machine") do |results|
+  results.each do |result|
+    Page.get(result.url) {|page| puts page}
   end
 end
 

@@ -32,6 +32,13 @@ describe HTTPMachine do
         end
       end
     end
+    
+    it "should return the body of the response when no block is passed to get" do
+      run_method_server(3001) do
+        response = @klass.get("http://localhost:3001/foo.bar")
+        response.should inclue("REQUEST_URI=/foo.bar")
+      end
+    end
   end
 
   it "should add a post method" do

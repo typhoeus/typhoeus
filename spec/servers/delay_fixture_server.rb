@@ -9,7 +9,7 @@ class DelayFixtureServer  < EventMachine::Connection
  
   def process_http_request
     EventMachine.stop if ENV["PATH_INFO"] == "/die"
-    
+    puts "got a request"
     resp = EventMachine::DelegatedHttpResponse.new( self )
     
     # Block which fulfills the request
@@ -17,7 +17,8 @@ class DelayFixtureServer  < EventMachine::Connection
       sleep DelayFixtureServer.response_delay
 
       resp.status = 200
-      resp.content = DelayFixtureServer.response_fixture
+      DelayFixtureServer.response_number = DelayFixtureServer.response_number + 1
+      resp.content = "response number #{DelayFixtureServer.response_fixture}"
     end
 
     # Callback block to execute once the request is fulfilled
@@ -44,16 +45,23 @@ class DelayFixtureServer  < EventMachine::Connection
   def self.response_delay=(val)
     @response_delay = val
   end
+  
+  def self.reponse_number
+    @response_number
+  end
+  
+  def self.response_number=(val)
+    @response_number = val
+  end
 end
-
+# 
 # port = (ARGV[0] || 3000).to_i
 # 
-# DelayFixtureServer.response_delay   = (ARGV[1].to_f || 0.1)
-# DelayFixtureServer.response_fixture = ARGV[2].nil? ? nil : File.read(File.dirname(__FILE__) + "/../fixtures/#{ARGV[2]}")
+# DelayFixtureServer.response_delay   = 0.1
+# DelayFixtureServer.response_number = 0
+# #DelayFixtureServer.response_fixture = File.read(File.dirname(__FILE__) + "/../fixtures/result_set.xml")
 # 
-# Process.fork do
-#   EventMachine::run {
-#     EventMachine.epoll
-#     EventMachine::start_server("0.0.0.0", port, DelayFixtureServer)
-#   }
-# end
+# EventMachine::run {
+#   EventMachine.epoll
+#   EventMachine::start_server("0.0.0.0", port, DelayFixtureServer)
+# }
