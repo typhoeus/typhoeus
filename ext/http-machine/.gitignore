@@ -1,0 +1,4 @@
+./conftest.dSYM/*
+mkfm.log
+*.o
+native.bundle

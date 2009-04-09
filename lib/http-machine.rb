@@ -1,7 +1,7 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__)) unless $LOAD_PATH.include?(File.dirname(__FILE__))
 
-require 'curb'
-
+require 'http-machine/easy'
+require 'http-machine/native'
 require 'http-machine/remote'
 
 module HTTPMachine

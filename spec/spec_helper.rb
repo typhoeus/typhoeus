@@ -13,6 +13,21 @@ require "lib/http-machine"
 require File.dirname(__FILE__) + "/servers/delay_fixture_server.rb"
 require File.dirname(__FILE__) + "/servers/method_server.rb"
 
+def start_method_server(port = 300)
+  pid = Process.fork do
+    EventMachine::run {
+      EventMachine.epoll
+      EventMachine::start_server("0.0.0.0", port, MethodServer)
+    }
+  end
+  sleep 0.2
+  pid
+end
+
+def stop_method_server(pid)
+  Process.kill("HUP", pid)
+end
+
 # this starts a local server on the specified port. It just takes the request info and echoes it back
 def run_method_server(port = 3000)
   pid = Process.fork do
@@ -22,7 +37,7 @@ def run_method_server(port = 3000)
     }
   end
   begin
-    sleep 0.1 # this is a total hack. the server needs a little time to start up before running the test block
+    sleep 0.2 # this is a total hack. the server needs a little time to start up before running the test block
     yield
   ensure
     Process.kill("HUP", pid)
