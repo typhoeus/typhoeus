@@ -1,6 +1,7 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__)) unless $LOAD_PATH.include?(File.dirname(__FILE__))
 
 require 'http-machine/easy'
+require 'http-machine/multi'
 require 'http-machine/native'
 require 'http-machine/remote'
 

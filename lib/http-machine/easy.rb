@@ -90,6 +90,41 @@ module HTTPMachine
       response_code()
     end
     
+    # gets called when finished and response code is 200-299
+    def success
+      @success.call(self) if @success
+    end
+    
+    def on_success(&block)
+      @success = block
+    end
+    
+    # gets called when finished and response code is 300-599
+    def failure
+      @failure.call(self) if @failure
+    end
+    
+    def on_failure(&block)
+      @failure = block
+    end
+
+    def retries
+      @retries ||= 0
+    end
+    
+    def increment_retries
+      @retries ||= 0
+      @retries += 1
+    end
+    
+    def max_retries
+      @max_retries ||= 10
+    end
+    
+    def max_retries?
+      retries >= max_retries
+    end
+    
     def reset
       easy_reset()
     end

@@ -1,5 +1,8 @@
 #include <http_machine_easy.h>
 	
+static VALUE idAppend;
+VALUE cHTTPMachineEasy;
+
 static void dealloc(CurlEasy *curl_easy) {
 	if (curl_easy->request_chunk != NULL) {
 		free(curl_easy->request_chunk);
