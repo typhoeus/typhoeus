@@ -12,27 +12,19 @@ A library for accessing web services in Ruby. It's specifically designed for bui
 
 h2. Installation
 
-For now HTTPMachine exists only on github. It also has a few gem requirements that are only on github. Before you start you need to have "libcurl":http://curl.haxx.se/ and "libxml":http://xmlsoft.org/ installed. If you're on Leopard you have both. Otherwise, you'll need to grab them. Once you've got those libraries, these are the gems that get used: nokogiri and taf2-curb (note that this is a fork that lives on github and not the Ruby Forge version of curb). The http-machine gemspec has all the dependencies so you should be able to get up and running with the standard github gem install routine:
+For now HTTPMachine exists only on github. It requires you to have a current version of libcurl installed. I've tested this with 7.19.4.
 <pre>
 gem sources -a http://gems.github.com # if you haven't already
 gem install pauldix-http-machine
 </pre>
-<b>NOTE:</b>Some people have been reporting a few issues related to installation. First, the Ruby Forge version of curb is not what you want. It will not work. Nor will the curl-multi gem that lives on Ruby Forge. You have to get the "taf2-curb":http://github.com/taf2/curb/tree/master fork installed.
-
-If you see this error when doing a require: 
-<pre>
-/Library/Ruby/Site/1.8/rubygems/custom_require.rb:31:in `gem_original_require': no such file to load -- curb_core (LoadError)
-</pre>
-It means that the taf2-curb gem didn't build correctly. To resolve this you can do a git clone git://github.com/taf2/curb.git then run rake gem in the curb directory, then sudo gem install pkg/curb-0.2.4.0.gem. After that you should be good.
-
-If you're on Debian or Ubuntu and getting errors while trying to install the taf2-curb gem, it could be because you don't have the latest version of libcurl installed. Do this to fix:
+If you're on Debian or Ubuntu and getting errors while trying to install, it could be because you don't have the latest version of libcurl installed. Do this to fix:
 <pre>
 sudo apt-get install libcurl4-gnutls-dev
 </pre>
 
-Another problem could be if you are running Mac Ports and you have libcurl installed through there. You need to uninstall it for curb to work! The version in Mac Ports is old and doesn't play nice with curb. If you're running Leopard, you can just uninstall and you should be golden. If you're on an older version of OS X, you'll then need to "download curl":http://curl.haxx.se/download.html and build from source. Then you'll have to install the taf2-curb gem again. You might have to perform the step above.
+Another problem could be if you are running Mac Ports and you have libcurl installed through there. You need to uninstall it for curb to work! The version in Mac Ports is old and doesn't play nice. You should "download curl":http://curl.haxx.se/download.html and build from source. Then you'll have to install the gem again.
 
-If you're still having issues, please let me know on the mailing list. Also, "Todd Fisher (taf2)":http://github.com/taf2 is working on the curb gem and wants to help resolve install issues. Please send him a full error report.
+If you're still having issues, please let me know on the mailing list.
 
 h2. Usage
 
