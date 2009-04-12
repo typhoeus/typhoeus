@@ -11,5 +11,9 @@ module HTTPMachine
     def perform()
       multi_perform
     end
+    
+    def cleanup()
+      multi_cleanup
+    end
   end
 end

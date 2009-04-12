@@ -59,6 +59,7 @@ module HTTPMachine
         set_option(OPTION_VALUES[:CURLOPT_HTTPGET], 1)
       elsif method == :post
         set_option(OPTION_VALUES[:CURLOPT_HTTPPOST], 1)
+        self.post_data = ""
       elsif method == :put
         set_option(OPTION_VALUES[:CURLOPT_UPLOAD], 1)
       else
@@ -81,7 +82,6 @@ module HTTPMachine
     end
     
     def perform
-      self.post_data = "" if (@method == :post && @post_data_set.nil?)
       headers.each_pair do |key, value|
         easy_add_header("#{key}: #{value}")
       end

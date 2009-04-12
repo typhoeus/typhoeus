@@ -88,6 +88,8 @@ static void multi_read_info(VALUE self, CURLM *multi_handle) {
 					continue;
 				}
 			}
+			multi_remove_handle(self, easy);
+
       if (result != 0) {
 				rb_funcall(easy, rb_intern("failure"), 0);
       }
@@ -97,8 +99,6 @@ static void multi_read_info(VALUE self, CURLM *multi_handle) {
       else if (response_code >= 300 && response_code < 600) {
         rb_funcall(easy, rb_intern("failure"), 0);
       }
-
-			multi_remove_handle(self, easy);
     }
   }
 }
@@ -169,6 +169,17 @@ static VALUE multi_perform(VALUE self) {
   return Qnil;
 }
 
+static VALUE multi_cleanup(VALUE self) {
+	CurlMulti *curl_multi;
+	Data_Get_Struct(self, CurlMulti, curl_multi);
+	
+	curl_multi_cleanup(curl_multi->multi);
+	curl_multi->active = 0;
+	curl_multi->running = 0;
+	
+	return Qnil;
+}
+
 static VALUE new(int argc, VALUE *argv, VALUE klass) {
 	CurlMulti *curl_multi = ALLOC(CurlMulti);
 	curl_multi->multi = curl_multi_init();
@@ -189,4 +200,5 @@ void init_http_machine_multi() {
 	rb_define_private_method(klass, "multi_add_handle", multi_add_handle, 1);
 	rb_define_private_method(klass, "multi_remove_handle", multi_remove_handle, 1);
 	rb_define_private_method(klass, "multi_perform", multi_perform, 0);
+	rb_define_private_method(klass, "multi_cleanup", multi_cleanup, 0);
 }

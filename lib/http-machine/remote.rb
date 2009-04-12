@@ -1,6 +1,3 @@
-require 'curb'
-require 'cgi'
-
 module HTTPMachine
   USER_AGENT = "HTTPMachine - http://github.com/pauldix/http-machine/tree/master"
   
@@ -12,7 +9,7 @@ module HTTPMachine
     def get(url, options = {}, &block)
       if HTTPMachine.multi_running?
         url = add_params_to_url(url, options[:params]) if options[:params]
-        HTTPMachine.add_easy_request(base_easy_object(url, options, block))
+        HTTPMachine.add_easy_request(base_easy_object(url, :get, options, block))
       else
         HTTPMachine.service_access do
           get(url, options, &block)
@@ -21,7 +18,13 @@ module HTTPMachine
     end
     
     def post(url, options = {}, &block)
-      base_easy_object(url, options, block).http_post(params_to_curl_post_fields(options[:params]))
+      if HTTPMachine.multi_running?
+        HTTPMachine.add_easy_request(base_easy_object(url, :post, options, block))
+      else
+        HTTPMachine.service_access do
+          delete(url, options, &block)
+        end
+      end
     end
     
     # def put(url, options = {}, &block)
@@ -38,19 +41,27 @@ module HTTPMachine
     # end
     
     def delete(url, options = {}, &block)
-      base_easy_object(url, options, block).http_delete
+      if HTTPMachine.multi_running?
+        HTTPMachine.add_easy_request(base_easy_object(url, :delete, options, block))
+      else
+        HTTPMachine.service_access do
+          delete(url, options, &block)
+        end
+      end
     end
     
-    def base_easy_object(url, options, block)
-      easy = Curl::Easy.new(url) do |curl|
-        curl.headers["User-Agent"] = (options[:user_agent] || HTTPMachine::USER_AGENT)
-        curl.on_success do |c|
-          block.call(c.response_code, c.body_str)
-        end
-        curl.on_failure do |c|
-          block.call(c.response_code, c.body_str)
-        end        
+    def base_easy_object(url, method, options, block)
+      easy = HTTPMachine::Easy.new
+      easy.url = url
+      easy.method = method
+      easy.headers["User-Agent"] = (options[:user_agent] || HTTPMachine::USER_AGENT)
+      easy.on_success do |c|
+        block.call(c.response_code, c.response_body)
       end
+      easy.on_failure do |c|
+        block.call(c.response_code, c.response_body)
+      end
+      easy
     end
     
     def add_params_to_url(url, params)
