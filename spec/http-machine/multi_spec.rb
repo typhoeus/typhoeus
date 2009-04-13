@@ -32,6 +32,27 @@ describe HTTPMachine::Easy do
     e2.response_body.should include("METHOD=POST")
   end
   
+  it "should perform easy handles added after the first one runs" do
+    easy = HTTPMachine::Easy.new
+    easy.url = "http://localhost:3002"
+    easy.method = :get
+    multi = HTTPMachine::Multi.new
+    multi.add(easy)
+
+    e2 = HTTPMachine::Easy.new
+    e2.url = "http://localhost:3002"
+    e2.method = :post
+    easy.on_success do |e|
+      multi.add(e2)
+    end
+    
+    multi.perform
+    easy.response_code.should == 200
+    easy.response_body.should include("METHOD=GET")    
+    e2.response_code.should == 200
+    e2.response_body.should include("METHOD=POST")    
+  end
+  
   # it "should do multiple gets" do
     # multi = HTTPMachine::Multi.new
     # 

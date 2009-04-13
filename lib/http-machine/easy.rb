@@ -1,6 +1,6 @@
 module HTTPMachine
   class Easy
-    attr_reader :response_body, :response_header, :method, :headers
+    attr_reader :response_body, :response_header, :method, :headers, :url
     CURLINFO_STRING = 1048576
     OPTION_VALUES = {
       :CURLOPT_URL           => 10002,
@@ -50,6 +50,7 @@ module HTTPMachine
     end
           
     def url=(url)
+      @url = url
       set_option(OPTION_VALUES[:CURLOPT_URL], url)
     end
     
@@ -71,6 +72,23 @@ module HTTPMachine
       @post_data_set = true
       set_option(OPTION_VALUES[:CURLOPT_POSTFIELDS], data)
       set_option(OPTION_VALUES[:CURLOPT_POSTFIELDSIZE], data.length)
+    end
+    
+    def params=(params)
+      params_string = params.keys.collect do |k|
+        value = params[k]
+        if value.is_a? Hash
+          value.keys.collect {|sk| CGI.escape("#{k}[#{sk}]") + "=" + CGI.escape(value[sk].to_s)}
+        else
+          "#{CGI.escape(k.to_s)}=#{CGI.escape(params[k].to_s)}"
+        end
+      end.flatten.join("&")
+      
+      if method == :get
+        self.url = "#{url}?#{params_string}"
+      elsif method == :post
+        self.post_data = params_string
+      end
     end
     
     def set_option(option, value)
@@ -118,7 +136,7 @@ module HTTPMachine
     end
     
     def max_retries
-      @max_retries ||= 10
+      @max_retries ||= 40
     end
     
     def max_retries?

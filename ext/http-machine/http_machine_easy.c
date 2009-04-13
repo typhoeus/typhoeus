@@ -147,6 +147,13 @@ static VALUE easy_set_request_body(VALUE self, VALUE data, VALUE content_length_
 	return Qnil;
 }
 
+static VALUE easy_escape(VALUE self, VALUE data, VALUE length) {
+	CurlEasy *curl_easy;
+	Data_Get_Struct(self, CurlEasy, curl_easy);
+
+	return rb_str_new2(curl_easy_escape(curl_easy->curl, StringValuePtr(data), NUM2INT(length)));
+}
+
 static VALUE new(int argc, VALUE *argv, VALUE klass) {
 	CURL *curl = curl_easy_init();
 	CurlEasy *curl_easy = ALLOC(CurlEasy);
@@ -182,4 +189,5 @@ void init_http_machine_easy() {
 	rb_define_private_method(klass, "easy_set_request_body", easy_set_request_body, 1);
 	rb_define_private_method(klass, "easy_set_headers", easy_set_headers, 0);
 	rb_define_private_method(klass, "easy_add_header", easy_add_header, 1);
+	rb_define_private_method(klass, "easy_escape", easy_escape, 2);
 }

@@ -9,7 +9,9 @@ module HTTPMachine
     end
     
     def perform()
-      multi_perform
+      while active_handle_count > 0 do
+        multi_perform
+      end
     end
     
     def cleanup()

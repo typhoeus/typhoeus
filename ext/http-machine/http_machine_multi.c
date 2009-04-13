@@ -25,10 +25,11 @@ static VALUE multi_add_handle(VALUE self, VALUE easy) {
   if (mcode == CURLM_CALL_MULTI_PERFORM) {
     curl_multi_perform(curl_multi->multi, &(curl_multi->running));
   }
-  
-  if (curl_multi->active > curl_multi->running) {
-   multi_read_info(self, curl_multi->multi);
-  }
+  // 
+  // if (curl_multi->running) {
+  // 		printf("call read_info on add<br/>");
+  //   multi_read_info(self, curl_multi->multi);
+  // }
 	
 	return easy;	
 }
@@ -169,6 +170,13 @@ static VALUE multi_perform(VALUE self) {
   return Qnil;
 }
 
+static VALUE active_handle_count(VALUE self) {
+	CurlMulti *curl_multi;
+	Data_Get_Struct(self, CurlMulti, curl_multi);
+
+	return INT2NUM(curl_multi->active);
+}
+
 static VALUE multi_cleanup(VALUE self) {
 	CurlMulti *curl_multi;
 	Data_Get_Struct(self, CurlMulti, curl_multi);
@@ -201,4 +209,5 @@ void init_http_machine_multi() {
 	rb_define_private_method(klass, "multi_remove_handle", multi_remove_handle, 1);
 	rb_define_private_method(klass, "multi_perform", multi_perform, 0);
 	rb_define_private_method(klass, "multi_cleanup", multi_cleanup, 0);
+	rb_define_private_method(klass, "active_handle_count", active_handle_count, 0);
 }

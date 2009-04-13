@@ -42,23 +42,37 @@ describe HTTPMachine do
   #     response.should inclue("REQUEST_URI=/foo.bar")
   #   end
   end
-  # 
-  # it "should add a post method" do
-  #   response_block = mock("response_block")
-  #   response_block.should_receive(:called)
-  #   
-  #   @klass.post("http://localhost:3001/posts.xml", {:params => {:post => {:author => "paul", :title => "a title", :body => "a body"}}}) do |response_code, response|
-  #     response_block.called
-  #     response_code.should == 200
-  #     response.should include("post%5Bbody%5D=a%20body")
-  #     response.should include("post%5Bauthor%5D=paul")
-  #     response.should include("post%5Btitle%5D=a%20title")
-  #     response.should include("REQUEST_METHOD=POST")
-  #   end
-  # end
-  # 
-  # it "should add a put method"
-  # 
+  
+  describe "post" do
+    it "should add a post method" do
+      response_block = mock("response_block")
+      response_block.should_receive(:called)
+
+      @klass.post("http://localhost:3001/posts.xml", {:params => {:post => {:author => "paul", :title => "a title", :body => "a body"}}}) do |response_code, response|
+        response_block.called
+        response_code.should == 200
+        response.should include("post%5Bbody%5D=a+body")
+        response.should include("post%5Bauthor%5D=paul")
+        response.should include("post%5Btitle%5D=a+title")
+        response.should include("REQUEST_METHOD=POST")
+      end
+    end
+
+    it "should add a body" do
+      response_block = mock("response_block")
+      response_block.should_receive(:called)
+
+      @klass.post("http://localhost:3001/posts.xml", {:body => "this is a request body"}) do |response_code, response|
+        response_block.called
+        response_code.should == 200
+        response.should include("this is a request body")
+        response.should include("REQUEST_METHOD=POST")
+      end
+    end
+  end
+  
+  it "should add a put method"
+  
   it "should add a delete method" do
     response_block = mock("response_block")
     response_block.should_receive(:called)

@@ -8,7 +8,6 @@ module HTTPMachine
   module ClassMethods
     def get(url, options = {}, &block)
       if HTTPMachine.multi_running?
-        url = add_params_to_url(url, options[:params]) if options[:params]
         HTTPMachine.add_easy_request(base_easy_object(url, :get, options, block))
       else
         HTTPMachine.service_access do
@@ -22,7 +21,7 @@ module HTTPMachine
         HTTPMachine.add_easy_request(base_easy_object(url, :post, options, block))
       else
         HTTPMachine.service_access do
-          delete(url, options, &block)
+          post(url, options, &block)
         end
       end
     end
@@ -55,6 +54,8 @@ module HTTPMachine
       easy.url = url
       easy.method = method
       easy.headers["User-Agent"] = (options[:user_agent] || HTTPMachine::USER_AGENT)
+      easy.params = options[:params] if options[:params]
+      easy.request_body = options[:body] if options[:body]
       easy.on_success do |c|
         block.call(c.response_code, c.response_body)
       end

@@ -70,6 +70,16 @@ describe HTTPMachine::Easy do
       easy.response_code.should == 200
       easy.response_body.should include("this is a body!")
     end
+    
+    it "should handle params" do
+      easy = HTTPMachine::Easy.new
+      easy.url    = "http://localhost:3002"
+      easy.method = :post
+      easy.params = {:foo => "bar"}
+      easy.perform
+      easy.response_code.should == 200
+      easy.response_body.should include("foo=bar")
+    end
   end
   
   describe "delete" do
