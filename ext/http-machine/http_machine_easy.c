@@ -58,14 +58,14 @@ static VALUE easy_getinfo_long(VALUE self, VALUE info) {
 }
 
 static VALUE easy_getinfo_double(VALUE self, VALUE info) {
-	double info_double;
+	double info_double = 0;
 	CurlEasy *curl_easy;
 	Data_Get_Struct(self, CurlEasy, curl_easy);
 
 	long opt = NUM2LONG(info);
 	curl_easy_getinfo(curl_easy->curl, opt, &info_double);
-	
-	return rb_dbl2big(info_double);
+
+	return rb_float_new(info_double);
 }
 
 static VALUE easy_perform(VALUE self) {
