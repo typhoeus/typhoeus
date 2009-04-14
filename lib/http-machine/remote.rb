@@ -64,7 +64,7 @@ module HTTPMachine
       after_filters = @after_filters || []
       wrapper = lambda do |easy_object|
         after_filters.each do |filter|
-          filter.call(easy_object) if filter.apply_filter?(method_name)
+          send(filter.method_name, easy_object) if filter.apply_filter?(method_name)
         end
         block.call(easy_object)
       end
@@ -74,9 +74,9 @@ module HTTPMachine
       @server = server
     end
     
-    def after_filter(options = {}, &block)
+    def after_filter(method_name, options = {})
       @after_filters ||= []
-      @after_filters << Filter.new(options, block)
+      @after_filters << Filter.new(method_name, options)
     end
     
     def add_multi_request(method_name, params, block)

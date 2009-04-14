@@ -100,8 +100,12 @@ describe HTTPMachine do
 
       klass = Class.new do
         include HTTPMachine
-        after_filter do |easy|
-          filter_mock.call
+        after_filter :some_method
+        
+        @filter_mock = filter_mock
+        
+        def self.some_method(easy)
+          @filter_mock.call
         end
       end
       

@@ -1,8 +1,10 @@
 module HTTPMachine
   class Filter
-    def initialize(options, block)
+    attr_reader :method_name
+    
+    def initialize(method_name, options = {})
+      @method_name = method_name
       @options = options
-      @block   = block
     end
     
     def apply_filter?(method_name)
@@ -21,10 +23,6 @@ module HTTPMachine
       else
         true
       end
-    end
-    
-    def call(curl_easy)
-      @block.call(curl_easy)
     end
   end
 end
