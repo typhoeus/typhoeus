@@ -1,7 +1,5 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-require 'rubygems'
-require 'curb'
 describe HTTPMachine::Easy do
   before(:all) do
     @pid = start_method_server(3002)
