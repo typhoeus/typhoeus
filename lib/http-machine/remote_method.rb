@@ -2,8 +2,8 @@ module HTTPMachine
   class RemoteMethod
     attr_accessor :http_method, :options, :base_uri, :path
     
-    def initialize(http_method, options)
-      @http_method = http_method
+    def initialize(options = {})
+      @http_method = options.delete(:method) || :get
       @options     = options
       @base_uri    = options.delete(:base_uri)
       @path        = options.delete(:path)

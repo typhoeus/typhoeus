@@ -220,10 +220,43 @@ describe HTTPMachine do
     end
     
     describe "method" do
-      it "should take :method as an argument"
-      it "should use :get if no method or default_method exists"
-      it "should use default_method if no method provided"
-      it "should override deafult_method if method argument is provided"
+      it "should take :method as an argument" do
+        @klass.instance_eval do
+          remote_method :do_stuff, :base_uri => "http://pauldix.net", :method => :put
+        end
+        
+        @klass.should_receive(:put).with("http://pauldix.net", {})
+        @klass.do_stuff
+      end
+      
+      it "should use :get if no method or default_method exists" do
+        @klass.instance_eval do
+          remote_method :do_stuff, :base_uri => "http://pauldix.net"
+        end
+        
+        @klass.should_receive(:get).with("http://pauldix.net", {})
+        @klass.do_stuff
+      end
+      
+      it "should use default_method if no method provided" do
+        @klass.instance_eval do
+          default_method :delete
+          remote_method :do_stuff, :base_uri => "http://kgb.com"
+        end
+        
+        @klass.should_receive(:delete).with("http://kgb.com", {})
+        @klass.do_stuff
+      end
+      
+      it "should override deafult_method if method argument is provided" do
+        @klass.instance_eval do
+          default_method :put
+          remote_method :do_stuff, :base_uri => "http://pauldix.net", :method => :post
+        end
+        
+        @klass.should_receive(:post).with("http://pauldix.net", {})
+        @klass.do_stuff
+      end
     end
     
     describe "on_success" do
