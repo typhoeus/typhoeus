@@ -143,7 +143,7 @@ describe HTTPMachine do
       end
       
       it "should take arguments" do
-        @klass.should_receive(:get).with(nil, {:params=>{:foo=>"bar"}, :body=>"whatever"})
+        @klass.should_receive(:get).with("", {:params=>{:foo=>"bar"}, :body=>"whatever"})
         @klass.do_stuff(:params => {:foo => "bar"}, :body => "whatever")
       end
     end
@@ -180,10 +180,43 @@ describe HTTPMachine do
     end
     
     describe "path" do
-      it "should take :path as an argument"
-      it "should use deafult_path if no path provided"
-      it "should orverride default_path if path argument is provided"
-      it "should map symbols in path to arguments for the remote method"
+      it "should take :path as an argument" do
+        @klass.instance_eval do
+          remote_method :do_stuff, :base_uri => "http://kgb.com", :path => "/default.html"
+        end
+        
+        @klass.should_receive(:get).with("http://kgb.com/default.html", {})
+        @klass.do_stuff
+      end
+      
+      it "should use deafult_path if no path provided" do
+        @klass.instance_eval do
+          default_path "/index.html"
+          remote_method :do_stuff, :base_uri => "http://pauldix.net"
+        end
+        
+        @klass.should_receive(:get).with("http://pauldix.net/index.html", {})
+        @klass.do_stuff
+      end
+      
+      it "should orverride default_path if path argument is provided" do
+        @klass.instance_eval do
+          default_path "/index.html"
+          remote_method :do_stuff, :base_uri => "http://pauldix.net", :path => "/foo.html"
+        end
+        
+        @klass.should_receive(:get).with("http://pauldix.net/foo.html", {})
+        @klass.do_stuff        
+      end
+      
+      it "should map symbols in path to arguments for the remote method" do
+        @klass.instance_eval do
+          remote_method :do_stuff, :base_uri => "http://pauldix.net", :path => "/posts/:post_id/comments/:comment_id"
+        end
+        
+        @klass.should_receive(:get).with("http://pauldix.net/posts/foo/comments/bar", {})
+        @klass.do_stuff("foo", "bar")
+      end
     end
     
     describe "method" do

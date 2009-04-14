@@ -74,25 +74,38 @@ module HTTPMachine
       @default_base_uri = default_uri
     end
     
+    def default_path(default_path)
+      @default_path = default_path
+    end
+    
     def after_filter(method_name, options = {})
       @after_filters ||= []
       @after_filters << Filter.new(method_name, options)
     end
     
-    def call_remote_method(method_name, options, block)
+    def call_remote_method(method_name, args, options, block)
       m = @remote_methods[method_name]
-      base_uri = m.base_uri || @default_base_uri
+      base_uri = m.base_uri || @default_base_uri || ""
+
+      if args.empty?
+        path = m.path || @default_path || ""
+      else
+        path = m.interpolate_path_with_arguments(args)
+      end
+
       if m.http_method == :get
-        get(base_uri, options.merge(m.options), &block)
+        get(base_uri + path, options.merge(m.options), &block)
       end
     end
     
     def remote_method(name, args = {})
       @remote_methods ||= {}
-      @remote_methods[name] = RemoteMethod.new(:get, args)
+      m = RemoteMethod.new(:get, args)
+      arg_names = m.argument_names_string
+      @remote_methods[name] = m
       class_eval <<-SRC
-        def self.#{name.to_s}(options = {}, &block)
-          call_remote_method(:#{name.to_s}, options, block)
+        def self.#{name.to_s}(#{arg_names}options = {}, &block)
+          call_remote_method(:#{name.to_s}, [#{arg_names}], options, block)
         end
       SRC
     end
