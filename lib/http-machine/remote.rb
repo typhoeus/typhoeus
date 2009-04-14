@@ -8,7 +8,7 @@ module HTTPMachine
   module ClassMethods
     def get(url, options = {}, &block)
       if HTTPMachine.multi_running?
-        HTTPMachine.add_easy_request(base_easy_object(url, :get, options, block))
+        HTTPMachine.add_easy_request(base_easy_object(url, :get, options, filter_wrapper_block(:get, block)))
       else
         HTTPMachine.service_access do
           get(url, options, &block)
@@ -18,7 +18,7 @@ module HTTPMachine
     
     def post(url, options = {}, &block)
       if HTTPMachine.multi_running?
-        HTTPMachine.add_easy_request(base_easy_object(url, :post, options, block))
+        HTTPMachine.add_easy_request(base_easy_object(url, :post, options, filter_wrapper_block(:post, block)))
       else
         HTTPMachine.service_access do
           post(url, options, &block)
@@ -28,7 +28,7 @@ module HTTPMachine
 
     def put(url, options = {}, &block)
       if HTTPMachine.multi_running?
-        HTTPMachine.add_easy_request(base_easy_object(url, :put, options, block))
+        HTTPMachine.add_easy_request(base_easy_object(url, :put, options, filter_wrapper_block(:put, block)))
       else
         HTTPMachine.service_access do
           put(url, options, &block)
@@ -38,7 +38,7 @@ module HTTPMachine
     
     def delete(url, options = {}, &block)
       if HTTPMachine.multi_running?
-        HTTPMachine.add_easy_request(base_easy_object(url, :delete, options, block))
+        HTTPMachine.add_easy_request(base_easy_object(url, :delete, options, filter_wrapper_block(:delete, block)))
       else
         HTTPMachine.service_access do
           delete(url, options, &block)
@@ -60,8 +60,23 @@ module HTTPMachine
       easy
     end
     
+    def filter_wrapper_block(method_name, block)
+      after_filters = @after_filters || []
+      wrapper = lambda do |easy_object|
+        after_filters.each do |filter|
+          filter.call(easy_object) if filter.apply_filter?(method_name)
+        end
+        block.call(easy_object)
+      end
+    end
+    
     def remote_server(server)
       @server = server
+    end
+    
+    def after_filter(options = {}, &block)
+      @after_filters ||= []
+      @after_filters << Filter.new(options, block)
     end
     
     def add_multi_request(method_name, params, block)
