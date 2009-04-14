@@ -70,8 +70,9 @@ module HTTPMachine
       end
     end
     
-    def remote_server(server)
-      @server = server
+    def base_uri(base_uri = nil)
+      return @base_uri if base_uri.nil?
+      @base_uri = base_uri
     end
     
     def after_filter(method_name, options = {})

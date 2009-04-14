@@ -41,7 +41,7 @@ describe HTTPMachine do
   #     response = @klass.get("http://localhost:3001/foo.bar")
   #     response.should inclue("REQUEST_URI=/foo.bar")
   #   end
-  end
+  end # get
   
   describe "post" do
     it "should add a post method" do
@@ -69,7 +69,7 @@ describe HTTPMachine do
         easy.response_body.should include("REQUEST_METHOD=POST")
       end
     end
-  end
+  end # post
   
   it "should add a put method" do
     response_block = mock("response_block")
@@ -116,6 +116,17 @@ describe HTTPMachine do
         easy.response_code.should == 200
         easy.response_body.should include("REQUEST_METHOD=GET")
       end
+    end
+  end # after_filter
+  
+  describe "base_uri" do
+    it "shoud store the remote host" do
+      klass = Class.new do
+        include HTTPMachine
+        base_uri "http://localhost:3001"
+      end
+      
+      klass.base_uri.should == "http://localhost:3001"
     end
   end
 end
