@@ -16,13 +16,18 @@ module HTTPMachine
       :CURLOPT_HTTPHEADER    => 10023
     }
     INFO_VALUES = {
-      :CURLINFO_RESPONSE_CODE => 2097154
+      :CURLINFO_RESPONSE_CODE => 2097154,
+      :CURLINFO_TOTAL_TIME    => 3145731
     }
     
     def initialize
       @method = :get
       @post_dat_set = nil
       @headers = {}
+    end
+    
+    def total_time_taken
+      get_info_double(INFO_VALUES[:CURLINFO_TOTAL_TIME])
     end
     
     def response_code
@@ -117,12 +122,20 @@ module HTTPMachine
       @success = block
     end
     
+    def on_success=(block)
+      @success = block
+    end
+    
     # gets called when finished and response code is 300-599
     def failure
       @failure.call(self) if @failure
     end
     
     def on_failure(&block)
+      @failure = block
+    end
+    
+    def on_failure=(block)
       @failure = block
     end
 
