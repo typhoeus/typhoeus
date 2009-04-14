@@ -14,4 +14,10 @@ describe HTTPMachine::RemoteMethod do
     m = HTTPMachine::RemoteMethod.new(:delete, :body => "foo")
     m.options.should == {:body => "foo"}
   end
+  
+  it "should pull uri out of the options hash" do
+    m = HTTPMachine::RemoteMethod.new(:delete, {:base_uri => "http://pauldix.net"})
+    m.base_uri.should == "http://pauldix.net"
+    m.options.should_not have_key(:base_uri)
+  end
 end

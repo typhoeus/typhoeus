@@ -143,15 +143,40 @@ describe HTTPMachine do
       end
       
       it "should take arguments" do
-        @klass.should_receive(:get).with("", {:params=>{:foo=>"bar"}, :body=>"whatever"})
+        @klass.should_receive(:get).with(nil, {:params=>{:foo=>"bar"}, :body=>"whatever"})
         @klass.do_stuff(:params => {:foo => "bar"}, :body => "whatever")
       end
     end
 
-    describe "uri" do
-      it "should take a :uri as an argument"
-      it "should use default_uri if no uri provided"
-      it "should override default_uri if uri argument is provided"
+    describe "base_uri" do
+      it "should take a :uri as an argument" do
+        @klass.instance_eval do
+          remote_method :do_stuff, :base_uri => "http://pauldix.net"
+        end
+        
+        @klass.should_receive(:get).with("http://pauldix.net", {})
+        @klass.do_stuff
+      end
+      
+      it "should use default_base_uri if no base_uri provided" do
+        @klass.instance_eval do
+          default_base_uri "http://kgb.com"
+          remote_method :do_stuff
+        end
+        
+        @klass.should_receive(:get).with("http://kgb.com", {})
+        @klass.do_stuff
+      end
+      
+      it "should override default_base_uri if uri argument is provided" do
+        @klass.instance_eval do
+          default_base_uri "http://kgb.com"
+          remote_method :do_stuff, :base_uri => "http://pauldix.net"
+        end
+        
+        @klass.should_receive(:get).with("http://pauldix.net", {})
+        @klass.do_stuff        
+      end
     end
     
     describe "path" do

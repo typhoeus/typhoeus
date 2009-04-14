@@ -70,8 +70,8 @@ module HTTPMachine
       end
     end
     
-    def base_uri(base_uri)
-      @base_uri = base_uri
+    def default_base_uri(default_uri)
+      @default_base_uri = default_uri
     end
     
     def after_filter(method_name, options = {})
@@ -81,8 +81,9 @@ module HTTPMachine
     
     def call_remote_method(method_name, options, block)
       m = @remote_methods[method_name]
+      base_uri = m.base_uri || @default_base_uri
       if m.http_method == :get
-        get("", options.merge(m.options), &block)
+        get(base_uri, options.merge(m.options), &block)
       end
     end
     
