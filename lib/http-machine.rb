@@ -5,6 +5,7 @@ require 'http-machine/easy'
 require 'http-machine/multi'
 require 'http-machine/native'
 require 'http-machine/filter'
+require 'http-machine/remote_method'
 require 'http-machine/remote'
 
 module HTTPMachine

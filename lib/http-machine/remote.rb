@@ -70,8 +70,7 @@ module HTTPMachine
       end
     end
     
-    def base_uri(base_uri = nil)
-      return @base_uri if base_uri.nil?
+    def base_uri(base_uri)
       @base_uri = base_uri
     end
     
@@ -80,28 +79,19 @@ module HTTPMachine
       @after_filters << Filter.new(method_name, options)
     end
     
-    def add_multi_request(method_name, params, block)
-      all_params = @methods[method_name][:params].merge(params)
-      params_string = all_params.to_a.map {|a| a.map {|o|o.to_s}.join("=")}.join("&")
-      url = "#{@server}?#{params_string}"
-      easy = Curl::Easy.new(url) do |curl|
-        curl.headers["User-Agent"] = "HTTPMachine - http://github.com/pauldix/http-machine/tree/master"
-        curl.on_success do |c|
-          block.functionally.call(send(@methods[method_name][:response_handler], c.body_str))
-        end
+    def call_remote_method(method_name, options, block)
+      m = @remote_methods[method_name]
+      if m.http_method == :get
+        get("", options.merge(m.options), &block)
       end
-      Thread.current[:curl_multi].add(easy)
     end
-
+    
     def remote_method(name, args = {})
-      args[:method] ||= :get
-      args[:params] ||= {}
-      @methods ||= {}
-      @methods[name] = args
-      puts name
+      @remote_methods ||= {}
+      @remote_methods[name] = RemoteMethod.new(:get, args)
       class_eval <<-SRC
-        def self.#{name.to_s}(params, &block)
-          add_multi_request(:#{name.to_s}, params, block)
+        def self.#{name.to_s}(options = {}, &block)
+          call_remote_method(:#{name.to_s}, options, block)
         end
       SRC
     end

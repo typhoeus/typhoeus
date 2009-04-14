@@ -119,14 +119,69 @@ describe HTTPMachine do
     end
   end # after_filter
   
-  describe "base_uri" do
-    it "shoud store the remote host" do
-      klass = Class.new do
+  describe "#remote_method" do
+    before(:each) do
+      @klass = Class.new do
         include HTTPMachine
-        base_uri "http://localhost:3001"
+      end
+    end
+    
+    describe "defined methods" do
+      before(:each) do
+        @klass.instance_eval do
+          remote_method :do_stuff
+        end
+      end
+
+      it "should take a method name as the first argument and define that as a class method" do
+        @klass.should respond_to(:do_stuff)
       end
       
-      klass.base_uri.should == "http://localhost:3001"
+      it "should optionally take arguments" do
+        @klass.should_receive(:get)
+        @klass.do_stuff
+      end
+      
+      it "should take arguments" do
+        @klass.should_receive(:get).with("", {:params=>{:foo=>"bar"}, :body=>"whatever"})
+        @klass.do_stuff(:params => {:foo => "bar"}, :body => "whatever")
+      end
     end
-  end
+
+    describe "uri" do
+      it "should take a :uri as an argument"
+      it "should use default_uri if no uri provided"
+      it "should override default_uri if uri argument is provided"
+    end
+    
+    describe "path" do
+      it "should take :path as an argument"
+      it "should use deafult_path if no path provided"
+      it "should orverride default_path if path argument is provided"
+      it "should map symbols in path to arguments for the remote method"
+    end
+    
+    describe "method" do
+      it "should take :method as an argument"
+      it "should use :get if no method or default_method exists"
+      it "should use default_method if no method provided"
+      it "should override deafult_method if method argument is provided"
+    end
+    
+    describe "on_success" do
+      it "should take :on_success as an argument"
+      it "should use default_on_success if no on_success provided"
+      it "should override default_on_success if no method is provided"
+    end
+    
+    describe "on_failure" do
+      it "should take :on_failure as an argument"
+      it "should use default_on_failure if no on_success provided"
+      it "should override default_on_failure if no method is provided"      
+    end
+    
+    describe "params" do
+      it "should take :params as an argument"
+    end
+  end # remote_method  
 end
