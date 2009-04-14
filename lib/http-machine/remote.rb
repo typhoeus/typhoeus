@@ -25,19 +25,16 @@ module HTTPMachine
         end
       end
     end
-    
-    # def put(url, options = {}, &block)
-    #   easy = Curl::Easy.new(url) do |curl|
-    #     curl.on_success do |c|
-    #       block.call(c.response_code, c.body_str)
-    #     end
-    #     curl.on_failure do |c|
-    #       block.call(c.response_code, c.body_str)
-    #     end
-    #   end
-    #   put_data = params_to_curl_post_fields(options[:params]).collect{|p| p.to_s}.join("&")
-    #   easy.http_put(put_data)
-    # end
+
+    def put(url, options = {}, &block)
+      if HTTPMachine.multi_running?
+        HTTPMachine.add_easy_request(base_easy_object(url, :put, options, block))
+      else
+        HTTPMachine.service_access do
+          put(url, options, &block)
+        end
+      end      
+    end
     
     def delete(url, options = {}, &block)
       if HTTPMachine.multi_running?
@@ -51,48 +48,16 @@ module HTTPMachine
     
     def base_easy_object(url, method, options, block)
       easy = HTTPMachine::Easy.new
-      easy.url = url
-      easy.method = method
+      
+      easy.url                   = url
+      easy.method                = method
       easy.headers["User-Agent"] = (options[:user_agent] || HTTPMachine::USER_AGENT)
-      easy.params = options[:params] if options[:params]
-      easy.request_body = options[:body] if options[:body]
-      easy.on_success do |c|
-        block.call(c.response_code, c.response_body)
-      end
-      easy.on_failure do |c|
-        block.call(c.response_code, c.response_body)
-      end
+      easy.params                = options[:params] if options[:params]
+      easy.request_body          = options[:body] if options[:body]
+      easy.on_success            = block
+      easy.on_failure            = block
+      
       easy
-    end
-    
-    def add_params_to_url(url, params)
-      if url.include?("?")
-        url + "&" + params_to_query_string(params)
-      else
-        url + "?" + params_to_query_string(params)
-      end
-    end
-    
-    def params_to_query_string(params)
-      params.keys.collect do |k|
-        value = params[k]
-        if value.is_a? Hash
-          value.keys.collect {|sk| CGI.escape("#{k}[#{sk}]") + "=" + CGI.escape(value[sk].to_s)}
-        else
-          "#{CGI.escape(k.to_s)}=#{CGI.escape(params[k].to_s)}"
-        end
-      end.flatten.join("&")
-    end
-    
-    def params_to_curl_post_fields(params)
-      params.keys.collect do |k|
-        value = params[k]
-        if value.is_a? Hash
-          value.keys.collect {|sk| Curl::PostField.content("#{k}[#{sk}]", value[sk])}
-        else
-          Curl::PostField.content(k.to_s, params[k].to_s)
-        end
-      end.flatten
     end
     
     def remote_server(server)
