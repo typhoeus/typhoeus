@@ -70,6 +70,10 @@ module HTTPMachine
       end
     end
     
+    def default_base_uri=(default_uri)
+      @default_base_uri = default_uri
+    end
+    
     def default_base_uri(default_uri)
       @default_base_uri = default_uri
     end
@@ -140,16 +144,22 @@ module HTTPMachine
 
       class_eval <<-SRC
         def self.#{name.to_s}(#{arg_names}options = {}, &block)
-          m = @remote_methods[:#{name.to_s}]
-          if m.cache_response?
-            if m.already_called?([#{arg_names}], options)
-              m.add_response_block(block, [#{arg_names}], options)
+          if HTTPMachine.multi_running?
+            m = @remote_methods[:#{name.to_s}]
+            if m.cache_response?
+              if m.already_called?([#{arg_names}], options)
+                m.add_response_block(block, [#{arg_names}], options)
+              else
+                m.calling([#{arg_names}], options)
+                call_remote_method(:#{name.to_s}, [#{arg_names}], options, block)
+              end
             else
-              m.calling([#{arg_names}], options)
               call_remote_method(:#{name.to_s}, [#{arg_names}], options, block)
             end
           else
-            call_remote_method(:#{name.to_s}, [#{arg_names}], options, block)
+            HTTPMachine.service_access do
+              #{name.to_s}(#{arg_names}options, &block)
+            end
           end
         end
       SRC

@@ -21,11 +21,15 @@ Gem::Specification.new do |s|
     "lib/http-machine/easy.rb",
     "lib/http-machine/multi.rb",
     "lib/http-machine/remote.rb",
+    "lib/http-machine/filter.rb",
+    "lib/http-machine/remote_method.rb",
     "spec/spec.opts",
     "spec/spec_helper.rb",
     "spec/http-machine/easy_spec.rb",
     "spec/http-machine/multi_spec.rb",
     "spec/http-machine/remote_spec.rb",
+    "spec/http-machine/filter_spec.rb",
+    "spec/http-machine/remote_method_spec.rb",
     "spec/servers/delay_fixture_server.rb",
     "spec/servers/method_server.rb"]
   s.has_rdoc = true
