@@ -1,12 +1,14 @@
 module HTTPMachine
   class RemoteMethod
-    attr_accessor :http_method, :options, :base_uri, :path
+    attr_accessor :http_method, :options, :base_uri, :path, :on_success, :on_failure
     
     def initialize(options = {})
       @http_method = options.delete(:method) || :get
       @options     = options
       @base_uri    = options.delete(:base_uri)
       @path        = options.delete(:path)
+      @on_success  = options.delete(:on_success)
+      @on_failure  = options.delete(:on_failure)
     end
     
     def interpolate_path_with_arguments(args)

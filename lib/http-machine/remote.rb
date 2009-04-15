@@ -82,6 +82,14 @@ module HTTPMachine
       @default_method = default_method
     end
     
+    def default_on_success(default_on_success)
+      @default_on_success = default_on_success
+    end
+    
+    def default_on_failure(default_on_failure)
+      @default_on_failure = default_on_failure
+    end
+    
     def after_filter(method_name, options = {})
       @after_filters ||= []
       @after_filters << Filter.new(method_name, options)
@@ -97,7 +105,26 @@ module HTTPMachine
         path = m.interpolate_path_with_arguments(args)
       end
       
-      send(m.http_method, base_uri + path, options.merge(m.options), &block)
+      
+      klass = self
+      wrapped_block = lambda do |easy|
+        response_code = easy.response_code
+        if response_code > 199 && response_code < 300
+          if s = m.on_success || @default_on_success
+            block.call(klass.send(s, easy))
+          else
+            block.call(easy)
+          end
+        else
+          if f = m.on_failure || @default_on_failure
+            block.call(klass.send(f, easy))
+          else
+            block.call(easy)
+          end
+        end
+      end
+      
+      send(m.http_method, base_uri + path, options.merge(m.options), &wrapped_block)
       # if m.http_method == :get
       #   get(base_uri + path, options.merge(m.options), &block)
       # end

@@ -260,15 +260,138 @@ describe HTTPMachine do
     end
     
     describe "on_success" do
-      it "should take :on_success as an argument"
-      it "should use default_on_success if no on_success provided"
-      it "should override default_on_success if no method is provided"
+      it "should take :on_success as an argument" do
+        success_called = mock("success")
+        success_called.should_receive(:call)
+        
+        @klass.instance_eval do
+          @success_called = success_called
+          remote_method :do_stuff, :base_uri => "http://localhost:3001", :on_success => :handle_response
+          
+          def self.handle_response(easy)
+            @success_called.call
+          end
+        end
+        
+        @klass.do_stuff {|e| }
+      end
+      
+      it "should use default_on_success if no on_success provided" do
+        success_called = mock("success")
+        success_called.should_receive(:call)
+        
+        @klass.instance_eval do
+          @success_called = success_called
+          default_on_success :handle_it
+          remote_method :do_stuff, :base_uri => "http://localhost:3001"
+          
+          def self.handle_it(easy)
+            @success_called.call
+          end
+        end
+        
+        @klass.do_stuff {|e| }
+      end
+      
+      it "should override default_on_success if on_success is provided" do
+        success_called = mock("success")
+        success_called.should_receive(:call)
+        
+        @klass.instance_eval do
+          @success_called = success_called
+          default_on_success :should_not_get_called
+          remote_method :do_stuff, :base_uri => "http://localhost:3001", :on_success => :handle_it
+          
+          def self.handle_it(easy)
+            @success_called.call
+          end
+        end
+        
+        @klass.do_stuff {|e| }
+      end
+      
+      it "should give the returned value from the on_success handler to the block" do
+        @klass.instance_eval do
+          remote_method :do_stuff, :base_uri => "http://localhost:3001", :on_success => :handle_response
+          
+          def self.handle_response(easy)
+            :foo
+          end
+        end
+
+        stuff = nil
+        @klass.do_stuff do |val|
+          stuff = val
+        end
+        
+        stuff.should == :foo
+      end
     end
     
     describe "on_failure" do
-      it "should take :on_failure as an argument"
-      it "should use default_on_failure if no on_success provided"
-      it "should override default_on_failure if no method is provided"      
+      it "should take :on_failure as an argument" do
+        failure_called = mock("failure")
+        failure_called.should_receive(:call)
+        
+        @klass.instance_eval do
+          @failure_called = failure_called
+          remote_method :do_stuff, :base_uri => "http://localhost:9999", :on_failure => :handle_response
+          
+          def self.handle_response(easy)
+            @failure_called.call
+          end
+        end
+        
+        @klass.do_stuff {|e| }
+      end
+      
+      it "should use default_on_failure if no on_success provided" do
+        failure_called = mock("failure")
+        failure_called.should_receive(:call)
+        
+        @klass.instance_eval do
+          @failure_called = failure_called
+          default_on_failure :handle_response
+          remote_method :do_stuff, :base_uri => "http://localhost:9999"
+          
+          def self.handle_response(easy)
+            @failure_called.call
+          end
+        end
+        
+        @klass.do_stuff {|e| }
+      end
+      
+      it "should override default_on_failure if no method is provided" do
+        failure_called = mock("failure")
+        failure_called.should_receive(:call)
+        
+        @klass.instance_eval do
+          @failure_called = failure_called
+          default_on_failure :should_not_call
+          remote_method :do_stuff, :base_uri => "http://localhost:9999", :on_failure => :handle_response
+          
+          def self.handle_response(easy)
+            @failure_called.call
+          end
+        end
+        
+        @klass.do_stuff {|e| }
+      end
+      
+      it "should give the returned value from the on_success handler to the block" do
+        @klass.instance_eval do
+          remote_method :do_stuff, :base_uri => "http://localhost:9999", :on_failure => :handle_response
+          
+          def self.handle_response(easy)
+            :foo
+          end
+        end
+        
+        stuff = nil
+        @klass.do_stuff {|val| stuff = val}
+        stuff.should == :foo
+      end
     end
     
     describe "params" do

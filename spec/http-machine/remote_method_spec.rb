@@ -28,6 +28,30 @@ describe HTTPMachine::RemoteMethod do
     m.options.should_not have_key(:base_uri)
   end
   
+  describe "on_success" do
+    it "should return method name" do
+      m = HTTPMachine::RemoteMethod.new(:on_success => :whatev)
+      m.on_success.should == :whatev
+    end
+    
+    it "should pull it out of the options hash" do
+      m = HTTPMachine::RemoteMethod.new(:on_success => :whatev)
+      m.options.should_not have_key(:on_success)
+    end
+  end
+  
+  describe "on_failure" do
+    it "should return method name" do
+      m = HTTPMachine::RemoteMethod.new(:on_failure => :whatev)
+      m.on_failure.should == :whatev
+    end
+    
+    it "should pull it out of the options hash" do
+      m = HTTPMachine::RemoteMethod.new(:on_failure => :whatev)
+      m.options.should_not have_key(:on_failure)
+    end
+  end
+  
   describe "path" do
     it "should pull path out of the options hash" do
       m = HTTPMachine::RemoteMethod.new(:path => "foo")
