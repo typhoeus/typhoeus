@@ -395,7 +395,25 @@ describe HTTPMachine do
     end
     
     describe "params" do
-      it "should take :params as an argument"
+      it "should take :params as an argument" do
+        @klass.instance_eval do
+          remote_method :do_stuff, :base_uri => "http://localhost:3001", :params => {:foo => :bar}
+        end
+
+        response_body = nil
+        @klass.do_stuff {|e| response_body = e.response_body}
+        response_body.should include("QUERY_STRING=foo=bar")
+      end
+      
+      it "should add :params from remote method definition with params passed in when called" do
+        @klass.instance_eval do
+          remote_method :do_stuff, :base_uri => "http://localhost:3001", :params => {:foo => :bar}
+        end
+
+        response_body = nil
+        @klass.do_stuff(:params => {:asdf => :jkl}) {|e| response_body = e.response_body}
+        response_body.should include("QUERY_STRING=foo=bar&asdf=jkl")
+      end
     end
   end # remote_method  
 end

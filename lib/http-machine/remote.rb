@@ -123,11 +123,8 @@ module HTTPMachine
           end
         end
       end
-      
-      send(m.http_method, base_uri + path, options.merge(m.options), &wrapped_block)
-      # if m.http_method == :get
-      #   get(base_uri + path, options.merge(m.options), &block)
-      # end
+
+      send(m.http_method, base_uri + path, m.merge_options(options), &wrapped_block)
     end
     
     def remote_method(name, args = {})

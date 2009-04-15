@@ -89,4 +89,16 @@ describe HTTPMachine::RemoteMethod do
       m.interpolate_path_with_arguments(["foo", "bar"]).should == "/posts/foo/comments/bar"
     end
   end
+  
+  describe "#merge_options" do
+    it "should keep the passed in options first" do
+      m = HTTPMachine::RemoteMethod.new("User-Agent" => "whatev", :foo => :bar)
+      m.merge_options({"User-Agent" => "http-machine"}).should == {"User-Agent" => "http-machine", :foo => :bar}
+    end
+    
+    it "should combine the params" do
+      m = HTTPMachine::RemoteMethod.new(:foo => :bar, :params => {:id => :asdf})
+      m.merge_options({:params => {:desc => :jkl}}).should == {:foo => :bar, :params => {:id => :asdf, :desc => :jkl}}
+    end
+  end
 end

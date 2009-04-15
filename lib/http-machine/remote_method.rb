@@ -11,6 +11,14 @@ module HTTPMachine
       @on_failure  = options.delete(:on_failure)
     end
     
+    def merge_options(new_options)
+      merged = options.merge(new_options)
+      if options.has_key?(:params) && new_options.has_key?(:params)
+        merged[:params] = options[:params].merge(new_options[:params])
+      end
+      merged
+    end
+    
     def interpolate_path_with_arguments(args)
       unless @interpolated_path
         @interpolated_path = @path
