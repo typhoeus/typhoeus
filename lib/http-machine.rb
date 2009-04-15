@@ -9,7 +9,7 @@ require 'http-machine/remote_method'
 require 'http-machine/remote'
 
 module HTTPMachine
-  VERSION = "0.0.1"
+  VERSION = "0.0.2"
 
   def self.multi_running?
     !Thread.current[:curl_multi_running].nil?
