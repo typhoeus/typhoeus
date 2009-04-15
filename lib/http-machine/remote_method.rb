@@ -3,12 +3,47 @@ module HTTPMachine
     attr_accessor :http_method, :options, :base_uri, :path, :on_success, :on_failure
     
     def initialize(options = {})
-      @http_method = options.delete(:method) || :get
-      @options     = options
-      @base_uri    = options.delete(:base_uri)
-      @path        = options.delete(:path)
-      @on_success  = options.delete(:on_success)
-      @on_failure  = options.delete(:on_failure)
+      @http_method      = options.delete(:method) || :get
+      @options          = options
+      @base_uri         = options.delete(:base_uri)
+      @path             = options.delete(:path)
+      @on_success       = options.delete(:on_success)
+      @on_failure       = options.delete(:on_failure)
+      @cache_response   = options.delete(:cache_response)
+      
+      clear_cache
+    end
+    
+    def cache_response?
+      @cache_response
+    end
+    
+    def args_options_key(args, options)
+      "#{args.to_s}+#{options.to_s}"
+    end
+    
+    def calling(args, options)
+      @called_methods[args_options_key(args, options)] = true
+    end
+    
+    def already_called?(args, options)
+      @called_methods.has_key? args_options_key(args, options)
+    end
+    
+    def add_response_block(block, args, options)
+      @response_blocks[args_options_key(args, options)] << block
+    end
+    
+    def call_response_blocks(result, args, options)
+      key = args_options_key(args, options)
+      @response_blocks[key].each {|block| block.call(result)}
+      @response_blocks.delete(key)
+      @called_methods.delete(key)
+    end
+    
+    def clear_cache
+      @response_blocks  = Hash.new {|h, k| h[k] = []}
+      @called_methods   = {}      
     end
     
     def merge_options(new_options)

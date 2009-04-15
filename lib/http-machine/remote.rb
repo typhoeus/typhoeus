@@ -97,6 +97,7 @@ module HTTPMachine
     
     def call_remote_method(method_name, args, options, block)
       m = @remote_methods[method_name]
+      
       base_uri = m.base_uri || @default_base_uri || ""
 
       if args.empty?
@@ -105,14 +106,16 @@ module HTTPMachine
         path = m.interpolate_path_with_arguments(args)
       end
       
-      
       klass = self
       wrapped_block = lambda do |easy|
         response_code = easy.response_code
         if response_code > 199 && response_code < 300
           if s = m.on_success || @default_on_success
-            block.call(klass.send(s, easy))
+            success_result = klass.send(s, easy)
+            m.call_response_blocks(success_result, args, options) if m.cache_response?
+            block.call(success_result)
           else
+            m.call_response_blocks(easy, args, options) if m.cache_response?
             block.call(easy)
           end
         else
@@ -137,7 +140,17 @@ module HTTPMachine
 
       class_eval <<-SRC
         def self.#{name.to_s}(#{arg_names}options = {}, &block)
-          call_remote_method(:#{name.to_s}, [#{arg_names}], options, block)
+          m = @remote_methods[:#{name.to_s}]
+          if m.cache_response?
+            if m.already_called?([#{arg_names}], options)
+              m.add_response_block(block, [#{arg_names}], options)
+            else
+              m.calling([#{arg_names}], options)
+              call_remote_method(:#{name.to_s}, [#{arg_names}], options, block)
+            end
+          else
+            call_remote_method(:#{name.to_s}, [#{arg_names}], options, block)
+          end
         end
       SRC
     end

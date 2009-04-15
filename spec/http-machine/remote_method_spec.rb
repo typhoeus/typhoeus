@@ -101,4 +101,35 @@ describe HTTPMachine::RemoteMethod do
       m.merge_options({:params => {:desc => :jkl}}).should == {:foo => :bar, :params => {:id => :asdf, :desc => :jkl}}
     end
   end
+  
+  describe "caching reponses" do
+    before(:each) do
+      @m = HTTPMachine::RemoteMethod.new(:cache_response => true)
+      @args    = ["foo", "bar"]
+      @options = {:asdf => {:jkl => :bar}}
+    end
+    
+    it "should store if a resposne should be cached" do
+      @m.cache_response?.should be_true
+      @m.options.should == {}
+    end
+    
+    it "should tell when a method is already called" do
+      @m.already_called?(@args, @options).should be_false
+      @m.calling(@args, @options)
+      @m.already_called?(@args, @options).should be_true
+      @m.already_called?([], {}).should be_false
+    end
+    
+    it "should call response blocks and clear the cache" do
+      response_block_called = mock('response_block')
+      response_block_called.should_receive(:call).exactly(1).times
+      
+      @m.add_response_block(lambda {|res| res.should == :foo; response_block_called.call}, @args, @options)
+      @m.calling(@args, @options)
+      @m.call_response_blocks(:foo, @args, @options)
+      @m.already_called?(@args, @options).should be_false
+      @m.call_response_blocks(:asdf, @args, @options) #just to make sure it doesn't actually call that block again
+    end
+  end
 end

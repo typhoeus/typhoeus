@@ -415,5 +415,46 @@ describe HTTPMachine do
         response_body.should include("QUERY_STRING=foo=bar&asdf=jkl")
       end
     end
+    
+    describe "cache_responses" do
+      it "should only make one call to the http method and the on_success handler if :cache_response => true" do
+        success_mock = mock("success")
+        success_mock.should_receive(:call).exactly(2).times
+        
+        @klass.instance_eval do
+          @success_mock = success_mock
+          remote_method :do_stuff, :base_uri => "http://localhost:3001", :path => "/:file", :cache_response => true, :on_success => :success
+          
+          def self.success(easy)
+            @success_mock.call
+            :foo
+          end
+        end
+        
+#        @klass.should_receive(:get).exactly(2).times.and_return(mock("easy"))
+        first_return_val  = nil
+        second_return_val = nil
+        third_return_val  = nil
+        
+        HTTPMachine.service_access do
+          @klass.do_stuff("user.html") do |val|
+            first_return_val = val
+          end
+          
+          
+          @klass.do_stuff("post.html") do |val|
+            second_return_val = val
+          end
+          
+          @klass.do_stuff("user.html") do |val|
+            third_return_val = val
+          end
+        end
+        
+        first_return_val.should  == :foo
+        second_return_val.should == :foo
+        third_return_val.should  == :foo
+      end
+    end
   end # remote_method  
 end
