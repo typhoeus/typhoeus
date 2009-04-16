@@ -11,7 +11,7 @@ require 'http-machine/remote_method'
 require 'http-machine/remote'
 
 module HTTPMachine
-  VERSION = "0.0.2"
+  VERSION = "0.0.3"
   
   def self.add_after_service_access_callback(&block)
     @after_service_access_callbacks ||= []
