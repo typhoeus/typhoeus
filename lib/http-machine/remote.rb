@@ -116,10 +116,10 @@ module HTTPMachine
         if response_code > 199 && response_code < 300
           if s = m.on_success || @default_on_success
             success_result = klass.send(s, easy)
-            m.call_response_blocks(success_result, args, options) if m.cache_response?
+            m.call_response_blocks(success_result, args, options) if m.memoize_responses?
             block.call(success_result)
           else
-            m.call_response_blocks(easy, args, options) if m.cache_response?
+            m.call_response_blocks(easy, args, options) if m.memoize_responses?
             block.call(easy)
           end
         else
@@ -146,7 +146,7 @@ module HTTPMachine
         def self.#{name.to_s}(#{arg_names}options = {}, &block)
           if HTTPMachine.multi_running?
             m = @remote_methods[:#{name.to_s}]
-            if m.cache_response?
+            if m.memoize_responses?
               if m.already_called?([#{arg_names}], options)
                 m.add_response_block(block, [#{arg_names}], options)
               else

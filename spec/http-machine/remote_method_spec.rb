@@ -102,15 +102,15 @@ describe HTTPMachine::RemoteMethod do
     end
   end
   
-  describe "caching reponses" do
+  describe "memoizing reponses" do
     before(:each) do
-      @m = HTTPMachine::RemoteMethod.new(:cache_response => true)
+      @m = HTTPMachine::RemoteMethod.new(:memoize_responses => true)
       @args    = ["foo", "bar"]
       @options = {:asdf => {:jkl => :bar}}
     end
     
-    it "should store if a resposne should be cached" do
-      @m.cache_response?.should be_true
+    it "should store if responses should be memoized" do
+      @m.memoize_responses?.should be_true
       @m.options.should == {}
     end
     

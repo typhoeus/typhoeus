@@ -3,19 +3,19 @@ module HTTPMachine
     attr_accessor :http_method, :options, :base_uri, :path, :on_success, :on_failure
     
     def initialize(options = {})
-      @http_method      = options.delete(:method) || :get
-      @options          = options
-      @base_uri         = options.delete(:base_uri)
-      @path             = options.delete(:path)
-      @on_success       = options.delete(:on_success)
-      @on_failure       = options.delete(:on_failure)
-      @cache_response   = options.delete(:cache_response)
+      @http_method       = options.delete(:method) || :get
+      @options           = options
+      @base_uri          = options.delete(:base_uri)
+      @path              = options.delete(:path)
+      @on_success        = options.delete(:on_success)
+      @on_failure        = options.delete(:on_failure)
+      @memoize_responses = options.delete(:memoize_responses)
       
       clear_cache
     end
     
-    def cache_response?
-      @cache_response
+    def memoize_responses?
+      @memoize_responses
     end
     
     def args_options_key(args, options)

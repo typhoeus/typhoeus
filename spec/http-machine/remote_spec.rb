@@ -416,14 +416,14 @@ describe HTTPMachine do
       end
     end
     
-    describe "cache_responses" do
+    describe "memoize_responses" do
       it "should only make one call to the http method and the on_success handler if :cache_response => true" do
         success_mock = mock("success")
         success_mock.should_receive(:call).exactly(2).times
         
         @klass.instance_eval do
           @success_mock = success_mock
-          remote_method :do_stuff, :base_uri => "http://localhost:3001", :path => "/:file", :cache_response => true, :on_success => :success
+          remote_method :do_stuff, :base_uri => "http://localhost:3001", :path => "/:file", :memoize_responses => true, :on_success => :success
           
           def self.success(easy)
             @success_mock.call
@@ -456,5 +456,21 @@ describe HTTPMachine do
         third_return_val.should  == :foo
       end
     end
-  end # remote_method  
+  end # remote_method
+  
+  # describe "multiple with post" do
+  #   require 'rubygems'
+  #   require 'json'
+  #   it "shoudl do stuff" do
+  #     @klass.instance_eval do
+  #       remote_method :post_stuff, :path => "/entries/metas/:meta_id/ids", :base_uri => "http://localhost:4567", :method => :post
+  #       remote_method :get_stuff, :base_uri => "http://localhost:4567"
+  #     end
+  #     
+  #     HTTPMachine.service_access do
+  #       @klass.post_stuff("paul-tv", :body => ["foo", "bar"].to_json) {|e| }
+  #       @klass.get_stuff {|e| }
+  #     end
+  #   end
+  # end
 end
