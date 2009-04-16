@@ -1,6 +1,8 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__)) unless $LOAD_PATH.include?(File.dirname(__FILE__))
 
 require 'cgi'
+require 'digest/sha2'
+require 'memcached' rescue nil # don't want to force this requirement
 require 'http-machine/easy'
 require 'http-machine/multi'
 require 'http-machine/native'
@@ -10,6 +12,11 @@ require 'http-machine/remote'
 
 module HTTPMachine
   VERSION = "0.0.2"
+  
+  def self.add_after_service_access_callback(&block)
+    @after_service_access_callbacks ||= []
+    @after_service_access_callbacks << block
+  end
 
   def self.multi_running?
     !Thread.current[:curl_multi_running].nil?
@@ -25,5 +32,6 @@ module HTTPMachine
     block.call
     Thread.current[:curl_multi].perform
     Thread.current[:curl_multi_running] = nil
+    @after_service_access_callbacks.each {|b| b.call} unless @after_service_access_callbacks.nil?
   end
 end

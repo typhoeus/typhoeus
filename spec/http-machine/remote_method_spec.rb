@@ -102,7 +102,7 @@ describe HTTPMachine::RemoteMethod do
     end
   end
   
-  describe "memoizing reponses" do
+  describe "memoize_reponses" do
     before(:each) do
       @m = HTTPMachine::RemoteMethod.new(:memoize_responses => true)
       @args    = ["foo", "bar"]
@@ -121,7 +121,7 @@ describe HTTPMachine::RemoteMethod do
       @m.already_called?([], {}).should be_false
     end
     
-    it "should call response blocks and clear the cache" do
+    it "should call response blocks and clear the methods that have been called" do
       response_block_called = mock('response_block')
       response_block_called.should_receive(:call).exactly(1).times
       
@@ -130,6 +130,27 @@ describe HTTPMachine::RemoteMethod do
       @m.call_response_blocks(:foo, @args, @options)
       @m.already_called?(@args, @options).should be_false
       @m.call_response_blocks(:asdf, @args, @options) #just to make sure it doesn't actually call that block again
+    end
+  end
+  
+  describe "cache_reponses" do
+    before(:each) do
+      @m = HTTPMachine::RemoteMethod.new(:cache_responses => true)
+      @args    = ["foo", "bar"]
+      @options = {:asdf => {:jkl => :bar}}
+    end
+    
+    it "should store if responses should be cached" do
+      @m.cache_responses?.should be_true
+      @m.options.should == {}
+    end
+    
+    it "should force memoization if caching is enabled" do
+      @m.memoize_responses?.should be_true
+    end
+    
+    it "should store cache ttl" do
+      HTTPMachine::RemoteMethod.new(:cache_responses => 30).cache_ttl.should == 30
     end
   end
 end

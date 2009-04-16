@@ -417,7 +417,7 @@ describe HTTPMachine do
     end
     
     describe "memoize_responses" do
-      it "should only make one call to the http method and the on_success handler if :cache_response => true" do
+      it "should only make one call to the http method and the on_success handler if :memoize_responses => true" do
         success_mock = mock("success")
         success_mock.should_receive(:call).exactly(2).times
         
@@ -456,7 +456,92 @@ describe HTTPMachine do
         third_return_val.should  == :foo
       end
     end
+    
+    describe "cache_response" do
+      before(:each) do
+        success_mock = mock("success")
+        success_mock.should_receive(:call).exactly(1).times
+        require 'memcached'
+        @klass.cache_server = Memcached.new("localhost:11211")
+        @klass.instance_eval do
+          @success_mock = success_mock
+          remote_method :do_stuff, :base_uri => "http://localhost:3001", :path => "/:file", :cache_responses => true, :on_success => :success
+          
+          def self.success(easy)
+            @success_mock.call
+            :foo
+          end
+        end
+      end
+      
+      it "should pull from the cache if :cache_response => true" do        
+        first_return_val  = nil
+        second_return_val = nil
+
+        HTTPMachine.service_access do
+          @klass.do_stuff("user.html") {|val| first_return_val = val}
+        end
+        
+        HTTPMachine.service_access do
+          @klass.do_stuff("user.html") {|val| second_return_val = val}
+        end
+        
+        first_return_val.should  == :foo
+        second_return_val.should == :foo        
+      end
+      
+      it "should only hit the cache once for the same value" do
+        cache = Memcached.new("localhost:11211")
+        @klass.cache_server = cache
+        
+        HTTPMachine.service_access do
+          @klass.do_stuff("asdf.html") {|val| }
+        end
+        
+        first_return_val = nil
+        second_return_val = nil
+        cache.should_receive(:get).exactly(1).times.and_return(:foo)
+        HTTPMachine.service_access do
+          @klass.do_stuff("asdf.html") {|val| first_return_val = val}
+          @klass.do_stuff("asdf.html") {|val| second_return_val = val}
+        end
+        
+        first_return_val.should  == :foo
+        second_return_val.should == :foo        
+      end
+      
+      it "should only hit the cache once if there is a cache miss (don't check again and again inside the same block)." do
+        first_return_val  = nil
+        second_return_val = nil
+
+        cache = Memcached.new("localhost:11211")
+        cache.should_receive(:get).exactly(1).times
+        @klass.cache_server = cache
+        HTTPMachine.service_access do
+          @klass.do_stuff("foo.html") {|val| first_return_val = val}
+          @klass.do_stuff("foo.html") {|val| second_return_val = val}
+        end
+        
+        first_return_val.should  == :foo
+        second_return_val.should == :foo        
+      end
+      
+      it "should store an object in the cache with a set ttl"
+      it "should take a hash with get and set method pointers to enable custom caching behavior"
+    end
   end # remote_method
+  
+  describe "cache_server" do
+    it "should store a cache_server" do
+      @klass.cache_server = :foo
+    end
+  end
+  
+  describe "get_memcache_resposne_key" do
+    it "should return a key that is an and of the method name, args, and options" do
+      @klass.get_memcache_response_key(:do_stuff, ["foo"], {}).should == "do_stuff-foo-"
+    end
+  end
   
   # describe "multiple with post" do
   #   require 'rubygems'

@@ -1,6 +1,6 @@
 module HTTPMachine
   class RemoteMethod
-    attr_accessor :http_method, :options, :base_uri, :path, :on_success, :on_failure
+    attr_accessor :http_method, :options, :base_uri, :path, :on_success, :on_failure, :cache_ttl
     
     def initialize(options = {})
       @http_method       = options.delete(:method) || :get
@@ -9,9 +9,15 @@ module HTTPMachine
       @path              = options.delete(:path)
       @on_success        = options.delete(:on_success)
       @on_failure        = options.delete(:on_failure)
-      @memoize_responses = options.delete(:memoize_responses)
+      @cache_responses   = options.delete(:cache_responses)
+      @memoize_responses = options.delete(:memoize_responses) || @cache_responses
+      @cache_ttl         = @cache_responses == true ? 0 : @cache_responses
       
       clear_cache
+    end
+    
+    def cache_responses?
+      @cache_responses
     end
     
     def memoize_responses?

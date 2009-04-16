@@ -117,9 +117,11 @@ module HTTPMachine
           if s = m.on_success || @default_on_success
             success_result = klass.send(s, easy)
             m.call_response_blocks(success_result, args, options) if m.memoize_responses?
+            set_cache(method_name, m, args, options, success_result) if m.cache_responses?
             block.call(success_result)
           else
             m.call_response_blocks(easy, args, options) if m.memoize_responses?
+            set_cache(method_name, m, args, options, easy) if m.cache_responses?
             block.call(easy)
           end
         else
@@ -134,6 +136,54 @@ module HTTPMachine
       send(m.http_method, base_uri + path, m.merge_options(options), &wrapped_block)
     end
     
+    def set_cache(method_name, method_object, args, options, value)
+      ttl = method_object.cache_ttl
+      if ttl == 0
+        @cache_server.set(get_memcache_response_key(method_name, args, options), value) unless @cache_server.nil?
+      else
+        @cache_server.set(get_memcache_response_key(method_name, args, options), value, ttl) unless @cache_server.nil?
+      end
+    end
+    
+    def get_cached_response(remote_method_name, method_object, args, options, block)
+      @memoized_cache_results ||= {}
+      @memoized_cache_misses  ||= {}
+      
+      key = get_memcache_response_key(remote_method_name, args, options)
+      # first see if it's memoized
+      response = @memoized_cache_results[key]
+      
+      # now check if it's in the cache
+      if response.nil? && @memoized_cache_misses[key].nil?
+        response = @cache_server.get(key) rescue nil
+        @memoized_cache_results[key] = response unless response.nil?
+      end
+      
+      # now set it as a miss if appropriate
+      @memoized_cache_misses[key] = true unless response
+      
+      # now set the callback to clear the memoized values
+      unless @memoize_clear_block_added
+        HTTPMachine.add_after_service_access_callback do
+          @memoize_clear_block_added = false
+          @memoized_cache_results    = {}
+          @memoized_cache_misses     = {}
+        end
+      end
+      @memoize_clear_block_added = true
+      
+      response
+    end
+    
+    def get_memcache_response_key(remote_method_name, args, options)
+      result = "#{remote_method_name.to_s}-#{args.to_s}-#{options.to_s}"
+      (Digest::SHA2.new << result).to_s
+    end
+    
+    def cache_server=(cache_server)
+      @cache_server = cache_server
+    end
+    
     def remote_method(name, args = {})
       args[:method] ||= @default_method
       m = RemoteMethod.new(args)
@@ -144,8 +194,15 @@ module HTTPMachine
 
       class_eval <<-SRC
         def self.#{name.to_s}(#{arg_names}options = {}, &block)
+          m = @remote_methods[:#{name.to_s}]
+          
+          if m.cache_responses?
+            res = get_cached_response('#{name.to_s}', m, [#{arg_names}], options, block)
+            block.call(res) if res
+            return nil if res
+          end
+          
           if HTTPMachine.multi_running?
-            m = @remote_methods[:#{name.to_s}]
             if m.memoize_responses?
               if m.already_called?([#{arg_names}], options)
                 m.add_response_block(block, [#{arg_names}], options)
