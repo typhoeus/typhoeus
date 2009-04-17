@@ -2,7 +2,6 @@ $LOAD_PATH.unshift(File.dirname(__FILE__)) unless $LOAD_PATH.include?(File.dirna
 
 require 'cgi'
 require 'digest/sha2'
-require 'memcached' rescue nil # don't want to force this requirement
 require 'http-machine/easy'
 require 'http-machine/multi'
 require 'http-machine/native'

@@ -61,13 +61,11 @@ module HTTPMachine
     end
     
     def interpolate_path_with_arguments(args)
-      unless @interpolated_path
-        @interpolated_path = @path
-        argument_names.each_with_index do |arg, i|
-          @interpolated_path.gsub!(":#{arg}", args[i])
-        end
+      interpolated_path = @path
+      argument_names.each_with_index do |arg, i|
+        interpolated_path = interpolated_path.gsub(":#{arg}", args[i])
       end
-      @interpolated_path
+      interpolated_path
     end
     
     def argument_names_string
