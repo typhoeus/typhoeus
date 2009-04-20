@@ -1,4 +1,4 @@
-#include <http_machine_easy.h>
+#include <typhoeus_easy.h>
 	
 static VALUE idAppend;
 VALUE cTyphoeusEasy;
@@ -175,7 +175,7 @@ static VALUE new(int argc, VALUE *argv, VALUE klass) {
 	return easy;
 }
 
-void init_http_machine_easy() {
+void init_typhoeus_easy() {
 	VALUE klass = cTyphoeusEasy = rb_define_class_under(mTyphoeus, "Easy", rb_cObject);
 	idAppend = rb_intern("<<");
 	rb_define_singleton_method(klass, "new", new, -1);

@@ -3,7 +3,7 @@
 
 #include <native.h>
 
-void init_http_machine_easy();
+void init_typhoeus_easy();
 typedef struct {
 	const char *memory;
 	int size;

@@ -1,4 +1,4 @@
-#include <http_machine_multi.h>
+#include <typhoeus_multi.h>
 
 static void multi_read_info(VALUE self, CURLM *multi_handle);
 
@@ -201,7 +201,7 @@ static VALUE new(int argc, VALUE *argv, VALUE klass) {
 	return multi;
 }
 
-void init_http_machine_multi() {
+void init_typhoeus_multi() {
 	VALUE klass = cTyphoeusMulti = rb_define_class_under(mTyphoeus, "Multi", rb_cObject);
 
 	rb_define_singleton_method(klass, "new", new, -1);

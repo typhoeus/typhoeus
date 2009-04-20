@@ -10,10 +10,10 @@ Gem::Specification.new do |s|
   s.email = %q{paul@pauldix.net}
   s.files = [
     "ext/typhoeus/extconf.rb",
-    "ext/typhoeus/http_machine_easy.h",
-    "ext/typhoeus/http_machine_easy.c",
-    "ext/typhoeus/http_machine_multi.h",
-    "ext/typhoeus/http_machine_multi.c",
+    "ext/typhoeus/typhoeus_easy.h",
+    "ext/typhoeus/typhoeus_easy.c",
+    "ext/typhoeus/typhoeus_multi.h",
+    "ext/typhoeus/typhoeus_multi.c",
     "ext/typhoeus/Makefile",
     "ext/typhoeus/native.h",
     "ext/typhoeus/native.c",

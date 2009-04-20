@@ -84,11 +84,11 @@ DISTCLEANFILES =
 
 extout = 
 extout_prefix = 
-target_prefix = /http-machine
+target_prefix = /typhoeus
 LOCAL_LIBS = 
 LIBS =  -lcurl  -ldl -lobjc  
-SRCS = http_machine_easy.c http_machine_multi.c native.c
-OBJS = http_machine_easy.o http_machine_multi.o native.o
+SRCS = native.c typhoeus_easy.c typhoeus_multi.c
+OBJS = native.o typhoeus_easy.o typhoeus_multi.o
 TARGET = native
 DLLIB = $(TARGET).bundle
 EXTSTATIC = 

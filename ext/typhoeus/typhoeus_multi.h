@@ -2,7 +2,7 @@
 #define TYPHOEUS_MULTI
 
 #include <native.h>
-#include <http_machine_easy.h>
+#include <typhoeus_easy.h>
 
 VALUE cTyphoeusMulti;
 typedef struct {
@@ -11,6 +11,6 @@ typedef struct {
 	CURLM *multi;
 } CurlMulti;
 
-void init_http_machine_multi();
+void init_typhoeus_multi();
 
 #endif
