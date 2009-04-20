@@ -1,5 +1,5 @@
-#ifndef HTTPMACHINE_EASY
-#define HTTPMACHINE_EASY
+#ifndef TYPHOEUS_EASY
+#define TYPHOEUS_EASY
 
 #include <native.h>
 

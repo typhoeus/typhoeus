@@ -2,14 +2,14 @@ $LOAD_PATH.unshift(File.dirname(__FILE__)) unless $LOAD_PATH.include?(File.dirna
 
 require 'cgi'
 require 'digest/sha2'
-require 'http-machine/easy'
-require 'http-machine/multi'
-require 'http-machine/native'
-require 'http-machine/filter'
-require 'http-machine/remote_method'
-require 'http-machine/remote'
+require 'typhoeus/easy'
+require 'typhoeus/multi'
+require 'typhoeus/native'
+require 'typhoeus/filter'
+require 'typhoeus/remote_method'
+require 'typhoeus/remote'
 
-module HTTPMachine
+module Typhoeus
   VERSION = "0.0.4"
   
   def self.add_after_service_access_callback(&block)
@@ -26,7 +26,7 @@ module HTTPMachine
   end
   
   def self.service_access(&block)
-    Thread.current[:curl_multi] ||= HTTPMachine::Multi.new
+    Thread.current[:curl_multi] ||= Typhoeus::Multi.new
     Thread.current[:curl_multi_running] = true
     block.call
     Thread.current[:curl_multi].perform

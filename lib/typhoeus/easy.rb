@@ -1,4 +1,4 @@
-module HTTPMachine
+module Typhoeus
   class Easy
     attr_reader :response_body, :response_header, :method, :headers, :url
     CURLINFO_STRING = 1048576

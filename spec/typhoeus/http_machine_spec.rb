@@ -1,12 +1,12 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe HTTPMachine do
+describe Typhoeus do
   it "should store a block to be executed later after service_access runs" do
     val = nil
-    HTTPMachine.add_after_service_access_callback do
+    Typhoeus.add_after_service_access_callback do
       val = :foo
     end
-    HTTPMachine.service_access {}
+    Typhoeus.service_access {}
     val.should == :foo
   end
 end

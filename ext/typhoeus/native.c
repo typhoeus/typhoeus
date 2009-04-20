@@ -1,11 +1,11 @@
 #include <native.h>
 
-VALUE mHTTPMachine;
+VALUE mTyphoeus;
 
 void Init_native()
 {
-	mHTTPMachine = rb_const_get(rb_cObject, rb_intern("HTTPMachine"));
+	mTyphoeus = rb_const_get(rb_cObject, rb_intern("Typhoeus"));
 	
-	init_http_machine_easy();
-	init_http_machine_multi();
+	init_typhoeus_easy();
+	init_typhoeus_multi();
 }

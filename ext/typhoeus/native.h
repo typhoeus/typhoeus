@@ -1,11 +1,11 @@
-#ifndef HTTPMACHINE_NATIVE
-#define HTTPMACHINE_NATIVE
+#ifndef TYPHOEUS_NATIVE
+#define TYPHOEUS_NATIVE
 
 #include <ruby.h>
 #include <curl/curl.h>
 #include <curl/easy.h>
 #include <curl/multi.h>
 
-extern VALUE mHTTPMachine;
+extern VALUE mTyphoeus;
 
 #endif

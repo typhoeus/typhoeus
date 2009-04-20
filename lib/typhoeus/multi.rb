@@ -1,4 +1,4 @@
-module HTTPMachine
+module Typhoeus
   class Multi
     def remove(easy)
       multi_remove_handle(easy)

@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
  
 Gem::Specification.new do |s|
-  s.name = %q{http-machine}
+  s.name = %q{typhoeus}
   s.version = "0.0.4"
  
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
@@ -9,35 +9,35 @@ Gem::Specification.new do |s|
   s.date = %q{2009-03-12}
   s.email = %q{paul@pauldix.net}
   s.files = [
-    "ext/http-machine/extconf.rb",
-    "ext/http-machine/http_machine_easy.h",
-    "ext/http-machine/http_machine_easy.c",
-    "ext/http-machine/http_machine_multi.h",
-    "ext/http-machine/http_machine_multi.c",
-    "ext/http-machine/Makefile",
-    "ext/http-machine/native.h",
-    "ext/http-machine/native.c",
-    "lib/http-machine.rb",
-    "lib/http-machine/easy.rb",
-    "lib/http-machine/multi.rb",
-    "lib/http-machine/remote.rb",
-    "lib/http-machine/filter.rb",
-    "lib/http-machine/remote_method.rb",
+    "ext/typhoeus/extconf.rb",
+    "ext/typhoeus/http_machine_easy.h",
+    "ext/typhoeus/http_machine_easy.c",
+    "ext/typhoeus/http_machine_multi.h",
+    "ext/typhoeus/http_machine_multi.c",
+    "ext/typhoeus/Makefile",
+    "ext/typhoeus/native.h",
+    "ext/typhoeus/native.c",
+    "lib/typhoeus.rb",
+    "lib/typhoeus/easy.rb",
+    "lib/typhoeus/multi.rb",
+    "lib/typhoeus/remote.rb",
+    "lib/typhoeus/filter.rb",
+    "lib/typhoeus/remote_method.rb",
     "spec/spec.opts",
     "spec/spec_helper.rb",
-    "spec/http-machine/easy_spec.rb",
-    "spec/http-machine/multi_spec.rb",
-    "spec/http-machine/remote_spec.rb",
-    "spec/http-machine/filter_spec.rb",
-    "spec/http-machine/remote_method_spec.rb",
+    "spec/typhoeus/easy_spec.rb",
+    "spec/typhoeus/multi_spec.rb",
+    "spec/typhoeus/remote_spec.rb",
+    "spec/typhoeus/filter_spec.rb",
+    "spec/typhoeus/remote_method_spec.rb",
     "spec/servers/delay_fixture_server.rb",
     "spec/servers/method_server.rb"]
   s.has_rdoc = true
-  s.homepage = %q{http://github.com/pauldix/http-machine}
+  s.homepage = %q{http://github.com/pauldix/typhoeus}
   s.require_paths = ["lib", "ext"]
   s.rubygems_version = %q{1.3.1}
   s.summary = %q{A library for interacting with web services (and building SOAs) at blinding speed.}
-  s.extensions << 'ext/http-machine/extconf.rb'
+  s.extensions << 'ext/typhoeus/extconf.rb'
  
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION

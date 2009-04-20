@@ -1,9 +1,9 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe HTTPMachine do
+describe Typhoeus do
   before(:each) do
     @klass = Class.new do
-      include HTTPMachine
+      include Typhoeus
     end
   end
   
@@ -99,7 +99,7 @@ describe HTTPMachine do
       filter_mock.should_receive(:call)
 
       klass = Class.new do
-        include HTTPMachine
+        include Typhoeus
         after_filter :some_method
         
         @filter_mock = filter_mock
@@ -122,7 +122,7 @@ describe HTTPMachine do
   describe "#remote_method" do
     before(:each) do
       @klass = Class.new do
-        include HTTPMachine
+        include Typhoeus
       end
     end
     
@@ -436,7 +436,7 @@ describe HTTPMachine do
         second_return_val = nil
         third_return_val  = nil
         
-        HTTPMachine.service_access do
+        Typhoeus.service_access do
           @klass.do_stuff("user.html") do |val|
             first_return_val = val
           end
@@ -478,11 +478,11 @@ describe HTTPMachine do
         first_return_val  = nil
         second_return_val = nil
 
-        HTTPMachine.service_access do
+        Typhoeus.service_access do
           @klass.do_stuff("user.html") {|val| first_return_val = val}
         end
         
-        HTTPMachine.service_access do
+        Typhoeus.service_access do
           @klass.do_stuff("user.html") {|val| second_return_val = val}
         end
         
@@ -494,14 +494,14 @@ describe HTTPMachine do
         cache = Memcached.new("localhost:11211")
         @klass.cache_server = cache
         
-        HTTPMachine.service_access do
+        Typhoeus.service_access do
           @klass.do_stuff("asdf.html") {|val| }
         end
         
         first_return_val = nil
         second_return_val = nil
         cache.should_receive(:get).exactly(1).times.and_return(:foo)
-        HTTPMachine.service_access do
+        Typhoeus.service_access do
           @klass.do_stuff("asdf.html") {|val| first_return_val = val}
           @klass.do_stuff("asdf.html") {|val| second_return_val = val}
         end
@@ -517,7 +517,7 @@ describe HTTPMachine do
         cache = Memcached.new("localhost:11211")
         cache.should_receive(:get).exactly(1).times
         @klass.cache_server = cache
-        HTTPMachine.service_access do
+        Typhoeus.service_access do
           @klass.do_stuff("foo.html") {|val| first_return_val = val}
           @klass.do_stuff("foo.html") {|val| second_return_val = val}
         end
@@ -552,7 +552,7 @@ describe HTTPMachine do
   #       remote_method :get_stuff, :base_uri => "http://localhost:4567"
   #     end
   #     
-  #     HTTPMachine.service_access do
+  #     Typhoeus.service_access do
   #       @klass.post_stuff("paul-tv", :body => ["foo", "bar"].to_json) {|e| }
   #       @klass.get_stuff {|e| }
   #     end

@@ -1,4 +1,4 @@
-module HTTPMachine
+module Typhoeus
   class Filter
     attr_reader :method_name
     

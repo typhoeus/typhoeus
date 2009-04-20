@@ -1,4 +1,4 @@
-module HTTPMachine
+module Typhoeus
   class Service
     def initialize(host, port)
       @host = host

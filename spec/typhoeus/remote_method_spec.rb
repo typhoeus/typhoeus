@@ -1,110 +1,110 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe HTTPMachine::RemoteMethod do
+describe Typhoeus::RemoteMethod do
   it "should take options" do
-    HTTPMachine::RemoteMethod.new(:body => "foo")
+    Typhoeus::RemoteMethod.new(:body => "foo")
   end
   
   describe "http_method" do
     it "should return the http method" do
-      m = HTTPMachine::RemoteMethod.new(:method => :put)
+      m = Typhoeus::RemoteMethod.new(:method => :put)
       m.http_method.should == :put
     end
     
     it "should default to :get" do
-      m = HTTPMachine::RemoteMethod.new
+      m = Typhoeus::RemoteMethod.new
       m.http_method.should == :get
     end
   end
   
   it "should return the options" do
-    m = HTTPMachine::RemoteMethod.new(:body => "foo")
+    m = Typhoeus::RemoteMethod.new(:body => "foo")
     m.options.should == {:body => "foo"}
   end
   
   it "should pull uri out of the options hash" do
-    m = HTTPMachine::RemoteMethod.new(:base_uri => "http://pauldix.net")
+    m = Typhoeus::RemoteMethod.new(:base_uri => "http://pauldix.net")
     m.base_uri.should == "http://pauldix.net"
     m.options.should_not have_key(:base_uri)
   end
   
   describe "on_success" do
     it "should return method name" do
-      m = HTTPMachine::RemoteMethod.new(:on_success => :whatev)
+      m = Typhoeus::RemoteMethod.new(:on_success => :whatev)
       m.on_success.should == :whatev
     end
     
     it "should pull it out of the options hash" do
-      m = HTTPMachine::RemoteMethod.new(:on_success => :whatev)
+      m = Typhoeus::RemoteMethod.new(:on_success => :whatev)
       m.options.should_not have_key(:on_success)
     end
   end
   
   describe "on_failure" do
     it "should return method name" do
-      m = HTTPMachine::RemoteMethod.new(:on_failure => :whatev)
+      m = Typhoeus::RemoteMethod.new(:on_failure => :whatev)
       m.on_failure.should == :whatev
     end
     
     it "should pull it out of the options hash" do
-      m = HTTPMachine::RemoteMethod.new(:on_failure => :whatev)
+      m = Typhoeus::RemoteMethod.new(:on_failure => :whatev)
       m.options.should_not have_key(:on_failure)
     end
   end
   
   describe "path" do
     it "should pull path out of the options hash" do
-      m = HTTPMachine::RemoteMethod.new(:path => "foo")
+      m = Typhoeus::RemoteMethod.new(:path => "foo")
       m.path.should == "foo"
       m.options.should_not have_key(:path)
     end
     
     it "should output argument names from the symbols in the path" do
-      m = HTTPMachine::RemoteMethod.new(:path => "/posts/:post_id/comments/:comment_id")
+      m = Typhoeus::RemoteMethod.new(:path => "/posts/:post_id/comments/:comment_id")
       m.argument_names.should == ["post_id", "comment_id"]
     end
     
     it "should output an empty string when there are no arguments in path" do
-      m = HTTPMachine::RemoteMethod.new(:path => "/default.html")
+      m = Typhoeus::RemoteMethod.new(:path => "/default.html")
       m.argument_names.should == []
     end
     
     it "should output and empty string when there is no path specified" do
-      m = HTTPMachine::RemoteMethod.new
+      m = Typhoeus::RemoteMethod.new
       m.argument_names.should == []
     end
     
     it "should provide an empty argument_names string if an empty array" do
-      m = HTTPMachine::RemoteMethod.new(:path => "/default.html")
+      m = Typhoeus::RemoteMethod.new(:path => "/default.html")
       m.argument_names_string.should == ""
     end
     
     it "should provide an argument_names string with a trailing , if one or more arguments" do
-      m = HTTPMachine::RemoteMethod.new(:path => "/posts/:post_id/comments/:comment_id")
+      m = Typhoeus::RemoteMethod.new(:path => "/posts/:post_id/comments/:comment_id")
       m.argument_names_string.should == "post_id, comment_id, "
     end
     
     it "should interpolate a path with arguments" do
-      m = HTTPMachine::RemoteMethod.new(:path => "/posts/:post_id/comments/:comment_id")
+      m = Typhoeus::RemoteMethod.new(:path => "/posts/:post_id/comments/:comment_id")
       m.interpolate_path_with_arguments(["foo", "bar"]).should == "/posts/foo/comments/bar"
     end
   end
   
   describe "#merge_options" do
     it "should keep the passed in options first" do
-      m = HTTPMachine::RemoteMethod.new("User-Agent" => "whatev", :foo => :bar)
+      m = Typhoeus::RemoteMethod.new("User-Agent" => "whatev", :foo => :bar)
       m.merge_options({"User-Agent" => "http-machine"}).should == {"User-Agent" => "http-machine", :foo => :bar}
     end
     
     it "should combine the params" do
-      m = HTTPMachine::RemoteMethod.new(:foo => :bar, :params => {:id => :asdf})
+      m = Typhoeus::RemoteMethod.new(:foo => :bar, :params => {:id => :asdf})
       m.merge_options({:params => {:desc => :jkl}}).should == {:foo => :bar, :params => {:id => :asdf, :desc => :jkl}}
     end
   end
   
   describe "memoize_reponses" do
     before(:each) do
-      @m = HTTPMachine::RemoteMethod.new(:memoize_responses => true)
+      @m = Typhoeus::RemoteMethod.new(:memoize_responses => true)
       @args    = ["foo", "bar"]
       @options = {:asdf => {:jkl => :bar}}
     end
@@ -135,7 +135,7 @@ describe HTTPMachine::RemoteMethod do
   
   describe "cache_reponses" do
     before(:each) do
-      @m = HTTPMachine::RemoteMethod.new(:cache_responses => true)
+      @m = Typhoeus::RemoteMethod.new(:cache_responses => true)
       @args    = ["foo", "bar"]
       @options = {:asdf => {:jkl => :bar}}
     end
@@ -150,7 +150,7 @@ describe HTTPMachine::RemoteMethod do
     end
     
     it "should store cache ttl" do
-      HTTPMachine::RemoteMethod.new(:cache_responses => 30).cache_ttl.should == 30
+      Typhoeus::RemoteMethod.new(:cache_responses => 30).cache_ttl.should == 30
     end
   end
 end

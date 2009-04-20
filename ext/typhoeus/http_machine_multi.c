@@ -194,7 +194,7 @@ static VALUE new(int argc, VALUE *argv, VALUE klass) {
 	curl_multi->active = 0;
 	curl_multi->running = 0;
 
-	VALUE multi = Data_Wrap_Struct(cHTTPMachineMulti, 0, dealloc, curl_multi);
+	VALUE multi = Data_Wrap_Struct(cTyphoeusMulti, 0, dealloc, curl_multi);
 
 	rb_obj_call_init(multi, argc, argv);
 
@@ -202,7 +202,7 @@ static VALUE new(int argc, VALUE *argv, VALUE klass) {
 }
 
 void init_http_machine_multi() {
-	VALUE klass = cHTTPMachineMulti = rb_define_class_under(mHTTPMachine, "Multi", rb_cObject);
+	VALUE klass = cTyphoeusMulti = rb_define_class_under(mTyphoeus, "Multi", rb_cObject);
 
 	rb_define_singleton_method(klass, "new", new, -1);
 	rb_define_private_method(klass, "multi_add_handle", multi_add_handle, 1);

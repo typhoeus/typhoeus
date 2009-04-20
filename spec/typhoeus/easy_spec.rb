@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe HTTPMachine::Easy do
+describe Typhoeus::Easy do
   before(:all) do
     @pid = start_method_server(3002)
   end
@@ -11,7 +11,7 @@ describe HTTPMachine::Easy do
   
   describe "get" do
     it "should perform a get" do
-      easy = HTTPMachine::Easy.new
+      easy = Typhoeus::Easy.new
       easy.url    = "http://localhost:3002"
       easy.method = :get
       easy.perform
@@ -20,7 +20,7 @@ describe HTTPMachine::Easy do
     end
     
     it "should send a request body" do
-      easy = HTTPMachine::Easy.new
+      easy = Typhoeus::Easy.new
       easy.url    = "http://localhost:3002"
       easy.method = :get
       easy.request_body = "this is a body!"
@@ -32,7 +32,7 @@ describe HTTPMachine::Easy do
 
   describe "put" do
     it "should perform a put" do
-      easy = HTTPMachine::Easy.new
+      easy = Typhoeus::Easy.new
       easy.url    = "http://localhost:3002"
       easy.method = :put
       easy.perform
@@ -41,7 +41,7 @@ describe HTTPMachine::Easy do
     end
     
     it "should send a request body" do
-      easy = HTTPMachine::Easy.new
+      easy = Typhoeus::Easy.new
       easy.url    = "http://localhost:3002"
       easy.method = :put
       easy.request_body = "this is a body!"
@@ -53,7 +53,7 @@ describe HTTPMachine::Easy do
   
   describe "post" do
     it "should perform a post" do
-      easy = HTTPMachine::Easy.new
+      easy = Typhoeus::Easy.new
       easy.url    = "http://localhost:3002"
       easy.method = :post
       easy.perform
@@ -62,7 +62,7 @@ describe HTTPMachine::Easy do
     end
     
     it "should send a request body" do
-      easy = HTTPMachine::Easy.new
+      easy = Typhoeus::Easy.new
       easy.url    = "http://localhost:3002"
       easy.method = :post
       easy.request_body = "this is a body!"
@@ -72,7 +72,7 @@ describe HTTPMachine::Easy do
     end
     
     it "should handle params" do
-      easy = HTTPMachine::Easy.new
+      easy = Typhoeus::Easy.new
       easy.url    = "http://localhost:3002"
       easy.method = :post
       easy.params = {:foo => "bar"}
@@ -84,7 +84,7 @@ describe HTTPMachine::Easy do
   
   describe "delete" do
     it "should perform a delete" do
-      easy = HTTPMachine::Easy.new
+      easy = Typhoeus::Easy.new
       easy.url    = "http://localhost:3002"
       easy.method = :delete
       easy.perform
@@ -93,7 +93,7 @@ describe HTTPMachine::Easy do
     end
     
     it "should send a request body" do
-      easy = HTTPMachine::Easy.new
+      easy = Typhoeus::Easy.new
       easy.url    = "http://localhost:3002"
       easy.method = :delete
       easy.request_body = "this is a body!"

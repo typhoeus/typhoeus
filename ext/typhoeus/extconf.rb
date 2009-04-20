@@ -54,4 +54,4 @@ else
     )
 end
 
-create_makefile("http-machine/native")
+create_makefile("typhoeus/native")

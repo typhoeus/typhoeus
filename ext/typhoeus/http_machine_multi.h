@@ -1,10 +1,10 @@
-#ifndef HTTPMACHINE_MULTI
-#define HTTPMACHINE_MULTI
+#ifndef TYPHOEUS_MULTI
+#define TYPHOEUS_MULTI
 
 #include <native.h>
 #include <http_machine_easy.h>
 
-VALUE cHTTPMachineMulti;
+VALUE cTyphoeusMulti;
 typedef struct {
 	int running;
 	int active;

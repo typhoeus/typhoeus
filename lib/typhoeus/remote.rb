@@ -1,5 +1,5 @@
-module HTTPMachine
-  USER_AGENT = "HTTPMachine - http://github.com/pauldix/http-machine/tree/master"
+module Typhoeus
+  USER_AGENT = "Typhoeus - http://github.com/pauldix/typhoeus/tree/master"
   
   def self.included(base)
     base.extend ClassMethods
@@ -7,51 +7,51 @@ module HTTPMachine
     
   module ClassMethods
     def get(url, options = {}, &block)
-      if HTTPMachine.multi_running?
-        HTTPMachine.add_easy_request(base_easy_object(url, :get, options, filter_wrapper_block(:get, block)))
+      if Typhoeus.multi_running?
+        Typhoeus.add_easy_request(base_easy_object(url, :get, options, filter_wrapper_block(:get, block)))
       else
-        HTTPMachine.service_access do
+        Typhoeus.service_access do
           get(url, options, &block)
         end
       end
     end
     
     def post(url, options = {}, &block)
-      if HTTPMachine.multi_running?
-        HTTPMachine.add_easy_request(base_easy_object(url, :post, options, filter_wrapper_block(:post, block)))
+      if Typhoeus.multi_running?
+        Typhoeus.add_easy_request(base_easy_object(url, :post, options, filter_wrapper_block(:post, block)))
       else
-        HTTPMachine.service_access do
+        Typhoeus.service_access do
           post(url, options, &block)
         end
       end
     end
 
     def put(url, options = {}, &block)
-      if HTTPMachine.multi_running?
-        HTTPMachine.add_easy_request(base_easy_object(url, :put, options, filter_wrapper_block(:put, block)))
+      if Typhoeus.multi_running?
+        Typhoeus.add_easy_request(base_easy_object(url, :put, options, filter_wrapper_block(:put, block)))
       else
-        HTTPMachine.service_access do
+        Typhoeus.service_access do
           put(url, options, &block)
         end
       end      
     end
     
     def delete(url, options = {}, &block)
-      if HTTPMachine.multi_running?
-        HTTPMachine.add_easy_request(base_easy_object(url, :delete, options, filter_wrapper_block(:delete, block)))
+      if Typhoeus.multi_running?
+        Typhoeus.add_easy_request(base_easy_object(url, :delete, options, filter_wrapper_block(:delete, block)))
       else
-        HTTPMachine.service_access do
+        Typhoeus.service_access do
           delete(url, options, &block)
         end
       end
     end
     
     def base_easy_object(url, method, options, block)
-      easy = HTTPMachine::Easy.new
+      easy = Typhoeus::Easy.new
       
       easy.url                   = url
       easy.method                = method
-      easy.headers["User-Agent"] = (options[:user_agent] || HTTPMachine::USER_AGENT)
+      easy.headers["User-Agent"] = (options[:user_agent] || Typhoeus::USER_AGENT)
       easy.params                = options[:params] if options[:params]
       easy.request_body          = options[:body] if options[:body]
       easy.on_success            = block
@@ -164,7 +164,7 @@ module HTTPMachine
       
       # now set the callback to clear the memoized values
       unless @memoize_clear_block_added
-        HTTPMachine.add_after_service_access_callback do
+        Typhoeus.add_after_service_access_callback do
           @memoize_clear_block_added = false
           @memoized_cache_results    = {}
           @memoized_cache_misses     = {}
@@ -202,7 +202,7 @@ module HTTPMachine
             return nil if res
           end
           
-          if HTTPMachine.multi_running?
+          if Typhoeus.multi_running?
             if m.memoize_responses?
               if m.already_called?([#{arg_names}], options)
                 m.add_response_block(block, [#{arg_names}], options)
@@ -214,7 +214,7 @@ module HTTPMachine
               call_remote_method(:#{name.to_s}, [#{arg_names}], options, block)
             end
           else
-            HTTPMachine.service_access do
+            Typhoeus.service_access do
               #{name.to_s}(#{arg_names}options, &block)
             end
           end

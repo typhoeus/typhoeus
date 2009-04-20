@@ -1,7 +1,7 @@
 #include <http_machine_easy.h>
 	
 static VALUE idAppend;
-VALUE cHTTPMachineEasy;
+VALUE cTyphoeusEasy;
 
 static void dealloc(CurlEasy *curl_easy) {
 	if (curl_easy->request_chunk != NULL) {
@@ -160,7 +160,7 @@ static VALUE new(int argc, VALUE *argv, VALUE klass) {
 	curl_easy->curl = curl;
 	curl_easy->headers = NULL;
 	curl_easy->request_chunk = NULL;
-	VALUE easy = Data_Wrap_Struct(cHTTPMachineEasy, 0, dealloc, curl_easy);
+	VALUE easy = Data_Wrap_Struct(cTyphoeusEasy, 0, dealloc, curl_easy);
 	
 	rb_iv_set(easy, "@response_body", rb_str_new2(""));
 	rb_iv_set(easy, "@response_header", rb_str_new2(""));
@@ -176,7 +176,7 @@ static VALUE new(int argc, VALUE *argv, VALUE klass) {
 }
 
 void init_http_machine_easy() {
-	VALUE klass = cHTTPMachineEasy = rb_define_class_under(mHTTPMachine, "Easy", rb_cObject);
+	VALUE klass = cTyphoeusEasy = rb_define_class_under(mTyphoeus, "Easy", rb_cObject);
 	idAppend = rb_intern("<<");
 	rb_define_singleton_method(klass, "new", new, -1);
 	rb_define_private_method(klass, "easy_setopt_string", easy_setopt_string, 2);
