@@ -539,7 +539,7 @@ describe Typhoeus do
   
   describe "get_memcache_resposne_key" do
     it "should return a key that is an and of the method name, args, and options" do
-      @klass.get_memcache_response_key(:do_stuff, ["foo"], {}).should == "do_stuff-foo-"
+      @klass.get_memcache_response_key(:do_stuff, ["foo"], {}).should == "2edc0bf05e3f232d4012b1d3ddde4e35588742f4195911acedfe357488e6eeca"
     end
   end
   
