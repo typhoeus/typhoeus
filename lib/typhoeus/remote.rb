@@ -104,7 +104,9 @@ module Typhoeus
       
       base_uri = m.base_uri || @default_base_uri || ""
 
-      if args.empty?
+      if options.has_key? :path
+        path = options.delete(:path)
+      elsif args.empty?
         path = m.path || @default_path || ""
       else
         path = m.interpolate_path_with_arguments(args)

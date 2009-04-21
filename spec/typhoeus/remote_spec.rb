@@ -217,6 +217,15 @@ describe Typhoeus do
         @klass.should_receive(:get).with("http://pauldix.net/posts/foo/comments/bar", {})
         @klass.do_stuff("foo", "bar")
       end
+      
+      it "should use a path passed into the remote method call" do
+        @klass.instance_eval do
+          remote_method :do_stuff, :base_uri => "http://pauldix.net"
+        end
+        
+        @klass.should_receive(:get).with("http://pauldix.net/whatev?asdf=foo", {})
+        @klass.do_stuff(:path => "/whatev?asdf=foo")
+      end
     end
     
     describe "method" do
