@@ -10,7 +10,7 @@ require 'typhoeus/remote_method'
 require 'typhoeus/remote'
 
 module Typhoeus
-  VERSION = "0.0.4"
+  VERSION = "0.0.5"
   
   def self.add_after_service_access_callback(&block)
     @after_service_access_callbacks ||= []
