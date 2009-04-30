@@ -7,34 +7,22 @@ module Typhoeus
     
   module ClassMethods
     def get(url, options = {})
-      Typhoeus::RemoteProxyObject.new(base_easy_object(url, :get, options), :on_success => options[:on_success], :on_failure => options[:on_failure])
+      remote_proxy_object(url, :get, options)
     end
     
     def post(url, options = {}, &block)
-      Typhoeus::RemoteProxyObject.new(base_easy_object(url, :post, options), :on_success => options[:on_success], :on_failure => options[:on_failure])
+      remote_proxy_object(url, :post, options)
     end
 
     def put(url, options = {}, &block)
-      if Typhoeus.multi_running?
-        Typhoeus.add_easy_request(base_easy_object(url, :put, options, filter_wrapper_block(:put, block)))
-      else
-        Typhoeus.service_access do
-          put(url, options, &block)
-        end
-      end      
+      remote_proxy_object(url, :put, options)
     end
     
     def delete(url, options = {}, &block)
-      if Typhoeus.multi_running?
-        Typhoeus.add_easy_request(base_easy_object(url, :delete, options, filter_wrapper_block(:delete, block)))
-      else
-        Typhoeus.service_access do
-          delete(url, options, &block)
-        end
-      end
+      remote_proxy_object(url, :delete, options)
     end
     
-    def base_easy_object(url, method, options)
+    def remote_proxy_object(url, method, options)
       easy = Typhoeus::Easy.new
       
       easy.url                   = url
@@ -44,6 +32,8 @@ module Typhoeus
       easy.request_body          = options[:body] if options[:body]
       
       easy
+      
+      Typhoeus::RemoteProxyObject.new(easy, :on_success => options[:on_success], :on_failure => options[:on_failure])
     end
     
     def filter_wrapper_block(method_name, block)

@@ -48,25 +48,15 @@ describe Typhoeus do
   end # post
   
   it "should add a put method" do
-    response_block = mock("response_block")
-    response_block.should_receive(:called)
-    
-    @klass.put("http://localhost:3001/posts/3.xml") do |easy|
-      response_block.called
-      easy.response_code.should == 200
-      easy.response_body.should include("REQUEST_METHOD=PUT")
-    end
+    easy = @klass.put("http://localhost:3001/posts/3.xml")
+    easy.response_code.should == 200
+    easy.response_body.should include("REQUEST_METHOD=PUT")
   end
   
   it "should add a delete method" do
-    response_block = mock("response_block")
-    response_block.should_receive(:called)
-    
-    @klass.delete("http://localhost:3001/posts/3.xml") do |easy|
-      response_block.called
-      easy.response_code.should == 200
-      easy.response_body.should include("REQUEST_METHOD=DELETE")
-    end
+    easy = @klass.delete("http://localhost:3001/posts/3.xml")
+    easy.response_code.should == 200
+    easy.response_body.should include("REQUEST_METHOD=DELETE")
   end
   
   describe "after_filter" do
