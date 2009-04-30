@@ -16,31 +16,17 @@ describe Typhoeus do
   end
 
   describe "get" do
-    before(:each) do
-      @response_block = mock("response_block")
-      @response_block.should_receive(:called)
-    end
-    
     it "should add a get method" do
-      @klass.get("http://localhost:3001/posts.xml") do |easy|
-        @response_block.called
-        easy.response_code.should == 200
-        easy.response_body.should include("REQUEST_METHOD=GET")
-        easy.response_body.should include("REQUEST_URI=/posts.xml")
-      end
+      easy = @klass.get("http://localhost:3001/posts.xml")
+      easy.response_code.should == 200
+      easy.response_body.should include("REQUEST_METHOD=GET")
+      easy.response_body.should include("REQUEST_URI=/posts.xml")
     end
 
     it "should take passed in params and add them to the query string" do
-      @klass.get("http://localhost:3001", {:params => {:foo => :bar}}) do |easy|
-        @response_block.called
-        easy.response_body.should include("QUERY_STRING=foo=bar")
-      end
+      easy = @klass.get("http://localhost:3001", {:params => {:foo => :bar}})
+      easy.response_body.should include("QUERY_STRING=foo=bar")
     end
-    
-  #   it "should return the body of the response when no block is passed to get" do
-  #     response = @klass.get("http://localhost:3001/foo.bar")
-  #     response.should inclue("REQUEST_URI=/foo.bar")
-  #   end
   end # get
   
   describe "post" do

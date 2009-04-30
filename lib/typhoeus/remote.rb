@@ -6,14 +6,8 @@ module Typhoeus
   end
     
   module ClassMethods
-    def get(url, options = {}, &block)
-      if Typhoeus.multi_running?
-        Typhoeus.add_easy_request(base_easy_object(url, :get, options, filter_wrapper_block(:get, block)))
-      else
-        Typhoeus.service_access do
-          get(url, options, &block)
-        end
-      end
+    def get(url, options = {})
+      Typhoeus::RemoteProxyObject.new(base_easy_object(url, :get, options), :on_success => options[:on_success], :on_failure => options[:on_failure])
     end
     
     def post(url, options = {}, &block)
@@ -46,7 +40,7 @@ module Typhoeus
       end
     end
     
-    def base_easy_object(url, method, options, block)
+    def base_easy_object(url, method, options)
       easy = Typhoeus::Easy.new
       
       easy.url                   = url
@@ -54,8 +48,6 @@ module Typhoeus
       easy.headers["User-Agent"] = (options[:user_agent] || Typhoeus::USER_AGENT)
       easy.params                = options[:params] if options[:params]
       easy.request_body          = options[:body] if options[:body]
-      easy.on_success            = block
-      easy.on_failure            = block
       
       easy
     end
