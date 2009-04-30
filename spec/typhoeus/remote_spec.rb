@@ -31,29 +31,19 @@ describe Typhoeus do
   
   describe "post" do
     it "should add a post method" do
-      response_block = mock("response_block")
-      response_block.should_receive(:called)
-
-      @klass.post("http://localhost:3001/posts.xml", {:params => {:post => {:author => "paul", :title => "a title", :body => "a body"}}}) do |easy|
-        response_block.called
-        easy.response_code.should == 200
-        easy.response_body.should include("post%5Bbody%5D=a+body")
-        easy.response_body.should include("post%5Bauthor%5D=paul")
-        easy.response_body.should include("post%5Btitle%5D=a+title")
-        easy.response_body.should include("REQUEST_METHOD=POST")
-      end
+      easy = @klass.post("http://localhost:3001/posts.xml", {:params => {:post => {:author => "paul", :title => "a title", :body => "a body"}}})
+      easy.response_code.should == 200
+      easy.response_body.should include("post%5Bbody%5D=a+body")
+      easy.response_body.should include("post%5Bauthor%5D=paul")
+      easy.response_body.should include("post%5Btitle%5D=a+title")
+      easy.response_body.should include("REQUEST_METHOD=POST")
     end
 
     it "should add a body" do
-      response_block = mock("response_block")
-      response_block.should_receive(:called)
-
-      @klass.post("http://localhost:3001/posts.xml", {:body => "this is a request body"}) do |easy|
-        response_block.called
-        easy.response_code.should == 200
-        easy.response_body.should include("this is a request body")
-        easy.response_body.should include("REQUEST_METHOD=POST")
-      end
+      easy = @klass.post("http://localhost:3001/posts.xml", {:body => "this is a request body"})
+      easy.response_code.should == 200
+      easy.response_body.should include("this is a request body")
+      easy.response_body.should include("REQUEST_METHOD=POST")
     end
   end # post
   

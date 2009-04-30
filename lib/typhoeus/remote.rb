@@ -11,13 +11,7 @@ module Typhoeus
     end
     
     def post(url, options = {}, &block)
-      if Typhoeus.multi_running?
-        Typhoeus.add_easy_request(base_easy_object(url, :post, options, filter_wrapper_block(:post, block)))
-      else
-        Typhoeus.service_access do
-          post(url, options, &block)
-        end
-      end
+      Typhoeus::RemoteProxyObject.new(base_easy_object(url, :post, options), :on_success => options[:on_success], :on_failure => options[:on_failure])
     end
 
     def put(url, options = {}, &block)
