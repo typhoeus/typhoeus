@@ -11,7 +11,7 @@ require 'typhoeus/remote'
 require 'typhoeus/remote_proxy_object'
 
 module Typhoeus
-  VERSION = "0.0.5"
+  VERSION = "0.0.6"
   
   def self.add_easy_request(easy_object)
     Thread.current[:curl_multi] ||= Typhoeus::Multi.new
