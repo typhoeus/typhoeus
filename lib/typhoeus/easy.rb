@@ -3,17 +3,18 @@ module Typhoeus
     attr_reader :response_body, :response_header, :method, :headers, :url
     CURLINFO_STRING = 1048576
     OPTION_VALUES = {
-      :CURLOPT_URL           => 10002,
-      :CURLOPT_HTTPGET       => 80,
-      :CURLOPT_HTTPPOST      => 10024,
-      :CURLOPT_UPLOAD        => 46,
-      :CURLOPT_CUSTOMREQUEST => 10036,
-      :CURLOPT_POSTFIELDS    => 10015,
-      :CURLOPT_POSTFIELDSIZE => 60,
-      :CURLOPT_USERAGENT     => 10018,
-      :CURLOPT_TIMEOUT_MS    => 155,
-      :CURLOPT_NOSIGNAL      => 99,
-      :CURLOPT_HTTPHEADER    => 10023
+      :CURLOPT_URL            => 10002,
+      :CURLOPT_HTTPGET        => 80,
+      :CURLOPT_HTTPPOST       => 10024,
+      :CURLOPT_UPLOAD         => 46,
+      :CURLOPT_CUSTOMREQUEST  => 10036,
+      :CURLOPT_POSTFIELDS     => 10015,
+      :CURLOPT_POSTFIELDSIZE  => 60,
+      :CURLOPT_USERAGENT      => 10018,
+      :CURLOPT_TIMEOUT_MS     => 155,
+      :CURLOPT_NOSIGNAL       => 99,
+      :CURLOPT_HTTPHEADER     => 10023,
+      :CURLOPT_FOLLOWLOCATION => 52
     }
     INFO_VALUES = {
       :CURLINFO_RESPONSE_CODE => 2097154,
@@ -34,9 +35,22 @@ module Typhoeus
       get_info_long(INFO_VALUES[:CURLINFO_RESPONSE_CODE])
     end
     
+    def follow_location=(boolean)
+      if boolean
+        set_option(OPTION_VALUES[:CURLOPT_FOLLOWLOCATION], 1)
+      else
+        set_option(OPTION_VALUES[:CURLOPT_FOLLOWLOCATION], 0)
+      end
+    end
+    
     def timeout=(milliseconds)
+      @timeout = milliseconds
       set_option(OPTION_VALUES[:CURLOPT_NOSIGNAL], 1)
       set_option(OPTION_VALUES[:CURLOPT_TIMEOUT_MS], milliseconds)
+    end
+    
+    def timed_out?
+      @timeout && total_time_taken > @timeout && response_code == 0
     end
     
     def request_body=(request_body)

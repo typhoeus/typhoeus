@@ -9,6 +9,23 @@ describe Typhoeus::Easy do
     stop_method_server(@pid)
   end
   
+  describe "options" do
+    it "should allow for following redirects"
+    it "should allow you to set the user agent"
+    it "should provide a timeout in milliseconds" do
+      pid = start_method_server(3001, 5)
+      e = Typhoeus::Easy.new
+      e.url = "http://localhost:3001"
+      e.method = :get
+      e.timeout = 50
+      e.perform
+      puts e.response_code
+      puts e.total_time_taken
+#      e.timed_out?.should == true
+      stop_method_server(pid)
+    end
+  end
+  
   describe "get" do
     it "should perform a get" do
       easy = Typhoeus::Easy.new

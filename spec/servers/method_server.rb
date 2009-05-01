@@ -13,6 +13,7 @@ class MethodServer  < EventMachine::Connection
     
     # Block which fulfills the request
     operation = proc do
+      sleep MethodServer.sleep_time
       resp.status = 200
       resp.content = request_params + "\n#{@http_post_content}"
     end
@@ -30,6 +31,14 @@ class MethodServer  < EventMachine::Connection
     %w( PATH_INFO QUERY_STRING HTTP_COOKIE IF_NONE_MATCH CONTENT_TYPE REQUEST_METHOD REQUEST_URI ).collect do |param|
       "#{param}=#{ENV[param]}"
     end.join("\n")
+  end
+  
+  def self.sleep_time=(val)
+    @sleep_time = val
+  end
+  
+  def self.sleep_time
+    @sleep_time || 0
   end
 end
 # 
