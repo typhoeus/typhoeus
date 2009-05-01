@@ -1,50 +1,33 @@
 require 'rubygems'
-require File.dirname(__FILE__) + '/../lib/http-machine.rb'
+require File.dirname(__FILE__) + '/../lib/typhoeus.rb'
 require 'open-uri'
 require 'benchmark'
 include Benchmark
 
-require 'sax-machine'
 
-# class Result
-#   include SAXMachine
-#   element :id
-#   element :name
-#   element :description
-# end
-# 
-# class ResultSet
-#   include HTTPMachine
-#   remote_server "http://127.0.0.1:3001"
-#   remote_method :get,  {
-#     :resource => "",
-#     :method => :get, 
-#     :response_handler => :parse }
-# 
-#   include SAXMachine
-#   element :ttl
-#   elements :result, :as => :results, :class => Result
-# end
-
-calls = 10
+calls = 20
 @klass = Class.new do
-  include HTTPMachine
+  include Typhoeus
 end
+
 benchmark do |t|    
   t.report("httpmachine") do
-    HTTPMachine.service_access do      
-      calls.times do
-        s = nil
-        @klass.get("http://127.0.0.1:3000") do |response_code, response_body|
-          s = response_body
-        end
-      end
+    responses = []
+    
+    calls.times do
+      responses << @klass.get("http://127.0.0.1:3000")
     end
+    
+    responses.each {|r| raise unless r.response_body == "whatever"}
   end
 
   t.report("net::http") do
+    responses = []
+    
     calls.times do
-      s = open("http://127.0.0.1:3000").read
+      responses << open("http://127.0.0.1:3000").read
     end
+    
+    responses.each {|r| raise unless r == "whatever"}    
   end
 end

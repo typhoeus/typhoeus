@@ -33,169 +33,91 @@ module Typhoeus
       
       easy
       
-      Typhoeus::RemoteProxyObject.new(easy, :on_success => options[:on_success], :on_failure => options[:on_failure])
+      proxy = Typhoeus::RemoteProxyObject.new(clear_memoized_proxy_objects, easy, options)
+      set_memoized_proxy_object(method, url, options, proxy)
     end
     
-    def filter_wrapper_block(method_name, block)
-      after_filters = @after_filters || []
-      wrapper = lambda do |easy_object|
-        after_filters.each do |filter|
-          send(filter.method_name, easy_object) if filter.apply_filter?(method_name)
-        end
-        block.call(easy_object)
-      end
+    def remote_defaults(options)
+      @remote_defaults = options
     end
     
-    def default_base_uri=(default_uri)
-      @default_base_uri = default_uri
-    end
-    
-    def default_base_uri(default_uri)
-      @default_base_uri = default_uri
-    end
-    
-    def default_path(default_path)
-      @default_path = default_path
-    end
-    
-    def default_method(default_method)
-      @default_method = default_method
-    end
-    
-    def default_on_success(default_on_success)
-      @default_on_success = default_on_success
-    end
-    
-    def default_on_failure(default_on_failure)
-      @default_on_failure = default_on_failure
-    end
-    
-    def after_filter(method_name, options = {})
-      @after_filters ||= []
-      @after_filters << Filter.new(method_name, options)
-    end
-    
-    def call_remote_method(method_name, args, options, block)
+    def call_remote_method(method_name, args)
       m = @remote_methods[method_name]
       
-      base_uri = m.base_uri || @default_base_uri || ""
+      base_uri = args.delete(:base_uri) || m.base_uri || ""
 
-      if options.has_key? :path
-        path = options.delete(:path)
-      elsif args.empty?
-        path = m.path || @default_path || ""
+      if args.has_key? :path
+        path = args.delete(:path)
       else
         path = m.interpolate_path_with_arguments(args)
       end
+      path ||= ""
       
-      klass = self
-      wrapped_block = lambda do |easy|
-        response_code = easy.response_code
-        if response_code > 199 && response_code < 300
-          if s = m.on_success || @default_on_success
-            success_result = klass.send(s, easy)
-            m.call_response_blocks(success_result, args, options) if m.memoize_responses?
-            set_cache(method_name, m, args, options, success_result) if m.cache_responses?
-            block.call(success_result)
-          else
-            m.call_response_blocks(easy, args, options) if m.memoize_responses?
-            set_cache(method_name, m, args, options, easy) if m.cache_responses?
-            block.call(easy)
-          end
-        else
-          if f = m.on_failure || @default_on_failure
-            block.call(klass.send(f, easy))
-          else
-            block.call(easy)
-          end
+      http_method = m.http_method
+      url         = base_uri + path
+      options     = m.merge_options(args)
+      
+      # proxy_object = memoized_proxy_object(http_method, url, options)
+      # return proxy_object unless proxy_object.nil?
+      # 
+      # if m.cache_responses?
+      #   object = @cache.get(get_memcache_response_key(method_name, args))
+      #   if object
+      #     set_memoized_proxy_object(http_method, url, options, object)
+      #     return object
+      #   end
+      # end
+      
+      proxy = memoized_proxy_object(http_method, url, options)
+      unless proxy
+        if m.cache_responses?
+          options[:cache] = @cache
+          options[:cache_key] = get_memcache_response_key(method_name, args)
+          options[:cache_timeout] = m.cache_ttl
         end
+        proxy = send(http_method, url, options)
       end
+      proxy
+    end
+    
+    def set_memoized_proxy_object(http_method, url, options, object)
+      @memoized_proxy_objects ||= {}
+      @memoized_proxy_objects["#{http_method}_#{url}_#{options.to_s}"] = object
+    end
+    
+    def memoized_proxy_object(http_method, url, options)
+      @memoized_proxy_objects ||= {}
+      @memoized_proxy_objects["#{http_method}_#{url}_#{options.to_s}"]
+    end
+    
+    def clear_memoized_proxy_objects
+      lambda { @memoized_proxy_objects = {} }
+    end
 
-      send(m.http_method, base_uri + path, m.merge_options(options), &wrapped_block)
-    end
-    
-    def set_cache(method_name, method_object, args, options, value)
-      ttl = method_object.cache_ttl
-      if ttl == 0
-        @cache_server.set(get_memcache_response_key(method_name, args, options), value) unless @cache_server.nil?
-      else
-        @cache_server.set(get_memcache_response_key(method_name, args, options), value, ttl) unless @cache_server.nil?
-      end
-    end
-    
-    def get_cached_response(remote_method_name, method_object, args, options, block)
-      @memoized_cache_results ||= {}
-      @memoized_cache_misses  ||= {}
-      
-      key = get_memcache_response_key(remote_method_name, args, options)
-      # first see if it's memoized
-      response = @memoized_cache_results[key]
-      
-      # now check if it's in the cache
-      if response.nil? && @memoized_cache_misses[key].nil?
-        response = @cache_server.get(key) rescue nil
-        @memoized_cache_results[key] = response unless response.nil?
-      end
-      
-      # now set it as a miss if appropriate
-      @memoized_cache_misses[key] = true unless response
-      
-      # now set the callback to clear the memoized values
-      unless @memoize_clear_block_added
-        Typhoeus.add_after_service_access_callback do
-          @memoize_clear_block_added = false
-          @memoized_cache_results    = {}
-          @memoized_cache_misses     = {}
-        end
-      end
-      @memoize_clear_block_added = true
-      
-      response
-    end
-    
-    def get_memcache_response_key(remote_method_name, args, options)
-      result = "#{remote_method_name.to_s}-#{args.to_s}-#{options.to_s}"
+    def get_memcache_response_key(remote_method_name, args)
+      result = "#{remote_method_name.to_s}-#{args.to_s}"
       (Digest::SHA2.new << result).to_s
     end
     
-    def cache_server=(cache_server)
-      @cache_server = cache_server
+    def cache=(cache)
+      @cache = cache
     end
     
-    def remote_method(name, args = {})
-      args[:method] ||= @default_method
+    def define_remote_method(name, args = {})
+      @remote_defaults  ||= {}
+      args[:method]     ||= @remote_defaults[:method]
+      args[:on_success] ||= @remote_defaults[:on_success]
+      args[:on_failure] ||= @remote_defaults[:on_failure]
+      args[:base_uri]   ||= @remote_defaults[:base_uri]
+      args[:path]       ||= @remote_defaults[:path]
       m = RemoteMethod.new(args)
-      arg_names = m.argument_names_string
 
       @remote_methods ||= {}
       @remote_methods[name] = m
 
       class_eval <<-SRC
-        def self.#{name.to_s}(#{arg_names}options = {}, &block)
-          m = @remote_methods[:#{name.to_s}]
-          
-          if m.cache_responses?
-            res = get_cached_response('#{name.to_s}', m, [#{arg_names}], options, block)
-            block.call(res) if res
-            return nil if res
-          end
-          
-          if Typhoeus.multi_running?
-            if m.memoize_responses?
-              if m.already_called?([#{arg_names}], options)
-                m.add_response_block(block, [#{arg_names}], options)
-              else
-                m.calling([#{arg_names}], options)
-                call_remote_method(:#{name.to_s}, [#{arg_names}], options, block)
-              end
-            else
-              call_remote_method(:#{name.to_s}, [#{arg_names}], options, block)
-            end
-          else
-            Typhoeus.service_access do
-              #{name.to_s}(#{arg_names}options, &block)
-            end
-          end
+        def self.#{name.to_s}(args = {})
+          call_remote_method(:#{name.to_s}, args)
         end
       SRC
     end

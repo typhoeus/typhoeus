@@ -10,7 +10,7 @@ $LOAD_PATH.unshift(path) unless $LOAD_PATH.include?(path)
 require "lib/typhoeus"
 
 # local servers for running tests
-require File.dirname(__FILE__) + "/servers/delay_fixture_server.rb"
+#require File.dirname(__FILE__) + "/servers/delay_fixture_server.rb"
 require File.dirname(__FILE__) + "/servers/method_server.rb"
 
 def start_method_server(port = 300)

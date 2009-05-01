@@ -17,8 +17,7 @@ class DelayFixtureServer  < EventMachine::Connection
       sleep DelayFixtureServer.response_delay
 
       resp.status = 200
-      DelayFixtureServer.response_number = DelayFixtureServer.response_number + 1
-      resp.content = "response number #{DelayFixtureServer.response_fixture}"
+      resp.content = "whatever"
     end
 
     # Callback block to execute once the request is fulfilled
@@ -54,14 +53,14 @@ class DelayFixtureServer  < EventMachine::Connection
     @response_number = val
   end
 end
-# 
-# port = (ARGV[0] || 3000).to_i
-# 
-# DelayFixtureServer.response_delay   = 0.1
-# DelayFixtureServer.response_number = 0
-# #DelayFixtureServer.response_fixture = File.read(File.dirname(__FILE__) + "/../fixtures/result_set.xml")
-# 
-# EventMachine::run {
-#   EventMachine.epoll
-#   EventMachine::start_server("0.0.0.0", port, DelayFixtureServer)
-# }
+
+port = (ARGV[0] || 3000).to_i
+
+DelayFixtureServer.response_delay   = 0.1
+DelayFixtureServer.response_number = 0
+#DelayFixtureServer.response_fixture = File.read(File.dirname(__FILE__) + "/../fixtures/result_set.xml")
+
+EventMachine::run {
+  EventMachine.epoll
+  EventMachine::start_server("0.0.0.0", port, DelayFixtureServer)
+}

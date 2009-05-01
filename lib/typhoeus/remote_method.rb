@@ -7,8 +7,8 @@ module Typhoeus
       @options           = options
       @base_uri          = options.delete(:base_uri)
       @path              = options.delete(:path)
-      @on_success        = options.delete(:on_success)
-      @on_failure        = options.delete(:on_failure)
+      @on_success        = options[:on_success]
+      @on_failure        = options[:on_failure]
       @cache_responses   = options.delete(:cache_responses)
       @memoize_responses = options.delete(:memoize_responses) || @cache_responses
       @cache_ttl         = @cache_responses == true ? 0 : @cache_responses
@@ -57,29 +57,24 @@ module Typhoeus
       if options.has_key?(:params) && new_options.has_key?(:params)
         merged[:params] = options[:params].merge(new_options[:params])
       end
+      argument_names.each {|a| merged.delete(a)}
+      merged.delete(:on_success) if merged[:on_success].nil?
+      merged.delete(:on_failure) if merged[:on_failure].nil?
       merged
     end
     
     def interpolate_path_with_arguments(args)
       interpolated_path = @path
-      argument_names.each_with_index do |arg, i|
-        interpolated_path = interpolated_path.gsub(":#{arg}", args[i])
+      argument_names.each do |arg|
+        interpolated_path = interpolated_path.gsub(":#{arg}", args[arg].to_s)
       end
       interpolated_path
     end
     
-    def argument_names_string
-      args = argument_names
-      if args.empty?
-        ""
-      else
-        "#{args.join(', ')}, "
-      end
-    end
-    
     def argument_names
-      pattern, @keys = compile(@path) unless @keys
-      @keys
+      return @keys if @keys
+      pattern, keys = compile(@path)
+      @keys = keys.collect {|k| k.to_sym}
     end
     
     # rippped from Sinatra. clean up stuff we don't need later

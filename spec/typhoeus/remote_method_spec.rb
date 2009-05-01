@@ -29,26 +29,16 @@ describe Typhoeus::RemoteMethod do
   end
   
   describe "on_success" do
-    it "should return method name" do
-      m = Typhoeus::RemoteMethod.new(:on_success => :whatev)
-      m.on_success.should == :whatev
-    end
-    
-    it "should pull it out of the options hash" do
-      m = Typhoeus::RemoteMethod.new(:on_success => :whatev)
-      m.options.should_not have_key(:on_success)
+    it "should return the block" do
+      m = Typhoeus::RemoteMethod.new(:on_success => lambda {:foo})
+      m.on_success.call.should == :foo
     end
   end
   
   describe "on_failure" do
     it "should return method name" do
-      m = Typhoeus::RemoteMethod.new(:on_failure => :whatev)
-      m.on_failure.should == :whatev
-    end
-    
-    it "should pull it out of the options hash" do
-      m = Typhoeus::RemoteMethod.new(:on_failure => :whatev)
-      m.options.should_not have_key(:on_failure)
+      m = Typhoeus::RemoteMethod.new(:on_failure => lambda {:bar})
+      m.on_failure.call.should == :bar
     end
   end
   
@@ -61,7 +51,7 @@ describe Typhoeus::RemoteMethod do
     
     it "should output argument names from the symbols in the path" do
       m = Typhoeus::RemoteMethod.new(:path => "/posts/:post_id/comments/:comment_id")
-      m.argument_names.should == ["post_id", "comment_id"]
+      m.argument_names.should == [:post_id, :comment_id]
     end
     
     it "should output an empty string when there are no arguments in path" do
@@ -74,19 +64,14 @@ describe Typhoeus::RemoteMethod do
       m.argument_names.should == []
     end
     
-    it "should provide an empty argument_names string if an empty array" do
-      m = Typhoeus::RemoteMethod.new(:path => "/default.html")
-      m.argument_names_string.should == ""
-    end
-    
-    it "should provide an argument_names string with a trailing , if one or more arguments" do
-      m = Typhoeus::RemoteMethod.new(:path => "/posts/:post_id/comments/:comment_id")
-      m.argument_names_string.should == "post_id, comment_id, "
-    end
-    
     it "should interpolate a path with arguments" do
       m = Typhoeus::RemoteMethod.new(:path => "/posts/:post_id/comments/:comment_id")
-      m.interpolate_path_with_arguments(["foo", "bar"]).should == "/posts/foo/comments/bar"
+      m.interpolate_path_with_arguments(:post_id => 1, :comment_id => "asdf").should == "/posts/1/comments/asdf"
+    end
+    
+    it "should provide the path when interpolated called and there is nothing to interpolate" do
+      m = Typhoeus::RemoteMethod.new(:path => "/posts/123")
+      m.interpolate_path_with_arguments(:foo => :bar).should == "/posts/123"
     end
   end
   
