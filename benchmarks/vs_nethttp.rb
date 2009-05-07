@@ -10,7 +10,7 @@ calls = 20
   include Typhoeus
 end
 
-Typhoeus.init_easy_objects
+Typhoeus.init_easy_object_pool
 
 benchmark do |t|    
   t.report("net::http") do
