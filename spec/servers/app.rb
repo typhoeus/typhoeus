@@ -4,7 +4,7 @@ require 'sinatra'
 get '/**' do
   puts request.inspect
   puts "**#{request.body.read}**"
-  sleep 1
+  sleep 3
   "hello world"
 end
 

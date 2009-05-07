@@ -12,3 +12,6 @@ task :install do
   puts `gem build typhoeus.gemspec`
   puts `sudo gem install typhoeus-#{Typhoeus::VERSION}.gem`
 end
+
+desc "Run all the tests"
+task :default => :spec

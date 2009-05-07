@@ -5,10 +5,6 @@ describe Typhoeus::RemoteProxyObject do
     @easy = Typhoeus::Easy.new
     @easy.method = :get
     @easy.url    = "http://localhost:3001"
-    @klass = Class.new do
-      def self.clear_memoized_proxy_objects
-      end
-    end
   end
       
   before(:all) do
@@ -20,51 +16,52 @@ describe Typhoeus::RemoteProxyObject do
   end
   
   it "should take a caller and call the clear_memoized_proxy_objects" do
-    @klass.should_receive(:clear_memoized_proxy_objects)
-    easy = Typhoeus::RemoteProxyObject.new(@klass, @easy)
-    easy.response_code.should == 200
+    clear_proxy = lambda {}
+    clear_proxy.should_receive(:call)
+    response = Typhoeus::RemoteProxyObject.new(clear_proxy, @easy)
+    response.code.should == 200
   end
 
   it "should take an easy object and return the body when requested" do
-    easy = Typhoeus::RemoteProxyObject.new(@klass, @easy)
+    response = Typhoeus::RemoteProxyObject.new(lambda {}, @easy)
     @easy.response_code.should == 0
-    easy.response_code.should == 200
+    response.code.should == 200
   end
   
   it "should perform requests only on the first access" do
-    easy = Typhoeus::RemoteProxyObject.new(@klass, @easy)
-    easy.response_code.should == 200
+    response = Typhoeus::RemoteProxyObject.new(lambda {}, @easy)
+    response.code.should == 200
     Typhoeus.should_receive(:perform_easy_requests).exactly(0).times
-    easy.response_code.should == 200
+    response.code.should == 200
   end
   
   it "should call the on_success method with an easy object and proxy to the result of on_success" do
     klass = Class.new do
-      def initialize(e)
-        @easy = e
+      def initialize(r)
+        @response = r
       end
       
       def blah
-        @easy.response_code
+        @response.code
       end
     end
     
-    k = Typhoeus::RemoteProxyObject.new(@klass, @easy, :on_success => lambda {|e| klass.new(e)})
+    k = Typhoeus::RemoteProxyObject.new(lambda {}, @easy, :on_success => lambda {|e| klass.new(e)})
     k.blah.should == 200
   end
   
   it "should call the on_failure method with an easy object and proxy to the result of on_failure" do
     klass = Class.new do
-      def initialize(e)
-        @easy = e
+      def initialize(r)
+        @response = r
       end
       
       def blah
-        @easy.response_code
+        @response.code
       end
     end
     @easy.url = "http://localhost:3002" #bad port
-    k = Typhoeus::RemoteProxyObject.new(@klass, @easy, :on_failure => lambda {|e| klass.new(e)})
+    k = Typhoeus::RemoteProxyObject.new(lambda {}, @easy, :on_failure => lambda {|e| klass.new(e)})
     k.blah.should == 0
   end
 end

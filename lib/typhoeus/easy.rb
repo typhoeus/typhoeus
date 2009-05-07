@@ -171,6 +171,9 @@ module Typhoeus
     end
     
     def reset
+      @response_code = 0
+      @response_header = ""
+      @response_body = ""
       easy_reset()
     end
     
@@ -184,6 +187,10 @@ module Typhoeus
     
     def get_info_double(option)
       easy_getinfo_double(option)
+    end
+    
+    def curl_version
+      version
     end
   end
 end

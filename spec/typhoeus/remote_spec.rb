@@ -18,45 +18,45 @@ describe Typhoeus do
   describe "get" do
     it "should add a get method" do
       easy = @klass.get("http://localhost:3001/posts.xml")
-      easy.response_code.should == 200
-      easy.response_body.should include("REQUEST_METHOD=GET")
-      easy.response_body.should include("REQUEST_URI=/posts.xml")
+      easy.code.should == 200
+      easy.body.should include("REQUEST_METHOD=GET")
+      easy.body.should include("REQUEST_URI=/posts.xml")
     end
 
     it "should take passed in params and add them to the query string" do
       easy = @klass.get("http://localhost:3001", {:params => {:foo => :bar}})
-      easy.response_body.should include("QUERY_STRING=foo=bar")
+      easy.body.should include("QUERY_STRING=foo=bar")
     end
   end # get
   
   describe "post" do
     it "should add a post method" do
       easy = @klass.post("http://localhost:3001/posts.xml", {:params => {:post => {:author => "paul", :title => "a title", :body => "a body"}}})
-      easy.response_code.should == 200
-      easy.response_body.should include("post%5Bbody%5D=a+body")
-      easy.response_body.should include("post%5Bauthor%5D=paul")
-      easy.response_body.should include("post%5Btitle%5D=a+title")
-      easy.response_body.should include("REQUEST_METHOD=POST")
+      easy.code.should == 200
+      easy.body.should include("post%5Bbody%5D=a+body")
+      easy.body.should include("post%5Bauthor%5D=paul")
+      easy.body.should include("post%5Btitle%5D=a+title")
+      easy.body.should include("REQUEST_METHOD=POST")
     end
 
     it "should add a body" do
       easy = @klass.post("http://localhost:3001/posts.xml", {:body => "this is a request body"})
-      easy.response_code.should == 200
-      easy.response_body.should include("this is a request body")
-      easy.response_body.should include("REQUEST_METHOD=POST")
+      easy.code.should == 200
+      easy.body.should include("this is a request body")
+      easy.body.should include("REQUEST_METHOD=POST")
     end
   end # post
   
   it "should add a put method" do
     easy = @klass.put("http://localhost:3001/posts/3.xml")
-    easy.response_code.should == 200
-    easy.response_body.should include("REQUEST_METHOD=PUT")
+    easy.code.should == 200
+    easy.body.should include("REQUEST_METHOD=PUT")
   end
   
   it "should add a delete method" do
     easy = @klass.delete("http://localhost:3001/posts/3.xml")
-    easy.response_code.should == 200
-    easy.response_body.should include("REQUEST_METHOD=DELETE")
+    easy.code.should == 200
+    easy.body.should include("REQUEST_METHOD=DELETE")
   end
   
   describe "#define_remote_method" do
@@ -211,7 +211,7 @@ describe Typhoeus do
     describe "on_success" do
       it "should take :on_success as an argument" do
         @klass.instance_eval do
-          define_remote_method :do_stuff, :base_uri => "http://localhost:3001", :on_success => lambda {|e| e.response_code.should == 200; :foo}
+          define_remote_method :do_stuff, :base_uri => "http://localhost:3001", :on_success => lambda {|e| e.code.should == 200; :foo}
         end
         
         @klass.do_stuff.should == :foo
@@ -219,7 +219,7 @@ describe Typhoeus do
       
       it "should use default_on_success if no on_success provided" do
         @klass.instance_eval do
-          remote_defaults :on_success => lambda {|e| e.response_code.should == 200; :foo}
+          remote_defaults :on_success => lambda {|e| e.code.should == 200; :foo}
           define_remote_method :do_stuff, :base_uri => "http://localhost:3001"
         end
         
@@ -229,7 +229,7 @@ describe Typhoeus do
       it "should override default_on_success if on_success is provided" do
         @klass.instance_eval do
           remote_defaults :on_success => lambda {|e| :foo}
-          define_remote_method :do_stuff, :base_uri => "http://localhost:3001", :on_success => lambda {|e| e.response_code.should == 200; :bar}
+          define_remote_method :do_stuff, :base_uri => "http://localhost:3001", :on_success => lambda {|e| e.code.should == 200; :bar}
         end
         
         @klass.do_stuff.should == :bar
@@ -239,7 +239,7 @@ describe Typhoeus do
     describe "on_failure" do
       it "should take :on_failure as an argument" do
         @klass.instance_eval do
-          define_remote_method :do_stuff, :base_uri => "http://localhost:9999", :on_failure => lambda {|e| e.response_code.should == 0; :foo}
+          define_remote_method :do_stuff, :base_uri => "http://localhost:9999", :on_failure => lambda {|e| e.code.should == 0; :foo}
         end
         
         @klass.do_stuff.should == :foo
@@ -247,7 +247,7 @@ describe Typhoeus do
       
       it "should use default_on_failure if no on_success provided" do
         @klass.instance_eval do
-          remote_defaults :on_failure => lambda {|e| e.response_code.should == 0; :bar}
+          remote_defaults :on_failure => lambda {|e| e.code.should == 0; :bar}
           define_remote_method :do_stuff, :base_uri => "http://localhost:9999"
         end
         
@@ -257,7 +257,7 @@ describe Typhoeus do
       it "should override default_on_failure if no method is provided" do
         @klass.instance_eval do
           remote_defaults :on_failure => lambda {|e| :foo}
-          define_remote_method :do_stuff, :base_uri => "http://localhost:9999", :on_failure => lambda {|e| e.response_code.should == 0; :bar}
+          define_remote_method :do_stuff, :base_uri => "http://localhost:9999", :on_failure => lambda {|e| e.code.should == 0; :bar}
         end
         
         @klass.do_stuff.should == :bar
@@ -270,7 +270,7 @@ describe Typhoeus do
           define_remote_method :do_stuff, :base_uri => "http://localhost:3001", :params => {:foo => :bar}
         end
 
-        @klass.do_stuff.response_body.should include("QUERY_STRING=foo=bar")
+        @klass.do_stuff.body.should include("QUERY_STRING=foo=bar")
       end
       
       it "should add :params from remote method definition with params passed in when called" do
@@ -278,7 +278,7 @@ describe Typhoeus do
           define_remote_method :do_stuff, :base_uri => "http://localhost:3001", :params => {:foo => :bar}
         end
 
-        @klass.do_stuff(:params => {:asdf => :jkl}).response_body.should include("QUERY_STRING=asdf=jkl&foo=bar")
+        @klass.do_stuff(:params => {:asdf => :jkl}).body.should include("QUERY_STRING=foo=bar&asdf=jkl")
       end
     end
     

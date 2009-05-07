@@ -10,24 +10,26 @@ calls = 20
   include Typhoeus
 end
 
-benchmark do |t|    
-  t.report("httpmachine") do
-    responses = []
-    
-    calls.times do
-      responses << @klass.get("http://127.0.0.1:3000")
-    end
-    
-    responses.each {|r| raise unless r.response_body == "whatever"}
-  end
+Typhoeus.init_easy_objects
 
+benchmark do |t|    
   t.report("net::http") do
     responses = []
     
-    calls.times do
-      responses << open("http://127.0.0.1:3000").read
+    calls.times do |i|
+      responses << open("http://127.0.0.1:3000/#{i}").read
     end
     
     responses.each {|r| raise unless r == "whatever"}    
+  end
+  
+  t.report("typhoeus") do
+    responses = []
+    
+    calls.times do |i|
+      responses << @klass.get("http://127.0.0.1:3000/#{i}")
+    end
+    
+    responses.each {|r| raise unless r.body == "whatever"}
   end
 end

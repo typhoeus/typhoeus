@@ -76,23 +76,6 @@ static VALUE easy_perform(VALUE self) {
 	return Qnil;
 }
 
-static VALUE easy_reset(VALUE self) {
-	CurlEasy *curl_easy;
-	Data_Get_Struct(self, CurlEasy, curl_easy);
-
-	curl_easy_reset(curl_easy->curl);
-
-	if (curl_easy->request_chunk != NULL) {
-		free(curl_easy->request_chunk);
-	}
-	
-	if (curl_easy->headers != NULL) {
-		curl_slist_free_all(curl_easy->headers);
-	}
-
-	return Qnil;	
-}
-
 static size_t write_data_handler(char *stream, size_t size, size_t nmemb, VALUE val) {
 	rb_funcall(val, idAppend, 1, rb_str_new(stream, size * nmemb));
 	return size * nmemb;
@@ -112,6 +95,37 @@ static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *data) {
 	}
 	
 	return realsize; 
+}
+
+static void set_response_handlers(VALUE easy, CURL *curl) {
+	rb_iv_set(easy, "@response_body", rb_str_new2(""));
+	rb_iv_set(easy, "@response_header", rb_str_new2(""));
+	
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, (curl_write_callback)&write_data_handler);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, rb_iv_get(easy, "@response_body"));	
+  curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, (curl_write_callback)&write_data_handler);
+  curl_easy_setopt(curl, CURLOPT_HEADERDATA, rb_iv_get(easy, "@response_header"));
+	
+	return NULL;
+}
+
+static VALUE easy_reset(VALUE self) {
+	CurlEasy *curl_easy;
+	Data_Get_Struct(self, CurlEasy, curl_easy);
+
+	curl_easy_reset(curl_easy->curl);
+
+	if (curl_easy->request_chunk != NULL) {
+		free(curl_easy->request_chunk);
+	}
+	
+	if (curl_easy->headers != NULL) {
+		curl_slist_free_all(curl_easy->headers);
+	}
+
+	set_response_handlers(self, curl_easy->curl);
+
+	return Qnil;	
 }
 
 static VALUE easy_add_header(VALUE self, VALUE header) {
@@ -154,6 +168,10 @@ static VALUE easy_escape(VALUE self, VALUE data, VALUE length) {
 	return rb_str_new2(curl_easy_escape(curl_easy->curl, StringValuePtr(data), NUM2INT(length)));
 }
 
+static VALUE version(VALUE self) {
+	return rb_str_new2(curl_version());
+}
+
 static VALUE new(int argc, VALUE *argv, VALUE klass) {
 	CURL *curl = curl_easy_init();
 	CurlEasy *curl_easy = ALLOC(CurlEasy);
@@ -161,14 +179,8 @@ static VALUE new(int argc, VALUE *argv, VALUE klass) {
 	curl_easy->headers = NULL;
 	curl_easy->request_chunk = NULL;
 	VALUE easy = Data_Wrap_Struct(cTyphoeusEasy, 0, dealloc, curl_easy);
-	
-	rb_iv_set(easy, "@response_body", rb_str_new2(""));
-	rb_iv_set(easy, "@response_header", rb_str_new2(""));
-	
-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, (curl_write_callback)&write_data_handler);
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, rb_iv_get(easy, "@response_body"));	
-  curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, (curl_write_callback)&write_data_handler);
-  curl_easy_setopt(curl, CURLOPT_HEADERDATA, rb_iv_get(easy, "@response_header"));
+
+	set_response_handlers(easy, curl);
 
 	rb_obj_call_init(easy, argc, argv);
 
@@ -190,4 +202,5 @@ void init_typhoeus_easy() {
 	rb_define_private_method(klass, "easy_set_headers", easy_set_headers, 0);
 	rb_define_private_method(klass, "easy_add_header", easy_add_header, 1);
 	rb_define_private_method(klass, "easy_escape", easy_escape, 2);
+	rb_define_private_method(klass, "version", version, 0);
 }

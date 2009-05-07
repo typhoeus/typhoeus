@@ -21,13 +21,16 @@ module Typhoeus
         
         unless @proxied_object
           Typhoeus.perform_easy_requests
+          response = Response.new(@easy.response_code, @easy.response_header, @easy.response_body, @easy.total_time_taken)
           if @easy.response_code >= 200 && @easy.response_code < 300
-            @proxied_object = @success.nil? ? @easy : @success.call(@easy)
+            Typhoeus.release_easy_object(@easy)
+            @proxied_object = @success.nil? ? response : @success.call(response)
+            
             if @cache && @cache_key
               @cache.set(@cache_key, @proxied_object, @timeout)
             end
           else
-            @proxied_object = @failure.nil? ? @easy : @failure.call(@easy)
+            @proxied_object = @failure.nil? ? response : @failure.call(response)
           end
          @clear_memoized_store_proc.call
        end

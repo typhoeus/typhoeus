@@ -9,7 +9,7 @@ class DelayFixtureServer  < EventMachine::Connection
  
   def process_http_request
     EventMachine.stop if ENV["PATH_INFO"] == "/die"
-    puts "got a request"
+    puts "got a request #{ENV['PATH_INFO']}"
     resp = EventMachine::DelegatedHttpResponse.new( self )
     
     # Block which fulfills the request
@@ -56,7 +56,7 @@ end
 
 port = (ARGV[0] || 3000).to_i
 
-DelayFixtureServer.response_delay   = 0.1
+DelayFixtureServer.response_delay   = 0.5
 DelayFixtureServer.response_number = 0
 #DelayFixtureServer.response_fixture = File.read(File.dirname(__FILE__) + "/../fixtures/result_set.xml")
 

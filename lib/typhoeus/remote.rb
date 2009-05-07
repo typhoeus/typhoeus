@@ -23,13 +23,14 @@ module Typhoeus
     end
     
     def remote_proxy_object(url, method, options)
-      easy = Typhoeus::Easy.new
+      easy = Typhoeus.get_easy_object
       
       easy.url                   = url
       easy.method                = method
       easy.headers["User-Agent"] = (options[:user_agent] || Typhoeus::USER_AGENT)
       easy.params                = options[:params] if options[:params]
       easy.request_body          = options[:body] if options[:body]
+      easy.timeout               = options[:timeout] if options[:timeout]
       
       easy
       
