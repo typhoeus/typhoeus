@@ -4,6 +4,8 @@ h1. Typhoeus
 
 "the mailing list":http://groups.google.com/group/typhoeus
 
+If you came to this after my RailsConf lightning talk, I forgot to mention one thing. I haven't done the first gem release yet. Fear not, I'll do it some time tomorrow while here at the conference.
+
 h2. Summary
 
 Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.
