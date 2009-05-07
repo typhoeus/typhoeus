@@ -2,7 +2,7 @@
  
 Gem::Specification.new do |s|
   s.name = %q{typhoeus}
-  s.version = "0.0.6"
+  s.version = "0.0.7"
  
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Paul Dix"]
@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
     "lib/typhoeus/remote_proxy_object.rb",
     "lib/typhoeus/filter.rb",
     "lib/typhoeus/remote_method.rb",
+    "lib/typhoeus/response.rb",
     "spec/spec.opts",
     "spec/spec_helper.rb",
     "spec/typhoeus/easy_spec.rb",
@@ -32,6 +33,7 @@ Gem::Specification.new do |s|
     "spec/typhoeus/remote_proxy_object_spec.rb",
     "spec/typhoeus/filter_spec.rb",
     "spec/typhoeus/remote_method_spec.rb",
+    "spec/typhoeus/response_spec.rb",
     "spec/servers/delay_fixture_server.rb",
     "spec/servers/method_server.rb"]
   s.has_rdoc = true
