@@ -6,6 +6,8 @@ h1. Typhoeus
 
 Thanks to my employer "kgb":http://kgb.com for allowing me to release this as open source. Btw, we're hiring and we work on cool stuff like this every day. Get a hold of me if you rock at rails/js/html/css or if you have experience in search, information retrieval, and machine learning.
 
+I also wanted to thank Todd A. Fisher. I ripped a good chunk of the c libcurl-multi code from his update to Curb. Awesome stuff Todd!
+
 h2. Summary
 
 Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic. To be a little more specific, it's a library for accessing web services in Ruby. It's specifically designed for building RESTful service oriented architectures in Ruby that need to be fast enough to process calls to multiple services within the client's HTTP request/response life cycle.
