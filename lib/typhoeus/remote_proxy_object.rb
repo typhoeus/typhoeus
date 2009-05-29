@@ -16,7 +16,7 @@ module Typhoeus
     def method_missing(sym, *args, &block)
       unless @proxied_object
         if @cache && @cache_key
-          @proxied_object = @cache.get(@cache_key)
+          @proxied_object = @cache.get(@cache_key) rescue nil
         end
         
         unless @proxied_object
