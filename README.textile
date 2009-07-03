@@ -4,7 +4,7 @@ h1. Typhoeus
 
 "the mailing list":http://groups.google.com/group/typhoeus
 
-Thanks to my employer "kgb":http://kgb.com for allowing me to release this as open source. Btw, we're hiring and we work on cool stuff like this every day. Get a hold of me if you rock at rails/js/html/css or if you have experience in search, information retrieval, and machine learning.
+Thanks to my employer "kgbweb":http://kgbweb.com for allowing me to release this as open source. Btw, we're hiring and we work on cool stuff like this every day. Get a hold of me if you rock at rails/js/html/css or if you have experience in search, information retrieval, and machine learning.
 
 I also wanted to thank Todd A. Fisher. I ripped a good chunk of the c libcurl-multi code from his update to Curb. Awesome stuff Todd!
 
@@ -12,7 +12,7 @@ h2. Summary
 
 Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic. To be a little more specific, it's a library for accessing web services in Ruby. It's specifically designed for building RESTful service oriented architectures in Ruby that need to be fast enough to process calls to multiple services within the client's HTTP request/response life cycle.
 
-Some of the awesome features are parallel request execution, memoization of request responses (so you don't make the same request multiple times in a single group), built in support for caching responses to memcached (or whatever), and a nifty DSL for creating classes that make http calls and process responses. It uses libcurl and libcurl-multi to work this speedy magic. I wrote the c bindings myself so it's yet another Ruby libcurl library, but with some extra awesomeness added in.
+Some of the awesome features are parallel request execution, memoization of request responses (so you don't make the same request multiple times in a single group), built in support for caching responses to memcached (or whatever), a nifty DSL for creating classes that make http calls and process responses, and mocking capability baked in. It uses libcurl and libcurl-multi to work this speedy magic. I wrote the c bindings myself so it's yet another Ruby libcurl library, but with some extra awesomeness added in.
 
 h2. Installation
 
@@ -106,6 +106,30 @@ Remote.put("http://", :body => "this is a request body")
 Remote.post("http://localhost:3001/posts.xml", 
   {:params => {:post => {:author => "paul", :title => "a title", :body => "a body"}}})
 Remote.delete("http://localhost:3001/posts/1")
+
+# the object returned by get, put, post, and delete or passed to the on_success and on_failure handlers
+# for remote methods is a response object. You can do the following:
+response.code    # the http return code
+response.body    # the body of the response
+response.headers # the response headers
+response.time    # the response time in seconds
+
+# Typhoeus also has a nifty mocking framework built in
+# mock all calls to get
+Remote.mock(:get, :code => 200, :body => "whatever")
+
+# here we mock calls to get for the url
+Remote.mock(:get, :url => "http://pauldix.net", :code => 200, :body => "hi", :headers => "there", :time => 2)
+
+# note that url, code, body, headers, and time are all optional parameters to mock.
+# the first parameter can be either :get, :put, :post, or :delete
+
+# using that mocking you could mock out the Twitter client like so:
+Twitter.mock(:get, :body => '{"hi": "there"}')
+# now any calls to trends, or search will get the mock and call the on_success handler. the response object will have that body.
+# we could also mock out a failure like so
+Twitter.mock(:get, :body => '{"fail": "oh noes!"}', :code => 500)
+# now calls to a remote method will result in the on_failure handler being called
 </pre>
 
 The best place to see the functionality of what including Typhoeus in a class gives you is to look at the "remote_spec.rb"
