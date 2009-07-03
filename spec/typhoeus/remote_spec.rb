@@ -14,6 +14,93 @@ describe Typhoeus do
   after(:all) do
     stop_method_server(@pid)
   end
+  
+  describe "mocking" do
+    it "should mock out GET" do
+      @klass.mock(:get)
+      response = @klass.get("http://mock_url")
+      response.code.should == 200
+      response.body.should == ""
+      response.headers.should == ""
+      response.time.should == 0
+    end
+    
+    it "should mock out PUT" do
+      @klass.mock(:put)
+      response = @klass.put("http://mock_url")
+      response.code.should == 200
+      response.body.should == ""
+      response.headers.should == ""
+      response.time.should == 0
+    end
+
+    it "should mock out POST" do
+      @klass.mock(:post)
+      response = @klass.post("http://mock_url")
+      response.code.should == 200
+      response.body.should == ""
+      response.headers.should == ""
+      response.time.should == 0
+    end
+    
+    it "should mock out DELETE" do
+      @klass.mock(:delete)
+      response = @klass.delete("http://mock_url")
+      response.code.should == 200
+      response.body.should == ""
+      response.headers.should == ""
+      response.time.should == 0
+    end
+    
+    it "should take an optional url" do
+      @klass.mock(:get, :url => "http://stuff")
+      response = @klass.get("http://stuff")
+      response.code.should == 200
+      response.body.should == ""
+      response.headers.should == ""
+      response.time.should == 0
+      
+      @klass.get("http://localhost:234234234").code.should == 0
+    end
+    
+    describe "response hash" do
+      it "should use provided code" do
+        @klass.mock(:get, :url => "http://localhost/whatever", :code => 301)
+        response = @klass.get("http://localhost/whatever")
+        response.code.should == 301
+        response.body.should == ""
+        response.headers.should == ""
+        response.time.should == 0
+      end
+
+      it "should use provided body" do
+        @klass.mock(:get, :url => "http://localhost/whatever", :body => "hey paul")
+        response = @klass.get("http://localhost/whatever")
+        response.code.should == 200
+        response.body.should == "hey paul"
+        response.headers.should == ""
+        response.time.should == 0
+      end
+
+      it "should use provided headers" do
+        @klass.mock(:get, :url => "http://localhost/whatever", :headers => "whooo, headers!")
+        response = @klass.get("http://localhost/whatever")
+        response.code.should == 200
+        response.body.should == ""
+        response.headers.should == "whooo, headers!"
+        response.time.should == 0
+      end
+      
+      it "should use provided time" do
+        @klass.mock(:get, :url => "http://localhost/whatever", :time => 123)
+        response = @klass.get("http://localhost/whatever")
+        response.code.should == 200
+        response.body.should == ""
+        response.headers.should == ""
+        response.time.should == 123
+      end
+    end
+  end
 
   describe "get" do
     it "should add a get method" do

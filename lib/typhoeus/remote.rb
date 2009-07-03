@@ -6,19 +6,56 @@ module Typhoeus
   end
     
   module ClassMethods
+    def mock(method, args = {})
+      @remote_mocks ||= {}
+      @remote_mocks[method] ||= {}
+      args[:code]    ||= 200
+      args[:body]    ||= ""
+      args[:headers] ||= ""
+      args[:time]    ||= 0
+      url = args.delete(:url)
+      url ||= "catch all"
+      @remote_mocks[method][url] = args
+    end
+    
+    def get_mock(method, url)
+      return nil unless @remote_mocks
+      if @remote_mocks.has_key? method
+        if @remote_mocks[method].has_key? url
+          args = @remote_mocks[method][url]
+          Response.new(args[:code], args[:headers], args[:body], args[:time])
+        elsif @remote_mocks[method].has_key? "catch all"
+          args = @remote_mocks[method]["catch all"]
+          Response.new(args[:code], args[:headers], args[:body], args[:time])          
+        else
+          nil
+        end
+      else
+        nil
+      end
+    end
+    
     def get(url, options = {})
+      mock_object = get_mock(:get, url)
+      return mock_object if mock_object
       remote_proxy_object(url, :get, options)
     end
     
     def post(url, options = {}, &block)
+      mock_object = get_mock(:post, url)
+      return mock_object if mock_object
       remote_proxy_object(url, :post, options)
     end
 
     def put(url, options = {}, &block)
+      mock_object = get_mock(:put, url)
+      return mock_object if mock_object
       remote_proxy_object(url, :put, options)
     end
     
     def delete(url, options = {}, &block)
+      mock_object = get_mock(:delete, url)
+      return mock_object if mock_object
       remote_proxy_object(url, :delete, options)
     end
     
