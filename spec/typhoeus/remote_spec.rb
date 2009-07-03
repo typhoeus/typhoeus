@@ -63,6 +63,24 @@ describe Typhoeus do
       @klass.get("http://localhost:234234234").code.should == 0
     end
     
+    describe "remote methods" do
+      it "should work for defined remote methods" do
+        @klass.instance_eval do
+          define_remote_method :do_stuff, :base_uri => "http://localhost:3001", :on_success => lambda {|r| r.body.should == "hi"; :great_success}
+        end
+        @klass.mock(:get, :url => "http://localhost:3001", :body => "hi")
+        @klass.do_stuff.should == :great_success
+      end
+      
+      it "should call the on failure handler for remote methods" do
+        @klass.instance_eval do
+          define_remote_method :do_stuff, :base_uri => "http://localhost:3001", :on_failure => lambda {|r| r.body.should == "hi"; :fail}
+        end
+        @klass.mock(:get, :url => "http://localhost:3001", :body => "hi", :code => 500)
+        @klass.do_stuff.should == :fail
+      end
+    end
+    
     describe "response hash" do
       it "should use provided code" do
         @klass.mock(:get, :url => "http://localhost/whatever", :code => 301)

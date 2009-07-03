@@ -14,19 +14,17 @@ module Typhoeus
       args[:headers] ||= ""
       args[:time]    ||= 0
       url = args.delete(:url)
-      url ||= "catch all"
+      url ||= :catch_all
       @remote_mocks[method][url] = args
     end
     
-    def get_mock(method, url)
+    def get_mock(method, url, options)
       return nil unless @remote_mocks
       if @remote_mocks.has_key? method
         if @remote_mocks[method].has_key? url
-          args = @remote_mocks[method][url]
-          Response.new(args[:code], args[:headers], args[:body], args[:time])
-        elsif @remote_mocks[method].has_key? "catch all"
-          args = @remote_mocks[method]["catch all"]
-          Response.new(args[:code], args[:headers], args[:body], args[:time])          
+          get_mock_and_run_handlers(@remote_mocks[method][url], options)
+        elsif @remote_mocks[method].has_key? :catch_all
+          get_mock_and_run_handlers(@remote_mocks[method][:catch_all], options)
         else
           nil
         end
@@ -35,26 +33,36 @@ module Typhoeus
       end
     end
     
+    def get_mock_and_run_handlers(response_args, options)
+      response = Response.new(response_args[:code], response_args[:headers], response_args[:body], response_args[:time])
+      if response.code >= 200 && response.code < 300 && options.has_key?(:on_success)
+        response = options[:on_success].call(response)
+      elsif options.has_key?(:on_failure)
+        response = options[:on_failure].call(response)
+      end
+      response
+    end
+    
     def get(url, options = {})
-      mock_object = get_mock(:get, url)
+      mock_object = get_mock(:get, url, options)
       return mock_object if mock_object
       remote_proxy_object(url, :get, options)
     end
     
     def post(url, options = {}, &block)
-      mock_object = get_mock(:post, url)
+      mock_object = get_mock(:post, url, options)
       return mock_object if mock_object
       remote_proxy_object(url, :post, options)
     end
 
     def put(url, options = {}, &block)
-      mock_object = get_mock(:put, url)
+      mock_object = get_mock(:put, url, options)
       return mock_object if mock_object
       remote_proxy_object(url, :put, options)
     end
     
     def delete(url, options = {}, &block)
-      mock_object = get_mock(:delete, url)
+      mock_object = get_mock(:delete, url, options)
       return mock_object if mock_object
       remote_proxy_object(url, :delete, options)
     end
