@@ -124,6 +124,10 @@ Remote.mock(:get, :url => "http://pauldix.net", :code => 200, :body => "hi", :he
 # note that url, code, body, headers, and time are all optional parameters to mock.
 # the first parameter can be either :get, :put, :post, or :delete
 
+# you can also provide headers and body that are expected on the call. An exception will be raised if they don't match
+Remote.mock(:get, :url => "http://pauldix.net", :expected_headers => {"If-None-Match" => "sldfkj234"})
+Remote.mock(:put, :url => "http://pauldix.net", :expected_body => "this is a body!")
+
 # using that mocking you could mock out the Twitter client like so:
 Twitter.mock(:get, :body => '{"hi": "there"}')
 # now any calls to trends, or search will get the mock and call the on_success handler. the response object will have that body.
