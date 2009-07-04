@@ -107,6 +107,11 @@ Remote.post("http://localhost:3001/posts.xml",
   {:params => {:post => {:author => "paul", :title => "a title", :body => "a body"}}})
 Remote.delete("http://localhost:3001/posts/1")
 
+# you also have the ability to set request headers. So you can set your user agent and manually
+# do things like set for basic authentication.
+Remote.get("http://www.pauldix.net", :headers => {"User-Agent" => "typhoeus", "If-None-Match" => "some etag"})
+# body and headers arguments also get passed through on defined remote methods.
+
 # the object returned by get, put, post, and delete or passed to the on_success and on_failure handlers
 # for remote methods is a response object. You can do the following:
 response.code    # the http return code
