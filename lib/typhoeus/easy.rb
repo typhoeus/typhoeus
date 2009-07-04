@@ -27,6 +27,10 @@ module Typhoeus
       @headers = {}
     end
     
+    def headers=(hash)
+      @headers = hash
+    end
+    
     def total_time_taken
       get_info_double(INFO_VALUES[:CURLINFO_TOTAL_TIME])
     end
@@ -119,12 +123,16 @@ module Typhoeus
     end
     
     def perform
+      set_headers()
+      easy_perform()
+      response_code()
+    end
+    
+    def set_headers
       headers.each_pair do |key, value|
         easy_add_header("#{key}: #{value}")
       end
       easy_set_headers() unless headers.empty?
-      easy_perform()
-      response_code()
     end
     
     # gets called when finished and response code is 200-299

@@ -105,34 +105,34 @@ static void set_response_handlers(VALUE easy, CURL *curl) {
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, rb_iv_get(easy, "@response_body"));	
   curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, (curl_write_callback)&write_data_handler);
   curl_easy_setopt(curl, CURLOPT_HEADERDATA, rb_iv_get(easy, "@response_header"));
-	
-	return NULL;
 }
 
 static VALUE easy_reset(VALUE self) {
 	CurlEasy *curl_easy;
 	Data_Get_Struct(self, CurlEasy, curl_easy);
 
-	curl_easy_reset(curl_easy->curl);
-
 	if (curl_easy->request_chunk != NULL) {
 		free(curl_easy->request_chunk);
+		curl_easy->request_chunk = NULL;
 	}
 	
 	if (curl_easy->headers != NULL) {
 		curl_slist_free_all(curl_easy->headers);
+		curl_easy->headers = NULL;
 	}
 
-	set_response_handlers(self, curl_easy->curl);
+	curl_easy_reset(curl_easy->curl);
 
+	set_response_handlers(self, curl_easy->curl);
+	
 	return Qnil;	
 }
 
 static VALUE easy_add_header(VALUE self, VALUE header) {
 	CurlEasy *curl_easy;
 	Data_Get_Struct(self, CurlEasy, curl_easy);
-
-	curl_easy->headers = curl_slist_append(curl_easy->headers, StringValuePtr(header));
+	
+	curl_easy->headers = curl_slist_append(curl_easy->headers, strdup(RSTRING_PTR(header)));
 	return header;
 }
 

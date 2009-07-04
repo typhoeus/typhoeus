@@ -80,13 +80,12 @@ module Typhoeus
       
       easy.url                   = url
       easy.method                = method
-      easy.headers               = options[:headers] if options.has_key? :headers
+      easy.headers               = options[:headers] if options.has_key?(:headers)
       easy.headers["User-Agent"] = (options[:user_agent] || Typhoeus::USER_AGENT)
       easy.params                = options[:params] if options[:params]
       easy.request_body          = options[:body] if options[:body]
       easy.timeout               = options[:timeout] if options[:timeout]
-      
-      easy
+      easy.set_headers
       
       proxy = Typhoeus::RemoteProxyObject.new(clear_memoized_proxy_objects, easy, options)
       set_memoized_proxy_object(method, url, options, proxy)
@@ -122,7 +121,7 @@ module Typhoeus
       #     return object
       #   end
       # end
-      
+
       proxy = memoized_proxy_object(http_method, url, options)
       unless proxy
         if m.cache_responses?
