@@ -22,9 +22,9 @@ module Typhoeus
       return nil unless @remote_mocks
       if @remote_mocks.has_key? method
         if @remote_mocks[method].has_key? url
-          get_mock_and_run_handlers(@remote_mocks[method][url], options)
+          get_mock_and_run_handlers(method, @remote_mocks[method][url], options)
         elsif @remote_mocks[method].has_key? :catch_all
-          get_mock_and_run_handlers(@remote_mocks[method][:catch_all], options)
+          get_mock_and_run_handlers(method, @remote_mocks[method][:catch_all], options)
         else
           nil
         end
@@ -33,8 +33,16 @@ module Typhoeus
       end
     end
     
-    def get_mock_and_run_handlers(response_args, options)
+    def get_mock_and_run_handlers(method, response_args, options)
       response = Response.new(response_args[:code], response_args[:headers], response_args[:body], response_args[:time])
+      if response_args.has_key? :expected_body
+        raise "#{method} expected body of \"#{response_args[:expected_body]}\" but received #{options[:body]}" if response_args[:expected_body] != options[:body]
+      end
+      
+      if response_args.has_key? :expected_headers
+        raise "#{method} expected body of \"#{response_args[:expected_headers].inspect}\" but received #{options[:headers].inspect}" if response_args[:expected_headers] != options[:headers]
+      end
+      
       if response.code >= 200 && response.code < 300 && options.has_key?(:on_success)
         response = options[:on_success].call(response)
       elsif options.has_key?(:on_failure)
@@ -72,6 +80,7 @@ module Typhoeus
       
       easy.url                   = url
       easy.method                = method
+      easy.headers               = options[:headers] if options.has_key? :headers
       easy.headers["User-Agent"] = (options[:user_agent] || Typhoeus::USER_AGENT)
       easy.params                = options[:params] if options[:params]
       easy.request_body          = options[:body] if options[:body]

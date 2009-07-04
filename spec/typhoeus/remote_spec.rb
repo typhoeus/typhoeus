@@ -63,6 +63,44 @@ describe Typhoeus do
       @klass.get("http://localhost:234234234").code.should == 0
     end
     
+    describe "request body expectations" do
+      before(:all) do
+        @body_klass = Class.new do
+          include Typhoeus
+        end
+        @body_klass.mock(:put, :url => "http://whatev", :expected_body => "hi")
+      end
+      
+      it "should take an expected request body" do
+        @body_klass.put("http://whatev", :body => "hi").code.should == 200
+      end
+      
+      it "should raise if the expected request body doesn't match" do
+        lambda {
+          @body_klass.put("http://whatev", :body => "not what we expect")
+        }.should raise_error
+      end
+    end
+    
+    describe "request header expectations" do
+      before(:all) do
+        @header_klass = Class.new do
+          include Typhoeus
+        end
+        @header_klass.mock(:get, :url => "http://asdf", :expected_headers => {"If-None-Match" => "\"lkjsd90823\""})
+      end
+      
+      it "should take expected request headers" do
+        @header_klass.get("http://asdf", :headers => {"If-None-Match" => "\"lkjsd90823\""})
+      end
+      
+      it "should raise if the expected request headers don't match" do
+        lambda {
+          @header_klass.get("http://asdf")
+        }.should raise_error
+      end
+    end
+    
     describe "remote methods" do
       it "should work for defined remote methods" do
         @klass.instance_eval do
