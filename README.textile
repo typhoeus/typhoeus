@@ -36,6 +36,10 @@ h2. Usage
 
 
 <pre>
+require 'rubygems'
+require 'typhoeus'
+require 'json'  
+
 # here's an example for twitter search
 # Including Typhoeus adds http methods like get, put, post, and delete.
 # What's more interesting though is the stuff to build up what I call
@@ -108,12 +112,26 @@ Remote.post("http://localhost:3001/posts.xml",
 Remote.delete("http://localhost:3001/posts/1")
 
 # you also have the ability to set request headers. So you can set your user agent and manually
-# do things like set for basic authentication.
 Remote.get("http://www.pauldix.net", :headers => {"User-Agent" => "typhoeus", "If-None-Match" => "some etag"})
-# body and headers arguments also get passed through on defined remote methods.
 
-# the object returned by get, put, post, and delete or passed to the on_success and on_failure handlers
-# for remote methods is a response object. You can do the following:
+# and do things like basic HTTP authentication
+require 'base64'
+Remote.get("http://twitter.com/statuses/followers.json", :headers => {"Authorization" => "Basic #{Base64.b64encode("login:password")}"})
+
+# body and headers arguments also get passed through on defined remote methods.
+class TwitterRestAPI
+  include Typhoeus
+  remote_defaults :on_success => lambda {|response| JSON.parse(response.body)},
+                  :on_failure => lambda {|response| puts "error code: #{response.code}"},
+                  :base_uri   => "http://twitter.com"
+
+  define_remote_method :followers, :path => '/statuses/followers.json', :headers => {"Authorization" => "Basic #{Base64.b64encode("twitter_id:password")}"}
+end
+
+# The response object returned by get, put, post, and delete is passed to the on_success 
+# or on_failure lambda block if declared.
+# The return value of the lambda block is then what is returned by the remote method invocation.
+# The response object can do the following:
 response.code    # the http return code
 response.body    # the body of the response
 response.headers # the response headers
@@ -159,7 +177,6 @@ h2. Next Steps
 * Write up some more examples.
 * Create a SimpleDB client library using Typhoeus.
 * Create or get someone to create a CouchDB client library using Typhoeus.
-* wire up a simple method to mock out remote requests.
 * Add support for automatic retry, exponential back-off, and queuing for later.
 * Add in the support for custom get and set methods on the cache.
 * Add in support for integrated HTTP caching with Memcached.
