@@ -116,7 +116,8 @@ Remote.get("http://www.pauldix.net", :headers => {"User-Agent" => "typhoeus", "I
 
 # and do things like basic HTTP authentication
 require 'base64'
-Remote.get("http://twitter.com/statuses/followers.json", :headers => {"Authorization" => "Basic #{Base64.b64encode("login:password")}"})
+Remote.get("http://twitter.com/statuses/followers.json", 
+           :headers => {"Authorization" => "Basic #{Base64.b64encode("login:password")}"})
 
 # body and headers arguments also get passed through on defined remote methods.
 class TwitterRestAPI
@@ -125,7 +126,9 @@ class TwitterRestAPI
                   :on_failure => lambda {|response| puts "error code: #{response.code}"},
                   :base_uri   => "http://twitter.com"
 
-  define_remote_method :followers, :path => '/statuses/followers.json', :headers => {"Authorization" => "Basic #{Base64.b64encode("twitter_id:password")}"}
+  define_remote_method :followers, 
+                       :path => '/statuses/followers.json', 
+                       :headers => {"Authorization" => "Basic #{Base64.b64encode("twitter_id:password")}"}
 end
 
 # The response object returned by get, put, post, and delete is passed to the on_success 
