@@ -421,7 +421,14 @@ describe Typhoeus do
           define_remote_method :do_stuff, :base_uri => "http://localhost:3001", :params => {:foo => :bar}
         end
 
-        @klass.do_stuff(:params => {:asdf => :jkl}).body.should include("QUERY_STRING=foo=bar&asdf=jkl")
+        result = @klass.do_stuff(:params => {:asdf => :jkl})
+
+        # Make this test more robust to hash ordering.
+        query_string = result.body.match(/QUERY_STRING=([^\n]+)/)
+        params = query_string[1].split("&")
+        ["asdf=jkl", "foo=bar"].each do |param|
+          params.should include(param)
+        end
       end
     end
     
