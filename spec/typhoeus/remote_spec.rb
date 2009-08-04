@@ -117,6 +117,23 @@ describe Typhoeus do
         @klass.mock(:get, :url => "http://localhost:3001", :body => "hi", :code => 500)
         @klass.do_stuff.should == :fail
       end
+
+      it "should allow for subclassing a class that includes Typhoeus, and merging defaults" do
+        class TestA
+          include Typhoeus
+          remote_defaults :on_failure => lambda { |response|
+                                           :fail
+                                         }
+        end
+
+        class TestB < TestA
+          remote_defaults :base_uri => "http://localhost"
+          define_remote_method :do_stuff
+        end
+
+        TestB.mock(:get, :url => "http://localhost", :body => "hi", :code => 500)
+        TestB.do_stuff.should == :fail
+      end
     end
     
     describe "response hash" do

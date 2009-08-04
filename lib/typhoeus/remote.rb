@@ -92,7 +92,15 @@ module Typhoeus
     end
     
     def remote_defaults(options)
-      @remote_defaults = options
+      @remote_defaults ||= {}
+      @remote_defaults.merge!(options)
+      @remote_defaults
+    end
+
+    # If we get subclassed, make sure that child inherits the remote defaults
+    # of the parent class.
+    def inherited(child)
+      child.__send__(:remote_defaults, @remote_defaults)
     end
     
     def call_remote_method(method_name, args)
