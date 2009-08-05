@@ -4,8 +4,19 @@ module Typhoeus
   def self.included(base)
     base.extend ClassMethods
   end
+
+  class MockExpectedError < StandardError; end
     
   module ClassMethods
+    def allow_net_connect
+      @allow_net_connect = true if @allow_net_connect.nil?
+      @allow_net_connect
+    end
+
+    def allow_net_connect=(value)
+      @allow_net_connect = value
+    end
+    
     def mock(method, args = {})
       @remote_mocks ||= {}
       @remote_mocks[method] ||= {}
@@ -32,6 +43,15 @@ module Typhoeus
         nil
       end
     end
+
+    def enforce_allow_net_connect!(http_verb, url)
+      if !allow_net_connect
+        raise MockExpectedError,
+              "Real HTTP connections are disabled. Unregistered request: " <<
+              "#{http_verb.to_s.upcase} #{url}\n" <<
+              "  Try: mock(:#{http_verb}, :url => \"#{url}\")"
+      end
+    end
     
     def get_mock_and_run_handlers(method, response_args, options)
       response = Response.new(response_args[:code], response_args[:headers], response_args[:body], response_args[:time])
@@ -53,26 +73,42 @@ module Typhoeus
     
     def get(url, options = {})
       mock_object = get_mock(:get, url, options)
-      return mock_object if mock_object
-      remote_proxy_object(url, :get, options)
+      if mock_object
+        mock_object
+      else
+        enforce_allow_net_connect!(:get, url)  
+        remote_proxy_object(url, :get, options)
+      end
     end
     
     def post(url, options = {}, &block)
       mock_object = get_mock(:post, url, options)
-      return mock_object if mock_object
-      remote_proxy_object(url, :post, options)
+      if mock_object
+        mock_object
+      else
+        enforce_allow_net_connect!(:post, url)
+        remote_proxy_object(url, :post, options)
+      end
     end
 
     def put(url, options = {}, &block)
       mock_object = get_mock(:put, url, options)
-      return mock_object if mock_object
-      remote_proxy_object(url, :put, options)
+      if mock_object
+        mock_object
+      else
+        enforce_allow_net_connect!(:put, url)
+        remote_proxy_object(url, :put, options)
+      end
     end
     
     def delete(url, options = {}, &block)
       mock_object = get_mock(:delete, url, options)
-      return mock_object if mock_object
-      remote_proxy_object(url, :delete, options)
+      if mock_object
+        mock_object
+      else
+        enforce_allow_net_connect!(:delete, url)
+        remote_proxy_object(url, :delete, options)
+      end
     end
     
     def remote_proxy_object(url, method, options)
