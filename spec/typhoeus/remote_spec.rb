@@ -14,7 +14,48 @@ describe Typhoeus do
   after(:all) do
     stop_method_server(@pid)
   end
-  
+
+  describe "entirely disallowing HTTP connections in specs" do
+    describe "allow_net_connect" do
+      it "should default to true" do
+        @klass.allow_net_connect.should be_true
+      end
+
+      it "should be settable" do
+        @klass.allow_net_connect.should be_true
+        @klass.allow_net_connect = false
+        @klass.allow_net_connect.should be_false
+      end
+    end
+
+    describe "and hitting a URL that hasn't been mocked" do
+      it "should raise an error for any HTTP verbs" do
+        @klass.allow_net_connect = false
+
+        [:get, :put, :post, :delete].each do |method|
+          lambda {
+            @klass.send(method, "http://crazy_url_that_isnt_mocked.com")
+          }.should raise_error(Typhoeus::MockExpectedError)
+        end
+      end
+    end
+
+    describe "hitting a mocked URL that returns false" do
+      it "should not raise a MockExpectedError" do
+        @klass.allow_net_connect = false
+        @klass.mock(:delete,
+                    :url => "http://test.com",
+                    :code => 500,
+                    :body => 'ok')
+
+        lambda {
+          @klass.delete("http://test.com",
+                        :on_failure => lambda { |response| false })
+        }.should_not raise_error
+      end
+    end
+  end
+
   describe "mocking" do
     it "should mock out GET" do
       @klass.mock(:get)
