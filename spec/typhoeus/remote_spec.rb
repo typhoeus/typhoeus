@@ -103,6 +103,22 @@ describe Typhoeus do
       
       @klass.get("http://localhost:234234234").code.should == 0
     end
+
+    it "should be able to mock using specific params as well" do
+      @klass.allow_net_connect = false
+      @klass.mock(:get, :url => "http://stuff")
+
+      lambda {
+        @klass.get("http://stuff", :params => { :a => 'test' })
+      }.should raise_error(Typhoeus::MockExpectedError)
+
+      @klass.mock(:get,
+                  :url => "http://stuff",
+                  :params => { :a => 'test' })
+      lambda {
+        @klass.get("http://stuff", :params => { :a => 'test' })
+      }.should_not raise_error(Typhoeus::MockExpectedError)
+    end
     
     describe "request body expectations" do
       before(:all) do

@@ -26,7 +26,39 @@ module Typhoeus
       args[:time]    ||= 0
       url = args.delete(:url)
       url ||= :catch_all
-      @remote_mocks[method][url] = args
+      params = args.delete(:params)
+
+      key = mock_key_for(url, params)
+
+      @remote_mocks[method][key] = args
+    end
+
+    # Returns a key for a given URL and passed in 
+    # set of Typhoeus options to be used to store/retrieve
+    # a corresponding mock.
+    def mock_key_for(url, params = nil)
+      if url == :catch_all
+        url
+      else
+        key = url
+        if params and !params.empty?
+          key += flatten_and_sort_hash(params).to_s
+        end
+        key
+      end
+    end
+
+    def flatten_and_sort_hash(params)
+      params = params.dup
+
+      # Flatten any sub-hashes to a single string.
+      params.keys.each do |key|
+        if params[key].is_a?(Hash)
+          params[key] = params[key].sort_by { |k, v| k.to_s.downcase }.to_s
+        end
+      end
+
+      params.sort_by { |k, v| k.to_s.downcase }
     end
     
     def get_mock(method, url, options)
@@ -34,9 +66,10 @@ module Typhoeus
       if @remote_mocks.has_key? method
         extra_response_args = { :requested_http_method => method,
                                 :requested_url => url }
-        if @remote_mocks[method].has_key? url
+        mock_key = mock_key_for(url, options[:params])
+        if @remote_mocks[method].has_key? mock_key
           get_mock_and_run_handlers(method,
-                                    @remote_mocks[method][url].merge(
+                                    @remote_mocks[method][mock_key].merge(
                                       extra_response_args),
                                     options)
         elsif @remote_mocks[method].has_key? :catch_all
@@ -52,12 +85,18 @@ module Typhoeus
       end
     end
 
-    def enforce_allow_net_connect!(http_verb, url)
+    def enforce_allow_net_connect!(http_verb, url, params = nil)
       if !allow_net_connect
-        raise MockExpectedError,
-              "Real HTTP connections are disabled. Unregistered request: " <<
-              "#{http_verb.to_s.upcase} #{url}\n" <<
-              "  Try: mock(:#{http_verb}, :url => \"#{url}\")"
+        message = "Real HTTP connections are disabled. Unregistered request: " <<
+                  "#{http_verb.to_s.upcase} #{url}\n" <<
+                  "  Try: mock(:#{http_verb}, :url => \"#{url}\""
+        if params
+          message << ",\n            :params => #{params.inspect}"
+        end
+
+        message << ")"
+
+        raise MockExpectedError, message
       end
     end
     
@@ -80,44 +119,20 @@ module Typhoeus
       response
     end
     
-    def get(url, options = {})
-      mock_object = get_mock(:get, url, options)
-      unless mock_object.nil?
-        mock_object
-      else
-        enforce_allow_net_connect!(:get, url)  
-        remote_proxy_object(url, :get, options)
-      end
-    end
-    
-    def post(url, options = {}, &block)
-      mock_object = get_mock(:post, url, options)
-      unless mock_object.nil?
-        mock_object
-      else
-        enforce_allow_net_connect!(:post, url)
-        remote_proxy_object(url, :post, options)
-      end
-    end
-
-    def put(url, options = {}, &block)
-      mock_object = get_mock(:put, url, options)
-      unless mock_object.nil?
-        mock_object
-      else
-        enforce_allow_net_connect!(:put, url)
-        remote_proxy_object(url, :put, options)
-      end
-    end
-    
-    def delete(url, options = {}, &block)
-      mock_object = get_mock(:delete, url, options)
-      unless mock_object.nil?
-        mock_object
-      else
-        enforce_allow_net_connect!(:delete, url)
-        remote_proxy_object(url, :delete, options)
-      end
+    [:get, :post, :put, :delete].each do |method|
+      line = __LINE__ + 2  # get any errors on the correct line num
+      code = <<-SRC
+        def #{method.to_s}(url, options = {})
+          mock_object = get_mock(:#{method.to_s}, url, options)
+          unless mock_object.nil?
+            mock_object
+          else
+            enforce_allow_net_connect!(:#{method.to_s}, url, options[:params])
+            remote_proxy_object(url, :#{method.to_s}, options)
+          end
+        end
+      SRC
+      module_eval(code, "./lib/typhoeus/remote.rb", line)
     end
     
     def remote_proxy_object(url, method, options)
