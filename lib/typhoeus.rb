@@ -12,7 +12,7 @@ require 'typhoeus/remote_proxy_object'
 require 'typhoeus/response'
 
 module Typhoeus
-  VERSION = "0.0.12"
+  VERSION = "0.0.13"
   
   def self.easy_object_pool
     @easy_objects ||= []
