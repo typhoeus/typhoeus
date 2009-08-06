@@ -32,10 +32,18 @@ module Typhoeus
     def get_mock(method, url, options)
       return nil unless @remote_mocks
       if @remote_mocks.has_key? method
+        extra_response_args = { :requested_http_method => method,
+                                :requested_url => url }
         if @remote_mocks[method].has_key? url
-          get_mock_and_run_handlers(method, @remote_mocks[method][url], options)
+          get_mock_and_run_handlers(method,
+                                    @remote_mocks[method][url].merge(
+                                      extra_response_args),
+                                    options)
         elsif @remote_mocks[method].has_key? :catch_all
-          get_mock_and_run_handlers(method, @remote_mocks[method][:catch_all], options)
+          get_mock_and_run_handlers(method,
+                                    @remote_mocks[method][:catch_all].merge(
+                                      extra_response_args),
+                                    options)
         else
           nil
         end
@@ -54,7 +62,8 @@ module Typhoeus
     end
     
     def get_mock_and_run_handlers(method, response_args, options)
-      response = Response.new(response_args[:code], response_args[:headers], response_args[:body], response_args[:time])
+      response = Response.new(response_args)
+     
       if response_args.has_key? :expected_body
         raise "#{method} expected body of \"#{response_args[:expected_body]}\" but received #{options[:body]}" if response_args[:expected_body] != options[:body]
       end

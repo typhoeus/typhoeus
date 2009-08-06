@@ -34,6 +34,12 @@ describe Typhoeus::RemoteProxyObject do
     Typhoeus.should_receive(:perform_easy_requests).exactly(0).times
     response.code.should == 200
   end
+
+  it "should set the requested_url and requested_http_method on the response" do
+    response = Typhoeus::RemoteProxyObject.new(lambda {}, @easy)
+    response.requested_url.should == "http://localhost:3001"
+    response.requested_http_method.should == :get
+  end
   
   it "should call the on_success method with an easy object and proxy to the result of on_success" do
     klass = Class.new do
