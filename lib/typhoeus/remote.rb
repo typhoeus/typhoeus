@@ -73,7 +73,7 @@ module Typhoeus
     
     def get(url, options = {})
       mock_object = get_mock(:get, url, options)
-      if mock_object
+      unless mock_object.nil?
         mock_object
       else
         enforce_allow_net_connect!(:get, url)  
@@ -83,7 +83,7 @@ module Typhoeus
     
     def post(url, options = {}, &block)
       mock_object = get_mock(:post, url, options)
-      if mock_object
+      unless mock_object.nil?
         mock_object
       else
         enforce_allow_net_connect!(:post, url)
@@ -93,7 +93,7 @@ module Typhoeus
 
     def put(url, options = {}, &block)
       mock_object = get_mock(:put, url, options)
-      if mock_object
+      unless mock_object.nil?
         mock_object
       else
         enforce_allow_net_connect!(:put, url)
@@ -103,7 +103,7 @@ module Typhoeus
     
     def delete(url, options = {}, &block)
       mock_object = get_mock(:delete, url, options)
-      if mock_object
+      unless mock_object.nil?
         mock_object
       else
         enforce_allow_net_connect!(:delete, url)

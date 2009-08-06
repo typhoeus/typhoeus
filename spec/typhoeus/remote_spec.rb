@@ -39,6 +39,21 @@ describe Typhoeus do
         end
       end
     end
+
+    describe "hitting a mocked URL that returns false" do
+      it "should not raise a MockExpectedError" do
+        @klass.allow_net_connect = false
+        @klass.mock(:delete,
+                    :url => "http://test.com",
+                    :code => 500,
+                    :body => 'ok')
+
+        lambda {
+          @klass.delete("http://test.com",
+                        :on_failure => lambda { |response| false })
+        }.should_not raise_error
+      end
+    end
   end
 
   describe "mocking" do
