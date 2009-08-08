@@ -54,6 +54,20 @@ describe Typhoeus do
         }.should_not raise_error
       end
     end
+
+    describe "handlers" do
+      it "should be able to return nil as part of their block" do
+        @klass.allow_net_connect = false
+        url = 'http://api.mysite.com/v1/stuff.json'
+        @klass.mock(:get,
+                    :url => url,
+                    :body => '',
+                    :code => 500)
+        result = @klass.get(url,
+                            :on_failure => lambda { |response| nil })
+        result.should be_nil
+      end
+    end
   end
 
   describe "mocking" do

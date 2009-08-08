@@ -116,16 +116,17 @@ module Typhoeus
       elsif options.has_key?(:on_failure)
         response = options[:on_failure].call(response)
       end
-      response
+
+      encode_nil_response(response)
     end
-    
+       
     [:get, :post, :put, :delete].each do |method|
       line = __LINE__ + 2  # get any errors on the correct line num
       code = <<-SRC
         def #{method.to_s}(url, options = {})
           mock_object = get_mock(:#{method.to_s}, url, options)
           unless mock_object.nil?
-            mock_object
+            decode_nil_response(mock_object)
           else
             enforce_allow_net_connect!(:#{method.to_s}, url, options[:params])
             remote_proxy_object(url, :#{method.to_s}, options)
@@ -242,6 +243,15 @@ module Typhoeus
           call_remote_method(:#{name.to_s}, args)
         end
       SRC
+    end
+
+    private
+    def encode_nil_response(response)
+      response == nil ? :__nil__ : response
+    end
+
+    def decode_nil_response(response)
+      response == :__nil__ ? nil : response
     end
   end # ClassMethods
 end
