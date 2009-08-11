@@ -12,6 +12,7 @@ module Typhoeus
       @cache_responses   = options.delete(:cache_responses)
       @memoize_responses = options.delete(:memoize_responses) || @cache_responses
       @cache_ttl         = @cache_responses == true ? 0 : @cache_responses
+      @keys              = nil
       
       clear_cache
     end
