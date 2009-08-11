@@ -152,13 +152,68 @@ describe Typhoeus do
         }.should raise_error
       end
     end
-    
+
+    describe "check_expected_headers!" do
+      before(:each) do
+        @header_klass = Class.new do
+          include Typhoeus
+        end
+      end
+
+      it "should match a header with :anything" do
+        lambda {
+          @header_klass.check_expected_headers!(
+            { :expected_headers => { 'Content-Type' => :anything } },
+            { :headers => { 'Content-Type' => 'text/xml' } }
+          )
+        }.should_not raise_error
+      end 
+
+      it "should enforce exact matching" do
+        lambda {
+          @header_klass.check_expected_headers!(
+            { :expected_headers => { 'Content-Type' => 'text/html' } },
+            { :headers => { 'Content-Type' => 'text/xml' } }
+          )
+        }.should raise_error
+      end
+    end
+  
+    describe "check_unexpected_headers!" do
+      before(:each) do
+        @header_klass = Class.new do
+          include Typhoeus
+        end
+      end
+
+      it "should match a header with :anything" do
+        lambda {
+          @header_klass.check_unexpected_headers!(
+            { :unexpected_headers => { 'Content-Type' => :anything } },
+            { :headers => { "Content-Type" => "text/xml" } }
+          )
+        }.should raise_error
+      end
+
+      it "should not match if a header is different from the expected value" do
+        lambda {
+          @header_klass.check_unexpected_headers!(
+            { :unexpected_headers => { 'Content-Type' => 'text/html' } },
+            { :headers => { "Content-Type" => "text/xml" } }
+          )
+        }.should_not raise_error
+      end
+    end
+
     describe "request header expectations" do
       before(:all) do
         @header_klass = Class.new do
           include Typhoeus
         end
-        @header_klass.mock(:get, :url => "http://asdf", :expected_headers => {"If-None-Match" => "\"lkjsd90823\""})
+        @header_klass.mock(:get,
+                           :url => "http://asdf",
+                           :expected_headers => {"If-None-Match" => "\"lkjsd90823\""},
+                           :unexpected_headers => { 'Content-Type' => "text/xml" })
       end
       
       it "should take expected request headers" do
@@ -168,6 +223,13 @@ describe Typhoeus do
       it "should raise if the expected request headers don't match" do
         lambda {
           @header_klass.get("http://asdf")
+        }.should raise_error
+      end
+
+      it "should raise if an unexpected header shows up" do
+        lambda {
+          @header_klass.get("http://asdf",
+                            :headers => { "Content-Type" => "text/xml" })
         }.should raise_error
       end
     end

@@ -99,7 +99,51 @@ module Typhoeus
         raise MockExpectedError, message
       end
     end
-    
+
+    def check_expected_headers!(response_args, options)
+      missing_headers = {}
+
+      response_args[:expected_headers].each do |key, value|
+        if options[:headers].nil?
+          missing_headers[key] = [value, nil]
+        elsif ((options[:headers][key] && value != :anything) &&
+           options[:headers][key] != value)
+
+          missing_headers[key] = [value, options[:headers][key]]
+        end
+      end
+
+      unless missing_headers.empty?
+        raise headers_error_summary(response_args, options, missing_headers, 'expected')
+      end
+    end
+
+    def check_unexpected_headers!(response_args, options)
+      bad_headers = {}
+      response_args[:unexpected_headers].each do |key, value|
+        if (options[:headers][key] && value == :anything) ||
+           (options[:headers][key] == value)
+          bad_headers[key] = [value, options[:headers][key]]
+        end
+      end
+
+      unless bad_headers.empty?
+        raise headers_error_summary(response_args, options, bad_headers, 'did not expect')
+      end
+    end
+
+    def headers_error_summary(response_args, options, missing_headers, lead_in)
+      error = "#{lead_in} the following headers: #{response_args[:expected_headers].inspect}, but received: #{options[:headers].inspect}\n\n"
+      error   << "Differences:\n"
+      error   << "------------\n"
+      missing_headers.each do |key, values|
+        error << "  - #{key}: #{lead_in} #{values[0].inspect}, got #{values[1].inspect}\n"
+      end
+
+      error
+    end
+    private :headers_error_summary
+
     def get_mock_and_run_handlers(method, response_args, options)
       response = Response.new(response_args)
      
@@ -108,9 +152,13 @@ module Typhoeus
       end
       
       if response_args.has_key? :expected_headers
-        raise "#{method} expected body of \"#{response_args[:expected_headers].inspect}\" but received #{options[:headers].inspect}" if response_args[:expected_headers] != options[:headers]
+        check_expected_headers!(response_args, options)
       end
-      
+
+      if response_args.has_key? :unexpected_headers
+        check_unexpected_headers!(response_args, options)
+      end
+
       if response.code >= 200 && response.code < 300 && options.has_key?(:on_success)
         response = options[:on_success].call(response)
       elsif options.has_key?(:on_failure)
