@@ -202,7 +202,7 @@ module Typhoeus
     
     def remote_defaults(options)
       @remote_defaults ||= {}
-      @remote_defaults.merge!(options)
+      @remote_defaults.merge!(options) if options
       @remote_defaults
     end
 
