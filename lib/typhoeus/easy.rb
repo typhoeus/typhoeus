@@ -107,10 +107,10 @@ module Typhoeus
         end
       end.flatten.join("&")
       
-      if method == :get
-        self.url = "#{url}?#{params_string}"
-      elsif method == :post
+      if method == :post
         self.post_data = params_string
+      else
+        self.url = "#{url}?#{params_string}"
       end
     end
     
