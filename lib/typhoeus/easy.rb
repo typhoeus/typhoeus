@@ -86,6 +86,7 @@ module Typhoeus
         self.post_data = ""
       elsif method == :put
         set_option(OPTION_VALUES[:CURLOPT_UPLOAD], 1)
+        self.request_body = "" unless @request_body
       else
         set_option(OPTION_VALUES[:CURLOPT_CUSTOMREQUEST], "DELETE")
       end
