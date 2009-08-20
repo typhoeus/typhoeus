@@ -103,6 +103,9 @@ module Typhoeus
         value = params[k]
         if value.is_a? Hash
           value.keys.collect {|sk| CGI.escape("#{k}[#{sk}]") + "=" + CGI.escape(value[sk].to_s)}
+        elsif value.is_a? Array
+          key = CGI.escape(k.to_s)
+          value.collect { |v| "#{key}=#{CGI.escape(v.to_s)}" }.join('&')
         else
           "#{CGI.escape(k.to_s)}=#{CGI.escape(params[k].to_s)}"
         end

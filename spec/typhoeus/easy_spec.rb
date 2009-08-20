@@ -47,6 +47,22 @@ describe Typhoeus::Easy do
     end
   end
 
+  describe "params=" do
+    it "should handle arrays of params" do
+      easy = Typhoeus::Easy.new
+      easy.url = "http://localhost:3002/index.html"
+      easy.method = :get
+      easy.request_body = "this is a body!"
+      easy.params = {
+        :foo => 'bar',
+        :username => ['dbalatero', 'dbalatero2']
+      }
+      
+      easy.url.should =~ /\?.*username=dbalatero&username=dbalatero2/
+    end
+  end
+
+
   describe "put" do
     it "should perform a put" do
       easy = Typhoeus::Easy.new
