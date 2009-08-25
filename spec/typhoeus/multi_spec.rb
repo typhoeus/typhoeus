@@ -8,6 +8,18 @@ describe Typhoeus::Easy do
   after(:all) do
     stop_method_server(@pid)
   end
+
+  it "should save easy handles that get added" do
+    multi = Typhoeus::Multi.new
+    easy = Typhoeus::Easy.new
+    easy.url = "http://localhost:3002"
+    easy.method = :get
+
+    multi.add(easy)
+    multi.easy_handles.should == [easy]
+    multi.perform
+    multi.easy_handles.should == []
+  end
   
   it "should be reusable" do
     easy = Typhoeus::Easy.new

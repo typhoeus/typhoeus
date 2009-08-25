@@ -47,6 +47,16 @@ describe Typhoeus::Easy do
     end
   end
 
+  describe "start_time" do
+    it "should be get/settable" do
+      time = Time.now
+      easy = Typhoeus::Easy.new
+      easy.start_time.should be_nil
+      easy.start_time = time
+      easy.start_time.should == time
+    end
+  end
+
   describe "params=" do
     it "should handle arrays of params" do
       easy = Typhoeus::Easy.new

@@ -43,6 +43,11 @@ module Typhoeus
   end
   
   def self.perform_easy_requests
-    Thread.current[:curl_multi].perform
+    multi = Thread.current[:curl_multi]
+    start_time = Time.now
+    multi.easy_handles.each do |easy|
+      easy.start_time = Time.now
+    end
+    multi.perform
   end
 end

@@ -65,7 +65,8 @@ module Typhoeus
       return nil unless @remote_mocks
       if @remote_mocks.has_key? method
         extra_response_args = { :requested_http_method => method,
-                                :requested_url => url }
+                                :requested_url => url,
+                                :start_time => Time.now }
         mock_key = mock_key_for(url, options[:params])
         if @remote_mocks[method].has_key? mock_key
           get_mock_and_run_handlers(method,

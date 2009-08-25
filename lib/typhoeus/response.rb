@@ -2,7 +2,7 @@ module Typhoeus
   class Response
     attr_reader :code, :headers, :body, :time,
                 :requested_url, :requested_remote_method,
-                :requested_http_method
+                :requested_http_method, :start_time
     
     def initialize(params = {})
       @code                     = params[:code]
@@ -11,6 +11,7 @@ module Typhoeus
       @time                     = params[:time]
       @requested_url            = params[:requested_url]
       @requested_http_method    = params[:requested_http_method]
+      @start_time               = params[:start_time]
     end
   end
 end

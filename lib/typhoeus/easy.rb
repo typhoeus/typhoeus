@@ -1,6 +1,8 @@
 module Typhoeus
   class Easy
     attr_reader :response_body, :response_header, :method, :headers, :url
+    attr_accessor :start_time
+
     CURLINFO_STRING = 1048576
     OPTION_VALUES = {
       :CURLOPT_URL            => 10002,

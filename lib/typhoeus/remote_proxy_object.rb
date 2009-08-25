@@ -26,7 +26,8 @@ module Typhoeus
                                   :body => @easy.response_body,
                                   :time => @easy.total_time_taken,
                                   :requested_url => @easy.url,
-                                  :requested_http_method => @easy.method)
+                                  :requested_http_method => @easy.method,
+                                  :start_time => @easy.start_time)
           if @easy.response_code >= 200 && @easy.response_code < 300
             Typhoeus.release_easy_object(@easy)
             @proxied_object = @success.nil? ? response : @success.call(response)
