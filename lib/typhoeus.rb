@@ -46,7 +46,7 @@ module Typhoeus
     multi = Thread.current[:curl_multi]
     start_time = Time.now
     multi.easy_handles.each do |easy|
-      easy.start_time = Time.now
+      easy.start_time = start_time
     end
     multi.perform
   end
