@@ -39,7 +39,7 @@ Gem::Specification.new do |s|
   s.has_rdoc = true
   s.homepage = %q{http://github.com/pauldix/typhoeus}
   s.require_paths = ["lib", "ext"]
-  s.rubygems_version = %q{1.3.1}
+  s.rubygems_version = %q{1.3.4}
   s.summary = %q{A library for interacting with web services (and building SOAs) at blinding speed.}
   s.extensions << 'ext/typhoeus/extconf.rb'
  
