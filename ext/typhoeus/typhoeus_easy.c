@@ -132,7 +132,7 @@ static VALUE easy_add_header(VALUE self, VALUE header) {
 	CurlEasy *curl_easy;
 	Data_Get_Struct(self, CurlEasy, curl_easy);
 	
-	curl_easy->headers = curl_slist_append(curl_easy->headers, strdup(RSTRING_PTR(header)));
+	curl_easy->headers = curl_slist_append(curl_easy->headers, RSTRING_PTR(header));
 	return header;
 }
 
