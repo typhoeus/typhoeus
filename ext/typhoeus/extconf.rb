@@ -1,4 +1,6 @@
-ENV["ARCHFLAGS"] = "-arch #{`uname -p` =~ /powerpc/ ? 'ppc' : 'i386'}"
+ENV['RC_ARCHS'] = '' if RUBY_PLATFORM =~ /darwin/
+
+# :stopdoc:
 
 require 'mkmf'
 
@@ -6,15 +8,20 @@ ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
 LIBDIR = Config::CONFIG['libdir']
 INCLUDEDIR = Config::CONFIG['includedir']
 
-  use_macports = !(defined?(RUBY_ENGINE) && RUBY_ENGINE != 'ruby')
+if defined?(RUBY_ENGINE) && RUBY_ENGINE == 'macruby'
+  $LIBRUBYARG_STATIC.gsub!(/-static/, '')
+end
 
 $CFLAGS << " #{ENV["CFLAGS"]}"
 if Config::CONFIG['target_os'] == 'mingw32'
-  $CFLAGS << " -DXP_WIN -DXP_WIN32"
+  $CFLAGS << " -DXP_WIN -DXP_WIN32 -DUSE_INCLUDED_VASPRINTF"
+elsif Config::CONFIG['target_os'] == 'solaris2'
+  $CFLAGS << " -DUSE_INCLUDED_VASPRINTF"
 else
   $CFLAGS << " -g -DXP_UNIX"
 end
 
+use_macports = !(defined?(RUBY_ENGINE) && RUBY_ENGINE != 'ruby')
 $LIBPATH << "/opt/local/lib" if use_macports
 
 $CFLAGS << " -O3 -Wall -Wcast-qual -Wwrite-strings -Wconversion -Wmissing-noreturn -Winline"
