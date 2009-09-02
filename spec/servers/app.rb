@@ -2,10 +2,8 @@ require 'rubygems'
 require 'sinatra'
 
 get '/**' do
-  puts request.inspect
-  puts "**#{request.body.read}**"
-  sleep 3
-  "hello world"
+  sleep params["delay"].to_i if params.has_key?("delay")
+  params.inspect
 end
 
 put '/**' do

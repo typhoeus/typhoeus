@@ -10,6 +10,8 @@ require 'typhoeus/remote_method'
 require 'typhoeus/remote'
 require 'typhoeus/remote_proxy_object'
 require 'typhoeus/response'
+require 'typhoeus/request'
+require 'typhoeus/hydra'
 
 module Typhoeus
   VERSION = "0.0.24"

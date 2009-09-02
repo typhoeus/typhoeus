@@ -27,5 +27,10 @@ describe Typhoeus::Response do
       response = Typhoeus::Response.new(:requested_http_method => :delete)
       response.requested_http_method.should == :delete
     end
+    
+    it "should store an associated request object" do
+      response = Typhoeus::Response.new(:request => "whatever")
+      response.request.should == "whatever"
+    end
   end
 end
