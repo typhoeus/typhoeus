@@ -23,6 +23,24 @@ describe "hydra" do
   it "has a singleton" do
     Typhoeus::Hydra.hydra.should be_a Typhoeus::Hydra
   end
+  
+  it "mocks requests" do
+    hydra    = Typhoeus::Hydra.new
+    on_complete_handler_called = nil
+    request  = Typhoeus::Request.new("http://localhost:3000/foo")
+    request.on_complete do |response|
+      on_complete_handler_called = true
+      response.code.should == 404
+      response.headers.should == "whatever"
+    end
+    response = Typhoeus::Response.new(:code => 404, :headers => "whatever", :body => "not found", :time => 0.1)
+    
+    hydra.mock(:get, "http://localhost:3000/foo").and_return(response)
+    hydra.queue(request)
+    hydra.run
+    on_complete_handler_called.should be_true
+    response.request.should == request
+  end
 
   it "queues a request" do
     hydra = Typhoeus::Hydra.new

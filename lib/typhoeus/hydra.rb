@@ -3,6 +3,7 @@ module Typhoeus
     def initialize
       @multi       = Multi.new
       @easy_pool   = []
+      @mocks       = []
       @memoized_requests = {}
     end
   
@@ -11,6 +12,8 @@ module Typhoeus
     end
 
     def queue(request)
+      return if assign_to_mock(request)
+      
       if request.method == :get
         if @memoized_requests.has_key? request.url
           @memoized_requests[request.url] << request
@@ -24,6 +27,12 @@ module Typhoeus
     end
 
     def run
+      @mocks.each do |m|
+        m.requests.each do |request|
+          m.response.request = request
+          handle_request(request, m.response)
+        end
+      end
       @multi.perform
       @memoized_requests = {}
     end
@@ -39,6 +48,17 @@ module Typhoeus
     def on_complete(&block)
       @on_complete = block
     end
+    
+    def mock(method, url)
+      @mocks << HydraMock.new(url, method)
+      @mocks.last
+    end
+    
+    def assign_to_mock(request)
+      m = @mocks.detect {|mck| mck.method == request.method && mck.url == request.url}
+      m && m.add_request(request)
+    end
+    private :assign_to_mock
     
     def get_from_cache_or_queue(request)
       if @cache_getter
@@ -79,6 +99,7 @@ module Typhoeus
       easy.reset
       @easy_pool.push easy
     end
+    private :release_easy_object
     
     def handle_request(request, response)
       request.response = response
@@ -106,5 +127,23 @@ module Typhoeus
                    :request => request)
     end
     private :response_from_easy
+  end
+  
+  class HydraMock
+    attr_reader :url, :method, :response, :requests
+    
+    def initialize(url, method)
+      @url      = url
+      @method   = method
+      @requests = []
+    end
+    
+    def add_request(request)
+      @requests << request
+    end
+    
+    def and_return(val)
+      @response = val
+    end
   end
 end
