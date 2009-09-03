@@ -1,6 +1,6 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__)) unless $LOAD_PATH.include?(File.dirname(__FILE__))
 
-require 'cgi'
+require 'rack/utils'
 require 'digest/sha2'
 require 'typhoeus/easy'
 require 'typhoeus/multi'

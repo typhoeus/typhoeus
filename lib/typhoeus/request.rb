@@ -36,12 +36,12 @@ module Typhoeus
       params.keys.sort.collect do |k|
         value = params[k]
         if value.is_a? Hash
-          value.keys.collect {|sk| CGI.escape("#{k}[#{sk}]") + "=" + CGI.escape(value[sk].to_s)}
+          value.keys.collect {|sk| Rack::Utils.escape("#{k}[#{sk}]") + "=" + Rack::Utils.escape(value[sk].to_s)}
         elsif value.is_a? Array
-          key = CGI.escape(k.to_s)
-          value.collect { |v| "#{key}=#{CGI.escape(v.to_s)}" }.join('&')
+          key = Rack::Utils.escape(k.to_s)
+          value.collect { |v| "#{key}=#{Rack::Utils.escape(v.to_s)}" }.join('&')
         else
-          "#{CGI.escape(k.to_s)}=#{CGI.escape(params[k].to_s)}"
+          "#{Rack::Utils.escape(k.to_s)}=#{Rack::Utils.escape(params[k].to_s)}"
         end
       end.flatten.join("&")
     end
