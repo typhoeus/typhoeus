@@ -4,14 +4,17 @@ module Typhoeus
     attr_reader   :url
     
     def initialize(url, options = {})
-      @method        = options[:method] || :get
-      @params        = options[:params]
-      @body          = options[:body]
-      @timeout       = options[:timeout]
-      @headers       = options[:headers] || {}
-      @user_agent    = options[:user_agent] || Typhoeus::USER_AGENT
-      @cache_timeout = options[:cache_timeout]
-      @url           = @params ? "#{url}?#{params_string}" : url
+      @method           = options[:method] || :get
+      @params           = options[:params]
+      @body             = options[:body]
+      @timeout          = options[:timeout]
+      @headers          = options[:headers] || {}
+      @user_agent       = options[:user_agent] || Typhoeus::USER_AGENT
+      @cache_timeout    = options[:cache_timeout]
+      @url              = @params ? "#{url}?#{params_string}" : url
+      @on_complete      = nil
+      @after_complete   = nil
+      @handled_response = nil
     end
     
     def host

@@ -64,16 +64,21 @@ module Typhoeus
       easy.timeout      = request.timeout if request.timeout
       easy.on_success do |easy|
         handle_request(request, response_from_easy(easy, request))
-        @easy_pool.push easy
+        release_easy_object(easy)
       end
       easy.on_failure do |easy|
         handle_request(request, response_from_easy(easy, request))
-        @easy_pool.push easy
+        release_easy_object(easy)
       end
       easy.set_headers
       easy
     end
     private :get_easy_object
+    
+    def release_easy_object(easy)
+      easy.reset
+      @easy_pool.push easy
+    end
     
     def handle_request(request, response)
       request.response = response
