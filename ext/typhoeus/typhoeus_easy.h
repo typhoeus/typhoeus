@@ -5,15 +5,15 @@
 
 void init_typhoeus_easy();
 typedef struct {
-	const char *memory;
-	int size;
-	int read;
+  const char *memory;
+  int size;
+  int read;
 } RequestChunk;
 
 typedef struct {
-	RequestChunk *request_chunk;
-	CURL *curl;
-	struct curl_slist *headers;
+  RequestChunk *request_chunk;
+  CURL *curl;
+  struct curl_slist *headers;
 } CurlEasy;
 
 #endif

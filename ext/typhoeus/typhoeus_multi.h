@@ -6,9 +6,9 @@
 
 VALUE cTyphoeusMulti;
 typedef struct {
-	int running;
-	int active;
-	CURLM *multi;
+  int running;
+  int active;
+  CURLM *multi;
 } CurlMulti;
 
 void init_typhoeus_multi();
