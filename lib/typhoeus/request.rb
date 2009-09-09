@@ -50,8 +50,16 @@ module Typhoeus
       @on_complete = block
     end
     
+    def on_complete=(proc)
+      @on_complete = proc
+    end
+    
     def after_complete(&block)
       @after_complete = block
+    end
+    
+    def after_complete=(proc)
+      @after_complete = proc
     end
     
     def call_handlers

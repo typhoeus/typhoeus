@@ -139,6 +139,19 @@ describe "hydra" do
     foo.should == :called
   end
   
+  it "has a global on_omplete setter" do
+    foo = nil
+    hydra  = Typhoeus::Hydra.new
+    proc = Proc.new {|response| foo = :called}
+    hydra.on_complete = proc
+    
+    first  = Typhoeus::Request.new("http://localhost:3000/first")
+    hydra.queue first
+    hydra.run
+    first.response.body.should include("first")
+    foo.should == :called
+  end
+  
   it "should reuse connections from the pool for a host"
   
   it "should queue up requests while others are running" do

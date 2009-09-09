@@ -49,6 +49,10 @@ module Typhoeus
       @on_complete = block
     end
     
+    def on_complete=(proc)
+      @on_complete = proc
+    end
+    
     def mock(method, url)
       @mocks << HydraMock.new(url, method)
       @mocks.last

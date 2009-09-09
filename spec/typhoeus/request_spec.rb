@@ -54,6 +54,16 @@ describe "request" do
     foo.should == :bar
   end
   
+  it "has an on_complete setter" do
+    foo = nil
+    proc = Proc.new {|response| foo = response}
+    request = Typhoeus::Request.new("http://localhost:3000")
+    request.on_complete = proc
+    request.response = :bar
+    request.call_handlers
+    foo.should == :bar
+  end
+  
   it "stores the handled response that is the return value from the on_complete block" do
     request = Typhoeus::Request.new("http://localhost:3000")
     request.on_complete do |response|
@@ -73,6 +83,19 @@ describe "request" do
     request.after_complete do |object|
       good = object == "handled"
     end
+    request.call_handlers
+    good.should be_true
+  end
+  
+  it "has an after_complete setter" do
+    request = Typhoeus::Request.new("http://localhost:3000")
+    request.on_complete do |response|
+      "handled"
+    end
+    good = nil
+    proc = Proc.new {|object| good = object == "handled"}
+    request.after_complete = proc
+    
     request.call_handlers
     good.should be_true
   end
