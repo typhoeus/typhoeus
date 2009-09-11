@@ -5,6 +5,7 @@ module Typhoeus
       @easy_pool   = []
       @mocks       = []
       @memoized_requests = {}
+      @retrieved_from_cache = {}
     end
 
     def self.hydra
@@ -16,7 +17,12 @@ module Typhoeus
 
       if request.method == :get
         if @memoized_requests.has_key? request.url
-          @memoized_requests[request.url] << request
+          if response = @retrieved_from_cache[request.url]
+            request.response = response
+            request.call_handlers
+          else
+            @memoized_requests[request.url] << request
+          end
         else
           @memoized_requests[request.url] = []
           get_from_cache_or_queue(request)
@@ -35,6 +41,7 @@ module Typhoeus
       end
       @multi.perform
       @memoized_requests = {}
+      @retrieved_from_cache = {}
     end
 
     def cache_getter(&block)
@@ -68,6 +75,7 @@ module Typhoeus
       if @cache_getter
         val = @cache_getter.call(request)
         if val
+          @retrieved_from_cache[request.url] = val
           handle_request(request, val, false)
         else
           @multi.add(get_easy_object(request))
