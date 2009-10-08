@@ -4,7 +4,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 # ruby spec/servers/app.rb -p 3000
 # ruby spec/servers/app.rb -p 3001
 # ruby spec/servers/app.rb -p 3002
-describe "hydra" do
+describe Typhoeus::Hydra do
   before(:all) do
     cache_class = Class.new do
       def initialize
@@ -19,35 +19,48 @@ describe "hydra" do
     end
     @cache = cache_class.new
   end
-  
+
   it "has a singleton" do
     Typhoeus::Hydra.hydra.should be_a Typhoeus::Hydra
   end
-  
-  it "mocks requests" do
-    hydra    = Typhoeus::Hydra.new
-    on_complete_handler_called = nil
-    request  = Typhoeus::Request.new("http://localhost:3000/foo")
-    request.on_complete do |response|
-      on_complete_handler_called = true
-      response.code.should == 404
-      response.headers.should == "whatever"
+
+  context "#mock" do
+    before do
+      @hydra = Typhoeus::Hydra.new
+      @on_complete_handler_called = nil
+      @request  = Typhoeus::Request.new("http://localhost:3000/foo")
+      @request.on_complete do |response|
+        @on_complete_handler_called = true
+        response.code.should == 404
+        response.headers.should == "whatever"
+      end
+      @response = Typhoeus::Response.new(:code => 404, :headers => "whatever", :body => "not found", :time => 0.1)
     end
-    response = Typhoeus::Response.new(:code => 404, :headers => "whatever", :body => "not found", :time => 0.1)
-    
-    hydra.mock(:get, "http://localhost:3000/foo").and_return(response)
-    hydra.queue(request)
-    hydra.run
-    on_complete_handler_called.should be_true
-    response.request.should == request
+
+    it "mocks requests to a specific URI" do
+      @hydra.mock(:get, "http://localhost:3000/foo").and_return(@response)
+      @hydra.queue(request)
+      @hydra.run
+      @on_complete_handler_called.should be_true
+      @response.request.should == request
+    end
+
+    it "mocks requests to URIs matching a pattern" do
+      @hydra.mock(:get, /foo/).and_return(@response)
+      @hydra.queue(request)
+      @hydra.run
+      @on_complete_handler_called.should be_true
+      @response.request.should == request
+    end
+
+    it "matches a mock only when the HTTP method also matches"
   end
 
   it "queues a request" do
     hydra = Typhoeus::Hydra.new
     hydra.queue Typhoeus::Request.new("http://localhost:3000")
   end
-  
-  
+
   it "runs a batch of requests" do
     hydra  = Typhoeus::Hydra.new
     first  = Typhoeus::Request.new("http://localhost:3000/first")
@@ -65,14 +78,14 @@ describe "hydra" do
       # @cache.set(request.cache_key, request.response, request.cache_timeout)
     end
   end
-  
+
   it "has a cache_getter" do
     hydra = Typhoeus::Hydra.new
     hydra.cache_getter do |request|
       # @cache.get(request.cache_key) rescue nil
     end
   end
-  
+
   it "memoizes GET reqeusts" do
     hydra  = Typhoeus::Hydra.new
     first  = Typhoeus::Request.new("http://localhost:3000/foo", :params => {:delay => 1})
@@ -87,7 +100,7 @@ describe "hydra" do
     first.handled_response.should == second.handled_response
     (Time.now - start_time).should < 1.1 # if it had run twice it would be ~ 2 seconds
   end
-  
+
   it "pulls GETs from cache" do
     start_time = Time.now
     hydra  = Typhoeus::Hydra.new
@@ -97,7 +110,7 @@ describe "hydra" do
     hydra.cache_setter do |request|
       @cache.set(request.cache_key, request.response, request.cache_timeout)
     end
-    
+
     first  = Typhoeus::Request.new("http://localhost:3000/foo", :params => {:delay => 1})
     @cache.set(first.cache_key, :foo, 60)
     hydra.queue first
@@ -105,7 +118,7 @@ describe "hydra" do
     (Time.now - start_time).should < 0.1
     first.response.should == :foo
   end
-  
+
   it "sets GET responses to cache when the request has a cache_timeout value" do
     hydra  = Typhoeus::Hydra.new
     hydra.cache_getter do |request|
@@ -114,7 +127,7 @@ describe "hydra" do
     hydra.cache_setter do |request|
       @cache.set(request.cache_key, request.response, request.cache_timeout)
     end
-    
+
     first  = Typhoeus::Request.new("http://localhost:3000/first", :cache_timeout => 0)
     second = Typhoeus::Request.new("http://localhost:3000/second")
     hydra.queue first
@@ -124,7 +137,7 @@ describe "hydra" do
     @cache.get(first.cache_key).should == first.response
     @cache.get(second.cache_key).should be_nil
   end
-  
+
   it "has a global on_complete" do
     foo = nil
     hydra  = Typhoeus::Hydra.new
@@ -138,28 +151,28 @@ describe "hydra" do
     first.response.body.should include("first")
     foo.should == :called
   end
-  
+
   it "has a global on_omplete setter" do
     foo = nil
     hydra  = Typhoeus::Hydra.new
     proc = Proc.new {|response| foo = :called}
     hydra.on_complete = proc
-    
+
     first  = Typhoeus::Request.new("http://localhost:3000/first")
     hydra.queue first
     hydra.run
     first.response.body.should include("first")
     foo.should == :called
   end
-  
+
   it "should reuse connections from the pool for a host"
-  
+
   it "should queue up requests while others are running" do
     hydra   = Typhoeus::Hydra.new
 
     start_time = Time.now
     @responses = []
-    
+
     request = Typhoeus::Request.new("http://localhost:3000/first", :params => {:delay => 1})
     request.on_complete 
     request.on_complete do |response|
