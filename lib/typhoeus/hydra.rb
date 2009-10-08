@@ -3,7 +3,7 @@ module Typhoeus
     def initialize
       @multi       = Multi.new
       @easy_pool   = []
-      @mocks       = []
+      @stubs       = []
       @memoized_requests = {}
       @retrieved_from_cache = {}
     end
@@ -11,9 +11,17 @@ module Typhoeus
     def self.hydra
       @hydra ||= new
     end
+    
+    def self.hydra=(val)
+      @hydra = val
+    end
+    
+    def clear_stubs
+      @stubs = []
+    end
 
     def queue(request)
-      return if assign_to_mock(request)
+      return if assign_to_stub(request)
 
       if request.method == :get
         if @memoized_requests.has_key? request.url
@@ -33,7 +41,7 @@ module Typhoeus
     end
 
     def run
-      @mocks.each do |m|
+      @stubs.each do |m|
         m.requests.each do |request|
           m.response.request = request
           handle_request(request, m.response)
@@ -60,16 +68,16 @@ module Typhoeus
       @on_complete = proc
     end
 
-    def mock(method, url)
-      @mocks << HydraMock.new(url, method)
-      @mocks.last
+    def stub(method, url)
+      @stubs << HydraMock.new(url, method)
+      @stubs.last
     end
 
-    def assign_to_mock(request)
-      m = @mocks.detect {|mck| mck.method == request.method && mck.url == request.url}
+    def assign_to_stub(request)
+      m = @stubs.detect {|stub| stub.matches? request}
       m && m.add_request(request)
     end
-    private :assign_to_mock
+    private :assign_to_stub
 
     def get_from_cache_or_queue(request)
       if @cache_getter
@@ -155,6 +163,14 @@ module Typhoeus
 
     def and_return(val)
       @response = val
+    end
+    
+    def matches?(request)
+      if url.kind_of?(String)
+        request.method == method && request.url == url
+      else
+        request.method == method && url =~ request.url
+      end
     end
   end
 end

@@ -23,8 +23,13 @@ describe Typhoeus::Hydra do
   it "has a singleton" do
     Typhoeus::Hydra.hydra.should be_a Typhoeus::Hydra
   end
+  
+  it "has a setter for the singleton" do
+    Typhoeus::Hydra.hydra = :foo
+    Typhoeus::Hydra.hydra.should == :foo
+  end
 
-  context "#mock" do
+  context "#stub" do
     before do
       @hydra = Typhoeus::Hydra.new
       @on_complete_handler_called = nil
@@ -37,23 +42,27 @@ describe Typhoeus::Hydra do
       @response = Typhoeus::Response.new(:code => 404, :headers => "whatever", :body => "not found", :time => 0.1)
     end
 
-    it "mocks requests to a specific URI" do
-      @hydra.mock(:get, "http://localhost:3000/foo").and_return(@response)
-      @hydra.queue(request)
+    it "stubs requests to a specific URI" do
+      @hydra.stub(:get, "http://localhost:3000/foo").and_return(@response)
+      @hydra.queue(@request)
       @hydra.run
       @on_complete_handler_called.should be_true
-      @response.request.should == request
+      @response.request.should == @request
     end
-
-    it "mocks requests to URIs matching a pattern" do
-      @hydra.mock(:get, /foo/).and_return(@response)
-      @hydra.queue(request)
+    
+    it "stubs requests to URIs matching a pattern" do
+      @hydra.stub(:get, /foo/).and_return(@response)
+      @hydra.queue(@request)
       @hydra.run
       @on_complete_handler_called.should be_true
-      @response.request.should == request
+      @response.request.should == @request
+    end
+    
+    it "can clear stubs" do
+      @hydra.clear_stubs
     end
 
-    it "matches a mock only when the HTTP method also matches"
+    it "matches a stub only when the HTTP method also matches"
   end
 
   it "queues a request" do
@@ -174,7 +183,6 @@ describe Typhoeus::Hydra do
     @responses = []
 
     request = Typhoeus::Request.new("http://localhost:3000/first", :params => {:delay => 1})
-    request.on_complete 
     request.on_complete do |response|
       @responses << response
       response.body.should include("first")
