@@ -159,7 +159,7 @@ static VALUE multi_perform(VALUE self) {
       rb_raise((VALUE)mcode, "an error occured getting the fdset");
     }
 
-    rc = select(maxfd+1, &fdread, &fdwrite, &fdexcep, &tv);
+    rc = rb_thread_select(maxfd+1, &fdread, &fdwrite, &fdexcep, &tv);
     if (rc < 0) {
       rb_raise(rb_eRuntimeError, "error on thread select");
     }
