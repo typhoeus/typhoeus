@@ -36,8 +36,7 @@ Gem::Specification.new do |s|
     "spec/typhoeus/filter_spec.rb",
     "spec/typhoeus/remote_method_spec.rb",
     "spec/typhoeus/response_spec.rb",
-    "spec/servers/delay_fixture_server.rb",
-    "spec/servers/method_server.rb"]
+    "spec/servers/app.rb"]
   s.has_rdoc = true
   s.homepage = %q{http://github.com/pauldix/typhoeus}
   s.require_paths = ["lib", "ext"]
