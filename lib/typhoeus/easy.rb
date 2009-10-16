@@ -185,6 +185,7 @@ module Typhoeus
     end
     
     def reset
+      @retries = 0
       @response_code = 0
       @response_header = ""
       @response_body = ""
