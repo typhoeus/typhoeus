@@ -124,6 +124,13 @@ static void rb_curl_multi_run(VALUE self, CURLM *multi_handle, int *still_runnin
   multi_read_info( self, multi_handle );
 }
 
+static VALUE fire_and_forget(VALUE self) {
+  CurlMulti *curl_multi;
+  Data_Get_Struct(self, CurlMulti, curl_multi);
+  rb_curl_multi_run( self, curl_multi->multi, &(curl_multi->running) );
+//	curl_multi_perform(curl_multi->multi, 0);
+}
+
 static VALUE multi_perform(VALUE self) {
   CURLMcode mcode;
   CurlMulti *curl_multi;
@@ -215,4 +222,5 @@ void init_typhoeus_multi() {
   rb_define_private_method(klass, "multi_perform", multi_perform, 0);
   rb_define_private_method(klass, "multi_cleanup", multi_cleanup, 0);
   rb_define_private_method(klass, "active_handle_count", active_handle_count, 0);
+	rb_define_method(klass, "fire_and_forget", fire_and_forget, 0);
 }

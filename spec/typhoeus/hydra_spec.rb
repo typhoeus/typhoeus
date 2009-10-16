@@ -209,4 +209,16 @@ describe Typhoeus::Hydra do
     @responses.size.should == 3
     (Time.now - start_time).should < 3.3
   end
+  
+  it "should fire and forget" do
+    hydra  = Typhoeus::Hydra.new
+    first  = Typhoeus::Request.new("http://localhost:3000/first?delay=5")
+    second = Typhoeus::Request.new("http://localhost:3001/second?delay=10")
+    hydra.queue first
+    hydra.queue second
+    hydra.fire_and_forget
+    third = Typhoeus::Request.new("http://localhost:3002/third?delay=15")
+    hydra.queue third
+    hydra.fire_and_forget
+  end
 end

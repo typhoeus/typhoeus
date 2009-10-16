@@ -20,6 +20,10 @@ module Typhoeus
     def clear_stubs
       @stubs = []
     end
+    
+    def fire_and_forget
+      @multi.fire_and_forget
+    end
 
     def queue(request)
       return if assign_to_stub(request)
