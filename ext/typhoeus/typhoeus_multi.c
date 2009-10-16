@@ -146,7 +146,7 @@ static VALUE multi_perform(VALUE self) {
       rb_curl_multi_run( self, curl_multi->multi, &(curl_multi->running) );
       continue;
     }
-    else if (timeout == -1) {
+    else if (timeout < 0) {
       timeout = 1;
     }
 
