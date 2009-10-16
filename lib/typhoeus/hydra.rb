@@ -1,8 +1,9 @@
 module Typhoeus
   class Hydra
-    def initialize
+    def initialize(initial_pool_size = 10)
       @multi       = Multi.new
       @easy_pool   = []
+      initial_pool_size.times { @easy_pool << Easy.new }
       @stubs       = []
       @memoized_requests = {}
       @retrieved_from_cache = {}

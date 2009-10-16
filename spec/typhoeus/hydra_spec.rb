@@ -107,12 +107,12 @@ describe Typhoeus::Hydra do
     first.handled_response.body.should include("foo")
     first.response.should == second.response
     first.handled_response.should == second.handled_response
-    (Time.now - start_time).should < 1.1 # if it had run twice it would be ~ 2 seconds
+    (Time.now - start_time).should < 1.2 # if it had run twice it would be ~ 2 seconds
   end
 
   it "pulls GETs from cache" do
-    start_time = Time.now
     hydra  = Typhoeus::Hydra.new
+    start_time = Time.now
     hydra.cache_getter do |request|
       @cache.get(request.cache_key) rescue nil
     end
@@ -207,6 +207,6 @@ describe Typhoeus::Hydra do
 
     hydra.run
     @responses.size.should == 3
-    (Time.now - start_time).should < 3.1
+    (Time.now - start_time).should < 3.3
   end
 end

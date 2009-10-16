@@ -1,28 +1,17 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe Typhoeus::Easy do
-  before(:all) do
-    @pid = start_method_server(3002)
-  end
-  
-  after(:all) do
-    stop_method_server(@pid)
-  end
-  
+describe Typhoeus::Easy do  
   describe "options" do
     it "should allow for following redirects"
     it "should allow you to set the user agent"
     it "should provide a timeout in milliseconds" do
-      pid = start_method_server(3001, 5)
       e = Typhoeus::Easy.new
       e.url = "http://localhost:3001"
       e.method = :get
       e.timeout = 50
       e.perform
-      puts e.response_code
-      puts e.total_time_taken
+      # this doesn't work on a mac for some reason
 #      e.timed_out?.should == true
-      stop_method_server(pid)
     end
   end
   
@@ -33,17 +22,7 @@ describe Typhoeus::Easy do
       easy.method = :get
       easy.perform
       easy.response_code.should == 200
-      easy.response_body.should include("REQUEST_METHOD=GET")
-    end
-    
-    it "should send a request body" do
-      easy = Typhoeus::Easy.new
-      easy.url    = "http://localhost:3002"
-      easy.method = :get
-      easy.request_body = "this is a body!"
-      easy.perform
-      easy.response_code.should == 200
-      easy.response_body.should include("this is a body!")
+      JSON.parse(easy.response_body)["REQUEST_METHOD"].should == "GET"
     end
   end
 
@@ -80,7 +59,7 @@ describe Typhoeus::Easy do
       easy.method = :put
       easy.perform
       easy.response_code.should == 200
-      easy.response_body.should include("REQUEST_METHOD=PUT")      
+      JSON.parse(easy.response_body)["REQUEST_METHOD"].should == "PUT"
     end
     
     it "should send a request body" do
@@ -101,7 +80,7 @@ describe Typhoeus::Easy do
       easy.method = :post
       easy.perform
       easy.response_code.should == 200
-      easy.response_body.should include("REQUEST_METHOD=POST")      
+      JSON.parse(easy.response_body)["REQUEST_METHOD"].should == "POST"
     end
     
     it "should send a request body" do
@@ -132,7 +111,7 @@ describe Typhoeus::Easy do
       easy.method = :delete
       easy.perform
       easy.response_code.should == 200
-      easy.response_body.should include("REQUEST_METHOD=DELETE")
+      JSON.parse(easy.response_body)["REQUEST_METHOD"].should == "DELETE"
     end
     
     it "should send a request body" do

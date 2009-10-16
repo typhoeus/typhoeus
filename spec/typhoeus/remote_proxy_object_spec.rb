@@ -6,14 +6,6 @@ describe Typhoeus::RemoteProxyObject do
     @easy.method = :get
     @easy.url    = "http://localhost:3001"
   end
-      
-  before(:all) do
-    @pid = start_method_server(3001)
-  end
-  
-  after(:all) do
-    stop_method_server(@pid)
-  end
   
   it "should take a caller and call the clear_memoized_proxy_objects" do
     clear_proxy = lambda {}
@@ -66,7 +58,7 @@ describe Typhoeus::RemoteProxyObject do
         @response.code
       end
     end
-    @easy.url = "http://localhost:3002" #bad port
+    @easy.url = "http://localhost:3005" #bad port
     k = Typhoeus::RemoteProxyObject.new(lambda {}, @easy, :on_failure => lambda {|e| klass.new(e)})
     k.blah.should == 0
   end

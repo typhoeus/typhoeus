@@ -99,4 +99,9 @@ describe "request" do
     request.call_handlers
     good.should be_true
   end
+  
+  describe "retry" do
+    it "should take a retry option"
+    it "should count the number of times a request has failed"
+  end
 end

@@ -1,14 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Typhoeus::Easy do
-  before(:all) do
-    @pid = start_method_server(3002)
-  end
-  
-  after(:all) do
-    stop_method_server(@pid)
-  end
-
   it "should save easy handles that get added" do
     multi = Typhoeus::Multi.new
     easy = Typhoeus::Easy.new
@@ -30,7 +22,7 @@ describe Typhoeus::Easy do
     multi.add(easy)
     multi.perform
     easy.response_code.should == 200
-    easy.response_body.should include("METHOD=GET")
+    JSON.parse(easy.response_body)["REQUEST_METHOD"].should == "GET"
     
     e2 = Typhoeus::Easy.new
     e2.url = "http://localhost:3002"
@@ -39,7 +31,7 @@ describe Typhoeus::Easy do
     multi.perform
     
     e2.response_code.should == 200
-    e2.response_body.should include("METHOD=POST")
+    JSON.parse(e2.response_body)["REQUEST_METHOD"].should == "POST"
   end
   
   it "should perform easy handles added after the first one runs" do
@@ -58,9 +50,9 @@ describe Typhoeus::Easy do
     
     multi.perform
     easy.response_code.should == 200
-    easy.response_body.should include("METHOD=GET")    
+    JSON.parse(easy.response_body)["REQUEST_METHOD"].should == "GET"
     e2.response_code.should == 200
-    e2.response_body.should include("METHOD=POST")    
+    JSON.parse(e2.response_body)["REQUEST_METHOD"].should == "POST"
   end
   
   # it "should do multiple gets" do
