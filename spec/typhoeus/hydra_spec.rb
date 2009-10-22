@@ -109,6 +109,18 @@ describe Typhoeus::Hydra do
     first.handled_response.should == second.handled_response
     (Time.now - start_time).should < 1.2 # if it had run twice it would be ~ 2 seconds
   end
+  
+  it "can turn off memoization for GET requests" do
+    hydra  = Typhoeus::Hydra.new
+    hydra.disable_memoization
+    first  = Typhoeus::Request.new("http://localhost:3000/foo")
+    second = Typhoeus::Request.new("http://localhost:3000/foo")
+    hydra.queue first
+    hydra.queue second
+    hydra.run
+    first.response.body.should include("foo")
+    first.response.object_id.should_not == second.response.object_id
+  end
 
   it "pulls GETs from cache" do
     hydra  = Typhoeus::Hydra.new

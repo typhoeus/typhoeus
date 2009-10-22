@@ -1,6 +1,7 @@
 module Typhoeus
   class Hydra
     def initialize(initial_pool_size = 10)
+      @memoize_requests = true
       @multi       = Multi.new
       @easy_pool   = []
       initial_pool_size.times { @easy_pool << Easy.new }
@@ -29,7 +30,7 @@ module Typhoeus
       return if assign_to_stub(request)
 
       if request.method == :get
-        if @memoized_requests.has_key? request.url
+        if @memoize_requests && @memoized_requests.has_key?(request.url)
           if response = @retrieved_from_cache[request.url]
             request.response = response
             request.call_handlers
@@ -37,7 +38,7 @@ module Typhoeus
             @memoized_requests[request.url] << request
           end
         else
-          @memoized_requests[request.url] = []
+          @memoized_requests[request.url] = [] if @memoize_requests
           get_from_cache_or_queue(request)
         end
       else
@@ -55,6 +56,10 @@ module Typhoeus
       @multi.perform
       @memoized_requests = {}
       @retrieved_from_cache = {}
+    end
+    
+    def disable_memoization
+      @memoize_requests = false
     end
 
     def cache_getter(&block)
