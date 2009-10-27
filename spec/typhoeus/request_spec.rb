@@ -1,6 +1,32 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe "request" do
+  describe "quick request methods" do
+    it "can run a GET synchronously" do
+      response = Typhoeus::Request.get("http://localhost:3000", :params => {:q => "hi"}, :headers => {:foo => "bar"})
+      response.code.should == 200
+      JSON.parse(response.body)["REQUEST_METHOD"].should == "GET"
+    end
+    
+    it "can run a POST synchronously" do
+      response = Typhoeus::Request.post("http://localhost:3000", :params => {:q => "hi"}, :headers => {:foo => "bar"})
+      response.code.should == 200
+      JSON.parse(response.body)["REQUEST_METHOD"].should == "POST"
+    end
+    
+    it "can run a PUT synchronously" do
+      response = Typhoeus::Request.put("http://localhost:3000", :params => {:q => "hi"}, :headers => {:foo => "bar"})
+      response.code.should == 200
+      JSON.parse(response.body)["REQUEST_METHOD"].should == "PUT"
+    end
+    
+    it "can run a DELETE synchronously" do
+      response = Typhoeus::Request.delete("http://localhost:3000", :params => {:q => "hi"}, :headers => {:foo => "bar"})
+      response.code.should == 200
+      JSON.parse(response.body)["REQUEST_METHOD"].should == "DELETE"      
+    end
+  end
+
   it "takes url as the first argument" do
     Typhoeus::Request.new("http://localhost:3000").url.should == "http://localhost:3000"
   end
@@ -104,4 +130,5 @@ describe "request" do
     it "should take a retry option"
     it "should count the number of times a request has failed"
   end
+  
 end

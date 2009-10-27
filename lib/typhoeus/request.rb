@@ -84,5 +84,28 @@ module Typhoeus
     def cache_key
       Digest::SHA1.hexdigest(url)
     end
+    
+    def self.run(url, params)
+      r = new(url, params)
+      Typhoeus::Hydra.hydra.queue r
+      Typhoeus::Hydra.hydra.run
+      r.response
+    end
+    
+    def self.get(url, params)
+      run(url, params.merge(:method => :get))
+    end
+    
+    def self.post(url, params)
+      run(url, params.merge(:method => :post))
+    end
+    
+    def self.put(url, params)
+      run(url, params.merge(:method => :put))
+    end
+    
+    def self.delete(url, params)
+      run(url, params.merge(:method => :delete))
+    end
   end
 end
