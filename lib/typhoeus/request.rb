@@ -92,19 +92,19 @@ module Typhoeus
       r.response
     end
     
-    def self.get(url, params)
+    def self.get(url, params = {})
       run(url, params.merge(:method => :get))
     end
     
-    def self.post(url, params)
+    def self.post(url, params = {})
       run(url, params.merge(:method => :post))
     end
     
-    def self.put(url, params)
+    def self.put(url, params = {})
       run(url, params.merge(:method => :put))
     end
     
-    def self.delete(url, params)
+    def self.delete(url, params = {})
       run(url, params.merge(:method => :delete))
     end
   end
