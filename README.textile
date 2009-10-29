@@ -37,6 +37,7 @@ h2. Usage
 The old version of Typhoeus used a module that you included in your class to get functionality. That interface has been deprecated. Here is the new interface.
 
 The primary interface for Typhoeus is comprised of three classes: Request, Response, and Hydra. Request represents an HTTP request object, response represents an HTTP response, and Hydra manages making parallel HTTP connections.
+
 <pre>
 require 'rubygems'
 require 'typhoeus'
@@ -64,6 +65,7 @@ response.body    # the response body
 
 *Making Quick Requests*
 The request object has some convenience methods for performing single HTTP requests. The arguments are the same as those you pass into the request constructor.
+
 <pre>
 response = Typhoeus::Request.get("http://www.pauldix.net")
 response = Typhoeus::Request.put("http://localhost:3000/posts/1", :body => "whoo, a body")
@@ -72,6 +74,7 @@ response = Typhoeus::Request.delete("http://localhost:3000/posts/1")
 </pre>
 
 *Making Parallel Requests*
+
 <pre>
 # Generally, you should be running requests through hydra. Here is how that looks
 hydra = Typhoeus::Hydra.new
@@ -97,10 +100,12 @@ hydra.run # this is a blocking call that returns once all requests are complete
 first_request.handled_resposne # the value returned from the on_complete block
 second_request.handled_resposne # the value returned from the on_complete block (parsed JSON)
 </pre>
+
 The execution of that code goes something like this. The first and second requests are built and queued. When hydra is run the first and second requests run in parallel. When the first request completes, the third request is then built and queued up. The moment it is queued Hydra starts executing it. Meanwhile the second request would continue to run (or it could have completed before the first). Once the third request is done, hydra.run returns.
 
 *Memoization*
 Hydra memoizes requests within a single run call. You can also disable memoization.
+
 <pre>
 hydra = Typhoeus::Hydra.new
 2.times do
@@ -118,6 +123,7 @@ hydra.run # this will result in a two requests.
 
 *Caching*
 Hydra includes built in support for creating cache getters and setters. In the following example, if there is a cache hit, the cached object is passed to the on_complete handler of the request object.
+
 <pre>
 hydra = Typhoeus::Hydra.new
 hydra.cache_setter do |request|
@@ -131,6 +137,7 @@ end
 
 *Stubbing*
 Hydra allows you to stub out specific urls and patters to avoid hitting remote servers while testing.
+
 <pre>
 hydra = Typhoeus::Hydra.new
 response = Response.new(:code => 200, :headers => "", :body => "{'name' : 'paul'}", :time => 0.3)
@@ -143,7 +150,9 @@ end
 hydra.queue request
 hydra.run
 </pre>
+
 The queued request will hit the stub. The on_complete handler will be called and will be passed the response object. You can also specify a regex to match urls.
+
 <pre>
 hydra.stub(:get, /http\:\/\/localhost\:3000\/users\/.*/).and_return(response)
 # any requests for a user will be stubbed out with the pre built response.
@@ -151,12 +160,14 @@ hydra.stub(:get, /http\:\/\/localhost\:3000\/users\/.*/).and_return(response)
 
 *The Singleton*
 All of the quick requests are done using the singleton hydra object. If you want to enable caching or stubbing on the quick requests, set those options on the singleton.
+
 <pre>
 hydra = Typhoeus::Hydra.hydra
 hydra.stub(:get, "http://localhost:3000/users")
 </pre>
 
 *Basic Authentication*
+
 <pre>
 require 'base64'
 response = Typhoeus::Request.get("http://twitter.com/statuses/followers.json", 
