@@ -163,6 +163,9 @@ response = Typhoeus::Request.get("http://twitter.com/statuses/followers.json",
                                  :headers => {"Authorization" => "Basic #{Base64.b64encode("#{username}:#{password}")}"})
 </pre>
 
+*LibCurl*
+Typhoeus also has a more raw libcurl interface. These are the Easy and Multi objects. If you're into accessing just the raw libcurl style, those are your best bet.
+
 h2. Benchmarks
 
 I set up a benchmark to test how the parallel performance works vs Ruby's built in NET::HTTP. The setup was a local evented HTTP server that would take a request, sleep for 500 milliseconds and then issued a blank response. I set up the client to call this 20 times. Here are the results:
