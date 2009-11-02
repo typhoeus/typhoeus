@@ -107,6 +107,7 @@ module Typhoeus
     def get_easy_object(request)
       easy = @easy_pool.pop || Easy.new
       easy.url          = request.url
+      easy.params       = request.params if request.method == :post
       easy.method       = request.method
       easy.headers      = request.headers if request.headers
       easy.request_body = request.body    if request.body

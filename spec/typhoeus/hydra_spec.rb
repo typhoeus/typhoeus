@@ -27,6 +27,7 @@ describe Typhoeus::Hydra do
   it "has a setter for the singleton" do
     Typhoeus::Hydra.hydra = :foo
     Typhoeus::Hydra.hydra.should == :foo
+    Typhoeus::Hydra.hydra = Typhoeus::Hydra.new
   end
 
   context "#stub" do
@@ -224,12 +225,12 @@ describe Typhoeus::Hydra do
   
   it "should fire and forget" do
     hydra  = Typhoeus::Hydra.new
-    first  = Typhoeus::Request.new("http://localhost:3000/first?delay=5")
-    second = Typhoeus::Request.new("http://localhost:3001/second?delay=10")
+    first  = Typhoeus::Request.new("http://localhost:3000/first?delay=1")
+    second = Typhoeus::Request.new("http://localhost:3001/second?delay=2")
     hydra.queue first
     hydra.queue second
     hydra.fire_and_forget
-    third = Typhoeus::Request.new("http://localhost:3002/third?delay=15")
+    third = Typhoeus::Request.new("http://localhost:3002/third?delay=3")
     hydra.queue third
     hydra.fire_and_forget
   end

@@ -11,7 +11,11 @@ module Typhoeus
       @headers          = options[:headers] || {}
       @user_agent       = options[:user_agent] || Typhoeus::USER_AGENT
       @cache_timeout    = options[:cache_timeout]
-      @url              = @params ? "#{url}?#{params_string}" : url
+      if @method == :post
+        @url = url
+      else
+        @url = @params ? "#{url}?#{params_string}" : url
+      end
       @on_complete      = nil
       @after_complete   = nil
       @handled_response = nil

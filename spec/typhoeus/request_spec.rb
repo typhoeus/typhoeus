@@ -11,7 +11,9 @@ describe "request" do
     it "can run a POST synchronously" do
       response = Typhoeus::Request.post("http://localhost:3000", :params => {:q => "hi"}, :headers => {:foo => "bar"})
       response.code.should == 200
-      JSON.parse(response.body)["REQUEST_METHOD"].should == "POST"
+      json = JSON.parse(response.body)
+      json["REQUEST_METHOD"].should == "POST"
+      json["QUERY_STRING"].should == "q=hi"
     end
     
     it "can run a PUT synchronously" do
