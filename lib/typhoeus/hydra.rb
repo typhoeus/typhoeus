@@ -1,48 +1,57 @@
 module Typhoeus
   class Hydra
-    def initialize(initial_pool_size = 10)
+    def initialize(options = {})
       @memoize_requests = true
       @multi       = Multi.new
       @easy_pool   = []
+      initial_pool_size = options[:initial_pool_size] || 10
+      @max_concurrency = options[:max_concurrency] || 200
       initial_pool_size.times { @easy_pool << Easy.new }
       @stubs       = []
       @memoized_requests = {}
       @retrieved_from_cache = {}
+      @queued_requests = []
+      @running_requests = 0
     end
 
     def self.hydra
       @hydra ||= new
     end
-    
+
     def self.hydra=(val)
       @hydra = val
     end
-    
+
     def clear_stubs
       @stubs = []
     end
-    
+
     def fire_and_forget
+      @queued_requests.each {|r| queue(r, false)}
       @multi.fire_and_forget
     end
 
-    def queue(request)
+    def queue(request, obey_concurrency_limit = true)
       return if assign_to_stub(request)
 
-      if request.method == :get
-        if @memoize_requests && @memoized_requests.has_key?(request.url)
-          if response = @retrieved_from_cache[request.url]
-            request.response = response
-            request.call_handlers
+      if @running_requests >= @max_concurrency && obey_concurrency_limit
+        @queued_requests << request
+      else
+        if request.method == :get
+          if @memoize_requests && @memoized_requests.has_key?(request.url)
+            if response = @retrieved_from_cache[request.url]
+              request.response = response
+              request.call_handlers
+            else
+              @memoized_requests[request.url] << request
+            end
           else
-            @memoized_requests[request.url] << request
+            @memoized_requests[request.url] = [] if @memoize_requests
+            get_from_cache_or_queue(request)
           end
         else
-          @memoized_requests[request.url] = [] if @memoize_requests
           get_from_cache_or_queue(request)
         end
-      else
-        get_from_cache_or_queue(request)
       end
     end
 
@@ -57,7 +66,7 @@ module Typhoeus
       @memoized_requests = {}
       @retrieved_from_cache = {}
     end
-    
+
     def disable_memoization
       @memoize_requests = false
     end
@@ -105,6 +114,7 @@ module Typhoeus
     private :get_from_cache_or_queue
 
     def get_easy_object(request)
+      @running_requests += 1
       easy = @easy_pool.pop || Easy.new
       easy.url          = request.url
       easy.method       = request.method
@@ -113,10 +123,12 @@ module Typhoeus
       easy.request_body = request.body    if request.body
       easy.timeout      = request.timeout if request.timeout
       easy.on_success do |easy|
+        queue_next
         handle_request(request, response_from_easy(easy, request))
         release_easy_object(easy)
       end
       easy.on_failure do |easy|
+        queue_next
         handle_request(request, response_from_easy(easy, request))
         release_easy_object(easy)
       end
@@ -124,6 +136,12 @@ module Typhoeus
       easy
     end
     private :get_easy_object
+
+    def queue_next
+      @running_requests -= 1
+      queue(@queued_requests.pop) unless @queued_requests.empty?
+    end
+    private :queue_next
 
     def release_easy_object(easy)
       easy.reset
@@ -175,7 +193,7 @@ module Typhoeus
     def and_return(val)
       @response = val
     end
-    
+
     def matches?(request)
       if url.kind_of?(String)
         request.method == method && request.url == url

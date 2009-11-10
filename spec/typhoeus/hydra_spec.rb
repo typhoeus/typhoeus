@@ -23,7 +23,7 @@ describe Typhoeus::Hydra do
   it "has a singleton" do
     Typhoeus::Hydra.hydra.should be_a Typhoeus::Hydra
   end
-  
+
   it "has a setter for the singleton" do
     Typhoeus::Hydra.hydra = :foo
     Typhoeus::Hydra.hydra.should == :foo
@@ -50,7 +50,7 @@ describe Typhoeus::Hydra do
       @on_complete_handler_called.should be_true
       @response.request.should == @request
     end
-    
+
     it "stubs requests to URIs matching a pattern" do
       @hydra.stub(:get, /foo/).and_return(@response)
       @hydra.queue(@request)
@@ -58,7 +58,7 @@ describe Typhoeus::Hydra do
       @on_complete_handler_called.should be_true
       @response.request.should == @request
     end
-    
+
     it "can clear stubs" do
       @hydra.clear_stubs
     end
@@ -110,7 +110,7 @@ describe Typhoeus::Hydra do
     first.handled_response.should == second.handled_response
     (Time.now - start_time).should < 1.2 # if it had run twice it would be ~ 2 seconds
   end
-  
+
   it "can turn off memoization for GET requests" do
     hydra  = Typhoeus::Hydra.new
     hydra.disable_memoization
@@ -222,8 +222,10 @@ describe Typhoeus::Hydra do
     @responses.size.should == 3
     (Time.now - start_time).should < 3.3
   end
-  
+
   it "should fire and forget" do
+    # this test is totally hacky. I have no clue how to make it verify. I just look at the test servers
+    # to verify that stuff is running
     hydra  = Typhoeus::Hydra.new
     first  = Typhoeus::Request.new("http://localhost:3000/first?delay=1")
     second = Typhoeus::Request.new("http://localhost:3001/second?delay=2")
@@ -233,5 +235,25 @@ describe Typhoeus::Hydra do
     third = Typhoeus::Request.new("http://localhost:3002/third?delay=3")
     hydra.queue third
     hydra.fire_and_forget
+    sleep 3 # have to do this or future tests may break.
+  end
+
+  it "should take the maximum number of concurrent reqeusts as an argument" do
+    hydra = Typhoeus::Hydra.new(:max_concurrency => 2)
+    first  = Typhoeus::Request.new("http://localhost:3000/first?delay=1")
+    second = Typhoeus::Request.new("http://localhost:3001/second?delay=1")
+    third  = Typhoeus::Request.new("http://localhost:3002/third?delay=1")
+    hydra.queue first
+    hydra.queue second
+    hydra.queue third
+
+    start_time = Time.now
+    hydra.run
+    finish_time = Time.now
+
+    first.response.code.should == 200
+    second.response.code.should == 200
+    third.response.code.should == 200
+    (finish_time - start_time).should > 2.0
   end
 end
