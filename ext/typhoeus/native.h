@@ -12,3 +12,10 @@ extern void init_typhoeus_easy();
 extern void init_typhoeus_multi();
 
 #endif
+
+#ifndef RSTRING_PTR
+
+#define RSTRING_PTR(s) (RSTRING(s)->ptr)
+#define RSTRING_LEN(s) (RSTRING(s)->len)
+
+#endif
