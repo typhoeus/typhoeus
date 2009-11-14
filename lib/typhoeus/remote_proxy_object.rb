@@ -1,7 +1,7 @@
 module Typhoeus
   class RemoteProxyObject
-    instance_methods.each { |m| undef_method m unless m =~ /^__/ }
-    
+    instance_methods.each { |m| undef_method m unless m =~ /^__|object_id/ }
+
     def initialize(clear_memoized_store_proc, easy, options = {})
       @clear_memoized_store_proc = clear_memoized_store_proc
       @easy      = easy
@@ -12,13 +12,13 @@ module Typhoeus
       @timeout   = options.delete(:cache_timeout)
       Typhoeus.add_easy_request(@easy)
     end
-    
+
     def method_missing(sym, *args, &block)
       unless @proxied_object
         if @cache && @cache_key
           @proxied_object = @cache.get(@cache_key) rescue nil
         end
-        
+
         unless @proxied_object
           Typhoeus.perform_easy_requests
           response = Response.new(:code => @easy.response_code,
@@ -31,7 +31,7 @@ module Typhoeus
           if @easy.response_code >= 200 && @easy.response_code < 300
             Typhoeus.release_easy_object(@easy)
             @proxied_object = @success.nil? ? response : @success.call(response)
-            
+
             if @cache && @cache_key
               @cache.set(@cache_key, @proxied_object, @timeout)
             end
@@ -41,7 +41,7 @@ module Typhoeus
          @clear_memoized_store_proc.call
        end
       end
-      
+
       @proxied_object.__send__(sym, *args, &block)
     end
   end
