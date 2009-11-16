@@ -65,6 +65,10 @@ describe "request" do
     Typhoeus::Request.new("http://localhost:3000", :cache_timeout => 60).cache_timeout.should == 60
   end
 
+  it "takes follow_location as an option" do
+    Typhoeus::Request.new("http://localhost:3000", :follow_location => true).follow_location.should == true
+  end
+
   it "has the associated response object" do
     request = Typhoeus::Request.new("http://localhost:3000")
     request.response = :foo

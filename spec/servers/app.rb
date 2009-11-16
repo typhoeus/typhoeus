@@ -17,6 +17,10 @@ get '/fail_forever' do
   error 500, "oh noes!"
 end
 
+get '/redirect' do
+  redirect '/'
+end
+
 get '/**' do
   sleep params["delay"].to_i if params.has_key?("delay")
   request.env.merge!(:body => request.body.read).to_json

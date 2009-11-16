@@ -2,8 +2,24 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Typhoeus::Easy do  
   describe "options" do
-    it "should allow for following redirects"
-    it "should allow you to set the user agent"
+    it "should not follow redirects if not instructed to" do
+      e = Typhoeus::Easy.new
+      e.url = "http://localhost:3001/redirect"
+      e.method = :get
+      e.perform
+      e.response_code.should == 302
+    end
+
+    it "should allow for following redirects" do
+      e = Typhoeus::Easy.new
+      e.url = "http://localhost:3001/redirect"
+      e.method = :get
+      e.follow_location = true
+      e.perform
+      e.response_code.should == 200
+      JSON.parse(e.response_body)["REQUEST_METHOD"].should == "GET"
+    end
+
     it "should provide a timeout in milliseconds" do
       e = Typhoeus::Easy.new
       e.url = "http://localhost:3001"

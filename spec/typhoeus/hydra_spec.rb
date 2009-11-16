@@ -174,7 +174,7 @@ describe Typhoeus::Hydra do
     foo.should == :called
   end
 
-  it "has a global on_omplete setter" do
+  it "has a global on_complete setter" do
     foo = nil
     hydra  = Typhoeus::Hydra.new
     proc = Proc.new {|response| foo = :called}
@@ -238,7 +238,7 @@ describe Typhoeus::Hydra do
     sleep 3 # have to do this or future tests may break.
   end
 
-  it "should take the maximum number of concurrent reqeusts as an argument" do
+  it "should take the maximum number of concurrent requests as an argument" do
     hydra = Typhoeus::Hydra.new(:max_concurrency => 2)
     first  = Typhoeus::Request.new("http://localhost:3000/first?delay=1")
     second = Typhoeus::Request.new("http://localhost:3001/second?delay=1")
@@ -255,5 +255,14 @@ describe Typhoeus::Hydra do
     second.response.code.should == 200
     third.response.code.should == 200
     (finish_time - start_time).should > 2.0
+  end
+
+  it "should respect the follow_location option when set on a request" do
+    hydra = Typhoeus::Hydra.new
+    request = Typhoeus::Request.new("http://localhost:3000/redirect", :follow_location => true)
+    hydra.queue request
+    hydra.run
+
+    request.response.code.should == 200
   end
 end
