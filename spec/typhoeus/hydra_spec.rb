@@ -265,4 +265,13 @@ describe Typhoeus::Hydra do
 
     request.response.code.should == 200
   end
+
+  it "should pass through the max_redirects option when set on a request" do
+    hydra = Typhoeus::Hydra.new
+    request = Typhoeus::Request.new("http://localhost:3000/bad_redirect", :max_redirects => 5)
+    hydra.queue request
+    hydra.run
+
+    request.response.code.should == 302
+  end
 end

@@ -39,6 +39,26 @@ describe Typhoeus::Easy do
       # this doesn't work on a mac for some reason
 #      e.timed_out?.should == true
     end
+
+    it "should allow the setting of the max redirects to follow" do
+      e = Typhoeus::Easy.new
+      e.url = "http://localhost:3001/redirect"
+      e.method = :get
+      e.follow_location = true
+      e.max_redirects = 5
+      e.perform
+      e.response_code.should == 200
+    end
+
+    it "should handle our bad redirect action, provided we've set max_redirects properly" do
+      e = Typhoeus::Easy.new
+      e.url = "http://localhost:3001/bad_redirect"
+      e.method = :get
+      e.follow_location = true
+      e.max_redirects = 5
+      e.perform
+      e.response_code.should == 302
+    end
   end
   
   describe "get" do

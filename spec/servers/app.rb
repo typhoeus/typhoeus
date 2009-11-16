@@ -21,6 +21,10 @@ get '/redirect' do
   redirect '/'
 end
 
+get '/bad_redirect' do
+  redirect '/bad_redirect'
+end
+
 get '/**' do
   sleep params["delay"].to_i if params.has_key?("delay")
   request.env.merge!(:body => request.body.read).to_json

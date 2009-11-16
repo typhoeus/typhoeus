@@ -69,6 +69,10 @@ describe "request" do
     Typhoeus::Request.new("http://localhost:3000", :follow_location => true).follow_location.should == true
   end
 
+  it "takes max_redirects as an option" do
+    Typhoeus::Request.new("http://localhost:3000", :max_redirects => 10).max_redirects.should == 10
+  end
+
   it "has the associated response object" do
     request = Typhoeus::Request.new("http://localhost:3000")
     request.response = :foo

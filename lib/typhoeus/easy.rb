@@ -16,7 +16,8 @@ module Typhoeus
       :CURLOPT_TIMEOUT_MS     => 155,
       :CURLOPT_NOSIGNAL       => 99,
       :CURLOPT_HTTPHEADER     => 10023,
-      :CURLOPT_FOLLOWLOCATION => 52
+      :CURLOPT_FOLLOWLOCATION => 52,
+      :CURLOPT_MAXREDIRS      => 68
     }
     INFO_VALUES = {
       :CURLINFO_RESPONSE_CODE => 2097154,
@@ -47,6 +48,10 @@ module Typhoeus
       else
         set_option(OPTION_VALUES[:CURLOPT_FOLLOWLOCATION], 0)
       end
+    end
+
+    def max_redirects=(redirects)
+      set_option(OPTION_VALUES[:CURLOPT_MAXREDIRS], redirects)
     end
     
     def timeout=(milliseconds)
