@@ -20,6 +20,16 @@ describe Typhoeus::Easy do
       JSON.parse(e.response_body)["REQUEST_METHOD"].should == "GET"
     end
 
+    it "should allow you to set the user agent" do
+      easy = Typhoeus::Easy.new
+      easy.url    = "http://localhost:3002"
+      easy.method = :get
+      easy.user_agent = "myapp"
+      easy.perform
+      easy.response_code.should == 200
+      JSON.parse(easy.response_body)["HTTP_USER_AGENT"].should == "myapp"
+    end
+
     it "should provide a timeout in milliseconds" do
       e = Typhoeus::Easy.new
       e.url = "http://localhost:3001"
