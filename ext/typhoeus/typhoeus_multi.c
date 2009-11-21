@@ -109,7 +109,7 @@ static void multi_read_info(VALUE self, CURLM *multi_handle) {
   }
 }
 
-/* called within ruby_curl_multi_perform */
+/* called by multi_perform and fire_and_forget */
 static void rb_curl_multi_run(VALUE self, CURLM *multi_handle, int *still_running) {
   CURLMcode mcode;
 
@@ -128,7 +128,6 @@ static VALUE fire_and_forget(VALUE self) {
   CurlMulti *curl_multi;
   Data_Get_Struct(self, CurlMulti, curl_multi);
   rb_curl_multi_run( self, curl_multi->multi, &(curl_multi->running) );
-//	curl_multi_perform(curl_multi->multi, 0);
 }
 
 static VALUE multi_perform(VALUE self) {
