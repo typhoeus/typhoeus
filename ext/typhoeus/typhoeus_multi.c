@@ -142,11 +142,7 @@ static VALUE multi_perform(VALUE self) {
   Data_Get_Struct(self, CurlMulti, curl_multi);
 
   rb_curl_multi_run( self, curl_multi->multi, &(curl_multi->running) );
-
-  struct timeval thread_poll_tv = {0, 5000};
-
   while(curl_multi->running) {
-    rb_thread_wait_for(thread_poll_tv);
     FD_ZERO(&fdread);
     FD_ZERO(&fdwrite);
     FD_ZERO(&fdexcep);
