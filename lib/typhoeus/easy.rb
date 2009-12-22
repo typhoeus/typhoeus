@@ -19,7 +19,8 @@ module Typhoeus
       :CURLOPT_FOLLOWLOCATION => 52,
       :CURLOPT_MAXREDIRS      => 68,
       :CURLOPT_HTTPAUTH       => 107,
-      :CURLOPT_USERPWD        => 10000 + 5
+      :CURLOPT_USERPWD        => 10000 + 5,
+      :CURLOPT_VERBOSE        => 41
     }
     INFO_VALUES = {
       :CURLINFO_RESPONSE_CODE => 2097154,
@@ -51,6 +52,10 @@ module Typhoeus
     
     def auth_methods
       get_info_long(INFO_VALUES[:CURLINFO_HTTPAUTH_AVAIL])
+    end
+    
+    def verbose=(boolean)
+      set_option(OPTION_VALUES[:CURLOPT_VERBOSE], !!boolean ? 1 : 0)
     end
     
     def total_time_taken
