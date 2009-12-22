@@ -17,11 +17,21 @@ module Typhoeus
       :CURLOPT_NOSIGNAL       => 99,
       :CURLOPT_HTTPHEADER     => 10023,
       :CURLOPT_FOLLOWLOCATION => 52,
-      :CURLOPT_MAXREDIRS      => 68
+      :CURLOPT_MAXREDIRS      => 68,
+      :CURLOPT_HTTPAUTH       => 107,
+      :CURLOPT_USERPWD        => 10000 + 5
     }
     INFO_VALUES = {
       :CURLINFO_RESPONSE_CODE => 2097154,
-      :CURLINFO_TOTAL_TIME    => 3145731
+      :CURLINFO_TOTAL_TIME    => 3145731,
+      :CURLINFO_HTTPAUTH_AVAIL => 0x200000 + 23
+    }
+    AUTH_TYPES = {
+      :CURLAUTH_BASIC         => 1,
+      :CURLAUTH_DIGEST        => 2,
+      :CURLAUTH_GSSNEGOTIATE  => 4,
+      :CURLAUTH_NTLM          => 8,
+      :CURLAUTH_DIGEST_IE     => 16
     }
     
     def initialize
@@ -32,6 +42,15 @@ module Typhoeus
     
     def headers=(hash)
       @headers = hash
+    end
+    
+    def auth=(authinfo)
+      set_option(OPTION_VALUES[:CURLOPT_USERPWD], "#{authinfo[:username]}:#{authinfo[:password]}")
+      set_option(OPTION_VALUES[:CURLOPT_HTTPAUTH], authinfo[:method]) if authinfo[:method]
+    end
+    
+    def auth_methods
+      get_info_long(INFO_VALUES[:CURLINFO_HTTPAUTH_AVAIL])
     end
     
     def total_time_taken

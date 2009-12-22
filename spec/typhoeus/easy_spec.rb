@@ -61,6 +61,35 @@ describe Typhoeus::Easy do
     end
   end
   
+  describe "authentication" do
+    it "should allow to set username and password" do
+      e = Typhoeus::Easy.new
+      username, password = 'foo', 'bar'
+      e.auth = { :username => username, :password => password }
+      e.url = "http://localhost:3001/auth_basic/#{username}/#{password}"
+      e.method = :get
+      e.perform
+      e.response_code.should == 200
+    end
+    
+    it "should allow to query auth methods support by the server" do
+      e = Typhoeus::Easy.new
+      e.url = "http://localhost:3001/auth_basic/foo/bar"
+      e.method = :get
+      e.perform
+      e.auth_methods.should == Typhoeus::Easy::AUTH_TYPES[:CURLAUTH_BASIC]
+    end
+
+    it "should allow to set authentication method" do
+      e = Typhoeus::Easy.new
+      e.auth = { :username => 'username', :password => 'password', :method => Typhoeus::Easy::AUTH_TYPES[:CURLAUTH_NTLM] }
+      e.url = "http://localhost:3001/auth_ntlm"
+      e.method = :get
+      e.perform
+      e.response_code.should == 200
+    end
+  end
+  
   describe "get" do
     it "should perform a get" do
       easy = Typhoeus::Easy.new
