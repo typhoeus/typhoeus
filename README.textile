@@ -24,6 +24,10 @@ If you're on Debian or Ubuntu and getting errors while trying to install, it cou
 <pre>
 sudo apt-get install libcurl4-gnutls-dev
 </pre>
+There's also something built in so that if you have a super old version of curl that you can't get rid of for some reason, you can install in a user directory and specify that during installation like so:
+<pre>
+gem install typhoeus --source http://gemcutter.org -- --with-curl=/usr/local/curl/7.19.7/
+</pre>
 
 Another problem could be if you are running Mac Ports and you have libcurl installed through there. You need to uninstall it for Typhoeus to work! The version in Mac Ports is old and doesn't play nice. You should "download curl":http://curl.haxx.se/download.html and build from source. Then you'll have to install the gem again.
 

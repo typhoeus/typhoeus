@@ -5,8 +5,9 @@ ENV['RC_ARCHS'] = '' if RUBY_PLATFORM =~ /darwin/
 require 'mkmf'
 
 ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
-LIBDIR = Config::CONFIG['libdir']
-INCLUDEDIR = Config::CONFIG['includedir']
+specified_curl = ARGV[0] =~ /^--with-curl/ ? ARGV[0].split("=")[1] : nil
+LIBDIR = specified_curl ? "#{specified_curl}/lib": Config::CONFIG['libdir']
+INCLUDEDIR = specified_curl ? "#{specified_curl}/include" : Config::CONFIG['includedir']
 
 if defined?(RUBY_ENGINE) && RUBY_ENGINE == 'macruby'
   $LIBRUBYARG_STATIC.gsub!(/-static/, '')
