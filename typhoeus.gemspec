@@ -2,13 +2,15 @@
 
 Gem::Specification.new do |s|
   s.name = %q{typhoeus}
-  s.version = "0.1.14"
+  s.version = "0.1.15"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Paul Dix"]
   s.date = %q{2009-07-03}
   s.email = %q{paul@pauldix.net}
   s.files = [
+    ".gitignore",
+    "ext/typhoeus/.gitignore",
     "ext/typhoeus/extconf.rb",
     "ext/typhoeus/typhoeus_easy.h",
     "ext/typhoeus/typhoeus_easy.c",
@@ -18,6 +20,7 @@ Gem::Specification.new do |s|
     "ext/typhoeus/native.h",
     "ext/typhoeus/native.c",
     "lib/typhoeus.rb",
+    "lib/typhoeus/.gitignore",
     "lib/typhoeus/easy.rb",
     "lib/typhoeus/multi.rb",
     "lib/typhoeus/remote.rb",
