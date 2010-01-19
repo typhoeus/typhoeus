@@ -1,13 +1,13 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{typhoeus_curly}
-  s.version = "0.1.14"
+  s.name = %q{typhoeus}
+  s.version = "0.1.15"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Paul Dix, Oleg 'morhekil' Ivanov"]
+  s.authors = ["Paul Dix"]
   s.date = %q{2009-07-03}
-  s.email = %q{morhekil@morhekil.net}
+  s.email = %q{paul@pauldix.net}
   s.files = [
     "ext/typhoeus/extconf.rb",
     "ext/typhoeus/typhoeus_easy.h",
@@ -38,10 +38,10 @@ Gem::Specification.new do |s|
     "spec/typhoeus/response_spec.rb",
     "spec/servers/app.rb"]
   s.has_rdoc = true
-  s.homepage = %q{http://github.com/morhekil/typhoeus_curly}
+  s.homepage = %q{http://github.com/pauldix/typhoeus}
   s.require_paths = ["lib", "ext"]
   s.rubygems_version = %q{1.3.4}
-  s.summary = %q{A fork of Typhoeus project with additional libcurl features exposed, like NTLM authentication.}
+  s.summary = %q{A library for interacting with web services (and building SOAs) at blinding speed.}
   s.extensions << 'ext/typhoeus/extconf.rb'
 
   if s.respond_to? :specification_version then
