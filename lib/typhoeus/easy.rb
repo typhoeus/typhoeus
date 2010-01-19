@@ -20,7 +20,8 @@ module Typhoeus
       :CURLOPT_MAXREDIRS      => 68,
       :CURLOPT_HTTPAUTH       => 107,
       :CURLOPT_USERPWD        => 10000 + 5,
-      :CURLOPT_VERBOSE        => 41
+      :CURLOPT_VERBOSE        => 41,
+      :CURLOPT_PROXY          => 10004
     }
     INFO_VALUES = {
       :CURLINFO_RESPONSE_CODE => 2097154,
@@ -43,6 +44,10 @@ module Typhoeus
     
     def headers=(hash)
       @headers = hash
+    end
+    
+    def proxy=(proxy)
+      set_option(OPTION_VALUES[:CURLOPT_PROXY], proxy)
     end
     
     def auth=(authinfo)

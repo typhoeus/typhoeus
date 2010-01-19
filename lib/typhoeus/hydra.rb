@@ -124,6 +124,8 @@ module Typhoeus
       easy.timeout      = request.timeout if request.timeout
       easy.follow_location = request.follow_location if request.follow_location
       easy.max_redirects = request.max_redirects if request.max_redirects
+      easy.proxy = request.proxy if request.proxy
+      
       easy.on_success do |easy|
         queue_next
         handle_request(request, response_from_easy(easy, request))
