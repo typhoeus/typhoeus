@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
     "spec/typhoeus/response_spec.rb",
     "spec/servers/app.rb"]
   s.has_rdoc = true
-  s.homepage = %q{http://github.com/pauldix/typhoeus}
+  s.homepage = %q{http://github.com/morhekil/typhoeus_curly}
   s.require_paths = ["lib", "ext"]
   s.rubygems_version = %q{1.3.4}
   s.summary = %q{A fork of Typhoeus project with additional libcurl features exposed, like NTLM authentication.}
