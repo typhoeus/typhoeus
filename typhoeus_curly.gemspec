@@ -41,7 +41,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/pauldix/typhoeus}
   s.require_paths = ["lib", "ext"]
   s.rubygems_version = %q{1.3.4}
-  s.summary = %q{A library for interacting with web services (and building SOAs) at blinding speed.}
+  s.summary = %q{A fork of Typhoeus project with additional libcurl features exposed, like NTLM authentication.}
   s.extensions << 'ext/typhoeus/extconf.rb'
 
   if s.respond_to? :specification_version then
