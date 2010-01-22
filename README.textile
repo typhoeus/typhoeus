@@ -186,6 +186,13 @@ response = Typhoeus::Request.get("http://twitter.com/statuses/followers.json",
                                  :headers => {"Authorization" => "Basic #{Base64.b64encode("#{username}:#{password}")}"})
 </pre>
 
+*SSL*
+SSL comes built in to libcurl so it's in Typhoeus as well. If you pass in a url with "https" it should just work assuming that you have your "cert bundle":http://curl.haxx.se/docs/caextract.html in order and the server is verifiable. However, if your bundle is messed up or if you're hitting a non-verifiable SSL server then you'll have to disable peer verification like so:
+
+<pre>
+Typhoeus::Request.get("https://mail.google.com/mail", :disable_ssl_peer_verification => true)
+</pre>
+
 *LibCurl*
 Typhoeus also has a more raw libcurl interface. These are the Easy and Multi objects. If you're into accessing just the raw libcurl style, those are your best bet.
 
