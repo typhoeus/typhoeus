@@ -125,7 +125,8 @@ module Typhoeus
       easy.follow_location = request.follow_location if request.follow_location
       easy.max_redirects = request.max_redirects if request.max_redirects
       easy.proxy = request.proxy if request.proxy
-      
+      easy.disable_ssl_peer_verification if request.disable_ssl_peer_verification
+
       easy.on_success do |easy|
         queue_next
         handle_request(request, response_from_easy(easy, request))
