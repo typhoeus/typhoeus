@@ -22,7 +22,14 @@ module Typhoeus
           hash
         else
           o = o.split(":")
-          hash[o.first.strip] = o.last ? o.last.strip : nil
+          key = o.first.strip
+          value = o.last ? o.last.strip : nil
+          if hash.has_key? key
+            hash[key] = [hash[key], value].flatten
+          else
+            hash[key] = value
+          end
+          
           hash
         end
       end
