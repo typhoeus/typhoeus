@@ -53,6 +53,10 @@ get '/**' do
   request.env.merge!(:body => request.body.read).to_json
 end
 
+head '/**' do
+  sleep params["delay"].to_i if params.has_key?("delay")
+end
+
 put '/**' do
   puts request.inspect
   request.env.merge!(:body => request.body.read).to_json

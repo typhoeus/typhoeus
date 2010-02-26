@@ -116,5 +116,9 @@ module Typhoeus
     def self.delete(url, params = {})
       run(url, params.merge(:method => :delete))
     end
+
+    def self.head(url, params = {})
+      run(url, params.merge(:method => :head))
+    end
   end
 end

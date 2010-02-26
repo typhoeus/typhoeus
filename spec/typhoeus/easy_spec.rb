@@ -101,6 +101,16 @@ describe Typhoeus::Easy do
     end
   end
 
+  describe "head" do
+    it "should perform a head" do
+      easy = Typhoeus::Easy.new
+      easy.url    = "http://localhost:3002"
+      easy.method = :head
+      easy.perform
+      easy.response_code.should == 200
+    end
+  end
+
   describe "start_time" do
     it "should be get/settable" do
       time = Time.now

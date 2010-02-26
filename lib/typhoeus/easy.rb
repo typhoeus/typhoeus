@@ -22,7 +22,8 @@ module Typhoeus
       :CURLOPT_USERPWD        => 10000 + 5,
       :CURLOPT_VERBOSE        => 41,
       :CURLOPT_PROXY          => 10004,
-      :CURLOPT_VERIFYPEER     => 64
+      :CURLOPT_VERIFYPEER     => 64,
+      :CURLOPT_NOBODY         => 44
     }
     INFO_VALUES = {
       :CURLINFO_RESPONSE_CODE => 2097154,
@@ -128,6 +129,8 @@ module Typhoeus
       elsif method == :put
         set_option(OPTION_VALUES[:CURLOPT_UPLOAD], 1)
         self.request_body = "" unless @request_body
+      elsif method == :head
+        set_option(OPTION_VALUES[:CURLOPT_NOBODY], 1)
       else
         set_option(OPTION_VALUES[:CURLOPT_CUSTOMREQUEST], "DELETE")
       end
