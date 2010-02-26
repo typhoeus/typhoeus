@@ -64,6 +64,7 @@ response = request.response
 response.code    # http status code
 response.time    # time in seconds the request took
 response.headers # the http headers
+response.headers_hash # http headers put into a hash
 response.body    # the response body
 </pre>
 
