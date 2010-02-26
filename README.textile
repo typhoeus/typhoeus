@@ -73,6 +73,7 @@ The request object has some convenience methods for performing single HTTP reque
 
 <pre>
 response = Typhoeus::Request.get("http://www.pauldix.net")
+response = Typhoeus::Request.head("http://www.pauldix.net")
 response = Typhoeus::Request.put("http://localhost:3000/posts/1", :body => "whoo, a body")
 response = Typhoeus::Request.post("http://localhost:3000/posts", :params => {:title => "test post", :content => "this is my test"})
 response = Typhoeus::Request.delete("http://localhost:3000/posts/1")
