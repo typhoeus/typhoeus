@@ -14,7 +14,7 @@ require 'typhoeus/request'
 require 'typhoeus/hydra'
 
 module Typhoeus
-  VERSION = "0.1.19"
+  VERSION = "0.1.20"
 
   def self.easy_object_pool
     @easy_objects ||= []
