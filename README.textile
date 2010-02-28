@@ -52,8 +52,8 @@ request = Typhoeus::Request.new("http://www.pauldix.net",
                                 :body          => "this is a request body",
                                 :method        => :post,
                                 :headers       => {:Accepts => "text/html"},
-                                :timeout       => 100,
-                                :cache_timeout => 60,
+                                :timeout       => 100, # milliseconds
+                                :cache_timeout => 60, # seconds
                                 :params        => {:field1 => "a field"})
 # we can see from this that the first argument is the url. the second is a set of options.
 # the options are all optional. The default for :method is :get. Timeout is measured in milliseconds.
