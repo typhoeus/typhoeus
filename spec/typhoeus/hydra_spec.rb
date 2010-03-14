@@ -62,6 +62,40 @@ describe Typhoeus::Hydra do
     it "can clear stubs" do
       @hydra.clear_stubs
     end
+    
+    it "clears out previously queued requests once they are called" do
+      @hydra.stub(:get, "asdf").and_return(@response)
+
+      call_count = 0
+      request = Typhoeus::Request.new("asdf")
+      request.on_complete do |response|
+        call_count += 1
+      end
+      @hydra.queue(request)
+      @hydra.run
+      call_count.should == 1
+      @hydra.run
+      call_count.should == 1
+    end
+    
+    it "calls stubs for requests that are queued up in the on_complete of a first stub" do
+      @hydra.stub(:get, "asdf").and_return(@response)
+      @hydra.stub(:get, "bar").and_return(@response)
+      
+      second_handler_called = false
+      request = Typhoeus::Request.new("asdf")
+      request.on_complete do |response|
+        r = Typhoeus::Request.new("bar")
+        r.on_complete do |res|
+          second_handler_called = true
+        end
+        @hydra.queue(r)
+      end
+      @hydra.queue(request)
+      @hydra.run
+      
+      second_handler_called.should be_true
+    end
 
     it "matches a stub only when the HTTP method also matches"
   end

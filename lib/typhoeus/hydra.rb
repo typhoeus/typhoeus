@@ -12,6 +12,7 @@ module Typhoeus
       @retrieved_from_cache = {}
       @queued_requests = []
       @running_requests = 0
+      @stubbed_request_count = 0
     end
 
     def self.hydra
@@ -56,12 +57,16 @@ module Typhoeus
     end
 
     def run
-      @stubs.each do |m|
-        m.requests.each do |request|
-          m.response.request = request
-          handle_request(request, m.response)
+      while @stubbed_request_count > 0
+        @stubs.each do |m|
+          while request = m.requests.shift
+            @stubbed_request_count -= 1
+            m.response.request = request
+            handle_request(request, m.response)
+          end
         end
       end
+
       @multi.perform
       @memoized_requests = {}
       @retrieved_from_cache = {}
@@ -94,7 +99,12 @@ module Typhoeus
 
     def assign_to_stub(request)
       m = @stubs.detect {|stub| stub.matches? request}
-      m && m.add_request(request)
+      if m
+        m.add_request(request)
+        @stubbed_request_count += 1
+      else
+        nil
+      end
     end
     private :assign_to_stub
 
