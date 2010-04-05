@@ -23,6 +23,11 @@ module Typhoeus
       @hydra = val
     end
 
+    def clear_cache_callbacks
+      @cache_setter = nil
+      @cache_getter = nil
+    end
+
     def clear_stubs
       @stubs = []
     end
