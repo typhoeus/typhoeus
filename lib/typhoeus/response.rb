@@ -35,5 +35,13 @@ module Typhoeus
         end
       end
     end
+    
+    def success?
+      @code >= 200 && @code < 300
+    end
+    
+    def modified?
+      @code != 304
+    end
   end
 end

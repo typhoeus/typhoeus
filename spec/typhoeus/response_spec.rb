@@ -48,4 +48,16 @@ describe Typhoeus::Response do
       response.headers_hash["Set-Cookie"].should include("_session=BAh7CToPc2Vzc2lvbl9pZCIlZTQzMDQzMDg1YjI3MTQ4MzAzMTZmMWZmMWJjMTU1NmI6CWNhcnQiJThmZGQ2YTgyOGQ5Yzg5YTczN2E1MjY2OGJlMGNlYmFmOgZyIgA6BnMiDi9jYXJ0L2FkZA%3D%3D--6b0a699625caed9597580d8e9b6ca5f5e5954125; path=/; HttpOnly")
     end
   end
+  
+  describe "status checking" do
+    it "is successful if response code is 200-299" do
+      Typhoeus::Response.new(:code => 220).success?.should be
+      Typhoeus::Response.new(:code => 400).success?.should_not be
+    end
+    
+    it "is not modified if the status code is 304" do
+      Typhoeus::Response.new(:code => 304).modified?.should_not be
+      Typhoeus::Response.new(:code => 200).modified?.should be
+    end
+  end
 end
