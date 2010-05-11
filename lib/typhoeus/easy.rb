@@ -101,6 +101,10 @@ module Typhoeus
       @timeout && total_time_taken > @timeout && response_code == 0
     end
 
+    def supports_zlib?
+      @supports_zlib ||= !!(version.match(/zlib/))
+    end
+
     def request_body=(request_body)
       @request_body = request_body
       if @method == :put

@@ -1,6 +1,22 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe Typhoeus::Easy do  
+describe Typhoeus::Easy do
+  describe "#supports_zlib" do
+    before(:each) do
+      @easy = Typhoeus::Easy.new
+    end
+
+    it "should return true if the version string has zlib" do
+      @easy.stub!(:version).and_return("libcurl/7.20.0 OpenSSL/0.9.8l zlib/1.2.3 libidn/1.16")
+      @easy.supports_zlib?.should be_true
+    end
+
+    it "should return false if the version string doesn't have zlib" do
+      @easy.stub!(:version).and_return("libcurl/7.20.0 OpenSSL/0.9.8l libidn/1.16")
+      @easy.supports_zlib?.should be_false
+    end
+  end
+
   describe "options" do
     it "should not follow redirects if not instructed to" do
       e = Typhoeus::Easy.new
