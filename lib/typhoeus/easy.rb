@@ -3,6 +3,7 @@ module Typhoeus
     attr_reader :response_body, :response_header, :method, :headers, :url
     attr_accessor :start_time
 
+    # These integer codes are available in curl/curl.h
     CURLINFO_STRING = 1048576
     OPTION_VALUES = {
       :CURLOPT_URL            => 10002,
@@ -28,7 +29,8 @@ module Typhoeus
     INFO_VALUES = {
       :CURLINFO_RESPONSE_CODE => 2097154,
       :CURLINFO_TOTAL_TIME    => 3145731,
-      :CURLINFO_HTTPAUTH_AVAIL => 0x200000 + 23
+      :CURLINFO_HTTPAUTH_AVAIL => 0x200000 + 23,
+      :CURLINFO_EFFECTIVE_URL => 0x100000 + 1
     }
     AUTH_TYPES = {
       :CURLAUTH_BASIC         => 1,
@@ -67,6 +69,10 @@ module Typhoeus
 
     def total_time_taken
       get_info_double(INFO_VALUES[:CURLINFO_TOTAL_TIME])
+    end
+
+    def effective_url
+      get_info_string(INFO_VALUES[:CURLINFO_EFFECTIVE_URL])
     end
 
     def response_code

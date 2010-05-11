@@ -192,6 +192,7 @@ module Typhoeus
                    :headers => easy.response_header,
                    :body    => easy.response_body,
                    :time    => easy.total_time_taken,
+                   :effective_url => easy.effective_url,
                    :request => request)
     end
     private :response_from_easy
