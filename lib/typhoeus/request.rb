@@ -42,7 +42,7 @@ module Typhoeus
     end
 
     def params_string
-      params.keys.sort.collect do |k|
+      params.keys.sort { |a, b| a.to_s <=> b.to_s }.collect do |k|
         value = params[k]
         if value.is_a? Hash
           value.keys.collect {|sk| Rack::Utils.escape("#{k}[#{sk}]") + "=" + Rack::Utils.escape(value[sk].to_s)}

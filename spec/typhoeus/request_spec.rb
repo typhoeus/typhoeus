@@ -1,6 +1,31 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe "request" do
+describe Typhoeus::Request do
+  describe "#params_string" do
+    it "should dump a sorted string" do
+      request = Typhoeus::Request.new(
+        "http://google.com",
+        :params => {
+          'b' => 'fdsa',
+          'a' => 'jlk',
+          'c' => '789'
+        }
+      )
+
+      request.params_string.should == "a=jlk&b=fdsa&c=789"
+    end
+
+    it "should accept symboled keys" do
+      request = Typhoeus::Request.new('http://google.com',
+                                      :params => {
+                                        :b => 'fdsa',
+                                        :a => 'jlk',
+                                        :c => '789'
+                                      })
+      request.params_string.should == "a=jlk&b=fdsa&c=789"
+    end
+  end
+
   describe "quick request methods" do
     it "can run a GET synchronously" do
       response = Typhoeus::Request.get("http://localhost:3000", :params => {:q => "hi"}, :headers => {:foo => "bar"})
