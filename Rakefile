@@ -12,6 +12,8 @@ begin
     gemspec.homepage = "http://github.com/pauldix/typhoeus"
     gemspec.authors = ["Paul Dix"]
   end
+
+  Jeweler::GemcutterTasks.new
 rescue LoadError
   puts "Jeweler not available. Install it with: gem install jeweler"
 end
