@@ -132,18 +132,10 @@ module Typhoeus
       @running_requests += 1
 
       easy = @easy_pool.pop || Easy.new
-
-      # Force gzip if we support it.
-      headers = {}
-      if easy.supports_zlib?
-        headers['Accept-Encoding'] = 'gzip'
-      end
-      headers.merge!(request.headers) if request.headers
-
       easy.url          = request.url
       easy.method       = request.method
       easy.params       = request.params  if request.method == :post && !request.params.nil?
-      easy.headers      = headers
+      easy.headers      = request.headers if request.headers
       easy.request_body = request.body    if request.body
       easy.timeout      = request.timeout if request.timeout
       easy.follow_location = request.follow_location if request.follow_location

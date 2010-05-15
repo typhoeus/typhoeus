@@ -24,7 +24,8 @@ module Typhoeus
       :CURLOPT_VERBOSE        => 41,
       :CURLOPT_PROXY          => 10004,
       :CURLOPT_VERIFYPEER     => 64,
-      :CURLOPT_NOBODY         => 44
+      :CURLOPT_NOBODY         => 44,
+      :CURLOPT_ENCODING       => 102
     }
     INFO_VALUES = {
       :CURLINFO_RESPONSE_CODE => 2097154,
@@ -44,6 +45,8 @@ module Typhoeus
       @method = :get
       @post_dat_set = nil
       @headers = {}
+
+      set_option(OPTION_VALUES[:CURLOPT_ENCODING], 'zlib') if supports_zlib?
     end
 
     def headers=(hash)
