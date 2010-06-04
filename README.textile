@@ -204,6 +204,18 @@ Typhoeus::Request.get("https://mail.google.com/mail", :disable_ssl_peer_verifica
 *LibCurl*
 Typhoeus also has a more raw libcurl interface. These are the Easy and Multi objects. If you're into accessing just the raw libcurl style, those are your best bet.
 
+SSL Certs can be provided to the Easy interface :
+
+<pre>
+e = Typhoeus::Easy.new
+e.url = "https://example.com/action"
+s.ssl_cacert = "ca_file.cer"
+e.ssl_cert = "acert.crt"
+e.ssl_key = "akey.key"
+[...]
+e.perform
+</pre>
+
 h2. NTLM authentication
 
 Thanks for the authentication piece and this description go to Oleg Ivanov (morhekil). The major reason to start this fork was the need to perform NTLM authentication in Ruby. Now you can do it via Typhoeus::Easy interface using the following API.
