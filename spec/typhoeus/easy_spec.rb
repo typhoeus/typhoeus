@@ -7,12 +7,12 @@ describe Typhoeus::Easy do
     end
 
     it "should return true if the version string has zlib" do
-      @easy.stub!(:version).and_return("libcurl/7.20.0 OpenSSL/0.9.8l zlib/1.2.3 libidn/1.16")
+      @easy.stub!(:curl_version).and_return("libcurl/7.20.0 OpenSSL/0.9.8l zlib/1.2.3 libidn/1.16")
       @easy.supports_zlib?.should be_true
     end
 
     it "should return false if the version string doesn't have zlib" do
-      @easy.stub!(:version).and_return("libcurl/7.20.0 OpenSSL/0.9.8l libidn/1.16")
+      @easy.stub!(:curl_version).and_return("libcurl/7.20.0 OpenSSL/0.9.8l libidn/1.16")
       @easy.supports_zlib?.should be_false
     end
   end
