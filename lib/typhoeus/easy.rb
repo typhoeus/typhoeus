@@ -25,7 +25,14 @@ module Typhoeus
       :CURLOPT_PROXY          => 10004,
       :CURLOPT_VERIFYPEER     => 64,
       :CURLOPT_NOBODY         => 44,
-      :CURLOPT_ENCODING       => 102
+      :CURLOPT_ENCODING       => 102,
+      :CURLOPT_SSLCERT        => 10025,
+      :CURLOPT_SSLCERTTYPE    => 10086,
+      :CURLOPT_SSLKEY         => 10087,
+      :CURLOPT_SSLKEYTYPE     => 10088,
+      :CURLOPT_KEYPASSWD      => 10026,
+      :CURLOPT_CAINFO         => 10065,
+      :CURLOPT_CAPATH         => 10097
     }
     INFO_VALUES = {
       :CURLINFO_RESPONSE_CODE => 2097154,
@@ -175,6 +182,52 @@ module Typhoeus
       end
     end
 
+    # Set SSL certificate (+options)
+    #
+    # Usage:
+    # * +cert+ : a valid path to the certificate
+    # * +:cert_type+ (opt) : cert type. Supported formats are "PEM" (default) and "DER".
+    #
+    # Example:
+    #
+    #     some_easy_object.ssl_cert("/etc/ssl/certs/my.crt")
+    def ssl_cert=(cert, cert_type = "PEM")
+      set_option(OPTION_VALUES[:CURLOPT_SSLCERT], cert)
+      raise "Invalid ssl cert type : '#{cert_type}'..." unless %w(PEM DER).include?(cert_type)
+      set_option(OPTION_VALUES[:CURLOPT_SSLCERTTYPE], cert_type)
+    end
+
+    # Set SSL private key
+    #
+    # Usage:
+    # * +key+ : a valid path to key file
+    # * +options+ (opt) : Key options, including keys:
+    # ** +:key_password+ (opt) : cert password as a String
+    # ** +:key_type+ (opt) : cert type. Supported formats are "PEM" (default) and "DER".
+
+    def ssl_key=(key, options = {})
+      set_option(OPTION_VALUES[:CURLOPT_SSLKEY], key)
+      set_option(OPTION_VALUES[:CURLOPT_SSLKEYTYPE], options[:key_type]) if options[:key_type]
+      set_option(OPTION_VALUES[:CURLOPT_KEYPASSWD], options[:key_password]) if options[:key_password]
+    end
+
+    # Set CACERT
+    #
+    # Usage :
+    # * +cacert+ : a valid path to cacert
+    #
+    def ssl_cacert=(cacert)
+      set_option(OPTION_VALUES[:CURLOPT_CAINFO], cacert)
+    end
+
+    # Set CAPATH
+    #
+    # Usage:
+    # * +cacert+ : a valid path
+    def ssl_capath=(capath)
+      set_option(OPTION_VALUES[:CURLOPT_CAPATH], capath)
+    end
+
     def set_option(option, value)
       if value.class == String
         easy_setopt_string(option, value)
@@ -262,5 +315,6 @@ module Typhoeus
     def curl_version
       version
     end
+
   end
 end
