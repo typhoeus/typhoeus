@@ -31,7 +31,6 @@ module Typhoeus
       :CURLOPT_SSLKEY         => 10087,
       :CURLOPT_SSLKEYTYPE     => 10088,
       :CURLOPT_KEYPASSWD      => 10026,
-      :CURLE_SSL_CACERT       => 60,
       :CURLOPT_CAINFO         => 10065,
       :CURLOPT_CAPATH         => 10097
     }
