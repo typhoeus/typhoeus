@@ -233,7 +233,7 @@ module Typhoeus
     def set_option(option, value)
       if value.class == String
         easy_setopt_string(option, value)
-      else
+      elsif value
         easy_setopt_long(option, value)
       end
     end
