@@ -11,6 +11,7 @@ module Typhoeus
     end
 
     def add(easy)
+      easy.set_headers()
       @easy_handles << easy
       multi_add_handle(easy)
     end

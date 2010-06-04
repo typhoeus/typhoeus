@@ -112,7 +112,7 @@ module Typhoeus
     end
 
     def supports_zlib?
-      @supports_zlib ||= !!(version.match(/zlib/))
+      !!(curl_version.match(/zlib/))
     end
 
     def request_body=(request_body)

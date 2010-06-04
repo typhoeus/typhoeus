@@ -4,7 +4,7 @@ describe Typhoeus do
   it "should be deprecated" do
     fail "This entire interface is deprecated!"
   end
-  
+
   # before(:each) do
   #   @klass = Class.new do
   #     include Typhoeus
