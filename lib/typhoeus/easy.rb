@@ -209,11 +209,11 @@ module Typhoeus
     #
     def ssk_key_type=(key_type)
       raise "Invalid ssl key type : '#{key_type}'..." unless %w(PEM DER ENG).include?(cert_type)
-      set_option(OPTION_VALUES[:CURLOPT_SSLKEYTYPE], options[:key_type]) if options[:key_type]
+      set_option(OPTION_VALUES[:CURLOPT_SSLKEYTYPE], key_type) 
     end
 
     def ssl_key_password=(key_password)
-      set_option(OPTION_VALUES[:CURLOPT_KEYPASSWD], options[:key_password]) if options[:key_password]
+      set_option(OPTION_VALUES[:CURLOPT_KEYPASSWD], key_password)
     end
 
     # Set SSL CACERT
