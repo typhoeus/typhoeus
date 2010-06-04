@@ -182,48 +182,50 @@ module Typhoeus
       end
     end
 
-    # Set SSL certificate (+options)
-    #
-    # Usage:
-    # * +cert+ : a valid path to the certificate
-    # * +:cert_type+ (opt) : cert type. Supported formats are "PEM" (default) and "DER".
-    #
-    # Example:
-    #
-    #     some_easy_object.ssl_cert("/etc/ssl/certs/my.crt")
+    # Set SSL certificate
+    # " The string should be the file name of your certificate. "
+    # The default format is "PEM" and can be changed with ssl_cert_type=
     def ssl_cert=(cert, cert_type = "PEM")
       set_option(OPTION_VALUES[:CURLOPT_SSLCERT], cert)
+    end
+
+    # Set SSL certificate type
+    # " The string should be the format of your certificate. Supported formats are "PEM" and "DER" "
+    def ssl_cert_type=(cert_type)
       raise "Invalid ssl cert type : '#{cert_type}'..." unless %w(PEM DER).include?(cert_type)
       set_option(OPTION_VALUES[:CURLOPT_SSLCERTTYPE], cert_type)
     end
 
-    # Set SSL private key
+    # Set SSL Key file
+    # " The string should be the file name of your private key. "
+    # The default format is "PEM" and can be changed with ssl_key_type=
     #
-    # Usage:
-    # * +key+ : a valid path to key file
-    # * +options+ (opt) : Key options, including keys:
-    # ** +:key_password+ (opt) : cert password as a String
-    # ** +:key_type+ (opt) : cert type. Supported formats are "PEM" (default) and "DER".
-
     def ssl_key=(key, options = {})
       set_option(OPTION_VALUES[:CURLOPT_SSLKEY], key)
+    end
+
+    # Set SSL Key type
+    # " The string should be the format of your private key. Supported formats are "PEM", "DER" and "ENG". "
+    #
+    def ssk_key_type=(key_type)
+      raise "Invalid ssl key type : '#{key_type}'..." unless %w(PEM DER ENG).include?(cert_type)
       set_option(OPTION_VALUES[:CURLOPT_SSLKEYTYPE], options[:key_type]) if options[:key_type]
+    end
+
+    def ssl_key_password=(key_password)
       set_option(OPTION_VALUES[:CURLOPT_KEYPASSWD], options[:key_password]) if options[:key_password]
     end
 
-    # Set CACERT
-    #
-    # Usage :
-    # * +cacert+ : a valid path to cacert
+    # Set SSL CACERT
+    # " File holding one or more certificates to verify the peer with. "
     #
     def ssl_cacert=(cacert)
       set_option(OPTION_VALUES[:CURLOPT_CAINFO], cacert)
     end
 
     # Set CAPATH
+    # " directory holding multiple CA certificates to verify the peer with. The certificate directory must be prepared using the openssl c_rehash utility. "
     #
-    # Usage:
-    # * +cacert+ : a valid path
     def ssl_capath=(capath)
       set_option(OPTION_VALUES[:CURLOPT_CAPATH], capath)
     end
