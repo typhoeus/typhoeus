@@ -207,7 +207,7 @@ module Typhoeus
     # Set SSL Key type
     # " The string should be the format of your private key. Supported formats are "PEM", "DER" and "ENG". "
     #
-    def ssk_key_type=(key_type)
+    def ssl_key_type=(key_type)
       raise "Invalid ssl key type : '#{key_type}'..." if key_type and !%w(PEM DER ENG).include?(key_type)
       set_option(OPTION_VALUES[:CURLOPT_SSLKEYTYPE], key_type) 
     end
