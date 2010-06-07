@@ -185,14 +185,14 @@ module Typhoeus
     # Set SSL certificate
     # " The string should be the file name of your certificate. "
     # The default format is "PEM" and can be changed with ssl_cert_type=
-    def ssl_cert=(cert, cert_type = "PEM")
+    def ssl_cert=(cert)
       set_option(OPTION_VALUES[:CURLOPT_SSLCERT], cert)
     end
 
     # Set SSL certificate type
     # " The string should be the format of your certificate. Supported formats are "PEM" and "DER" "
     def ssl_cert_type=(cert_type)
-      raise "Invalid ssl cert type : '#{cert_type}'..." unless %w(PEM DER).include?(cert_type)
+      raise "Invalid ssl cert type : '#{cert_type}'..." if cert_type and !%w(PEM DER).include?(cert_type) 
       set_option(OPTION_VALUES[:CURLOPT_SSLCERTTYPE], cert_type)
     end
 
@@ -200,7 +200,7 @@ module Typhoeus
     # " The string should be the file name of your private key. "
     # The default format is "PEM" and can be changed with ssl_key_type=
     #
-    def ssl_key=(key, options = {})
+    def ssl_key=(key)
       set_option(OPTION_VALUES[:CURLOPT_SSLKEY], key)
     end
 
@@ -208,7 +208,7 @@ module Typhoeus
     # " The string should be the format of your private key. Supported formats are "PEM", "DER" and "ENG". "
     #
     def ssk_key_type=(key_type)
-      raise "Invalid ssl key type : '#{key_type}'..." unless %w(PEM DER ENG).include?(cert_type)
+      raise "Invalid ssl key type : '#{key_type}'..." if key_type and !%w(PEM DER ENG).include?(key_type)
       set_option(OPTION_VALUES[:CURLOPT_SSLKEYTYPE], key_type) 
     end
 
