@@ -1,6 +1,6 @@
 module Typhoeus
   class Easy
-    attr_reader :response_body, :response_header, :method, :headers, :url
+    attr_reader :response_body, :response_header, :method, :headers, :url, :params
     attr_accessor :start_time
 
     # These integer codes are available in curl/curl.h
@@ -25,7 +25,14 @@ module Typhoeus
       :CURLOPT_PROXY          => 10004,
       :CURLOPT_VERIFYPEER     => 64,
       :CURLOPT_NOBODY         => 44,
-      :CURLOPT_ENCODING       => 102
+      :CURLOPT_ENCODING       => 102,
+      :CURLOPT_SSLCERT        => 10025,
+      :CURLOPT_SSLCERTTYPE    => 10086,
+      :CURLOPT_SSLKEY         => 10087,
+      :CURLOPT_SSLKEYTYPE     => 10088,
+      :CURLOPT_KEYPASSWD      => 10026,
+      :CURLOPT_CAINFO         => 10065,
+      :CURLOPT_CAPATH         => 10097
     }
     INFO_VALUES = {
       :CURLINFO_RESPONSE_CODE => 2097154,
@@ -105,7 +112,7 @@ module Typhoeus
     end
 
     def supports_zlib?
-      @supports_zlib ||= !!(version.match(/zlib/))
+      !!(curl_version.match(/zlib/))
     end
 
     def request_body=(request_body)
@@ -156,6 +163,7 @@ module Typhoeus
     end
 
     def params=(params)
+      @params = params
       params_string = params.keys.collect do |k|
         value = params[k]
         if value.is_a? Hash
@@ -175,10 +183,58 @@ module Typhoeus
       end
     end
 
+    # Set SSL certificate
+    # " The string should be the file name of your certificate. "
+    # The default format is "PEM" and can be changed with ssl_cert_type=
+    def ssl_cert=(cert)
+      set_option(OPTION_VALUES[:CURLOPT_SSLCERT], cert)
+    end
+
+    # Set SSL certificate type
+    # " The string should be the format of your certificate. Supported formats are "PEM" and "DER" "
+    def ssl_cert_type=(cert_type)
+      raise "Invalid ssl cert type : '#{cert_type}'..." if cert_type and !%w(PEM DER).include?(cert_type) 
+      set_option(OPTION_VALUES[:CURLOPT_SSLCERTTYPE], cert_type)
+    end
+
+    # Set SSL Key file
+    # " The string should be the file name of your private key. "
+    # The default format is "PEM" and can be changed with ssl_key_type=
+    #
+    def ssl_key=(key)
+      set_option(OPTION_VALUES[:CURLOPT_SSLKEY], key)
+    end
+
+    # Set SSL Key type
+    # " The string should be the format of your private key. Supported formats are "PEM", "DER" and "ENG". "
+    #
+    def ssl_key_type=(key_type)
+      raise "Invalid ssl key type : '#{key_type}'..." if key_type and !%w(PEM DER ENG).include?(key_type)
+      set_option(OPTION_VALUES[:CURLOPT_SSLKEYTYPE], key_type) 
+    end
+
+    def ssl_key_password=(key_password)
+      set_option(OPTION_VALUES[:CURLOPT_KEYPASSWD], key_password)
+    end
+
+    # Set SSL CACERT
+    # " File holding one or more certificates to verify the peer with. "
+    #
+    def ssl_cacert=(cacert)
+      set_option(OPTION_VALUES[:CURLOPT_CAINFO], cacert)
+    end
+
+    # Set CAPATH
+    # " directory holding multiple CA certificates to verify the peer with. The certificate directory must be prepared using the openssl c_rehash utility. "
+    #
+    def ssl_capath=(capath)
+      set_option(OPTION_VALUES[:CURLOPT_CAPATH], capath)
+    end
+
     def set_option(option, value)
       if value.class == String
         easy_setopt_string(option, value)
-      else
+      elsif value
         easy_setopt_long(option, value)
       end
     end
@@ -186,7 +242,9 @@ module Typhoeus
     def perform
       set_headers()
       easy_perform()
-      response_code()
+      resp_code = response_code()
+      (resp_code >= 200 and resp_code <= 299) ? success : failure
+      resp_code
     end
 
     def set_headers
@@ -262,5 +320,6 @@ module Typhoeus
     def curl_version
       version
     end
+
   end
 end
