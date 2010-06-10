@@ -242,7 +242,8 @@ module Typhoeus
     def perform
       set_headers()
       easy_perform()
-      if resp_code = response_code() && resp_code >= 200 && resp_code <= 299
+      resp_code = response_code() 
+      if resp_code >= 200 && resp_code <= 299
         success
       else
         failure
