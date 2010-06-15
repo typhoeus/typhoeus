@@ -142,6 +142,13 @@ module Typhoeus
       easy.max_redirects = request.max_redirects if request.max_redirects
       easy.proxy = request.proxy if request.proxy
       easy.disable_ssl_peer_verification if request.disable_ssl_peer_verification
+      easy.ssl_cert         = request.ssl_cert
+      easy.ssl_cert_type    = request.ssl_cert_type
+      easy.ssl_key          = request.ssl_key
+      easy.ssl_key_type     = request.ssl_key_type
+      easy.ssl_key_password = request.ssl_key_password
+      easy.ssl_cacert       = request.ssl_cacert
+      easy.ssl_capath       = request.ssl_capath
 
       easy.on_success do |easy|
         queue_next

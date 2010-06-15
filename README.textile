@@ -216,6 +216,17 @@ e.ssl_key = "akey.key"
 e.perform
 </pre>
 
+or directly to a Typhoeus::Request :
+
+<pre>
+e = Typhoeus::Request.get("https://example.com/action",
+  :ssl_cacert => "ca_file.cer",
+  :ssl_cert => "acert.crt",
+  :ssl_key => "akey.key",
+  [...]
+end
+</pre>
+
 h2. NTLM authentication
 
 Thanks for the authentication piece and this description go to Oleg Ivanov (morhekil). The major reason to start this fork was the need to perform NTLM authentication in Ruby. Now you can do it via Typhoeus::Easy interface using the following API.

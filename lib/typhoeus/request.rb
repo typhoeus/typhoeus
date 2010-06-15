@@ -1,8 +1,34 @@
 module Typhoeus
   class Request
-    attr_accessor :method, :params, :body, :headers, :timeout, :user_agent, :response, :cache_timeout, :follow_location, :max_redirects, :proxy, :disable_ssl_peer_verification
+    attr_accessor :method, :params, :body, :headers, :timeout, :user_agent, :response, :cache_timeout, :follow_location, :max_redirects, :proxy, :disable_ssl_peer_verification, :ssl_cert, :ssl_cert_type, :ssl_key, :ssl_key_type, :ssl_key_password, :ssl_cacert, :ssl_capath
+
+
     attr_reader   :url
 
+    # Initialize a new Request
+    #
+    # Options:
+    # * +url+ : Endpoint (URL) of the request
+    # * +options+   : A hash containing options among :
+    # ** +:method+  : :get (default) / :post / :put
+    # ** +:params+  : params as a Hash
+    # ** +:body+
+    # ** +:timeout+ : timeout (ms)
+    # ** +:headers+  : headers as Hash
+    # ** +:user_agent+ : user agent (string)
+    # ** +:cache_timeout+ : cache timeout (ms)
+    # ** +:follow_location
+    # ** +:max_redirects
+    # ** +:proxy
+    # ** +:disable_ssl_peer_verification
+    # ** +:ssl_cert
+    # ** +:ssl_cert_type
+    # ** +:ssl_key
+    # ** +:ssl_key_type
+    # ** +:ssl_key_password
+    # ** +:ssl_cacert
+    # ** +:ssl_capath
+    #
     def initialize(url, options = {})
       @method           = options[:method] || :get
       @params           = options[:params]
@@ -15,6 +41,13 @@ module Typhoeus
       @max_redirects    = options[:max_redirects]
       @proxy            = options[:proxy]
       @disable_ssl_peer_verification = options[:disable_ssl_peer_verification]
+      @ssl_cert         = options[:ssl_cert]
+      @ssl_cert_type    = options[:ssl_cert_type]
+      @ssl_key          = options[:ssl_key]
+      @ssl_key_type     = options[:ssl_key_type]
+      @ssl_key_password = options[:ssl_key_password]
+      @ssl_cacert       = options[:ssl_cacert]
+      @ssl_capath       = options[:ssl_capath]
 
       if @method == :post
         @url = url
