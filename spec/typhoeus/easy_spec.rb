@@ -117,6 +117,14 @@ describe Typhoeus::Easy do
     end
   end
 
+  describe "purge" do
+    it "should set custom request to purge" do
+      easy = Typhoeus::Easy.new
+      easy.should_receive(:set_option).with(Typhoeus::Easy::OPTION_VALUES[:CURLOPT_CUSTOMREQUEST], "PURGE").once
+      easy.method = :purge
+    end
+  end
+
   describe "head" do
     it "should perform a head" do
       easy = Typhoeus::Easy.new

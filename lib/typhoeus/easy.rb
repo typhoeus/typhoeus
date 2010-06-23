@@ -105,7 +105,7 @@ module Typhoeus
     end
 
     def supports_zlib?
-      @supports_zlib ||= !!(version.match(/zlib/))
+      @supports_zlib = !!(version.match(/zlib/))
     end
 
     def request_body=(request_body)
@@ -145,7 +145,7 @@ module Typhoeus
       elsif method == :head
         set_option(OPTION_VALUES[:CURLOPT_NOBODY], 1)
       else
-        set_option(OPTION_VALUES[:CURLOPT_CUSTOMREQUEST], "DELETE")
+        set_option(OPTION_VALUES[:CURLOPT_CUSTOMREQUEST], method.to_s.upcase)
       end
     end
 
