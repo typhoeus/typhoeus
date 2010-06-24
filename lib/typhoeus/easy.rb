@@ -152,7 +152,7 @@ module Typhoeus
       elsif method == :head
         set_option(OPTION_VALUES[:CURLOPT_NOBODY], 1)
       else
-        set_option(OPTION_VALUES[:CURLOPT_CUSTOMREQUEST], "DELETE")
+        set_option(OPTION_VALUES[:CURLOPT_CUSTOMREQUEST], method.to_s.upcase)
       end
     end
 
@@ -210,7 +210,7 @@ module Typhoeus
     #
     def ssl_key_type=(key_type)
       raise "Invalid ssl key type : '#{key_type}'..." if key_type and !%w(PEM DER ENG).include?(key_type)
-      set_option(OPTION_VALUES[:CURLOPT_SSLKEYTYPE], key_type) 
+      set_option(OPTION_VALUES[:CURLOPT_SSLKEYTYPE], key_type)
     end
 
     def ssl_key_password=(key_password)
