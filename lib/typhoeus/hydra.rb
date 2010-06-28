@@ -149,6 +149,7 @@ module Typhoeus
       easy.ssl_key_password = request.ssl_key_password
       easy.ssl_cacert       = request.ssl_cacert
       easy.ssl_capath       = request.ssl_capath
+      easy.verbose          = request.verbose
 
       easy.on_success do |easy|
         queue_next
