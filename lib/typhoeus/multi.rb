@@ -11,7 +11,7 @@ module Typhoeus
     end
 
     def add(easy)
-      easy.set_headers()
+      easy.set_headers() if easy.headers.empty?
       @easy_handles << easy
       multi_add_handle(easy)
     end
