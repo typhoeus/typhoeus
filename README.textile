@@ -103,8 +103,8 @@ hydra.queue first_request
 hydra.queue second_request
 hydra.run # this is a blocking call that returns once all requests are complete
 
-first_request.handled_resposne # the value returned from the on_complete block
-second_request.handled_resposne # the value returned from the on_complete block (parsed JSON)
+first_request.handled_response # the value returned from the on_complete block
+second_request.handled_response # the value returned from the on_complete block (parsed JSON)
 </pre>
 
 The execution of that code goes something like this. The first and second requests are built and queued. When hydra is run the first and second requests run in parallel. When the first request completes, the third request is then built and queued up. The moment it is queued Hydra starts executing it. Meanwhile the second request would continue to run (or it could have completed before the first). Once the third request is done, hydra.run returns.
