@@ -12,6 +12,7 @@ module Typhoeus
       :CURLOPT_UPLOAD         => 46,
       :CURLOPT_CUSTOMREQUEST  => 10036,
       :CURLOPT_POSTFIELDS     => 10015,
+      :CURLOPT_COPYPOSTFIELDS     => 10165,
       :CURLOPT_POSTFIELDSIZE  => 60,
       :CURLOPT_USERAGENT      => 10018,
       :CURLOPT_TIMEOUT_MS     => 155,
@@ -50,7 +51,6 @@ module Typhoeus
 
     def initialize
       @method = :get
-      @post_dat_set = nil
       @headers = {}
 
       set_option(OPTION_VALUES[:CURLOPT_ENCODING], 'zlib') if supports_zlib?
@@ -158,8 +158,8 @@ module Typhoeus
 
     def post_data=(data)
       @post_data_set = true
-      set_option(OPTION_VALUES[:CURLOPT_POSTFIELDS], data)
       set_option(OPTION_VALUES[:CURLOPT_POSTFIELDSIZE], data.length)
+      set_option(OPTION_VALUES[:CURLOPT_COPYPOSTFIELDS], data)
     end
 
     def params=(params)
