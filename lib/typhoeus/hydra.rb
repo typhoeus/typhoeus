@@ -138,6 +138,7 @@ module Typhoeus
       easy.headers      = request.headers if request.headers
       easy.request_body = request.body    if request.body
       easy.timeout      = request.timeout if request.timeout
+      easy.connect_timeout = request.connect_timeout if request.connect_timeout
       easy.follow_location = request.follow_location if request.follow_location
       easy.max_redirects = request.max_redirects if request.max_redirects
       easy.proxy = request.proxy if request.proxy

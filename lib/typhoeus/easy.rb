@@ -16,6 +16,10 @@ module Typhoeus
       :CURLOPT_POSTFIELDSIZE  => 60,
       :CURLOPT_USERAGENT      => 10018,
       :CURLOPT_TIMEOUT_MS     => 155,
+      # Time-out connect operations after this amount of milliseconds.
+      # [Only works on unix-style/SIGALRM operating systems. IOW, does
+      # not work on Windows.
+      :CURLOPT_CONNECTTIMEOUT_MS  => 156,
       :CURLOPT_NOSIGNAL       => 99,
       :CURLOPT_HTTPHEADER     => 10023,
       :CURLOPT_FOLLOWLOCATION => 52,
@@ -99,6 +103,12 @@ module Typhoeus
 
     def max_redirects=(redirects)
       set_option(OPTION_VALUES[:CURLOPT_MAXREDIRS], redirects)
+    end
+    
+    def connect_timeout=(milliseconds)
+    	@connect_timeout = milliseconds
+	set_option(OPTION_VALUES[:CURLOPT_NOSIGNAL], 1)
+	set_option(OPTION_VALUES[:CURLOPT_CONNECTTIMEOUT_MS], milliseconds)
     end
 
     def timeout=(milliseconds)

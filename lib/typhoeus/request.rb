@@ -1,7 +1,6 @@
 module Typhoeus
   class Request
-    attr_accessor :method, :params, :body, :headers, :timeout, :user_agent, :response, :cache_timeout, :follow_location, :max_redirects, :proxy, :disable_ssl_peer_verification, :ssl_cert, :ssl_cert_type, :ssl_key, :ssl_key_type, :ssl_key_password, :ssl_cacert, :ssl_capath, :verbose
-
+    attr_accessor :method, :params, :body, :headers, :connect_timeout, :timeout, :user_agent, :response, :cache_timeout, :follow_location, :max_redirects, :proxy, :disable_ssl_peer_verification, :ssl_cert, :ssl_cert_type, :ssl_key, :ssl_key_type, :ssl_key_password, :ssl_cacert, :ssl_capath, :verbose
 
     attr_reader   :url
 
@@ -14,6 +13,7 @@ module Typhoeus
     # ** +:params+  : params as a Hash
     # ** +:body+
     # ** +:timeout+ : timeout (ms)
+    # ** +:connect_timeout+ : connect timeout (ms)
     # ** +:headers+  : headers as Hash
     # ** +:user_agent+ : user agent (string)
     # ** +:cache_timeout+ : cache timeout (ms)
@@ -35,6 +35,7 @@ module Typhoeus
       @params           = options[:params]
       @body             = options[:body]
       @timeout          = options[:timeout]
+      @connect_timeout  = options[:connect_timeout]
       @headers          = options[:headers] || {}
       @user_agent       = options[:user_agent] || Typhoeus::USER_AGENT
       @cache_timeout    = options[:cache_timeout]

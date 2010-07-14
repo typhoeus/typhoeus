@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../lib/typhoeus.rb'
 require 'rubygems'
+require File.dirname(__FILE__) + '/../lib/typhoeus.rb'
 require 'json'
 
 class Twitter
