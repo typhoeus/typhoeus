@@ -106,9 +106,9 @@ module Typhoeus
     end
     
     def connect_timeout=(milliseconds)
-    	@connect_timeout = milliseconds
-	set_option(OPTION_VALUES[:CURLOPT_NOSIGNAL], 1)
-	set_option(OPTION_VALUES[:CURLOPT_CONNECTTIMEOUT_MS], milliseconds)
+      @connect_timeout = milliseconds
+      set_option(OPTION_VALUES[:CURLOPT_NOSIGNAL], 1)
+      set_option(OPTION_VALUES[:CURLOPT_CONNECTTIMEOUT_MS], milliseconds)
     end
 
     def timeout=(milliseconds)
