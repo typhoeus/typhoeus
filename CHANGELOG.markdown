@@ -1,4 +1,4 @@
-In-Progress
+0.1.30
 -----------
 * Exposed CURLOPT_CONNECTTIMEOUT_MS to Requests [balexis]
 
