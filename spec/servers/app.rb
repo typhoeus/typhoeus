@@ -2,6 +2,7 @@
 require 'rubygems'
 require 'sinatra'
 require 'json'
+require 'zlib'
 
 @@fail_count = 0
 get '/fail/:number' do
@@ -46,6 +47,15 @@ get '/auth_ntlm' do
   is_ntlm_auth = /^NTLM/ =~ request.env['HTTP_AUTHORIZATION']
   true if is_ntlm_auth
   throw(:halt, [401, "Not authorized\n"]) if !is_ntlm_auth
+end
+
+get '/gzipped' do
+  req_env = request.env.to_json
+  z = Zlib::Deflate.new
+  gzipped_env = z.deflate(req_env, Zlib::FINISH)
+  z.close
+  response['Content-Encoding'] = 'gzip'
+  gzipped_env
 end
 
 get '/**' do

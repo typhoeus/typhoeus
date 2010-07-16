@@ -232,5 +232,18 @@ describe Typhoeus::Easy do
       easy.response_code.should == 200
       easy.response_body.should include("this is a body!")
     end
-  end  
+  end
+  
+  describe "encoding/compression support" do
+    
+    it "should send valid encoding headers and decode the response" do
+      easy = Typhoeus::Easy.new
+      easy.url = "http://localhost:3002/gzipped"
+      easy.method = :get
+      easy.perform
+      easy.response_code.should == 200
+      JSON.parse(easy.response_body)["HTTP_ACCEPT_ENCODING"].should == "deflate, gzip"
+    end
+    
+  end
 end

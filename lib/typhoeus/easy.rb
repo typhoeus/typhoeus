@@ -30,7 +30,7 @@ module Typhoeus
       :CURLOPT_PROXY          => 10004,
       :CURLOPT_VERIFYPEER     => 64,
       :CURLOPT_NOBODY         => 44,
-      :CURLOPT_ENCODING       => 102,
+      :CURLOPT_ENCODING       => 10000 + 102,
       :CURLOPT_SSLCERT        => 10025,
       :CURLOPT_SSLCERTTYPE    => 10086,
       :CURLOPT_SSLKEY         => 10087,
@@ -57,7 +57,8 @@ module Typhoeus
       @method = :get
       @headers = {}
 
-      set_option(OPTION_VALUES[:CURLOPT_ENCODING], 'zlib') if supports_zlib?
+      # Enable encoding/compression support
+      set_option(OPTION_VALUES[:CURLOPT_ENCODING], '')
     end
 
     def headers=(hash)
