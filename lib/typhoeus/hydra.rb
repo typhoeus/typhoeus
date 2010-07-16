@@ -132,6 +132,12 @@ module Typhoeus
       @running_requests += 1
 
       easy = @easy_pool.pop || Easy.new
+      easy.verbose          = request.verbose
+      if request.username || request.password
+        auth = { :username => request.username, :password => request.password }
+        auth[:method] = Typhoeus::Easy::AUTH_TYPES["CURLAUTH_#{request.auth_method.to_s.upcase}".to_sym] if request.auth_method
+        easy.auth = auth
+      end
       easy.url          = request.url
       easy.method       = request.method
       easy.params       = request.params  if request.method == :post && !request.params.nil?

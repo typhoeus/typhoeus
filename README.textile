@@ -183,9 +183,8 @@ hydra.stub(:get, "http://localhost:3000/users")
 *Basic Authentication*
 
 <pre>
-require 'base64'
 response = Typhoeus::Request.get("http://twitter.com/statuses/followers.json",
-                                 :headers => {"Authorization" => "Basic #{Base64.b64encode("#{username}:#{password}")}"})
+                                 :username => username, :password => password)
 </pre>
 
 *SSL*
@@ -227,9 +226,9 @@ e = Typhoeus::Request.get("https://example.com/action",
 end
 </pre>
 
-h2. NTLM authentication
+h2. Advanced authentication
 
-Thanks for the authentication piece and this description go to Oleg Ivanov (morhekil). The major reason to start this fork was the need to perform NTLM authentication in Ruby. Now you can do it via Typhoeus::Easy interface using the following API.
+Thanks for the authentication piece and this description go to Oleg Ivanov (morhekil). The major reason to start this fork was the need to perform NTLM authentication in Ruby, and other libcurl's authentications method were made possible as a result. Now you can do it via Typhoeus::Easy interface using the following API.
 
 <pre>
 e = Typhoeus::Easy.new
@@ -251,6 +250,22 @@ The following authentication types are available:
 * CURLAUTH_GSSNEGOTIATE
 * CURLAUTH_NTLM
 * CURLAUTH_DIGEST_IE
+* CURLAUTH_AUTO
+
+The last one (CURLAUTH_AUTO) is really a combination of all previous methods and is provided by Typhoeus for convenience. When you set authentication to auto, Typhoeus will retrieve the given URL first and examine it's headers to confirm what auth types are supported by the server. The it will select the strongest of available auth methods and will send the second request using the selected authentication method.
+
+*Authentication via the quick request interface*
+
+There's also an easy way to perform any kind of authentication via the quick request interface:
+
+<pre>
+e = Typhoeus::Request.get("http://example.com",
+  :username => 'username',
+  :password => 'password',
+  :method => :ntlm)
+</pre>
+
+All methods listed above is available in a shorter form - :basic, :digest, :gssnegotiate, :ntlm, :digest_ie, :auto.
 
 *Query of available auth types*
 
@@ -266,7 +281,13 @@ e = Typhoeus::Easy.new
 e.verbose = 1
 </pre>
 
-Please note that libcurl prints it's output to the console, so you'll need to run your scripts from the console to see the debug info.
+or using the quick request:
+
+<pre>
+e = Typhoeus::Request.get("http://example.com", :verbose => true)
+</pre>
+
+Just remember that libcurl prints it's debug output to the console (to STDERR), so you'll need to run your scripts from the console to see it.
 
 h2. Benchmarks
 

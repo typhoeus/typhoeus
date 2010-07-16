@@ -1,6 +1,7 @@
 module Typhoeus
   class Request
-    attr_accessor :method, :params, :body, :headers, :connect_timeout, :timeout, :user_agent, :response, :cache_timeout, :follow_location, :max_redirects, :proxy, :disable_ssl_peer_verification, :ssl_cert, :ssl_cert_type, :ssl_key, :ssl_key_type, :ssl_key_password, :ssl_cacert, :ssl_capath, :verbose
+    attr_accessor :method, :params, :body, :headers, :connect_timeout, :timeout, :user_agent, :response, :cache_timeout, :follow_location, :max_redirects, :proxy, :disable_ssl_peer_verification, :ssl_cert, :ssl_cert_type, :ssl_key, :ssl_key_type, :ssl_key_password, :ssl_cacert, :ssl_capath, :verbose, :username, :password,
+:auth_method
 
     attr_reader   :url
 
@@ -29,6 +30,9 @@ module Typhoeus
     # ** +:ssl_cacert
     # ** +:ssl_capath
     # ** +:verbose
+    # ** +:username
+    # ** +:password
+    # ** +:auth_method
     #
     def initialize(url, options = {})
       @method           = options[:method] || :get
@@ -51,6 +55,9 @@ module Typhoeus
       @ssl_cacert       = options[:ssl_cacert]
       @ssl_capath       = options[:ssl_capath]
       @verbose          = options[:verbose]
+      @username         = options[:username]
+      @password         = options[:password]
+      @auth_method      = options[:auth_method]
 
       if @method == :post
         @url = url

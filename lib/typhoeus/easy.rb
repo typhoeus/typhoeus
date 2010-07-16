@@ -50,7 +50,8 @@ module Typhoeus
       :CURLAUTH_DIGEST        => 2,
       :CURLAUTH_GSSNEGOTIATE  => 4,
       :CURLAUTH_NTLM          => 8,
-      :CURLAUTH_DIGEST_IE     => 16
+      :CURLAUTH_DIGEST_IE     => 16,
+      :CURLAUTH_AUTO          => 16 | 8 | 4 | 2 | 1
     }
 
     def initialize

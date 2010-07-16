@@ -160,6 +160,32 @@ describe Typhoeus::Request do
     request.call_handlers
     good.should be_true
   end
+  
+  describe "authentication" do
+    
+    it "should allow to set username and password" do
+      auth = { :username => 'foo', :password => 'bar' }
+      e = Typhoeus::Request.get(
+        "http://localhost:3001/auth_basic/#{auth[:username]}/#{auth[:password]}",
+        auth
+      )
+      e.code.should == 200
+    end
+
+    it "should allow to set authentication method" do
+      auth = {
+        :username => 'username',
+        :password => 'password',
+        :auth_method => :ntlm
+      }
+      e = Typhoeus::Request.get(
+        "http://localhost:3001/auth_ntlm",
+        auth
+      )
+      e.code.should == 200
+    end
+
+  end
 
   describe "retry" do
     it "should take a retry option"

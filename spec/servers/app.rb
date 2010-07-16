@@ -44,6 +44,7 @@ get '/auth_ntlm' do
   # we're just checking for the existence if NTLM auth header here. It's validation
   # is too troublesome and really doesn't bother is much, it's up to libcurl to make
   # it valid
+  response['WWW-Authenticate'] = 'NTLM'
   is_ntlm_auth = /^NTLM/ =~ request.env['HTTP_AUTHORIZATION']
   true if is_ntlm_auth
   throw(:halt, [401, "Not authorized\n"]) if !is_ntlm_auth
