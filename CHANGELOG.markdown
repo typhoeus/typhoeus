@@ -1,3 +1,8 @@
+0.1.31
+------
+* Fixed bug in setting compression encoding [morhekil]
+* Exposed authentication control methods through Request interface [morhekil]
+
 0.1.30
 -----------
 * Exposed CURLOPT_CONNECTTIMEOUT_MS to Requests [balexis]
