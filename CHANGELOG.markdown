@@ -1,3 +1,7 @@
+Next version
+------------
+* Fix warning in Request#headers from attr_accessor
+
 0.1.31
 ------
 * Fixed bug in setting compression encoding [morhekil]
