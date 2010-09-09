@@ -24,6 +24,14 @@ describe Typhoeus::Request do
                                       })
       request.params_string.should == "a=jlk&b=fdsa&c=789"
     end
+
+    it "should translate params with values that are arrays to the proper format" do
+      request = Typhoeus::Request.new('http://google.com',
+                                      :params => {
+                                        :a => ['789','2434']
+                                      })
+      request.params_string.should == "a[]=789&a[]=2434"
+    end
   end
 
   describe "quick request methods" do
@@ -160,9 +168,9 @@ describe Typhoeus::Request do
     request.call_handlers
     good.should be_true
   end
-  
+
   describe "authentication" do
-    
+
     it "should allow to set username and password" do
       auth = { :username => 'foo', :password => 'bar' }
       e = Typhoeus::Request.get(

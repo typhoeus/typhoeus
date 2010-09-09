@@ -95,7 +95,7 @@ module Typhoeus
           value.keys.collect {|sk| Rack::Utils.escape("#{k}[#{sk}]") + "=" + Rack::Utils.escape(value[sk].to_s)}
         elsif value.is_a? Array
           key = Rack::Utils.escape(k.to_s)
-          value.collect { |v| "#{key}=#{Rack::Utils.escape(v.to_s)}" }.join('&')
+          value.collect { |v| "#{key}[]=#{Rack::Utils.escape(v.to_s)}" }.join('&')
         else
           "#{Rack::Utils.escape(k.to_s)}=#{Rack::Utils.escape(params[k].to_s)}"
         end
