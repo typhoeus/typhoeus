@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Typhoeus do
   it "should be deprecated" do
-    fail "This entire interface is deprecated!"
+    pending "This entire interface is deprecated!"
   end
 
   # before(:each) do
