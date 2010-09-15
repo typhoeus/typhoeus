@@ -51,7 +51,7 @@ require 'json'
 request = Typhoeus::Request.new("http://www.pauldix.net",
                                 :body          => "this is a request body",
                                 :method        => :post,
-                                :headers       => {:Accepts => "text/html"},
+                                :headers       => {:Accept => "text/html"},
                                 :timeout       => 100, # milliseconds
                                 :cache_timeout => 60, # seconds
                                 :params        => {:field1 => "a field"})
