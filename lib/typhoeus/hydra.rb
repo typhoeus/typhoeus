@@ -1,8 +1,10 @@
 require 'typhoeus/hydra/connect_options'
+require 'typhoeus/hydra/stubbing'
 
 module Typhoeus
   class Hydra
     include ConnectOptions
+    include Stubbing
 
     def initialize(options = {})
       @memoize_requests = true
@@ -30,10 +32,6 @@ module Typhoeus
     def clear_cache_callbacks
       @cache_setter = nil
       @cache_getter = nil
-    end
-
-    def clear_stubs
-      @stubs = []
     end
 
     def fire_and_forget
@@ -104,22 +102,6 @@ module Typhoeus
     def on_complete=(proc)
       @on_complete = proc
     end
-
-    def stub(method, url)
-      @stubs << HydraMock.new(url, method)
-      @stubs.last
-    end
-
-    def assign_to_stub(request)
-      m = @stubs.detect {|stub| stub.matches? request}
-      if m
-        m.add_request(request)
-        @stubbed_request_count += 1
-      else
-        nil
-      end
-    end
-    private :assign_to_stub
 
     def get_from_cache_or_queue(request)
       if @cache_getter
@@ -223,12 +205,21 @@ module Typhoeus
   end
 
   class HydraMock
-    attr_reader :url, :method, :response, :requests
+    attr_reader :url, :method, :response, :requests,
+                :body
 
-    def initialize(url, method)
+    class << self
+      attr_accessor :match_post_body
+
+      # Keep compatibility.
+      @match_post_body = false
+    end
+
+    def initialize(url, method, options = {})
       @url      = url
       @method   = method
       @requests = []
+      @body = options[:body]
     end
 
     def add_request(request)
@@ -240,11 +231,22 @@ module Typhoeus
     end
 
     def matches?(request)
-      if url.kind_of?(String)
-        request.method == method && request.url == url
-      else
-        request.method == method && url =~ request.url
+      result = request.method == method
+
+      if self.class.match_post_body
+        result &&= body_matches?(request)
       end
+
+      if url.kind_of?(String)
+        result &&= request.url == url
+      else
+        result &&= url =~ request.url
+      end
+    end
+
+  private
+    def body_matches?(request)
+      !request.body.nil? && !request.body.empty? && request.body == self.body
     end
   end
 end

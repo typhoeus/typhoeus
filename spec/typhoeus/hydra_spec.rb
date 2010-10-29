@@ -30,76 +30,6 @@ describe Typhoeus::Hydra do
     Typhoeus::Hydra.hydra = Typhoeus::Hydra.new
   end
 
-  context "#stub" do
-    before do
-      @hydra = Typhoeus::Hydra.new
-      @on_complete_handler_called = nil
-      @request  = Typhoeus::Request.new("http://localhost:3000/foo")
-      @request.on_complete do |response|
-        @on_complete_handler_called = true
-        response.code.should == 404
-        response.headers.should == "whatever"
-      end
-      @response = Typhoeus::Response.new(:code => 404, :headers => "whatever", :body => "not found", :time => 0.1)
-    end
-
-    it "stubs requests to a specific URI" do
-      @hydra.stub(:get, "http://localhost:3000/foo").and_return(@response)
-      @hydra.queue(@request)
-      @hydra.run
-      @on_complete_handler_called.should be_true
-      @response.request.should == @request
-    end
-
-    it "stubs requests to URIs matching a pattern" do
-      @hydra.stub(:get, /foo/).and_return(@response)
-      @hydra.queue(@request)
-      @hydra.run
-      @on_complete_handler_called.should be_true
-      @response.request.should == @request
-    end
-
-    it "can clear stubs" do
-      @hydra.clear_stubs
-    end
-    
-    it "clears out previously queued requests once they are called" do
-      @hydra.stub(:get, "asdf").and_return(@response)
-
-      call_count = 0
-      request = Typhoeus::Request.new("asdf")
-      request.on_complete do |response|
-        call_count += 1
-      end
-      @hydra.queue(request)
-      @hydra.run
-      call_count.should == 1
-      @hydra.run
-      call_count.should == 1
-    end
-    
-    it "calls stubs for requests that are queued up in the on_complete of a first stub" do
-      @hydra.stub(:get, "asdf").and_return(@response)
-      @hydra.stub(:get, "bar").and_return(@response)
-      
-      second_handler_called = false
-      request = Typhoeus::Request.new("asdf")
-      request.on_complete do |response|
-        r = Typhoeus::Request.new("bar")
-        r.on_complete do |res|
-          second_handler_called = true
-        end
-        @hydra.queue(r)
-      end
-      @hydra.queue(request)
-      @hydra.run
-      
-      second_handler_called.should be_true
-    end
-
-    it "matches a stub only when the HTTP method also matches"
-  end
-
   it "queues a request" do
     hydra = Typhoeus::Hydra.new
     hydra.queue Typhoeus::Request.new("http://localhost:3000")
@@ -307,6 +237,129 @@ describe Typhoeus::Hydra do
     hydra.run
 
     request.response.code.should == 302
+  end
+end
+
+describe Typhoeus::HydraMock do
+  describe "#matches?" do
+    describe "post body matching" do
+      it "should be off by default" do
+        Typhoeus::HydraMock.match_post_body.should be_false
+      end
+
+      it "should not bother matching on body if we don't turn the option on" do
+        Typhoeus::HydraMock.match_post_body = false
+
+        request = Typhoeus::Request.new("http://localhost:3000",
+                                        :method => :get,
+                                        :body => "fdsafdsa")
+        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
+                                       :body => nil)
+        mock.matches?(request).should be_true
+      end
+
+      it "should not match if the bodies do not match" do
+        begin
+          Typhoeus::HydraMock.match_post_body = true
+
+          request = Typhoeus::Request.new("http://localhost:3000",
+                                          :method => :get,
+                                          :body => "ffdsadsafdsa")
+          mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
+                                         :body => 'fdsafdsa')
+          mock.matches?(request).should be_false
+        ensure
+          Typhoeus::HydraMock.match_post_body = false
+        end
+      end
+
+      it "should match on optional body parameter" do
+        begin
+          Typhoeus::HydraMock.match_post_body = true
+
+          request = Typhoeus::Request.new("http://localhost:3000",
+                                          :method => :get,
+                                          :body => "fdsafdsa")
+          mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
+                                         :body => 'fdsafdsa')
+          mock.matches?(request).should be_true
+        ensure
+          Typhoeus::HydraMock.match_post_body = false
+        end
+      end
+    end
+  end
+end
+
+describe Typhoeus::Hydra::Stubbing do
+  describe "#stub" do
+    before do
+      @hydra = Typhoeus::Hydra.new
+      @on_complete_handler_called = nil
+      @request  = Typhoeus::Request.new("http://localhost:3000/foo")
+      @request.on_complete do |response|
+        @on_complete_handler_called = true
+        response.code.should == 404
+        response.headers.should == "whatever"
+      end
+      @response = Typhoeus::Response.new(:code => 404, :headers => "whatever", :body => "not found", :time => 0.1)
+    end
+
+    it "stubs requests to a specific URI" do
+      @hydra.stub(:get, "http://localhost:3000/foo").and_return(@response)
+      @hydra.queue(@request)
+      @hydra.run
+      @on_complete_handler_called.should be_true
+      @response.request.should == @request
+    end
+
+    it "stubs requests to URIs matching a pattern" do
+      @hydra.stub(:get, /foo/).and_return(@response)
+      @hydra.queue(@request)
+      @hydra.run
+      @on_complete_handler_called.should be_true
+      @response.request.should == @request
+    end
+
+    it "can clear stubs" do
+      @hydra.clear_stubs
+    end
+    
+    it "clears out previously queued requests once they are called" do
+      @hydra.stub(:get, "asdf").and_return(@response)
+
+      call_count = 0
+      request = Typhoeus::Request.new("asdf")
+      request.on_complete do |response|
+        call_count += 1
+      end
+      @hydra.queue(request)
+      @hydra.run
+      call_count.should == 1
+      @hydra.run
+      call_count.should == 1
+    end
+
+    it "calls stubs for requests that are queued up in the on_complete of a first stub" do
+      @hydra.stub(:get, "asdf").and_return(@response)
+      @hydra.stub(:get, "bar").and_return(@response)
+
+      second_handler_called = false
+      request = Typhoeus::Request.new("asdf")
+      request.on_complete do |response|
+        r = Typhoeus::Request.new("bar")
+        r.on_complete do |res|
+          second_handler_called = true
+        end
+        @hydra.queue(r)
+      end
+      @hydra.queue(request)
+      @hydra.run
+
+      second_handler_called.should be_true
+    end
+
+    it "matches a stub only when the HTTP method also matches"
   end
 end
 
