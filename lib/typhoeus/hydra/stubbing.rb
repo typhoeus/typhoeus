@@ -1,8 +1,8 @@
 module Typhoeus
   class Hydra
     module Stubbing
-      def stub(method, url)
-        @stubs << HydraMock.new(url, method)
+      def stub(method, url, options = {})
+        @stubs << HydraMock.new(url, method, options)
         @stubs.last
       end
 
