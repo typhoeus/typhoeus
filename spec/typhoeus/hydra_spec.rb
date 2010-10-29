@@ -488,6 +488,40 @@ describe Typhoeus::Hydra::Stubbing do
   end
 end
 
+describe Typhoeus::Hydra::Callbacks do
+  before(:all) do
+    @klass = Typhoeus::Hydra
+  end
+
+  describe "#after_request_before_on_complete" do
+    it "should provide a global hook after a request" do
+      begin
+        http_method = nil
+        @klass.after_request_before_on_complete do |request|
+          http_method = request.method
+        end
+
+        hydra = @klass.new
+        request = Typhoeus::Request.new('http://localhost:3000',
+                                        :method => :get)
+        response = Typhoeus::Response.new(:code => 404,
+                                          :headers => "whatever",
+                                          :body => "not found",
+                                          :time => 0.1)
+        hydra.stub(:get, 'http://localhost:3000').
+          and_return(response)
+
+        hydra.queue(request)
+        hydra.run
+
+        http_method.should == :get
+      ensure
+        @klass.clear_global_hooks
+      end
+    end
+  end
+end
+
 describe Typhoeus::Hydra::ConnectOptions do
   before(:all) do
     @klass = Typhoeus::Hydra

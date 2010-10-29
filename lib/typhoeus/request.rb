@@ -135,7 +135,7 @@ module Typhoeus
     end
 
     def call_after_complete
-       @after_complete.call(@handled_response) if @after_complete
+      @after_complete.call(@handled_response) if @after_complete
     end
 
     def handled_response=(val)

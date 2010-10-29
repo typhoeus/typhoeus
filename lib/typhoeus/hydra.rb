@@ -1,3 +1,4 @@
+require 'typhoeus/hydra/callbacks'
 require 'typhoeus/hydra/connect_options'
 require 'typhoeus/hydra/stubbing'
 require 'set'
@@ -6,6 +7,7 @@ module Typhoeus
   class Hydra
     include ConnectOptions
     include Stubbing
+    extend Callbacks
 
     def initialize(options = {})
       @memoize_requests = true
@@ -178,6 +180,9 @@ module Typhoeus
 
     def handle_request(request, response, live_request = true)
       request.response = response
+
+      self.class.run_global_hooks_for(:after_request_before_on_complete,
+                                      request)
 
       if live_request && request.cache_timeout && @cache_setter
         @cache_setter.call(request)
