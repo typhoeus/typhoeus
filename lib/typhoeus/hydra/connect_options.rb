@@ -11,8 +11,8 @@ module Typhoeus
       # a request.
       #
       # @raises NetConnectNotAllowedError
-      def check_allow_net_connect!
-        unless Typhoeus::Hydra.allow_net_connect?
+      def check_allow_net_connect!(request)
+        if !Typhoeus::Hydra.allow_net_connect? and (!Typhoeus::Hydra.ignore_localhost? or !request.localhost?)
           raise NetConnectNotAllowedError, "Real HTTP requests are not allowed."
         end
       end
@@ -22,8 +22,10 @@ module Typhoeus
         def self.extended(base)
           class << base
             attr_accessor :allow_net_connect
+            attr_accessor :ignore_localhost
           end
           base.allow_net_connect = true
+          base.ignore_localhost = false
         end
 
         # Returns whether we allow external HTTP connections.
@@ -32,6 +34,10 @@ module Typhoeus
         # @return [boolean] true/false
         def allow_net_connect?
           allow_net_connect
+        end
+
+        def ignore_localhost?
+          ignore_localhost
         end
       end
     end

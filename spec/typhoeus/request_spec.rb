@@ -1,6 +1,20 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Typhoeus::Request do
+  describe "#localhost?" do
+    %w(localhost 127.0.0.1 0.0.0.0).each do |host|
+      it "should be true for the #{host} host" do
+        req = Typhoeus::Request.new("http://#{host}")
+        req.should be_localhost
+      end
+    end
+
+    it "should be false for other domains" do
+      req = Typhoeus::Request.new("http://google.com")
+      req.should_not be_localhost
+    end
+  end
+
   describe "#params_string" do
     it "should dump a sorted string" do
       request = Typhoeus::Request.new(

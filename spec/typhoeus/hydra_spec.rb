@@ -315,6 +315,27 @@ describe Typhoeus::Hydra::ConnectOptions do
     @klass = Typhoeus::Hydra
   end
 
+  describe "#ignore_localhost" do
+    it "should allow localhost requests over the wire if true" do
+      begin
+        old_net_connect = @klass.allow_net_connect
+        old_ignore_localhost = @klass.ignore_localhost
+        @klass.allow_net_connect = false
+        @klass.ignore_localhost = true
+
+        req = Typhoeus::Request.new("http://localhost:3000")
+        hydra = @klass.new
+
+        lambda {
+          hydra.queue(req)
+        }.should_not raise_error
+      ensure
+        @klass.allow_net_connect = old_net_connect
+        @klass.ignore_localhost = old_ignore_localhost
+      end
+    end
+  end
+
   describe "#allow_net_connect" do
     it "should be settable" do
       begin
@@ -333,10 +354,12 @@ describe Typhoeus::Hydra::ConnectOptions do
 
     it "should raise an error if we queue a request while its false" do
       begin
-        # TODO(dbalatero): allow localhost false
         request = Typhoeus::Request.new("http://localhost:3000")
-        old = @klass.allow_net_connect
+        old_net_connect = @klass.allow_net_connect
+        old_ignore_localhost = @klass.ignore_localhost
+
         @klass.allow_net_connect = false
+        @klass.ignore_localhost = false
 
         hydra = Typhoeus::Hydra.new
 
@@ -344,7 +367,8 @@ describe Typhoeus::Hydra::ConnectOptions do
           hydra.queue(request)
         }.should raise_error(Typhoeus::Hydra::NetConnectNotAllowedError)
       ensure
-        @klass.allow_net_connect = old
+        @klass.allow_net_connect = old_net_connect
+        @klass.ignore_localhost = old_ignore_localhost
       end
     end
   end

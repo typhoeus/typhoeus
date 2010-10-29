@@ -44,8 +44,9 @@ module Typhoeus
     def queue(request, obey_concurrency_limit = true)
       return if assign_to_stub(request)
 
-      # At this point, we are running over live HTTP.
-      check_allow_net_connect!
+      # At this point, we are running over live HTTP. Make sure we haven't
+      # disabled live requests.
+      check_allow_net_connect!(request)
 
       if @running_requests >= @max_concurrency && obey_concurrency_limit
         @queued_requests << request

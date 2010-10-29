@@ -1,3 +1,5 @@
+require 'uri'
+
 module Typhoeus
   class Request
     attr_reader   :url
@@ -68,9 +70,16 @@ module Typhoeus
       else
         @url = @params ? "#{url}?#{params_string}" : url
       end
+
+      @parsed_uri = URI.parse(@url)
+
       @on_complete      = nil
       @after_complete   = nil
       @handled_response = nil
+    end
+
+    def localhost?
+      %(localhost 127.0.0.1 0.0.0.0).include?(@parsed_uri.host)
     end
 
     def host
