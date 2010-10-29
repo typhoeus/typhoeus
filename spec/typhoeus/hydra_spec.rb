@@ -253,6 +253,15 @@ describe Typhoeus::HydraMock do
   end
 
   describe "#matches?" do
+    describe "basic matching" do
+      it "should not match if the HTTP verbs are different" do
+        request = Typhoeus::Request.new("http://localhost:3000",
+                                        :method => :get)
+        mock = Typhoeus::HydraMock.new("http://localhost:3000", :post)
+        mock.matches?(request).should be_false
+      end
+    end
+
     describe "header matching" do
       it "should be off by default" do
         Typhoeus::HydraMock.match_headers.should be_false
@@ -362,14 +371,23 @@ describe Typhoeus::HydraMock do
           Typhoeus::HydraMock.match_post_body = false
         end
       end
+
+      it "should regex match" do
+        request = Typhoeus::Request.new("http://localhost:3000/whatever/fdsa",
+                                        :method => :get)
+        mock = Typhoeus::HydraMock.new(/fdsa/, :get)
+        mock.matches?(request).should be_true
+      end
     end
   end
 end
 
 describe Typhoeus::Hydra::Stubbing do
-  describe "#stub" do
-    before do
-      @hydra = Typhoeus::Hydra.new
+  shared_examples_for "any stubbable target" do
+    before(:each) do
+      Typhoeus::HydraMock.match_headers = false
+      Typhoeus::HydraMock.match_post_body = false
+
       @on_complete_handler_called = nil
       @request  = Typhoeus::Request.new("http://localhost:3000/foo")
       @request.on_complete do |response|
@@ -377,11 +395,27 @@ describe Typhoeus::Hydra::Stubbing do
         response.code.should == 404
         response.headers.should == "whatever"
       end
-      @response = Typhoeus::Response.new(:code => 404, :headers => "whatever", :body => "not found", :time => 0.1)
+      @response = Typhoeus::Response.new(:code => 404,
+                                         :headers => "whatever",
+                                         :body => "not found",
+                                         :time => 0.1)
+    end
+
+    after(:each) do
+      @stub_target.clear_stubs
+    end
+
+    it "should provide a stubs accessor" do
+      begin
+        @stub_target.stubs.should == []
+        @stub_target.stubs = [:foo]
+      ensure
+        @stub_target.clear_stubs
+      end
     end
 
     it "stubs requests to a specific URI" do
-      @hydra.stub(:get, "http://localhost:3000/foo").and_return(@response)
+      @stub_target.stub(:get, "http://localhost:3000/foo").and_return(@response)
       @hydra.queue(@request)
       @hydra.run
       @on_complete_handler_called.should be_true
@@ -389,7 +423,7 @@ describe Typhoeus::Hydra::Stubbing do
     end
 
     it "stubs requests to URIs matching a pattern" do
-      @hydra.stub(:get, /foo/).and_return(@response)
+      @stub_target.stub(:get, /foo/).and_return(@response)
       @hydra.queue(@request)
       @hydra.run
       @on_complete_handler_called.should be_true
@@ -397,14 +431,14 @@ describe Typhoeus::Hydra::Stubbing do
     end
 
     it "can clear stubs" do
-      @hydra.clear_stubs
+      @stub_target.clear_stubs
     end
-    
+
     it "clears out previously queued requests once they are called" do
-      @hydra.stub(:get, "asdf").and_return(@response)
+      @stub_target.stub(:get, "http://localhost:3000/asdf").and_return(@response)
 
       call_count = 0
-      request = Typhoeus::Request.new("asdf")
+      request = Typhoeus::Request.new("http://localhost:3000/asdf")
       request.on_complete do |response|
         call_count += 1
       end
@@ -416,13 +450,13 @@ describe Typhoeus::Hydra::Stubbing do
     end
 
     it "calls stubs for requests that are queued up in the on_complete of a first stub" do
-      @hydra.stub(:get, "asdf").and_return(@response)
-      @hydra.stub(:get, "bar").and_return(@response)
+      @stub_target.stub(:get, "http://localhost:3000/asdf").and_return(@response)
+      @stub_target.stub(:get, "http://localhost:3000/bar").and_return(@response)
 
       second_handler_called = false
-      request = Typhoeus::Request.new("asdf")
+      request = Typhoeus::Request.new("http://localhost:3000/asdf")
       request.on_complete do |response|
-        r = Typhoeus::Request.new("bar")
+        r = Typhoeus::Request.new("http://localhost:3000/bar")
         r.on_complete do |res|
           second_handler_called = true
         end
@@ -433,8 +467,24 @@ describe Typhoeus::Hydra::Stubbing do
 
       second_handler_called.should be_true
     end
+  end
 
-    it "matches a stub only when the HTTP method also matches"
+  describe "global (class-level) stubbing" do
+    before(:each) do
+      @hydra = Typhoeus::Hydra.new
+      @stub_target = Typhoeus::Hydra
+    end
+
+    it_should_behave_like "any stubbable target"
+  end
+
+  describe "instance stubbing" do
+    before(:each) do
+      @hydra = Typhoeus::Hydra.new
+      @stub_target = @hydra
+    end
+
+    it_should_behave_like "any stubbable target"
   end
 end
 

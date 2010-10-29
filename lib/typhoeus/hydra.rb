@@ -1,5 +1,6 @@
 require 'typhoeus/hydra/connect_options'
 require 'typhoeus/hydra/stubbing'
+require 'set'
 
 module Typhoeus
   class Hydra
@@ -13,12 +14,14 @@ module Typhoeus
       initial_pool_size = options[:initial_pool_size] || 10
       @max_concurrency = options[:max_concurrency] || 200
       initial_pool_size.times { @easy_pool << Easy.new }
-      @stubs       = []
       @memoized_requests = {}
       @retrieved_from_cache = {}
       @queued_requests = []
       @running_requests = 0
       @stubbed_request_count = 0
+
+      self.stubs = []
+      @active_stubs = Set.new
     end
 
     def self.hydra
@@ -68,14 +71,14 @@ module Typhoeus
     end
 
     def run
-      while @stubbed_request_count > 0
-        @stubs.each do |m|
-          while request = m.requests.shift
-            @stubbed_request_count -= 1
-            m.response.request = request
-            handle_request(request, m.response)
-          end
+      while @stubbed_request_count > 0 and !@active_stubs.empty?
+        m = @active_stubs.first
+        while request = m.requests.shift
+          @stubbed_request_count -= 1
+          m.response.request = request
+          handle_request(request, m.response)
         end
+        @active_stubs.delete(m)
       end
 
       @multi.perform
