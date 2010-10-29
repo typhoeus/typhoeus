@@ -1,5 +1,9 @@
+require 'typhoeus/hydra/connect_options'
+
 module Typhoeus
   class Hydra
+    include ConnectOptions
+
     def initialize(options = {})
       @memoize_requests = true
       @multi       = Multi.new
@@ -39,6 +43,9 @@ module Typhoeus
 
     def queue(request, obey_concurrency_limit = true)
       return if assign_to_stub(request)
+
+      # At this point, we are running over live HTTP.
+      check_allow_net_connect!
 
       if @running_requests >= @max_concurrency && obey_concurrency_limit
         @queued_requests << request

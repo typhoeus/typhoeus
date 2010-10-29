@@ -309,3 +309,49 @@ describe Typhoeus::Hydra do
     request.response.code.should == 302
   end
 end
+
+describe Typhoeus::Hydra::ConnectOptions do
+  before(:all) do
+    @klass = Typhoeus::Hydra
+  end
+
+  describe "#allow_net_connect" do
+    it "should be settable" do
+      begin
+        # make sure to not mess up other specs.
+        old = @klass.allow_net_connect
+        @klass.allow_net_connect = true
+        @klass.allow_net_connect.should be_true
+      ensure
+        @klass.allow_net_connect = old
+      end
+    end
+
+    it "should default to true" do
+      @klass.allow_net_connect.should be_true
+    end
+
+    it "should raise an error if we queue a request while its false" do
+      begin
+        # TODO(dbalatero): allow localhost false
+        request = Typhoeus::Request.new("http://localhost:3000")
+        old = @klass.allow_net_connect
+        @klass.allow_net_connect = false
+
+        hydra = Typhoeus::Hydra.new
+
+        lambda {
+          hydra.queue(request)
+        }.should raise_error(Typhoeus::Hydra::NetConnectNotAllowedError)
+      ensure
+        @klass.allow_net_connect = old
+      end
+    end
+  end
+
+  describe "#allow_net_connect?" do
+    it "should return true by default" do
+      @klass.allow_net_connect?.should be_true
+    end
+  end
+end
