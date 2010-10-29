@@ -18,7 +18,6 @@ module Typhoeus
       @retrieved_from_cache = {}
       @queued_requests = []
       @running_requests = 0
-      @stubbed_request_count = 0
 
       self.stubs = []
       @active_stubs = Set.new
@@ -71,10 +70,9 @@ module Typhoeus
     end
 
     def run
-      while @stubbed_request_count > 0 and !@active_stubs.empty?
+      while !@active_stubs.empty?
         m = @active_stubs.first
         while request = m.requests.shift
-          @stubbed_request_count -= 1
           m.response.request = request
           handle_request(request, m.response)
         end

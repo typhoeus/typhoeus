@@ -39,7 +39,6 @@ module Typhoeus
         if m
           m.add_request(request)
           @active_stubs << m
-          @stubbed_request_count += 1
           m
         else
           nil
