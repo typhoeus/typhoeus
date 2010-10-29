@@ -206,13 +206,15 @@ module Typhoeus
 
   class HydraMock
     attr_reader :url, :method, :response, :requests,
-                :body
+                :body, :headers
 
     class << self
       attr_accessor :match_post_body
+      attr_accessor :match_headers
 
       # Keep compatibility.
       @match_post_body = false
+      @match_headers = false
     end
 
     def initialize(url, method, options = {})
@@ -220,6 +222,7 @@ module Typhoeus
       @method   = method
       @requests = []
       @body = options[:body]
+      @headers = options[:headers]
     end
 
     def add_request(request)
@@ -231,22 +234,47 @@ module Typhoeus
     end
 
     def matches?(request)
-      result = request.method == method
+      if !(request.method == method) or !url_matches?(request)
+        return false
+      end
 
       if self.class.match_post_body
-        result &&= body_matches?(request)
+        return false unless body_matches?(request)
       end
 
-      if url.kind_of?(String)
-        result &&= request.url == url
-      else
-        result &&= url =~ request.url
+      if self.class.match_headers
+        return false unless headers_match?(request)
       end
+
+      true
     end
 
   private
+    def url_matches?(request)
+      if url.kind_of?(String)
+        request.url == self.url
+      else
+        self.url =~ request.url
+      end
+    end
+
     def body_matches?(request)
       !request.body.nil? && !request.body.empty? && request.body == self.body
+    end
+
+    def headers_match?(request)
+      if (self.headers.nil? or self.headers.empty?) and !request.headers.empty?
+        true
+      else
+        if self.headers.size == request.headers.size
+          self.headers.each do |key, value|
+            return false unless request.headers[key] == value
+          end
+          true
+        else
+          false
+        end
+      end
     end
   end
 end

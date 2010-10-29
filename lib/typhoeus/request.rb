@@ -9,7 +9,7 @@ module Typhoeus
                   :max_redirects, :proxy, :disable_ssl_peer_verification,
                   :ssl_cert, :ssl_cert_type, :ssl_key, :ssl_key_type,
                   :ssl_key_password, :ssl_cacert, :ssl_capath, :verbose,
-                  :username, :password, :auth_method
+                  :username, :password, :auth_method, :user_agent
 
     # Initialize a new Request
     #

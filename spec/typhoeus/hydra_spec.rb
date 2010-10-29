@@ -242,6 +242,70 @@ end
 
 describe Typhoeus::HydraMock do
   describe "#matches?" do
+    describe "header matching" do
+      it "should be off by default" do
+        Typhoeus::HydraMock.match_headers.should be_false
+      end
+
+      it "should not bother matching on body if we don't turn the option on" do
+        Typhoeus::HydraMock.match_headers = false
+
+        request = Typhoeus::Request.new("http://localhost:3000",
+                                        :method => :get,
+                                        :headers => { 'Content-Type' => 'text/html' })
+        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
+                                       :headers => nil)
+        mock.matches?(request).should be_true
+      end
+
+      it "should not match if the headers do not match" do
+        begin
+          Typhoeus::HydraMock.match_headers = true
+
+          request = Typhoeus::Request.new("http://localhost:3000",
+                                          :method => :get,
+                                          :headers => { 'Content-Type' => 'text/html' })
+          mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
+                                         :body => 'fdsafdsa',
+                                         :headers => { 'Content-Type' => 'text/html', 'Another' => 'fdsa' })
+          mock.matches?(request).should be_false
+        ensure
+          Typhoeus::HydraMock.match_headers = false
+        end
+      end
+
+      it "should not match if the headers do not match exactly" do
+        begin
+          Typhoeus::HydraMock.match_headers = true
+
+          request = Typhoeus::Request.new("http://localhost:3000",
+                                          :method => :get,
+                                          :headers => { 'Content-Type' => 'text/html', 'Extra' => 'fdsa' })
+          mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
+                                         :body => 'fdsafdsa',
+                                         :headers => { 'Content-Type' => 'text/html', 'User-Agent' => request.user_agent })
+          mock.matches?(request).should be_false
+        ensure
+          Typhoeus::HydraMock.match_headers = false
+        end
+      end
+
+      it "should match on exact headers" do
+        begin
+          Typhoeus::HydraMock.match_headers = true
+
+          request = Typhoeus::Request.new("http://localhost:3000",
+                                          :method => :get,
+                                          :headers => { 'Content-Type' => 'text/html' })
+          mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
+                                         :headers => { 'Content-Type' => 'text/html', 'User-Agent' => request.user_agent })
+          mock.matches?(request).should be_true
+        ensure
+          Typhoeus::HydraMock.match_headers = false
+        end
+      end
+    end
+
     describe "post body matching" do
       it "should be off by default" do
         Typhoeus::HydraMock.match_post_body.should be_false
