@@ -241,6 +241,17 @@ describe Typhoeus::Hydra do
 end
 
 describe Typhoeus::HydraMock do
+  it "should mark all responses as mocks" do
+    response = Typhoeus::Response.new(:mock => false)
+    response.should_not be_mock
+
+    mock = Typhoeus::HydraMock.new("http://localhost", :get)
+    mock.and_return(response)
+
+    mock.response.should be_mock
+    response.should be_mock
+  end
+
   describe "#matches?" do
     describe "header matching" do
       it "should be off by default" do

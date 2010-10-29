@@ -231,6 +231,10 @@ module Typhoeus
 
     def and_return(val)
       @response = val
+
+      # make sure to mark this as a mock.
+      @response.mock = true
+      @response
     end
 
     def matches?(request)

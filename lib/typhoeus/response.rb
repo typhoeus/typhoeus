@@ -1,6 +1,6 @@
 module Typhoeus
   class Response
-    attr_accessor :request
+    attr_accessor :request, :mock
     attr_reader :code, :headers, :body, :time,
                 :requested_url, :requested_remote_method,
                 :requested_http_method, :start_time,
@@ -16,6 +16,12 @@ module Typhoeus
       @start_time            = params[:start_time]
       @request               = params[:request]
       @effective_url         = params[:effective_url]
+      @mock                  = params[:mock] || false  # default
+    end
+
+    # Returns true if this is a mock response.
+    def mock?
+      @mock
     end
 
     def headers_hash

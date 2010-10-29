@@ -6,6 +6,10 @@ module Typhoeus
         @stubs.last
       end
 
+      def clear_stubs
+        @stubs = []
+      end
+
       def assign_to_stub(request)
         m = @stubs.detect {|stub| stub.matches? request}
         if m
@@ -16,10 +20,6 @@ module Typhoeus
         end
       end
       private :assign_to_stub
-
-      def clear_stubs
-        @stubs = []
-      end
     end
   end
 end
