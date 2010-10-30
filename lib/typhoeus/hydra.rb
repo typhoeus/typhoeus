@@ -244,7 +244,7 @@ module Typhoeus
     end
 
     def matches?(request)
-      if !(request.method == method) or !url_matches?(request)
+      if !method_matches?(request) or !url_matches?(request)
         return false
       end
 
@@ -260,6 +260,10 @@ module Typhoeus
     end
 
   private
+    def method_matches?(request)
+      self.method == :any or self.method == request.method
+    end
+
     def url_matches?(request)
       if url.kind_of?(String)
         request.url == self.url

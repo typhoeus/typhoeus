@@ -262,6 +262,17 @@ describe Typhoeus::HydraMock do
       end
     end
 
+    describe "any HTTP verb" do
+      it "should match any verb" do
+        mock = Typhoeus::HydraMock.new("http://localhost:3000", :any)
+        [:get, :post, :delete, :put].each do |verb|
+          request = Typhoeus::Request.new("http://localhost:3000",
+                                          :method => verb)
+          mock.matches?(request).should be_true
+        end
+      end
+    end
+
     describe "header matching" do
       it "should be off by default" do
         Typhoeus::HydraMock.match_headers.should be_false
