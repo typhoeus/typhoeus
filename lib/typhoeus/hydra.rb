@@ -75,8 +75,9 @@ module Typhoeus
       while !@active_stubs.empty?
         m = @active_stubs.first
         while request = m.requests.shift
-          m.response.request = request
-          handle_request(request, m.response)
+          response = m.response
+          response.request = request
+          handle_request(request, response)
         end
         @active_stubs.delete(m)
       end
@@ -211,7 +212,7 @@ module Typhoeus
   end
 
   class HydraMock
-    attr_reader :url, :method, :response, :requests,
+    attr_reader :url, :method, :requests,
                 :body, :headers
 
     class << self
@@ -229,6 +230,7 @@ module Typhoeus
       @requests = []
       @body = options[:body]
       @headers = options[:headers]
+      @current_response_index = 0
     end
 
     def add_request(request)
@@ -236,11 +238,26 @@ module Typhoeus
     end
 
     def and_return(val)
-      @response = val
+      if val.respond_to?(:each)
+        @responses = val
+      else
+        @responses = [val]
+      end
 
-      # make sure to mark this as a mock.
-      @response.mock = true
-      @response
+      # make sure to mark them as a mock.
+      @responses.each { |r| r.mock = true }
+
+      val
+    end
+
+    def response
+      if @current_response_index == (@responses.length - 1)
+        @responses.last
+      else
+        value = @responses[@current_response_index]
+        @current_response_index += 1
+        value
+      end
     end
 
     def matches?(request)

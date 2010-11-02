@@ -252,6 +252,43 @@ describe Typhoeus::HydraMock do
     response.should be_mock
   end
 
+  describe "stubbing response values" do
+    before(:each) do
+      @stub = Typhoeus::HydraMock.new('http://localhost:3000', :get)
+    end
+
+    describe "with a single response" do
+      it "should always return that response" do
+        response = Typhoeus::Response.new
+        @stub.and_return(response)
+
+        5.times do
+          @stub.response.should == response
+        end
+      end
+    end
+
+    describe "with multiple responses" do
+      it "should return consecutive responses in the array, then keep returning the last one" do
+        responses = []
+        3.times do |i|
+          responses << Typhoeus::Response.new(:body => "response #{i}")
+        end
+
+        # Stub 3 consecutive responses.
+        @stub.and_return(responses)
+
+        0.upto(2) do |i|
+          @stub.response.should == responses[i]
+        end
+
+        5.times do
+          @stub.response.should == responses.last
+        end
+      end
+    end
+  end
+
   describe "#matches?" do
     describe "basic matching" do
       it "should not match if the HTTP verbs are different" do
