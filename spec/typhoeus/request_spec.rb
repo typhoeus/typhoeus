@@ -1,6 +1,31 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Typhoeus::Request do
+  describe "#inspect" do
+    before(:each) do
+      @request = Typhoeus::Request.new('http://www.google.com/',
+                                       :body => "a=1&b=2",
+                                       :params => { :c => 'ok' },
+                                       :method => :get)
+    end
+
+    it "should dump out the URI" do
+      @request.inspect.should =~ /http:\/\/www\.google\.com/
+    end
+
+    it "should dump out the body" do
+      @request.inspect.should =~ /a=1&b=2/
+    end
+
+    it "should dump params" do
+      @request.inspect.should =~ /:c\s*=>\s*"ok"/
+    end
+
+    it "should dump the method" do
+      @request.inspect.should =~ /:get/
+    end
+  end
+
   describe "#localhost?" do
     %w(localhost 127.0.0.1 0.0.0.0).each do |host|
       it "should be true for the #{host} host" do

@@ -146,6 +146,20 @@ module Typhoeus
       @handled_response || response
     end
 
+    def inspect
+      result = ":method => #{self.method.inspect},\n" <<
+               "\t:url => #{URI.parse(self.url).to_s}"
+      if self.body and !self.body.empty?
+        result << ",\n\t:body => #{self.body.inspect}"
+      end
+
+      if self.params and !self.params.empty?
+        result << ",\n\t:params => #{self.params.inspect}"
+      end
+
+      result
+    end
+
     def cache_key
       Digest::SHA1.hexdigest(url)
     end

@@ -13,7 +13,7 @@ module Typhoeus
       # @raises NetConnectNotAllowedError
       def check_allow_net_connect!(request)
         if !Typhoeus::Hydra.allow_net_connect? and (!Typhoeus::Hydra.ignore_localhost? or !request.localhost?)
-          raise NetConnectNotAllowedError, "Real HTTP requests are not allowed."
+          raise NetConnectNotAllowedError, "Real HTTP requests are not allowed. Unregistered request: #{request.inspect}"
         end
       end
       private :check_allow_net_connect!
