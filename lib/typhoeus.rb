@@ -3,6 +3,7 @@ $LOAD_PATH.unshift(File.dirname(__FILE__) + "/../ext")
 
 require 'digest/sha2'
 require 'typhoeus/utils'
+require 'typhoeus/lowercase_hash'
 require 'typhoeus/easy'
 require 'typhoeus/multi'
 require 'typhoeus/native'
@@ -13,6 +14,7 @@ require 'typhoeus/remote_proxy_object'
 require 'typhoeus/response'
 require 'typhoeus/request'
 require 'typhoeus/hydra'
+require 'typhoeus/hydra_mock'
 
 module Typhoeus
   VERSION = File.read(File.dirname(__FILE__) + "/../VERSION").chomp

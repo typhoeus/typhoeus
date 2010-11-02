@@ -25,7 +25,7 @@ module Typhoeus
     end
 
     def headers_hash
-      headers.split("\n").map {|o| o.strip}.inject({}) do |hash, o|
+      headers.split("\n").map {|o| o.strip}.inject(Typhoeus::LowercaseHash.new) do |hash, o|
         if o.empty?
           hash
         else
