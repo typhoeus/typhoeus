@@ -212,26 +212,31 @@ module Typhoeus
   end
 
   class HydraMock
-    attr_reader :url, :method, :requests,
-                :body, :headers, :uri
-
-    class << self
-      attr_accessor :match_post_body
-      attr_accessor :match_headers
-
-      # Keep compatibility.
-      @match_post_body = false
-      @match_headers = false
-    end
+    attr_reader :url, :method, :requests, :uri
 
     def initialize(url, method, options = {})
       @url      = url
       @uri      = URI.parse(url) if url.kind_of?(String)
       @method   = method
       @requests = []
-      @body = options[:body]
-      @headers = options[:headers]
+      @options = options
       @current_response_index = 0
+    end
+
+    def body
+      @options[:body]
+    end
+
+    def body?
+      @options.has_key?(:body)
+    end
+
+    def headers
+      @options[:headers]
+    end
+
+    def headers?
+      @options.has_key?(:headers)
     end
 
     def add_request(request)
@@ -266,11 +271,11 @@ module Typhoeus
         return false
       end
 
-      if self.class.match_post_body
+      if body?
         return false unless body_matches?(request)
       end
 
-      if self.class.match_headers
+      if headers?
         return false unless headers_match?(request)
       end
 
@@ -299,14 +304,10 @@ module Typhoeus
       if (self.headers.nil? or self.headers.empty?) and !request.headers.empty?
         true
       else
-        if self.headers.size == request.headers.size
-          self.headers.each do |key, value|
-            return false unless request.headers[key] == value
-          end
-          true
-        else
-          false
+        self.headers.each do |key, value|
+          return false unless request.headers[key] == value
         end
+        true
       end
     end
   end
