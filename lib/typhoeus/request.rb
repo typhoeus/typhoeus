@@ -157,6 +157,10 @@ module Typhoeus
         result << ",\n\t:params => #{self.params.inspect}"
       end
 
+      if self.headers and !self.headers.empty?
+        result << ",\n\t:headers => #{self.headers.inspect}"
+      end
+
       result
     end
 

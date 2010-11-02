@@ -6,7 +6,8 @@ describe Typhoeus::Request do
       @request = Typhoeus::Request.new('http://www.google.com/',
                                        :body => "a=1&b=2",
                                        :params => { :c => 'ok' },
-                                       :method => :get)
+                                       :method => :get,
+                                       :headers => { 'Content-Type' => 'text/html' })
     end
 
     it "should dump out the URI" do
@@ -23,6 +24,10 @@ describe Typhoeus::Request do
 
     it "should dump the method" do
       @request.inspect.should =~ /:get/
+    end
+    
+    it "should dump out headers" do
+      @request.inspect.should =~ /"Content-Type"\s*=>\s*"text\/html"/
     end
   end
 
