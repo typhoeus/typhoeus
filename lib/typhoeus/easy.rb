@@ -179,12 +179,12 @@ module Typhoeus
       params_string = params.keys.collect do |k|
         value = params[k]
         if value.is_a? Hash
-          value.keys.collect {|sk| Rack::Utils.escape("#{k}[#{sk}]") + "=" + Rack::Utils.escape(value[sk].to_s)}
+          value.keys.collect {|sk| Typhoeus::Utils.escape("#{k}[#{sk}]") + "=" + Typhoeus::Utils.escape(value[sk].to_s)}
         elsif value.is_a? Array
-          key = Rack::Utils.escape(k.to_s)
-          value.collect { |v| "#{key}=#{Rack::Utils.escape(v.to_s)}" }.join('&')
+          key = Typhoeus::Utils.escape(k.to_s)
+          value.collect { |v| "#{key}=#{Typhoeus::Utils.escape(v.to_s)}" }.join('&')
         else
-          "#{Rack::Utils.escape(k.to_s)}=#{Rack::Utils.escape(params[k].to_s)}"
+          "#{Typhoeus::Utils.escape(k.to_s)}=#{Typhoeus::Utils.escape(params[k].to_s)}"
         end
       end.flatten.join("&")
 
