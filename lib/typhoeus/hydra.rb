@@ -213,7 +213,7 @@ module Typhoeus
 
   class HydraMock
     attr_reader :url, :method, :requests,
-                :body, :headers
+                :body, :headers, :uri
 
     class << self
       attr_accessor :match_post_body
@@ -226,6 +226,7 @@ module Typhoeus
 
     def initialize(url, method, options = {})
       @url      = url
+      @uri      = URI.parse(url) if url.kind_of?(String)
       @method   = method
       @requests = []
       @body = options[:body]
@@ -283,7 +284,8 @@ module Typhoeus
 
     def url_matches?(request)
       if url.kind_of?(String)
-        request.url == self.url
+        request_uri = URI.parse(request.url)
+        request_uri == self.uri
       else
         self.url =~ request.url
       end

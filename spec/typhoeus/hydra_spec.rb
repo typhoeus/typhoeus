@@ -299,6 +299,23 @@ describe Typhoeus::HydraMock do
       end
     end
 
+    describe "matching on ports" do
+      it "should handle default port 80 sanely" do
+        mock = Typhoeus::HydraMock.new('http://www.example.com:80/', :get)
+        request = Typhoeus::Request.new('http://www.example.com/',
+                                        :method => :get)
+        mock.matches?(request).should be_true
+      end
+
+      it "should handle default port 443 sanely" do
+        mock = Typhoeus::HydraMock.new('https://www.example.com:443/', :get)
+        request = Typhoeus::Request.new('https://www.example.com/',
+                                        :method => :get)
+        mock.matches?(request).should be_true
+      end
+    end
+
+
     describe "any HTTP verb" do
       it "should match any verb" do
         mock = Typhoeus::HydraMock.new("http://localhost:3000", :any)
