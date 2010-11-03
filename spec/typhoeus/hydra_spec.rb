@@ -244,7 +244,8 @@ describe Typhoeus::Hydra::Stubbing do
   shared_examples_for "any stubbable target" do
     before(:each) do
       @on_complete_handler_called = nil
-      @request  = Typhoeus::Request.new("http://localhost:3000/foo")
+      @request  = Typhoeus::Request.new("http://localhost:3000/foo",
+                                        :user_agent => 'test')
       @request.on_complete do |response|
         @on_complete_handler_called = true
         response.code.should == 404
@@ -270,7 +271,10 @@ describe Typhoeus::Hydra::Stubbing do
     end
 
     it "stubs requests to a specific URI" do
-      @stub_target.stub(:get, "http://localhost:3000/foo").and_return(@response)
+      @stub_target.stub(:get, "http://localhost:3000/foo",
+                        :headers => { 'user-agent' => 'test'}).
+                        and_return(@response)
+
       @hydra.queue(@request)
       @hydra.run
       @on_complete_handler_called.should be_true
@@ -278,7 +282,9 @@ describe Typhoeus::Hydra::Stubbing do
     end
 
     it "stubs requests to URIs matching a pattern" do
-      @stub_target.stub(:get, /foo/).and_return(@response)
+      @stub_target.stub(:get, /foo/,
+                        :headers => { 'user-agent' => 'test' }).
+                        and_return(@response)
       @hydra.queue(@request)
       @hydra.run
       @on_complete_handler_called.should be_true
@@ -290,10 +296,12 @@ describe Typhoeus::Hydra::Stubbing do
     end
 
     it "clears out previously queued requests once they are called" do
-      @stub_target.stub(:get, "http://localhost:3000/asdf").and_return(@response)
+      @stub_target.stub(:get, "http://localhost:3000/asdf",
+                        :headers => { 'user-agent' => 'test' }).
+                        and_return(@response)
 
       call_count = 0
-      request = Typhoeus::Request.new("http://localhost:3000/asdf")
+      request = Typhoeus::Request.new("http://localhost:3000/asdf", :user_agent => 'test')
       request.on_complete do |response|
         call_count += 1
       end

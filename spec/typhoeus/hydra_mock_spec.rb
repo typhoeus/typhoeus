@@ -61,16 +61,20 @@ describe Typhoeus::HydraMock do
 
     describe "matching on ports" do
       it "should handle default port 80 sanely" do
-        mock = Typhoeus::HydraMock.new('http://www.example.com:80/', :get)
+        mock = Typhoeus::HydraMock.new('http://www.example.com:80/', :get,
+                                       :headers => { 'user-agent' => 'test' })
         request = Typhoeus::Request.new('http://www.example.com/',
-                                        :method => :get)
+                                        :method => :get,
+                                        :user_agent => 'test')
         mock.matches?(request).should be_true
       end
 
       it "should handle default port 443 sanely" do
-        mock = Typhoeus::HydraMock.new('https://www.example.com:443/', :get)
+        mock = Typhoeus::HydraMock.new('https://www.example.com:443/', :get,
+                                       :headers => { 'user-agent' => 'test' })
         request = Typhoeus::Request.new('https://www.example.com/',
-                                        :method => :get)
+                                        :method => :get,
+                                        :user_agent => 'test')
         mock.matches?(request).should be_true
       end
     end
@@ -78,23 +82,66 @@ describe Typhoeus::HydraMock do
 
     describe "any HTTP verb" do
       it "should match any verb" do
-        mock = Typhoeus::HydraMock.new("http://localhost:3000", :any)
+        mock = Typhoeus::HydraMock.new("http://localhost:3000", :any,
+                                       :headers => { 'user-agent' => 'test' })
         [:get, :post, :delete, :put].each do |verb|
           request = Typhoeus::Request.new("http://localhost:3000",
-                                          :method => verb)
+                                          :method => verb,
+                                          :user_agent => 'test')
           mock.matches?(request).should be_true
         end
       end
     end
 
     describe "header matching" do
-      it "should not bother matching on body if we don't turn the option on" do
+      it "should return false if headers is set and request has no headers" do
         request = Typhoeus::Request.new("http://localhost:3000",
                                         :method => :get,
-                                        :headers => { 'Content-Type' => 'text/html' })
+                                        :headers => {})
+        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
+                                       :headers => { 'fdsa' => 'fdsa' })
+        mock.matches?(request).should be_false
+      end
+
+      it "should return true if headers is nil and the request doesn't have headers" do
+        request = Typhoeus::Request.new("http://localhost:3000",
+                                        :method => :get)
+        request.stub!(:headers).and_return(nil)
         mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
                                        :headers => nil)
         mock.matches?(request).should be_true
+      end
+
+      it "should handle multiple values for headers" do
+        request = Typhoeus::Request.new("http://localhost:3000",
+                                        :method => :get,
+                                        :user_agent => 'test',
+                                        :headers => {
+                                          'Accept' => ['text/html', 'application/csv']
+                                        })
+        mock = Typhoeus::HydraMock.new("http://localhost:3000", :any,
+                                       :headers => {
+                                          'Accept' => ['application/csv', 'text/html'],
+                                          'User-Agent' => 'test'
+                                       })
+
+        mock.matches?(request).should be_true
+      end
+
+      it "should fail with incorrect multiple values" do
+        request = Typhoeus::Request.new("http://localhost:3000",
+                                        :method => :get,
+                                        :user_agent => 'test',
+                                        :headers => {
+                                          'Accept' => ['text/html']
+                                        })
+        mock = Typhoeus::HydraMock.new("http://localhost:3000", :any,
+                                       :headers => {
+                                          'Accept' => ['text/html', 'application/csv'],
+                                          'User-Agent' => 'test'
+                                       })
+
+        mock.matches?(request).should be_false
       end
 
       it "should not match if the headers do not match" do
@@ -133,14 +180,24 @@ describe Typhoeus::HydraMock do
                                        :headers => { 'Content-Type' => 'text/html', 'User-Agent' => request.user_agent })
         mock.matches?(request).should be_true
       end
+
+      it "should not match if the request has headers, but the mock does not have headers" do
+        request = Typhoeus::Request.new("http://localhost:3000",
+                                        :method => :get,
+                                        :headers => { 'Content-Type' => 'text/html' })
+        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get)
+        mock.matches?(request).should be_false
+      end
     end
 
     describe "post body matching" do
       it "should not bother matching on body if we don't turn the option on" do
         request = Typhoeus::Request.new("http://localhost:3000",
                                         :method => :get,
+                                        :user_agent => 'test',
                                         :body => "fdsafdsa")
-        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get)
+        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
+                                       :headers => { 'user-agent' => 'test' })
         mock.matches?(request).should be_true
       end
 
@@ -165,16 +222,22 @@ describe Typhoeus::HydraMock do
       it "should match on optional body parameter" do
         request = Typhoeus::Request.new("http://localhost:3000",
                                         :method => :get,
+                                        :user_agent => 'test',
                                         :body => "fdsafdsa")
         mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
-                                       :body => 'fdsafdsa')
+                                       :body => 'fdsafdsa',
+                                       :headers => {
+                                         'User-Agent' => 'test'
+                                       })
         mock.matches?(request).should be_true
       end
 
       it "should regex match" do
         request = Typhoeus::Request.new("http://localhost:3000/whatever/fdsa",
-                                        :method => :get)
-        mock = Typhoeus::HydraMock.new(/fdsa/, :get)
+                                        :method => :get,
+                                        :user_agent => 'test')
+        mock = Typhoeus::HydraMock.new(/fdsa/, :get,
+                                       :headers => { 'user-agent' => 'test' })
         mock.matches?(request).should be_true
       end
     end

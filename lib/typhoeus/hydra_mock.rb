@@ -67,8 +67,8 @@ module Typhoeus
         return false unless body_matches?(request)
       end
 
-      if headers?
-        return false unless headers_match?(request)
+      if !headers_match?(request)
+        return false
       end
 
       true
@@ -93,16 +93,37 @@ module Typhoeus
     end
 
     def headers_match?(request)
-      if (self.headers.nil? or self.headers.empty?) and !request.headers.empty?
-        true
+      if empty_headers?(self.headers)
+        empty_headers?(request.headers)
       else
+        return false if empty_headers?(request.headers)
+
         matches = 0
         request.headers.each do |key, value|
-          matches += 1 if self.headers[key] == value
+          matches += 1 if headers.has_key?(key) && header_value_matches?(key, value)
         end
 
         matches == self.headers.size
       end
+    end
+
+    def header_value_matches?(key, expected_value)
+      if headers[key].class != expected_value.class
+        false
+      else
+        if headers[key].is_a?(Array)
+          headers[key].each do |value|
+            return false unless expected_value.include?(value)
+          end
+          headers.size == expected_value.size
+        else
+          headers[key] === expected_value
+        end
+      end
+    end
+
+    def empty_headers?(headers)
+      headers.nil? || headers.empty?
     end
   end
 end
