@@ -5,6 +5,7 @@ module Typhoeus
                 :requested_url, :requested_remote_method,
                 :requested_http_method, :start_time,
                 :effective_url
+    attr_writer :headers_hash
 
     def initialize(params = {})
       @code                  = params[:code]
@@ -17,6 +18,7 @@ module Typhoeus
       @request               = params[:request]
       @effective_url         = params[:effective_url]
       @mock                  = params[:mock] || false  # default
+      @headers_hash          = params[:headers_hash]
     end
 
     # Returns true if this is a mock response.
@@ -25,21 +27,23 @@ module Typhoeus
     end
 
     def headers_hash
-      headers.split("\n").map {|o| o.strip}.inject(Typhoeus::LowercaseHash.new) do |hash, o|
-        if o.empty?
-          hash
-        else
-          i = o.index(":") || o.size
-          key = o.slice(0, i)
-          value = o.slice(i + 1, o.size)
-          value = value.strip unless value.nil?
-          if hash.has_key? key
-            hash[key] = [hash[key], value].flatten
+      @headers_hash ||= begin
+        headers.split("\n").map {|o| o.strip}.inject(Typhoeus::LowercaseHash.new) do |hash, o|
+          if o.empty?
+            hash
           else
-            hash[key] = value
-          end
+            i = o.index(":") || o.size
+            key = o.slice(0, i)
+            value = o.slice(i + 1, o.size)
+            value = value.strip unless value.nil?
+            if hash.has_key? key
+              hash[key] = [hash[key], value].flatten
+            else
+              hash[key] = value
+            end
 
-          hash
+            hash
+          end
         end
       end
     end

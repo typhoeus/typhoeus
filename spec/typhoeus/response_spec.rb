@@ -2,6 +2,11 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Typhoeus::Response do
   describe "initialize" do
+    it "should store headers_hash" do
+      response = Typhoeus::Response.new(:headers_hash => {})
+      response.headers_hash.should == {}
+    end
+
     it "should store response_code" do
       Typhoeus::Response.new(:code => 200).code.should == 200
     end
