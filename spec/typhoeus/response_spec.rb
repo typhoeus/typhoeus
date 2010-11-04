@@ -15,6 +15,10 @@ describe Typhoeus::Response do
     it "should store response_code" do
       Typhoeus::Response.new(:code => 200).code.should == 200
     end
+
+    it "should store status_message" do
+      Typhoeus::Response.new(:status_message => 'Not Found').status_message.should == 'Not Found'
+    end
     
     it "should store response_headers" do
       Typhoeus::Response.new(:headers => "a header!").headers.should == "a header!"
@@ -70,6 +74,10 @@ describe Typhoeus::Response do
         @response.headers_hash["Status"].should == "200"
         @response.headers_hash["Set-Cookie"].should == ["_some_session=BAh7CDoGciIAOg9zZXNzaW9uX2lkIiU1OTQ2OTcwMjljMWM5ZTQwODU1NjQwYTViMmQxMTkxMjoGcyIKL2NhcnQ%3D--b4c4663932243090c961bb93d4ad5e4327064730; path=/; HttpOnly", "foo=bar; path=/;"]
         @response.headers_hash["Content-Type"].should == "text/html; charset=utf-8"
+      end
+
+      it 'parses the status message' do
+        @response.status_message.should == 'OK'
       end
     end
 

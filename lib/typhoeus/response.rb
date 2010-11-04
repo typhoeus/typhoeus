@@ -9,6 +9,7 @@ module Typhoeus
 
     def initialize(params = {})
       @code                  = params[:code]
+      @status_message        = params[:status_message]
       @headers               = params[:headers]
       @body                  = params[:body]
       @time                  = params[:time]
@@ -46,6 +47,10 @@ module Typhoeus
           end
         end
       end
+    end
+
+    def status_message
+      @status_message ||= headers.split("\n").first[/\d{3} (.*)\s+$/, 1]
     end
 
     def success?
