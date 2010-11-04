@@ -7,6 +7,11 @@ describe Typhoeus::Response do
       response.headers_hash.should == {}
     end
 
+    it "allows header access using a different casing of the header key" do
+      response = Typhoeus::Response.new(:headers_hash => { 'content-type' => 'text/html' } )
+      response.headers_hash['Content-Type'].should == 'text/html'
+    end
+
     it "should store response_code" do
       Typhoeus::Response.new(:code => 200).code.should == 200
     end
