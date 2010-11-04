@@ -10,7 +10,7 @@ module Typhoeus
     def initialize(params = {})
       @code                  = params[:code]
       @status_message        = params[:status_message]
-      @headers               = params[:headers]
+      @headers               = params[:headers] || ''
       @body                  = params[:body]
       @time                  = params[:time]
       @requested_url         = params[:requested_url]
