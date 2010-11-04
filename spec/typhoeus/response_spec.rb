@@ -99,6 +99,23 @@ describe Typhoeus::Response do
       it 'parses the HTTP version' do
         @response.http_version.should == '1.1'
       end
+
+      it 'parses all header keys except HTTP version declaration' do
+        @response.headers_hash.keys.should =~ %w[
+          X-Powered-By
+          P3p
+          X-Cache
+          Etag
+          X-Runtime
+          Content-Type
+          Content-Length
+          Server
+          Set-Cookie
+          Cache-Control
+          Connection
+          Status
+        ]
+      end
     end
 
     it "parses a header key that appears multiple times into an array" do

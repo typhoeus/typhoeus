@@ -31,7 +31,7 @@ module Typhoeus
     def headers_hash
       @headers_hash ||= begin
         headers.split("\n").map {|o| o.strip}.inject(Typhoeus::NormalizedHeaderHash.new) do |hash, o|
-          if o.empty?
+          if o.empty? || o =~ /^HTTP\/[\d\.]+/
             hash
           else
             i = o.index(":") || o.size
