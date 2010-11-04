@@ -67,8 +67,8 @@ module Typhoeus
         return false unless body_matches?(request)
       end
 
-      if !headers_match?(request)
-        return false
+      if headers?
+        return false unless headers_match?(request)
       end
 
       true
@@ -100,30 +100,33 @@ module Typhoeus
 
         matches = 0
         request.headers.each do |key, value|
-          matches += 1 if headers.has_key?(key) && header_value_matches?(key, value)
+          matches += 1 if headers.has_key?(key) && header_value_matches?(headers[key], value)
         end
 
         matches == self.headers.size
       end
     end
 
-    def header_value_matches?(key, expected_value)
-      if headers[key].class != expected_value.class
-        false
-      else
-        if headers[key].is_a?(Array)
-          headers[key].each do |value|
-            return false unless expected_value.include?(value)
-          end
-          headers.size == expected_value.size
-        else
-          headers[key] === expected_value
+    def header_value_matches?(mock_value, request_value)
+      if request_value.is_a?(Array)
+        mock_value.is_a?(Array) &&
+        mock_value.size == request_value.size &&
+        mock_value.all? do |value|
+          request_value.include?(value)
         end
+      else
+        mock_value === request_value
       end
     end
 
     def empty_headers?(headers)
-      headers.nil? || headers.empty?
+      # We consider the default User-Agent header to be empty since
+      # Typhoeus always adds that.
+      headers.nil? || headers.empty? || default_typhoeus_headers?(headers)
+    end
+
+    def default_typhoeus_headers?(headers)
+      headers.size == 1 && headers['User-Agent'] == Typhoeus::USER_AGENT
     end
   end
 end

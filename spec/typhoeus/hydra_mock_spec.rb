@@ -94,99 +94,145 @@ describe Typhoeus::HydraMock do
     end
 
     describe "header matching" do
-      it "should return false if headers is set and request has no headers" do
-        request = Typhoeus::Request.new("http://localhost:3000",
-                                        :method => :get,
-                                        :headers => {})
-        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
-                                       :headers => { 'fdsa' => 'fdsa' })
-        mock.matches?(request).should be_false
+      def request(options = {})
+        Typhoeus::Request.new("http://localhost:3000", options.merge(:method => :get))
       end
 
-      it "should return true if headers is nil and the request doesn't have headers" do
-        request = Typhoeus::Request.new("http://localhost:3000",
-                                        :method => :get)
-        request.stub!(:headers).and_return(nil)
-        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
-                                       :headers => nil)
-        mock.matches?(request).should be_true
+      def mock(options = {})
+        Typhoeus::HydraMock.new("http://localhost:3000", :get, options)
       end
 
-      it "should handle multiple values for headers" do
-        request = Typhoeus::Request.new("http://localhost:3000",
-                                        :method => :get,
-                                        :user_agent => 'test',
-                                        :headers => {
-                                          'Accept' => ['text/html', 'application/csv']
-                                        })
-        mock = Typhoeus::HydraMock.new("http://localhost:3000", :any,
-                                       :headers => {
-                                          'Accept' => ['application/csv', 'text/html'],
-                                          'User-Agent' => 'test'
-                                       })
+      context 'when no :headers option is given' do
+        subject { mock }
 
-        mock.matches?(request).should be_true
+        it "matches regardless of whether or not the request has headers" do
+          subject.matches?(request(:headers => nil)).should be_true
+          subject.matches?(request(:headers => {})).should be_true
+          subject.matches?(request(:headers => { 'a' => 'b' })).should be_true
+        end
       end
 
-      it "should fail with incorrect multiple values" do
-        request = Typhoeus::Request.new("http://localhost:3000",
-                                        :method => :get,
-                                        :user_agent => 'test',
-                                        :headers => {
-                                          'Accept' => ['text/html']
-                                        })
-        mock = Typhoeus::HydraMock.new("http://localhost:3000", :any,
-                                       :headers => {
-                                          'Accept' => ['text/html', 'application/csv'],
-                                          'User-Agent' => 'test'
-                                       })
+      [nil, {}].each do |value|
+        context "for :headers => #{value.inspect}" do
+          subject { mock(:headers => value) }
 
-        mock.matches?(request).should be_false
+          it "matches when the request has no headers" do
+            subject.matches?(request(:headers => nil)).should be_true
+            subject.matches?(request(:headers => {})).should be_true
+          end
+
+          it "does not match when the request has headers" do
+            subject.matches?(request(:headers => { 'a' => 'b' })).should be_false
+          end
+        end
       end
 
-      it "should not match if the headers do not match" do
-        request = Typhoeus::Request.new("http://localhost:3000",
-                                        :method => :get,
-                                        :headers => { 'Content-Type' => 'text/html' })
-        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
-                                       :body => 'fdsafdsa',
-                                       :headers => { 'Content-Type' => 'text/html', 'Another' => 'fdsa' })
-        mock.matches?(request).should be_false
-      end
+      context 'for :headers => [a hash]' do
+        it 'does not match if the request has no headers' do
+          m = mock(:headers => { 'A' => 'B', 'C' => 'D' })
 
-      it "should match if there are more headers in the request" do
-        request = Typhoeus::Request.new("http://localhost:3000",
-                                        :method => :get,
-                                        :headers => { 'Content-Type' => 'text/html', 'Extra' => 'fdsa' })
-        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
-                                       :headers => { 'Content-Type' => 'text/html' })
-        mock.matches?(request).should be_true
-      end
+          m.matches?(request).should be_false
+          m.matches?(request(:headers => nil)).should be_false
+          m.matches?(request(:headers => {})).should be_false
+        end
 
-      it "should match on lowercase header keys" do
-        request = Typhoeus::Request.new("http://localhost:3000",
-                                        :method => :get,
-                                        :headers => { 'Content-Type' => 'text/html' })
-        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
-                                       :headers => { 'content-type' => 'text/html', 'User-Agent' => request.user_agent })
-        mock.matches?(request).should be_true
-      end
+        it 'does not match if the request lacks any of the given headers' do
+          mock(
+            :headers => { 'A' => 'B', 'C' => 'D' }
+          ).matches?(request(
+            :headers => { 'A' => 'B' }
+          )).should be_false
+        end
 
-      it "should match on exact headers" do
-        request = Typhoeus::Request.new("http://localhost:3000",
-                                        :method => :get,
-                                        :headers => { 'Content-Type' => 'text/html' })
-        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
-                                       :headers => { 'Content-Type' => 'text/html', 'User-Agent' => request.user_agent })
-        mock.matches?(request).should be_true
-      end
+        it 'does not match if any of the specified values are different from the request value' do
+          mock(
+            :headers => { 'A' => 'B', 'C' => 'D' }
+          ).matches?(request(
+            :headers => { 'A' => 'B', 'C' => 'E' }
+          )).should be_false
+        end
 
-      it "should not match if the request has headers, but the mock does not have headers" do
-        request = Typhoeus::Request.new("http://localhost:3000",
-                                        :method => :get,
-                                        :headers => { 'Content-Type' => 'text/html' })
-        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get)
-        mock.matches?(request).should be_false
+        it 'matches if the given hash is exactly equal to the request headers' do
+          mock(
+            :headers => { 'A' => 'B', 'C' => 'D' }
+          ).matches?(request(
+            :headers => { 'A' => 'B', 'C' => 'D' }
+          )).should be_true
+        end
+
+        it 'matches even if the request has additional headers not specified in the mock' do
+          mock(
+            :headers => { 'A' => 'B', 'C' => 'D' }
+          ).matches?(request(
+            :headers => { 'A' => 'B', 'C' => 'D', 'E' => 'F' }
+          )).should be_true
+        end
+
+        it 'matches even if the casing of the header keys is different between the mock and request' do
+          mock(
+            :headers => { 'A' => 'B', 'c' => 'D' }
+          ).matches?(request(
+            :headers => { 'a' => 'B', 'C' => 'D' }
+          )).should be_true
+        end
+
+        it 'matches if the mocked values are regexes and match the request values' do
+          mock(
+            :headers => { 'A' => /foo/, }
+          ).matches?(request(
+            :headers => { 'A' => 'foo bar' }
+          )).should be_true
+        end
+
+        it 'does not match if the mocked values are regexes and match the request values' do
+          mock(
+            :headers => { 'A' => /foo/, }
+          ).matches?(request(
+            :headers => { 'A' => 'bar' }
+          )).should be_false
+        end
+
+        context 'when a header is specified as an array' do
+          it 'matches when the request header has the same array' do
+            mock(
+              :headers => { 'Accept' => ['text/html', 'text/plain'] }
+            ).matches?(request(
+              :headers => { 'Accept' => ['text/html', 'text/plain'] }
+            )).should be_true
+          end
+
+          it 'matches even when the request header array is ordered differently' do
+            mock(
+              :headers => { 'Accept' => ['text/html', 'text/plain'] }
+            ).matches?(request(
+              :headers => { 'Accept' => ['text/plain', 'text/html'] }
+            )).should be_true
+          end
+
+          it 'does not match when the request header array lacks a value' do
+            mock(
+              :headers => { 'Accept' => ['text/html', 'text/plain'] }
+            ).matches?(request(
+              :headers => { 'Accept' => ['text/plain'] }
+            )).should be_false
+          end
+
+          it 'does not match when the request header array has an extra value' do
+            mock(
+              :headers => { 'Accept' => ['text/html', 'text/plain'] }
+            ).matches?(request(
+              :headers => { 'Accept' => ['text/html', 'text/plain', 'application/xml'] }
+            )).should be_false
+          end
+
+          it 'does not match when the request header is not an array' do
+            mock(
+              :headers => { 'Accept' => ['text/html', 'text/plain'] }
+            ).matches?(request(
+              :headers => { 'Accept' => 'text/html' }
+            )).should be_false
+          end
+        end
       end
     end
 
