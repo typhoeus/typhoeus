@@ -201,6 +201,14 @@ describe Typhoeus::HydraMock do
             )).should be_true
           end
 
+          it 'matches when the request header is a single value and the mock array has the same value' do
+            mock(
+              :headers => { 'Accept' => ['text/html'] }
+            ).matches?(request(
+              :headers => { 'Accept' => 'text/html' }
+            )).should be_true
+          end
+
           it 'matches even when the request header array is ordered differently' do
             mock(
               :headers => { 'Accept' => ['text/html', 'text/plain'] }

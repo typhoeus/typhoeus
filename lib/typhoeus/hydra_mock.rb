@@ -108,14 +108,12 @@ module Typhoeus
     end
 
     def header_value_matches?(mock_value, request_value)
-      if request_value.is_a?(Array)
-        mock_value.is_a?(Array) &&
-        mock_value.size == request_value.size &&
-        mock_value.all? do |value|
-          request_value.include?(value)
-        end
-      else
-        mock_value === request_value
+      mock_arr = mock_value.is_a?(Array) ? mock_value : [mock_value]
+      request_arr = request_value.is_a?(Array) ? request_value : [request_value]
+
+      return false unless mock_arr.size == request_arr.size
+      mock_arr.all? do |value|
+        request_arr.any? { |a| value === a }
       end
     end
 
