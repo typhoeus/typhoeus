@@ -9,7 +9,7 @@ module Typhoeus
       @requests = []
       @options = options
       if @options[:headers]
-        @options[:headers] = Typhoeus::LowercaseHash.new(@options[:headers])
+        @options[:headers] = Typhoeus::NormalizedHeaderHash.new(@options[:headers])
       end
 
       @current_response_index = 0

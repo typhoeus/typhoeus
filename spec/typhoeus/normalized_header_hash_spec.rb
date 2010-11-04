@@ -1,21 +1,22 @@
 require File.dirname(__FILE__) + "/../spec_helper"
 
-describe Typhoeus::LowercaseHash do
+describe Typhoeus::NormalizedHeaderHash do
   before(:all) do
-    @klass = Typhoeus::LowercaseHash
+    @klass = Typhoeus::NormalizedHeaderHash
   end
 
-  it "should normalize keys to lowercase" do
+  it "should normalize keys on assignment" do
     hash = @klass.new
     hash['Content-Type'] = 'text/html'
     hash['content-type'].should == 'text/html'
+    hash[:content_type].should == 'text/html'
     hash['Accepts'] = 'text/javascript'
     hash['accepts'].should == 'text/javascript'
   end
 
-  it "should lowercase the keys" do
-    hash = @klass.new('Content-Type' => 'text/html')
-    hash.keys.should == ['content-type']
+  it "should normalize the keys on instantiation" do
+    hash = @klass.new('Content-Type' => 'text/html', :x_http_header => 'foo', 'X-HTTP-USER' => 'bar')
+    hash.keys.should =~ ['Content-Type', 'X-Http-Header', 'X-Http-User']
   end
 
   it "should merge keys correctly" do

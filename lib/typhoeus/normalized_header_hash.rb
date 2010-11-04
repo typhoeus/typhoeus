@@ -1,5 +1,5 @@
 module Typhoeus
-  class LowercaseHash < ::Hash
+  class NormalizedHeaderHash < ::Hash
     def initialize(constructor = {})
       if constructor.is_a?(Hash)
         super
@@ -39,7 +39,7 @@ module Typhoeus
     alias_method :merge!, :update
 
     def dup
-      Typhoeus::LowercaseHash.new(self)
+      self.class.new(self)
     end
 
     def merge(hash)
@@ -52,7 +52,7 @@ module Typhoeus
 
   private
     def convert_key(key)
-      key.to_s.downcase
+      key.to_s.split(/_|-/).map { |segment| segment.capitalize }.join("-")
     end
   end
 end
