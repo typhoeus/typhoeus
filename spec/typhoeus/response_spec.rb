@@ -19,6 +19,18 @@ describe Typhoeus::Response do
     it "should store status_message" do
       Typhoeus::Response.new(:status_message => 'Not Found').status_message.should == 'Not Found'
     end
+
+    it "should return nil for status_message if none is given and no header is given" do
+      Typhoeus::Response.new.status_message.should be_nil
+    end
+
+    it "should store http_version" do
+      Typhoeus::Response.new(:http_version => '1.1').http_version.should == '1.1'
+    end
+
+    it "should return nil for http version if none is given and no header is given" do
+      Typhoeus::Response.new.http_version.should be_nil
+    end
     
     it "should store response_headers" do
       Typhoeus::Response.new(:headers => "a header!").headers.should == "a header!"
@@ -82,6 +94,10 @@ describe Typhoeus::Response do
 
       it 'parses the status message' do
         @response.status_message.should == 'OK'
+      end
+
+      it 'parses the HTTP version' do
+        @response.http_version.should == '1.1'
       end
     end
 

@@ -10,6 +10,7 @@ module Typhoeus
     def initialize(params = {})
       @code                  = params[:code]
       @status_message        = params[:status_message]
+      @http_version          = params[:http_version]
       @headers               = params[:headers] || ''
       @body                  = params[:body]
       @time                  = params[:time]
@@ -50,7 +51,12 @@ module Typhoeus
     end
 
     def status_message
-      @status_message ||= headers.split("\n").first[/\d{3} (.*)\s+$/, 1]
+      # http://rubular.com/r/eAr1oVYsVa
+      @status_message ||= first_header_line ? first_header_line[/\d{3} (.*)\s+$/, 1] : nil
+    end
+
+    def http_version
+      @http_version ||= first_header_line ? first_header_line[/HTTP\/(\S+)/, 1] : nil
     end
 
     def success?
@@ -60,5 +66,11 @@ module Typhoeus
     def modified?
       @code != 304
     end
+
+    private
+
+      def first_header_line
+        @first_header_line ||= headers.split("\n").first
+      end
   end
 end
