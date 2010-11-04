@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Paul Dix"]
-  s.date = %q{2010-11-02}
+  s.date = %q{2010-11-03}
   s.description = %q{Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.}
   s.email = %q{paul@pauldix.net}
   s.extensions = ["ext/typhoeus/extconf.rb"]
@@ -44,8 +44,8 @@ Gem::Specification.new do |s|
      "lib/typhoeus/hydra/connect_options.rb",
      "lib/typhoeus/hydra/stubbing.rb",
      "lib/typhoeus/hydra_mock.rb",
-     "lib/typhoeus/lowercase_hash.rb",
      "lib/typhoeus/multi.rb",
+     "lib/typhoeus/normalized_header_hash.rb",
      "lib/typhoeus/remote.rb",
      "lib/typhoeus/remote_method.rb",
      "lib/typhoeus/remote_proxy_object.rb",
@@ -62,8 +62,8 @@ Gem::Specification.new do |s|
      "spec/typhoeus/filter_spec.rb",
      "spec/typhoeus/hydra_mock_spec.rb",
      "spec/typhoeus/hydra_spec.rb",
-     "spec/typhoeus/lowercase_hash_spec.rb",
      "spec/typhoeus/multi_spec.rb",
+     "spec/typhoeus/normalized_header_hash_spec.rb",
      "spec/typhoeus/remote_method_spec.rb",
      "spec/typhoeus/remote_proxy_object_spec.rb",
      "spec/typhoeus/remote_spec.rb",
@@ -84,8 +84,8 @@ Gem::Specification.new do |s|
      "spec/typhoeus/filter_spec.rb",
      "spec/typhoeus/hydra_mock_spec.rb",
      "spec/typhoeus/hydra_spec.rb",
-     "spec/typhoeus/lowercase_hash_spec.rb",
      "spec/typhoeus/multi_spec.rb",
+     "spec/typhoeus/normalized_header_hash_spec.rb",
      "spec/typhoeus/remote_method_spec.rb",
      "spec/typhoeus/remote_proxy_object_spec.rb",
      "spec/typhoeus/remote_spec.rb",
