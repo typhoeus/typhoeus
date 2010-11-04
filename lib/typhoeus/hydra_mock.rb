@@ -93,17 +93,18 @@ module Typhoeus
     end
 
     def headers_match?(request)
-      if empty_headers?(self.headers)
-        empty_headers?(request.headers)
-      else
-        return false if empty_headers?(request.headers)
+      request_headers = NormalizedHeaderHash.new(request.headers)
 
-        matches = 0
-        request.headers.each do |key, value|
-          matches += 1 if headers.has_key?(key) && header_value_matches?(headers[key], value)
+      if empty_headers?(self.headers)
+        empty_headers?(request_headers)
+      else
+        return false if empty_headers?(request_headers)
+
+        headers.each do |key, value|
+          return false unless header_value_matches?(value, request_headers[key])
         end
 
-        matches == self.headers.size
+        true
       end
     end
 
