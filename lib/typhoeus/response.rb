@@ -52,7 +52,7 @@ module Typhoeus
 
     def status_message
       # http://rubular.com/r/eAr1oVYsVa
-      @status_message ||= first_header_line ? first_header_line[/\d{3} (.*)\s+$/, 1] : nil
+      @status_message ||= first_header_line ? first_header_line[/\d{3} (.*)$/, 1].chomp : nil
     end
 
     def http_version
