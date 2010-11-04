@@ -184,7 +184,7 @@ describe Typhoeus::HydraMock do
           )).should be_true
         end
 
-        it 'does not match if the mocked values are regexes and match the request values' do
+        it 'does not match if the mocked values are regexes and do not match the request values' do
           mock(
             :headers => { 'A' => /foo/, }
           ).matches?(request(
