@@ -1,7 +1,6 @@
 require 'typhoeus/hydra/callbacks'
 require 'typhoeus/hydra/connect_options'
 require 'typhoeus/hydra/stubbing'
-require 'set'
 
 module Typhoeus
   class Hydra
@@ -22,7 +21,7 @@ module Typhoeus
       @running_requests = 0
 
       self.stubs = []
-      @active_stubs = Set.new
+      @active_stubs = []
     end
 
     def self.hydra
