@@ -1,4 +1,21 @@
 #!/usr/bin/env ruby
+
+if RUBY_VERSION == '1.8.6'
+  # Rack 1.2.1 won't load on 1.8.6 due to a difference in Regexp.union on 1.8.6 vs > 1.8.6.
+  # We work around it here by fixing Regexp.union so it handles being given an array as the
+  # a single parameter.
+  class Regexp
+    class << self
+      def union_with_array_fix(*strings)
+        strings = strings.first if strings.size == 1 && strings.first.is_a?(Array)
+        union_without_array_fix(*strings)
+      end
+      alias union_without_array_fix union
+      alias union union_with_array_fix
+    end
+  end
+end
+
 require 'rubygems'
 require 'sinatra'
 require 'json'
