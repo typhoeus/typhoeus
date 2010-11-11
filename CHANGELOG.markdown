@@ -1,9 +1,10 @@
-Next version
+0.2.0
 ------------
 * Fix warning in Request#headers from attr_accessor
 * Params with array values were not parsing into the format that rack expects
 [GH-39, smartocci]
 * Removed Rack as a dependency [GH-45]
+* Added integration hooks for VCR!
 
 0.1.31
 ------
