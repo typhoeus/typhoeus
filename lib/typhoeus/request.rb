@@ -6,10 +6,12 @@ module Typhoeus
     attr_writer   :headers
     attr_accessor :method, :params, :body, :connect_timeout, :timeout,
                   :user_agent, :response, :cache_timeout, :follow_location,
-                  :max_redirects, :proxy, :disable_ssl_peer_verification,
+                  :max_redirects, :proxy, :proxy_username,:proxy_password,
+                  :disable_ssl_peer_verification,
                   :ssl_cert, :ssl_cert_type, :ssl_key, :ssl_key_type,
                   :ssl_key_password, :ssl_cacert, :ssl_capath, :verbose,
-                  :username, :password, :auth_method, :user_agent
+                  :username, :password, :auth_method, :user_agent,
+                  :proxy_auth_method, :proxy_type
 
     # Initialize a new Request
     #
@@ -52,6 +54,10 @@ module Typhoeus
       @follow_location  = options[:follow_location]
       @max_redirects    = options[:max_redirects]
       @proxy            = options[:proxy]
+      @proxy_type       = options[:proxy_type]
+      @proxy_username   = options[:proxy_username]
+      @proxy_password   = options[:proxy_password]
+      @proxy_auth_method = options[:proxy_auth_method]
       @disable_ssl_peer_verification = options[:disable_ssl_peer_verification]
       @ssl_cert         = options[:ssl_cert]
       @ssl_cert_type    = options[:ssl_cert_type]

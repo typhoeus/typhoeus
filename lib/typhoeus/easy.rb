@@ -28,6 +28,9 @@ module Typhoeus
       :CURLOPT_USERPWD        => 10000 + 5,
       :CURLOPT_VERBOSE        => 41,
       :CURLOPT_PROXY          => 10004,
+      :CURLOPT_PROXYUSERPWD   => 10000 + 6,
+      :CURLOPT_PROXYTYPE      => 101,
+      :CURLOPT_PROXYAUTH      => 111,
       :CURLOPT_VERIFYPEER     => 64,
       :CURLOPT_NOBODY         => 44,
       :CURLOPT_ENCODING       => 10000 + 102,
@@ -53,6 +56,14 @@ module Typhoeus
       :CURLAUTH_DIGEST_IE     => 16,
       :CURLAUTH_AUTO          => 16 | 8 | 4 | 2 | 1
     }
+    PROXY_TYPES = {
+      :CURLPROXY_HTTP         => 0,
+      :CURLPROXY_HTTP_1_0     => 1,
+      :CURLPROXY_SOCKS4       => 4,
+      :CURLPROXY_SOCKS5       => 5,
+      :CURLPROXY_SOCKS4A      => 6,
+    }
+
 
     def initialize
       @method = :get
@@ -67,7 +78,13 @@ module Typhoeus
     end
 
     def proxy=(proxy)
-      set_option(OPTION_VALUES[:CURLOPT_PROXY], proxy)
+      set_option(OPTION_VALUES[:CURLOPT_PROXY], proxy[:server])
+      set_option(OPTION_VALUES[:CURLOPT_PROXYTYPE], proxy[:type]) if proxy[:type]
+    end
+
+    def proxy_auth=(authinfo)
+      set_option(OPTION_VALUES[:CURLOPT_PROXYUSERPWD], "#{authinfo[:username]}:#{authinfo[:password]}")
+      set_option(OPTION_VALUES[:CURLOPT_PROXYAUTH], authinfo[:method]) if authinfo[:method]
     end
 
     def auth=(authinfo)
@@ -106,7 +123,7 @@ module Typhoeus
     def max_redirects=(redirects)
       set_option(OPTION_VALUES[:CURLOPT_MAXREDIRS], redirects)
     end
-    
+
     def connect_timeout=(milliseconds)
       @connect_timeout = milliseconds
       set_option(OPTION_VALUES[:CURLOPT_NOSIGNAL], 1)
@@ -205,7 +222,7 @@ module Typhoeus
     # Set SSL certificate type
     # " The string should be the format of your certificate. Supported formats are "PEM" and "DER" "
     def ssl_cert_type=(cert_type)
-      raise "Invalid ssl cert type : '#{cert_type}'..." if cert_type and !%w(PEM DER).include?(cert_type) 
+      raise "Invalid ssl cert type : '#{cert_type}'..." if cert_type and !%w(PEM DER).include?(cert_type)
       set_option(OPTION_VALUES[:CURLOPT_SSLCERTTYPE], cert_type)
     end
 
@@ -254,7 +271,7 @@ module Typhoeus
     def perform
       set_headers()
       easy_perform()
-      resp_code = response_code() 
+      resp_code = response_code()
       if resp_code >= 200 && resp_code <= 299
         success
       else

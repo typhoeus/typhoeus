@@ -131,6 +131,19 @@ module Typhoeus
         auth[:method] = Typhoeus::Easy::AUTH_TYPES["CURLAUTH_#{request.auth_method.to_s.upcase}".to_sym] if request.auth_method
         easy.auth = auth
       end
+
+      if request.proxy
+        proxy = { :server => request.proxy }
+        proxy[:type] = Typhoeus::Easy::PROXY_TYPES["CURLPROXY_#{request.proxy_type.to_s.upcase}".to_sym] if request.proxy_type
+        easy.proxy = proxy if request.proxy
+      end
+
+      if request.proxy_username || request.proxy_password
+        auth = { :username => request.proxy_username, :password => request.proxy_password }
+        auth[:method] = Typhoeus::Easy::AUTH_TYPES["CURLAUTH_#{request.proxy_auth_method.to_s.upcase}".to_sym] if request.proxy_auth_method
+        easy.proxy_auth = auth
+      end
+
       easy.url          = request.url
       easy.method       = request.method
       easy.params       = request.params  if request.method == :post && !request.params.nil?
@@ -140,7 +153,6 @@ module Typhoeus
       easy.connect_timeout = request.connect_timeout if request.connect_timeout
       easy.follow_location = request.follow_location if request.follow_location
       easy.max_redirects = request.max_redirects if request.max_redirects
-      easy.proxy = request.proxy if request.proxy
       easy.disable_ssl_peer_verification if request.disable_ssl_peer_verification
       easy.ssl_cert         = request.ssl_cert
       easy.ssl_cert_type    = request.ssl_cert_type
