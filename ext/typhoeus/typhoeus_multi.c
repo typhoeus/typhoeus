@@ -128,6 +128,8 @@ static VALUE fire_and_forget(VALUE self) {
   CurlMulti *curl_multi;
   Data_Get_Struct(self, CurlMulti, curl_multi);
   rb_curl_multi_run( self, curl_multi->multi, &(curl_multi->running) );
+
+  return Qnil;
 }
 
 static VALUE multi_perform(VALUE self) {
