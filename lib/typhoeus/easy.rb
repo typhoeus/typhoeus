@@ -43,10 +43,16 @@ module Typhoeus
       :CURLOPT_CAPATH         => 10097
     }
     INFO_VALUES = {
-      :CURLINFO_RESPONSE_CODE => 2097154,
-      :CURLINFO_TOTAL_TIME    => 3145731,
-      :CURLINFO_HTTPAUTH_AVAIL => 0x200000 + 23,
-      :CURLINFO_EFFECTIVE_URL => 0x100000 + 1
+      :CURLINFO_RESPONSE_CODE      => 2097154,
+      :CURLINFO_TOTAL_TIME         => 3145731,
+      :CURLINFO_HTTPAUTH_AVAIL     => 0x200000 + 23,
+      :CURLINFO_EFFECTIVE_URL      => 0x100000 + 1,
+      :CURLINFO_NAMELOOKUP_TIME    => 0x300000 + 4,
+      :CURLINFO_CONNECT_TIME       => 0x300000 + 5,
+      :CURLINFO_PRETRANSFER_TIME   => 0x300000 + 6,
+      :CURLINFO_STARTTRANSFER_TIME => 0x300000 + 17,
+      :CURLINFO_APPCONNECT_TIME    => 0x300000 + 33,
+
     }
     AUTH_TYPES = {
       :CURLAUTH_BASIC         => 1,
@@ -102,6 +108,26 @@ module Typhoeus
 
     def total_time_taken
       get_info_double(INFO_VALUES[:CURLINFO_TOTAL_TIME])
+    end
+
+    def start_transfer_time
+      get_info_double(INFO_VALUES[:CURLINFO_STARTTRANSFER_TIME])
+    end
+
+    def app_connect_time
+      get_info_double(INFO_VALUES[:CURLINFO_APPCONNECT_TIME])
+    end
+
+    def pretransfer_time
+      get_info_double(INFO_VALUES[:CURLINFO_PRETRANSFER_TIME])
+    end
+
+    def connect_time
+      get_info_double(INFO_VALUES[:CURLINFO_CONNECT_TIME])
+    end
+
+    def name_lookup_time
+      get_info_double(INFO_VALUES[:CURLINFO_NAMELOOKUP_TIME])
     end
 
     def effective_url
