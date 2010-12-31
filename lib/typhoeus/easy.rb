@@ -1,6 +1,6 @@
 module Typhoeus
   class Easy
-    attr_reader :response_body, :response_header, :method, :headers, :url, :params
+    attr_reader :response_body, :response_header, :method, :headers, :url, :params, :curl_return_code
     attr_accessor :start_time
 
     # These integer codes are available in curl/curl.h
@@ -300,7 +300,7 @@ module Typhoeus
       @success = block
     end
 
-    # gets called when finished and response code is 300-599
+    # gets called when finished and response code is 300-599 or curl returns an error code
     def failure
       @failure.call(self) if @failure
     end

@@ -17,6 +17,28 @@ describe Typhoeus::Easy do
     end
   end
 
+  describe "curl errors" do
+    it "should provide the CURLE_OPERATION_TIMEDOUT return code when a request times out" do
+      e = Typhoeus::Easy.new
+      e.url = "http://localhost:3001/?delay=1"
+      e.method = :get
+      e.timeout = 100
+      e.perform
+      e.curl_return_code.should == 28
+      e.response_code.should == 0
+    end
+
+    it "should provide the CURLE_COULDNT_CONNECT return code when trying to connect to a non existent port" do
+      e = Typhoeus::Easy.new
+      e.url = "http://localhost:3999"
+      e.method = :get
+      e.connect_timeout = 100
+      e.perform
+      e.curl_return_code.should == 7
+      e.response_code.should == 0
+    end
+  end
+
   describe "options" do
     it "should not follow redirects if not instructed to" do
       e = Typhoeus::Easy.new

@@ -95,6 +95,7 @@ static void multi_read_info(VALUE self, CURLM *multi_handle) {
         }
       }
       multi_remove_handle(self, easy);
+      rb_iv_set(easy, "@curl_return_code", INT2FIX(result));
 
       if (result != 0) {
         rb_funcall(easy, rb_intern("failure"), 0);

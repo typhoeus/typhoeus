@@ -46,6 +46,17 @@ describe Typhoeus::Hydra do
     second.response.body.should include("second")
   end
 
+  it "should store the curl return codes on the reponses" do
+    hydra  = Typhoeus::Hydra.new
+    first  = Typhoeus::Request.new("http://localhost:3001/?delay=1", :timeout => 100)
+    second = Typhoeus::Request.new("http://localhost:3999", :connect_timout => 100)
+    hydra.queue first
+    hydra.queue second
+    hydra.run
+    first.response.curl_return_code == 28
+    second.response.curl_return_code == 7
+  end
+
   it "has a cache_setter proc" do
     hydra = Typhoeus::Hydra.new
     hydra.cache_setter do |request|

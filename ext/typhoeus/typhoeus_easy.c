@@ -70,8 +70,10 @@ static VALUE easy_getinfo_double(VALUE self, VALUE info) {
 
 static VALUE easy_perform(VALUE self) {
   CurlEasy *curl_easy;
+  CURLcode return_code;
   Data_Get_Struct(self, CurlEasy, curl_easy);
-  curl_easy_perform(curl_easy->curl);
+  return_code = curl_easy_perform(curl_easy->curl);
+  rb_iv_set(self, "@curl_return_code", INT2FIX(return_code));
 
   return Qnil;
 }

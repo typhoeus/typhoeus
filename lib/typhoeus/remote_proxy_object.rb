@@ -22,6 +22,7 @@ module Typhoeus
         unless @proxied_object
           Typhoeus.perform_easy_requests
           response = Response.new(:code => @easy.response_code,
+                                  :curl_return_code => @easy.curl_return_code,
                                   :headers => @easy.response_header,
                                   :body => @easy.response_body,
                                   :time => @easy.total_time_taken,
