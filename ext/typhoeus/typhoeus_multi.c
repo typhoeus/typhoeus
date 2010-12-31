@@ -16,7 +16,7 @@ static VALUE multi_add_handle(VALUE self, VALUE easy) {
 
   mcode = curl_multi_add_handle(curl_multi->multi, curl_easy->curl);
   if (mcode != CURLM_CALL_MULTI_PERFORM && mcode != CURLM_OK) {
-    rb_raise((VALUE)mcode, "An error occured adding the handle");
+    rb_raise(rb_eRuntimeError, "An error occured adding the handle: %d", mcode);
   }
 
   curl_easy_setopt(curl_easy->curl, CURLOPT_PRIVATE, easy);
@@ -65,7 +65,7 @@ static void multi_read_info(VALUE self, CURLM *multi_handle) {
     if (easy_handle) {
       ecode = curl_easy_getinfo(easy_handle, CURLINFO_PRIVATE, &easy);
       if (ecode != 0) {
-        rb_raise(ecode, "error getting easy object");
+        rb_raise(rb_eRuntimeError, "error getting easy object:%d", ecode);
       }
 
       long response_code = -1;
@@ -118,7 +118,7 @@ static void rb_curl_multi_run(VALUE self, CURLM *multi_handle, int *still_runnin
   } while (mcode == CURLM_CALL_MULTI_PERFORM);
 
   if (mcode != CURLM_OK) {
-    rb_raise((VALUE)mcode, "an error occured while running perform");
+    rb_raise(rb_eRuntimeError, "an error occured while running perform: %d", mcode);
   }
 
   multi_read_info( self, multi_handle );
@@ -150,7 +150,7 @@ static VALUE multi_perform(VALUE self) {
     /* get the curl suggested time out */
     mcode = curl_multi_timeout(curl_multi->multi, &timeout);
     if (mcode != CURLM_OK) {
-      rb_raise((VALUE)mcode, "an error occured getting the timeout");
+      rb_raise(rb_eRuntimeError, "an error occured getting the timeout: %d", mcode);
           }
 
     if (timeout == 0) { /* no delay */
@@ -167,7 +167,7 @@ static VALUE multi_perform(VALUE self) {
     /* load the fd sets from the multi handle */
     mcode = curl_multi_fdset(curl_multi->multi, &fdread, &fdwrite, &fdexcep, &maxfd);
     if (mcode != CURLM_OK) {
-      rb_raise((VALUE)mcode, "an error occured getting the fdset");
+      rb_raise(rb_eRuntimeError, "an error occured getting the fdset: %d", mcode);
     }
 
     rc = rb_thread_select(maxfd+1, &fdread, &fdwrite, &fdexcep, &tv);
