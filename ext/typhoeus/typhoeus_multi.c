@@ -185,7 +185,7 @@ static VALUE active_handle_count(VALUE self) {
   CurlMulti *curl_multi;
   Data_Get_Struct(self, CurlMulti, curl_multi);
 
-  return INT2NUM(curl_multi->active);
+  return INT2FIX(curl_multi->active);
 }
 
 static VALUE multi_cleanup(VALUE self) {
