@@ -190,10 +190,21 @@ static VALUE new(int argc, VALUE *argv, VALUE klass) {
   return easy;
 }
 
+static VALUE curl_error_message(VALUE self) {
+  VALUE return_code = rb_iv_get(self, "@curl_return_code");
+  if (return_code == Qnil)
+    return Qnil;
+  else {
+    CURLcode rc = (CURLcode)FIX2INT(return_code);
+    return rb_str_new2(curl_easy_strerror(rc));
+  }
+}
+
 void init_typhoeus_easy() {
   VALUE klass = cTyphoeusEasy = rb_define_class_under(mTyphoeus, "Easy", rb_cObject);
   idAppend = rb_intern("<<");
   rb_define_singleton_method(klass, "new", new, -1);
+  rb_define_method(klass, "curl_error_message", curl_error_message, 0);
   rb_define_private_method(klass, "easy_setopt_string", easy_setopt_string, 2);
   rb_define_private_method(klass, "easy_setopt_long", easy_setopt_long, 2);
   rb_define_private_method(klass, "easy_getinfo_string", easy_getinfo_string, 1);

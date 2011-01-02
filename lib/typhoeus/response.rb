@@ -4,12 +4,13 @@ module Typhoeus
     attr_reader :code, :headers, :body, :time,
                 :requested_url, :requested_remote_method,
                 :requested_http_method, :start_time,
-                :effective_url, :curl_return_code
+                :effective_url, :curl_return_code, :curl_error_message
     attr_writer :headers_hash
 
     def initialize(params = {})
       @code                  = params[:code]
       @curl_return_code      = params[:curl_return_code]
+      @curl_error_message    = params[:curl_error_message]
       @status_message        = params[:status_message]
       @http_version          = params[:http_version]
       @headers               = params[:headers] || ''

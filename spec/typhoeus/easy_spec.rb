@@ -25,6 +25,7 @@ describe Typhoeus::Easy do
       e.timeout = 100
       e.perform
       e.curl_return_code.should == 28
+      e.curl_error_message.should == "Timeout was reached"
       e.response_code.should == 0
     end
 
@@ -35,8 +36,21 @@ describe Typhoeus::Easy do
       e.connect_timeout = 100
       e.perform
       e.curl_return_code.should == 7
+      e.curl_error_message.should == "Couldn't connect to server"
       e.response_code.should == 0
     end
+
+    it "should not return an error message on a successful easy operation" do
+      easy = Typhoeus::Easy.new
+      easy.url    = "http://localhost:3002"
+      easy.method = :get
+      easy.curl_error_message.should == nil
+      easy.perform
+      easy.response_code.should == 200
+      easy.curl_return_code.should == 0
+      easy.curl_error_message.should == "No error"
+    end
+
   end
 
   describe "options" do
