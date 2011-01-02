@@ -203,7 +203,9 @@ Typhoeus::Request.get("https://mail.google.com/mail", :disable_ssl_peer_verifica
 *LibCurl*
 Typhoeus also has a more raw libcurl interface. These are the Easy and Multi objects. If you're into accessing just the raw libcurl style, those are your best bet.
 
-SSL Certs can be provided to the Easy interface :
+However, by using this raw interface, you do not get access to Hydra-specific features, such as stubbing/mocking.
+
+SSL Certs can be provided to the Easy interface:
 
 <pre>
 e = Typhoeus::Easy.new
@@ -262,7 +264,7 @@ There's also an easy way to perform any kind of authentication via the quick req
 e = Typhoeus::Request.get("http://example.com",
   :username => 'username',
   :password => 'password',
-  :method => :ntlm)
+  :auth_method => :ntlm)
 </pre>
 
 All methods listed above is available in a shorter form - :basic, :digest, :gssnegotiate, :ntlm, :digest_ie, :auto.
