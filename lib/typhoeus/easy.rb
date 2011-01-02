@@ -313,25 +313,7 @@ module Typhoeus
       @failure = block
     end
 
-    def retries
-      @retries ||= 0
-    end
-
-    def increment_retries
-      @retries ||= 0
-      @retries += 1
-    end
-
-    def max_retries
-      @max_retries ||= 40
-    end
-
-    def max_retries?
-      retries >= max_retries
-    end
-
     def reset
-      @retries = 0
       @response_code = 0
       @response_header = ""
       @response_body = ""

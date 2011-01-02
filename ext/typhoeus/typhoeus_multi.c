@@ -71,29 +71,6 @@ static void multi_read_info(VALUE self, CURLM *multi_handle) {
       long response_code = -1;
       curl_easy_getinfo(easy_handle, CURLINFO_RESPONSE_CODE, &response_code);
 
-      // TODO: find out what the real problem is here and fix it.
-      // this next bit is a horrible hack. For some reason my tests against a local server on my laptop
-      // fail intermittently and return this result number. However, it will succeed if you try it a few
-      // more times. Also noteworthy is that this doens't happen when hitting an external server. WTF?!
-
-      // Sandofsky says:
-      // This is caused by OS X first attempting to resolve using IPV6.
-      // Hack solution: connect to yourself with 127.0.0.1, not localhost
-      // http://curl.haxx.se/mail/tracker-2009-09/0018.html
-      if (result == 7) {
-        VALUE max_retries = rb_funcall(easy, rb_intern("max_retries?"), 0);
-        if (max_retries != Qtrue) {
-          multi_remove_handle(self, easy);
-          multi_add_handle(self, easy);
-          CurlMulti *curl_multi;
-          Data_Get_Struct(self, CurlMulti, curl_multi);
-          curl_multi_perform(curl_multi->multi, &(curl_multi->running));
-
-          rb_funcall(easy, rb_intern("increment_retries"), 0);
-
-          continue;
-        }
-      }
       multi_remove_handle(self, easy);
       rb_iv_set(easy, "@curl_return_code", INT2FIX(result));
 
