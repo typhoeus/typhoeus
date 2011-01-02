@@ -149,7 +149,7 @@ hydra.cache_getter do |request|
 end
 </pre>
 
-*Stubbing*
+*Direct Stubbing*
 Hydra allows you to stub out specific urls and patters to avoid hitting remote servers while testing.
 
 <pre>
