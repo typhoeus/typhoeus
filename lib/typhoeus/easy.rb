@@ -137,7 +137,7 @@ module Typhoeus
     end
 
     def timed_out?
-      @timeout && total_time_taken > @timeout && response_code == 0
+      curl_return_code == 28
     end
 
     def supports_zlib?

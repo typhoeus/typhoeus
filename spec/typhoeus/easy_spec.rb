@@ -70,12 +70,11 @@ describe Typhoeus::Easy do
 
     it "should provide a timeout in milliseconds" do
       e = Typhoeus::Easy.new
-      e.url = "http://localhost:3001"
+      e.url = "http://localhost:3001/?delay=1"
       e.method = :get
-      e.timeout = 50
+      e.timeout = 10
       e.perform
-      # this doesn't work on a mac for some reason
-#      e.timed_out?.should == true
+      e.timed_out?.should == true
     end
 
     it "should allow the setting of the max redirects to follow" do
