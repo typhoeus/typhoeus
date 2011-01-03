@@ -2,5 +2,6 @@ conftest.dSYM/*
 conftest.dSYM
 mkmf.log
 *.o
-native.bundleMakefile
+native.bundle
+Makefile
 *.bundle

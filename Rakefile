@@ -1,6 +1,8 @@
+$LOAD_PATH.unshift(File.dirname(__FILE__))
+
 require "spec"
 require "spec/rake/spectask"
-require 'lib/typhoeus.rb'
+require 'lib/typhoeus'
 
 begin
   require 'jeweler'
