@@ -13,7 +13,7 @@ urls = [
 10.times {
     |i|
 
-    req = Typhoeus::Request.new( urls[ i % urls.size], :max_concurrency => 10 )
+    req = Typhoeus::Request.new( urls[ i % urls.size] )
     req.on_complete {
         |res|
         puts 'URL:     ' + res.effective_url
