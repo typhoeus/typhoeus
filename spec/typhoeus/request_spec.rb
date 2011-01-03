@@ -25,7 +25,7 @@ describe Typhoeus::Request do
     it "should dump the method" do
       @request.inspect.should =~ /:get/
     end
-    
+
     it "should dump out headers" do
       @request.inspect.should =~ /"Content-Type"\s*=>\s*"text\/html"/
     end
@@ -212,6 +212,35 @@ describe Typhoeus::Request do
     request.call_handlers
     good.should be_true
   end
+
+  describe "time info" do
+    it "should have time" do
+      response = Typhoeus::Request.get("http://localhost:3000")
+      response.time.should > 0
+    end
+
+    it "should have connect time" do
+      response = Typhoeus::Request.get("http://localhost:3000")
+      response.connect_time.should > 0
+    end
+
+    it "should have app connect time" do
+      response = Typhoeus::Request.get("http://localhost:3000")
+      response.app_connect_time.should  > 0
+    end
+
+    it "should have start transfer time" do
+      response = Typhoeus::Request.get("http://localhost:3000")
+      response.start_transfer_time.should  > 0
+    end
+
+    it "should have pre-transfer time" do
+      response = Typhoeus::Request.get("http://localhost:3000")
+      response.pretransfer_time.should  > 0
+    end
+
+  end
+
 
   describe "authentication" do
 
