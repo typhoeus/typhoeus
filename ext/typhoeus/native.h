@@ -10,6 +10,7 @@ void Init_native();
 extern VALUE mTyphoeus;
 extern void init_typhoeus_easy();
 extern void init_typhoeus_multi();
+extern void init_typhoeus_form();
 
 #endif
 

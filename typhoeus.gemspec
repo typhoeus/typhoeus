@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Paul Dix"]
-  s.date = %q{2010-11-11}
+  s.date = %q{2011-01-08}
   s.description = %q{Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.}
   s.email = %q{paul@pauldix.net}
   s.extensions = ["ext/typhoeus/extconf.rb"]
@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     ".gitignore",
+     ".idea/projectCodeStyle.xml",
      "CHANGELOG.markdown",
      "Gemfile",
      "Gemfile.lock",
@@ -26,6 +27,8 @@ Gem::Specification.new do |s|
      "VERSION",
      "benchmarks/profile.rb",
      "benchmarks/vs_nethttp.rb",
+     "examples/file.rb",
+     "examples/times.rb",
      "examples/twitter.rb",
      "ext/typhoeus/.gitignore",
      "ext/typhoeus/extconf.rb",
@@ -33,12 +36,15 @@ Gem::Specification.new do |s|
      "ext/typhoeus/native.h",
      "ext/typhoeus/typhoeus_easy.c",
      "ext/typhoeus/typhoeus_easy.h",
+     "ext/typhoeus/typhoeus_form.c",
+     "ext/typhoeus/typhoeus_form.h",
      "ext/typhoeus/typhoeus_multi.c",
      "ext/typhoeus/typhoeus_multi.h",
      "lib/typhoeus.rb",
      "lib/typhoeus/.gitignore",
      "lib/typhoeus/easy.rb",
      "lib/typhoeus/filter.rb",
+     "lib/typhoeus/form.rb",
      "lib/typhoeus/hydra.rb",
      "lib/typhoeus/hydra/callbacks.rb",
      "lib/typhoeus/hydra/connect_options.rb",
@@ -92,6 +98,8 @@ Gem::Specification.new do |s|
      "spec/typhoeus/request_spec.rb",
      "spec/typhoeus/response_spec.rb",
      "spec/typhoeus/utils_spec.rb",
+     "examples/file.rb",
+     "examples/times.rb",
      "examples/twitter.rb"
   ]
 
