@@ -3,16 +3,16 @@ module Typhoeus
     attr_reader :easy_handles
 
     def initialize
-      reset_easy_handles
+      @easy_handles = []
     end
 
     def remove(easy)
-      multi_remove_handle(easy)
+      multi_remove_handle(easy) if @easy_handles.include?(easy)
     end
 
     def add(easy)
+      raise "trying to add easy handle twice" if @easy_handles.include?(easy)
       easy.set_headers() if easy.headers.empty?
-      @easy_handles << easy
       multi_add_handle(easy)
     end
 
@@ -27,9 +27,11 @@ module Typhoeus
       multi_cleanup
     end
 
-    private
     def reset_easy_handles
-      @easy_handles = []
+      @easy_handles.dup.each do |easy|
+        multi_remove_handle(easy)
+        yield easy if block_given?
+      end
     end
   end
 end

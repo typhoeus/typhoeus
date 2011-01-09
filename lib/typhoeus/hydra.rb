@@ -82,8 +82,11 @@ module Typhoeus
       end
 
       @multi.perform
+    ensure
+      @multi.reset_easy_handles{|easy| release_easy_object(easy)}
       @memoized_requests = {}
       @retrieved_from_cache = {}
+      @running_requests = 0
     end
 
     def disable_memoization

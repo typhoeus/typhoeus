@@ -22,6 +22,9 @@ static VALUE multi_add_handle(VALUE self, VALUE easy) {
   curl_easy_setopt(curl_easy->curl, CURLOPT_PRIVATE, easy);
   curl_multi->active++;
 
+  VALUE easy_handles = rb_iv_get(self, "@easy_handles");
+  rb_ary_push(easy_handles, easy);
+
   if (mcode == CURLM_CALL_MULTI_PERFORM) {
     curl_multi_perform(curl_multi->multi, &(curl_multi->running));
   }
@@ -42,6 +45,9 @@ static VALUE multi_remove_handle(VALUE self, VALUE easy) {
 
   curl_multi->active--;
   curl_multi_remove_handle(curl_multi->multi, curl_easy->curl);
+
+  VALUE easy_handles = rb_iv_get(self, "@easy_handles");
+  rb_ary_delete(easy_handles, easy);
 
   return easy;
 }
