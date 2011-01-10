@@ -25,7 +25,7 @@ module Typhoeus
               File.expand_path(value.path)
             )
           else
-            formadd_param(key, value)
+            formadd_param(key.to_s, value.to_s)
         end
       end
     end
