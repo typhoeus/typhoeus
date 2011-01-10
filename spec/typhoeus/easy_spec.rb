@@ -209,7 +209,6 @@ describe Typhoeus::Easy do
       easy.params = {:foo => "bar"}
       easy.perform
       easy.response_code.should == 200
-      puts "body: #{easy.response_body}"
       easy.response_body.should include("name=\\\"foo\\\"\\r\\n\\r\\nbar")
     end
   end
