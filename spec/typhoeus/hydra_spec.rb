@@ -390,37 +390,50 @@ describe Typhoeus::Hydra::ConnectOptions do
     @klass = Typhoeus::Hydra
   end
 
+  let!(:old_net_connect) { @klass.allow_net_connect }
+  let!(:old_ignore_localhost) { @klass.ignore_localhost }
+  let(:hydra) { @klass.new }
+
+  after(:each) do
+    @klass.allow_net_connect = old_net_connect
+    @klass.ignore_localhost = old_ignore_localhost
+  end
+
+  def request_for(host)
+    Typhoeus::Request.new("http://#{host}:3000")
+  end
+
   describe "#ignore_localhost" do
-    it "should allow localhost requests over the wire if true" do
-      begin
-        old_net_connect = @klass.allow_net_connect
-        old_ignore_localhost = @klass.ignore_localhost
+    context "when set to true" do
+      before(:each) { @klass.ignore_localhost = true }
+
+      [true, false].each do |val|
+        it "allows localhost requests when allow_net_connect is #{val}" do
+          @klass.allow_net_connect = val
+          expect { hydra.queue(request_for('localhost')) }.to_not raise_error
+        end
+      end
+    end
+
+    context "when set to false" do
+      before(:each) { @klass.ignore_localhost = false }
+
+      it "allows localhost requests when allow_net_connect is true" do
+        @klass.allow_net_connect = true
+        expect { hydra.queue(request_for('localhost')) }.to_not raise_error
+      end
+
+      it "does not allow localhost requests when allow_net_connect is false" do
         @klass.allow_net_connect = false
-        @klass.ignore_localhost = true
-
-        req = Typhoeus::Request.new("http://localhost:3000")
-        hydra = @klass.new
-
-        lambda {
-          hydra.queue(req)
-        }.should_not raise_error
-      ensure
-        @klass.allow_net_connect = old_net_connect
-        @klass.ignore_localhost = old_ignore_localhost
+        expect { hydra.queue(request_for('localhost')) }.to raise_error(Typhoeus::Hydra::NetConnectNotAllowedError)
       end
     end
   end
 
   describe "#allow_net_connect" do
     it "should be settable" do
-      begin
-        # make sure to not mess up other specs.
-        old = @klass.allow_net_connect
-        @klass.allow_net_connect = true
-        @klass.allow_net_connect.should be_true
-      ensure
-        @klass.allow_net_connect = old
-      end
+      @klass.allow_net_connect = true
+      @klass.allow_net_connect.should be_true
     end
 
     it "should default to true" do
@@ -428,23 +441,12 @@ describe Typhoeus::Hydra::ConnectOptions do
     end
 
     it "should raise an error if we queue a request while its false" do
-      begin
-        request = Typhoeus::Request.new("http://localhost:3000")
-        old_net_connect = @klass.allow_net_connect
-        old_ignore_localhost = @klass.ignore_localhost
+      @klass.allow_net_connect = false
+      @klass.ignore_localhost = false
 
-        @klass.allow_net_connect = false
-        @klass.ignore_localhost = false
-
-        hydra = Typhoeus::Hydra.new
-
-        lambda {
-          hydra.queue(request)
-        }.should raise_error(Typhoeus::Hydra::NetConnectNotAllowedError)
-      ensure
-        @klass.allow_net_connect = old_net_connect
-        @klass.ignore_localhost = old_ignore_localhost
-      end
+      expect {
+        hydra.queue(request_for('example.com'))
+      }.to raise_error(Typhoeus::Hydra::NetConnectNotAllowedError)
     end
   end
 
