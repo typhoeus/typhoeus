@@ -32,7 +32,13 @@ module Typhoeus
       @hydra = val
     end
 
-    # clears the queue thus aborting the rest of the run
+    #
+    # Abort the run on a best-effort basis.
+    #
+    # It won't abort the current burst of @max_concurrency requests,
+    # however it won't fire the rest of the queued requests so the run
+    # will be aborted as soon as possible...
+    #
     def abort
       @queued_requests.clear
     end
