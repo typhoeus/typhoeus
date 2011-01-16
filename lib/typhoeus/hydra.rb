@@ -32,6 +32,11 @@ module Typhoeus
       @hydra = val
     end
 
+    # clears the queue thus aborting the rest of the run
+    def abort
+      @queued_requests.clear
+    end
+
     def clear_cache_callbacks
       @cache_setter = nil
       @cache_getter = nil
