@@ -78,6 +78,10 @@ module Typhoeus
       @code != 304
     end
 
+    def timed_out?
+      curl_return_code == 28
+    end
+
     private
 
       def first_header_line

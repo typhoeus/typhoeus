@@ -1,6 +1,18 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Typhoeus::Response do
+  describe "timed_out?" do
+    it "should return true if curl return code is 28" do
+      response = Typhoeus::Response.new(:curl_return_code => 28)
+      response.should be_timed_out
+    end
+
+    it "should return false for not 28" do
+      response = Typhoeus::Response.new(:curl_return_code => 14)
+      response.should_not be_timed_out
+    end
+  end
+
   describe "initialize" do
     it "should store headers_hash" do
       response = Typhoeus::Response.new(:headers_hash => {})
