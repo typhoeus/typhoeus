@@ -21,7 +21,7 @@ static VALUE easy_setopt_string(VALUE self, VALUE opt_name, VALUE parameter) {
   CurlEasy *curl_easy;
   Data_Get_Struct(self, CurlEasy, curl_easy);
 
-  long opt = NUM2LONG(opt_name);
+  CURLoption opt = NUM2LONG(opt_name);
   curl_easy_setopt(curl_easy->curl, opt, StringValuePtr(parameter));
   return opt_name;
 }
@@ -41,7 +41,7 @@ static VALUE easy_setopt_long(VALUE self, VALUE opt_name, VALUE parameter) {
   CurlEasy *curl_easy;
   Data_Get_Struct(self, CurlEasy, curl_easy);
 
-  long opt = NUM2LONG(opt_name);
+  CURLoption opt = NUM2LONG(opt_name);
   curl_easy_setopt(curl_easy->curl, opt, NUM2LONG(parameter));
   return opt_name;
 }
@@ -51,7 +51,7 @@ static VALUE easy_getinfo_string(VALUE self, VALUE info) {
   CurlEasy *curl_easy;
   Data_Get_Struct(self, CurlEasy, curl_easy);
 
-  long opt = NUM2LONG(info);
+  CURLoption opt = NUM2LONG(info);
   curl_easy_getinfo(curl_easy->curl, opt, &info_string);
 
   return rb_str_new2(info_string);
@@ -62,7 +62,7 @@ static VALUE easy_getinfo_long(VALUE self, VALUE info) {
   CurlEasy *curl_easy;
   Data_Get_Struct(self, CurlEasy, curl_easy);
 
-  long opt = NUM2LONG(info);
+  CURLoption opt = NUM2LONG(info);
   curl_easy_getinfo(curl_easy->curl, opt, &info_long);
 
   return LONG2NUM(info_long);
@@ -73,7 +73,7 @@ static VALUE easy_getinfo_double(VALUE self, VALUE info) {
   CurlEasy *curl_easy;
   Data_Get_Struct(self, CurlEasy, curl_easy);
 
-  long opt = NUM2LONG(info);
+  CURLoption opt = NUM2LONG(info);
   curl_easy_getinfo(curl_easy->curl, opt, &info_double);
 
   return rb_float_new(info_double);
@@ -81,8 +81,10 @@ static VALUE easy_getinfo_double(VALUE self, VALUE info) {
 
 static VALUE easy_perform(VALUE self) {
   CurlEasy *curl_easy;
+  CURLcode return_code;
   Data_Get_Struct(self, CurlEasy, curl_easy);
-  curl_easy_perform(curl_easy->curl);
+  return_code = curl_easy_perform(curl_easy->curl);
+  rb_iv_set(self, "@curl_return_code", INT2FIX(return_code));
 
   return Qnil;
 }
@@ -177,7 +179,7 @@ static VALUE easy_escape(VALUE self, VALUE data, VALUE length) {
   CurlEasy *curl_easy;
   Data_Get_Struct(self, CurlEasy, curl_easy);
 
-  return rb_str_new2(curl_easy_escape(curl_easy->curl, StringValuePtr(data), NUM2INT(length)));
+  return rb_str_new2(curl_easy_escape(curl_easy->curl, StringValuePtr(data), (int)NUM2INT(length)));
 }
 
 static VALUE version(VALUE self) {
@@ -199,10 +201,21 @@ static VALUE new(int argc, VALUE *argv, VALUE klass) {
   return easy;
 }
 
+static VALUE curl_error_message(VALUE self) {
+  VALUE return_code = rb_iv_get(self, "@curl_return_code");
+  if (return_code == Qnil)
+    return Qnil;
+  else {
+    CURLcode rc = (CURLcode)FIX2INT(return_code);
+    return rb_str_new2(curl_easy_strerror(rc));
+  }
+}
+
 void init_typhoeus_easy() {
   VALUE klass = cTyphoeusEasy = rb_define_class_under(mTyphoeus, "Easy", rb_cObject);
   idAppend = rb_intern("<<");
   rb_define_singleton_method(klass, "new", new, -1);
+  rb_define_method(klass, "curl_error_message", curl_error_message, 0);
   rb_define_private_method(klass, "easy_setopt_string", easy_setopt_string, 2);
   rb_define_private_method(klass, "easy_setopt_form", easy_setopt_form, 2);
   rb_define_private_method(klass, "easy_setopt_long", easy_setopt_long, 2);

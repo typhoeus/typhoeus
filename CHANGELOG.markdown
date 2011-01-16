@@ -1,6 +1,13 @@
 Current Master
 --------------
 * Added extended proxy support [Zapotek, GH-46]
+* eliminated compile time warnings by using proper type declarations [skaes, GH-54]
+* fixed broken calls to rb_raise [skaes, GH-54]
+* prevent leaking of curl easy handles when exceptions are raised (either from typhoeus itself or user callbacks) [skaes, GH-54]
+* fixed Easy#timed_out? using curl return codes [skaes, GH-54]
+* provide curl return codes and corresponding curl error messages on classes Easy and Request [skaes, GH-54]
+* allow VCR to whitelist hosts in Typhoeus stubbing/mocking [myronmarston, GH-57]
+* added timed_out? documentation, method to Response [dbalatero, GH-34]
 
 0.2.0
 ------

@@ -1,6 +1,6 @@
 module Typhoeus
   class Easy
-    attr_reader :response_body, :response_header, :method, :headers, :url, :params
+    attr_reader :response_body, :response_header, :method, :headers, :url, :params, :curl_return_code
     attr_accessor :start_time
 
     # These integer codes are available in curl/curl.h
@@ -163,7 +163,7 @@ module Typhoeus
     end
 
     def timed_out?
-      @timeout && total_time_taken > @timeout && response_code == 0
+      curl_return_code == 28
     end
 
     def supports_zlib?
@@ -323,7 +323,7 @@ module Typhoeus
       @success = block
     end
 
-    # gets called when finished and response code is 300-599
+    # gets called when finished and response code is 300-599 or curl returns an error code
     def failure
       @failure.call(self) if @failure
     end
@@ -336,25 +336,7 @@ module Typhoeus
       @failure = block
     end
 
-    def retries
-      @retries ||= 0
-    end
-
-    def increment_retries
-      @retries ||= 0
-      @retries += 1
-    end
-
-    def max_retries
-      @max_retries ||= 40
-    end
-
-    def max_retries?
-      retries >= max_retries
-    end
-
     def reset
-      @retries = 0
       @response_code = 0
       @response_header = ""
       @response_body = ""

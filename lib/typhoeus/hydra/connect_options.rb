@@ -12,9 +12,10 @@ module Typhoeus
       #
       # @raises NetConnectNotAllowedError
       def check_allow_net_connect!(request)
-        if !Typhoeus::Hydra.allow_net_connect? and (!Typhoeus::Hydra.ignore_localhost? or !request.localhost?)
-          raise NetConnectNotAllowedError, "Real HTTP requests are not allowed. Unregistered request: #{request.inspect}"
-        end
+        return if Typhoeus::Hydra.allow_net_connect?
+        return if Typhoeus::Hydra.ignore_hosts.include?(request.host_domain)
+
+        raise NetConnectNotAllowedError, "Real HTTP requests are not allowed. Unregistered request: #{request.inspect}"
       end
       private :check_allow_net_connect!
 
@@ -39,7 +40,22 @@ module Typhoeus
         def ignore_localhost?
           ignore_localhost
         end
+
+        def ignore_hosts
+          @ignore_hosts ||= []
+
+          if ignore_localhost?
+            @ignore_hosts + Typhoeus::Request::LOCALHOST_ALIASES
+          else
+            @ignore_hosts
+          end
+        end
+
+        def ignore_hosts=(hosts)
+          @ignore_hosts = hosts
+        end
       end
     end
   end
 end
+

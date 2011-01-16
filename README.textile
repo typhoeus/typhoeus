@@ -18,7 +18,7 @@ h2. Installation
 
 Typhoeus requires you to have a current version of libcurl installed. I've tested this with 7.19.4 and higher.
 <pre>
-gem install typhoeus --source http://gemcutter.org
+gem install typhoeus
 </pre>
 If you're on Debian or Ubuntu and getting errors while trying to install, it could be because you don't have the latest version of libcurl installed. Do this to fix:
 <pre>
@@ -29,7 +29,7 @@ There's also something built in so that if you have a super old version of curl 
 gem install typhoeus --source http://gemcutter.org -- --with-curl=/usr/local/curl/7.19.7/
 </pre>
 
-Another problem could be if you are running Mac Ports and you have libcurl installed through there. You need to uninstall it for Typhoeus to work! The version in Mac Ports is old and doesn't play nice. You should "download curl":http://curl.haxx.se/download.html and build from source. Then you'll have to install the gem again.
+-Another problem could be if you are running Mac Ports and you have libcurl installed through there. You need to uninstall it for Typhoeus to work! The version in Mac Ports is old and doesn't play nice. You should "download curl":http://curl.haxx.se/download.html and build from source. Then you'll have to install the gem again.- The current version of Mac Ports (7.21.2) works just fine.
 
 If you're still having issues, please let me know on "the mailing list":http://groups.google.com/group/typhoeus.
 
@@ -180,6 +180,15 @@ hydra = Typhoeus::Hydra.hydra
 hydra.stub(:get, "http://localhost:3000/users")
 </pre>
 
+*Timeouts*
+
+No exceptions are raised on HTTP timeouts. You can check whether a request timed out with the following methods:
+
+<pre>
+easy.timed_out?  # for a raw Easy handle
+response.timed_out?  # for a Response handle
+</pre>
+
 *Basic Authentication*
 
 <pre>
@@ -301,6 +310,17 @@ I set up a benchmark to test how the parallel performance works vs Ruby's built 
 </pre>
 
 We can see from this that NET::HTTP performs as expected, taking 10 seconds to run 20 500ms requests. Typhoeus only takes 500ms (the time of the response that took the longest.) One other thing to note is that Typhoeus keeps a pool of libcurl Easy handles to use. For this benchmark I warmed the pool first. So if you test this out it may be a bit slower until the Easy handle pool has enough in it to run all the simultaneous requests. For some reason the easy handles can take quite some time to allocate.
+
+h2. Running the specs
+
+Running the specs requires a couple of Sinatra servers to be booted. Do this:
+
+<pre>
+  ruby spec/servers/app.rb -p 3000
+  ruby spec/servers/app.rb -p 3001
+  ruby spec/servers/app.rb -p 3002
+  rake spec
+</pre>
 
 h2. Next Steps
 

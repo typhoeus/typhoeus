@@ -17,6 +17,42 @@ describe Typhoeus::Easy do
     end
   end
 
+  describe "curl errors" do
+    it "should provide the CURLE_OPERATION_TIMEDOUT return code when a request times out" do
+      e = Typhoeus::Easy.new
+      e.url = "http://localhost:3001/?delay=1"
+      e.method = :get
+      e.timeout = 100
+      e.perform
+      e.curl_return_code.should == 28
+      e.curl_error_message.should == "Timeout was reached"
+      e.response_code.should == 0
+    end
+
+    it "should provide the CURLE_COULDNT_CONNECT return code when trying to connect to a non existent port" do
+      e = Typhoeus::Easy.new
+      e.url = "http://localhost:3999"
+      e.method = :get
+      e.connect_timeout = 100
+      e.perform
+      e.curl_return_code.should == 7
+      e.curl_error_message.should == "Couldn't connect to server"
+      e.response_code.should == 0
+    end
+
+    it "should not return an error message on a successful easy operation" do
+      easy = Typhoeus::Easy.new
+      easy.url    = "http://localhost:3002"
+      easy.method = :get
+      easy.curl_error_message.should == nil
+      easy.perform
+      easy.response_code.should == 200
+      easy.curl_return_code.should == 0
+      easy.curl_error_message.should == "No error"
+    end
+
+  end
+
   describe "options" do
     it "should not follow redirects if not instructed to" do
       e = Typhoeus::Easy.new
@@ -48,12 +84,11 @@ describe Typhoeus::Easy do
 
     it "should provide a timeout in milliseconds" do
       e = Typhoeus::Easy.new
-      e.url = "http://localhost:3001"
+      e.url = "http://localhost:3001/?delay=1"
       e.method = :get
-      e.timeout = 50
+      e.timeout = 10
       e.perform
-      # this doesn't work on a mac for some reason
-#      e.timed_out?.should == true
+      e.timed_out?.should == true
     end
 
     it "should allow the setting of the max redirects to follow" do

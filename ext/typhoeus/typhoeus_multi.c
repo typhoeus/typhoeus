@@ -16,11 +16,14 @@ static VALUE multi_add_handle(VALUE self, VALUE easy) {
 
   mcode = curl_multi_add_handle(curl_multi->multi, curl_easy->curl);
   if (mcode != CURLM_CALL_MULTI_PERFORM && mcode != CURLM_OK) {
-    rb_raise((VALUE)mcode, "An error occured adding the handle");
+    rb_raise(rb_eRuntimeError, "An error occured adding the handle: %d: %s", mcode, curl_multi_strerror(mcode));
   }
 
   curl_easy_setopt(curl_easy->curl, CURLOPT_PRIVATE, easy);
   curl_multi->active++;
+
+  VALUE easy_handles = rb_iv_get(self, "@easy_handles");
+  rb_ary_push(easy_handles, easy);
 
   if (mcode == CURLM_CALL_MULTI_PERFORM) {
     curl_multi_perform(curl_multi->multi, &(curl_multi->running));
@@ -42,6 +45,9 @@ static VALUE multi_remove_handle(VALUE self, VALUE easy) {
 
   curl_multi->active--;
   curl_multi_remove_handle(curl_multi->multi, curl_easy->curl);
+
+  VALUE easy_handles = rb_iv_get(self, "@easy_handles");
+  rb_ary_delete(easy_handles, easy);
 
   return easy;
 }
@@ -65,36 +71,14 @@ static void multi_read_info(VALUE self, CURLM *multi_handle) {
     if (easy_handle) {
       ecode = curl_easy_getinfo(easy_handle, CURLINFO_PRIVATE, &easy);
       if (ecode != 0) {
-        rb_raise(ecode, "error getting easy object");
+        rb_raise(rb_eRuntimeError, "error getting easy object: %d: %s", ecode, curl_easy_strerror(ecode));
       }
 
       long response_code = -1;
       curl_easy_getinfo(easy_handle, CURLINFO_RESPONSE_CODE, &response_code);
 
-      // TODO: find out what the real problem is here and fix it.
-      // this next bit is a horrible hack. For some reason my tests against a local server on my laptop
-      // fail intermittently and return this result number. However, it will succeed if you try it a few
-      // more times. Also noteworthy is that this doens't happen when hitting an external server. WTF?!
-
-      // Sandofsky says:
-      // This is caused by OS X first attempting to resolve using IPV6.
-      // Hack solution: connect to yourself with 127.0.0.1, not localhost
-      // http://curl.haxx.se/mail/tracker-2009-09/0018.html
-      if (result == 7) {
-        VALUE max_retries = rb_funcall(easy, rb_intern("max_retries?"), 0);
-        if (max_retries != Qtrue) {
-          multi_remove_handle(self, easy);
-          multi_add_handle(self, easy);
-          CurlMulti *curl_multi;
-          Data_Get_Struct(self, CurlMulti, curl_multi);
-          curl_multi_perform(curl_multi->multi, &(curl_multi->running));
-
-          rb_funcall(easy, rb_intern("increment_retries"), 0);
-
-          continue;
-        }
-      }
       multi_remove_handle(self, easy);
+      rb_iv_set(easy, "@curl_return_code", INT2FIX(result));
 
       if (result != 0) {
         rb_funcall(easy, rb_intern("failure"), 0);
@@ -118,7 +102,7 @@ static void rb_curl_multi_run(VALUE self, CURLM *multi_handle, int *still_runnin
   } while (mcode == CURLM_CALL_MULTI_PERFORM);
 
   if (mcode != CURLM_OK) {
-    rb_raise((VALUE)mcode, "an error occured while running perform");
+    rb_raise(rb_eRuntimeError, "an error occured while running perform: %d: %s", mcode, curl_multi_strerror(mcode));
   }
 
   multi_read_info( self, multi_handle );
@@ -128,6 +112,8 @@ static VALUE fire_and_forget(VALUE self) {
   CurlMulti *curl_multi;
   Data_Get_Struct(self, CurlMulti, curl_multi);
   rb_curl_multi_run( self, curl_multi->multi, &(curl_multi->running) );
+
+  return Qnil;
 }
 
 static VALUE multi_perform(VALUE self) {
@@ -150,7 +136,7 @@ static VALUE multi_perform(VALUE self) {
     /* get the curl suggested time out */
     mcode = curl_multi_timeout(curl_multi->multi, &timeout);
     if (mcode != CURLM_OK) {
-      rb_raise((VALUE)mcode, "an error occured getting the timeout");
+      rb_raise(rb_eRuntimeError, "an error occured getting the timeout: %d: %s", mcode, curl_multi_strerror(mcode));
           }
 
     if (timeout == 0) { /* no delay */
@@ -167,7 +153,7 @@ static VALUE multi_perform(VALUE self) {
     /* load the fd sets from the multi handle */
     mcode = curl_multi_fdset(curl_multi->multi, &fdread, &fdwrite, &fdexcep, &maxfd);
     if (mcode != CURLM_OK) {
-      rb_raise((VALUE)mcode, "an error occured getting the fdset");
+      rb_raise(rb_eRuntimeError, "an error occured getting the fdset: %d: %s", mcode, curl_multi_strerror(mcode));
     }
 
     rc = rb_thread_select(maxfd+1, &fdread, &fdwrite, &fdexcep, &tv);
@@ -185,7 +171,7 @@ static VALUE active_handle_count(VALUE self) {
   CurlMulti *curl_multi;
   Data_Get_Struct(self, CurlMulti, curl_multi);
 
-  return INT2NUM(curl_multi->active);
+  return INT2FIX(curl_multi->active);
 }
 
 static VALUE multi_cleanup(VALUE self) {
