@@ -84,8 +84,10 @@ module Typhoeus
       @handled_response = nil
     end
 
+    LOCALHOST_ALIASES = %w[ localhost 127.0.0.1 0.0.0.0 ]
+
     def localhost?
-      %(localhost 127.0.0.1 0.0.0.0).include?(@parsed_uri.host)
+      LOCALHOST_ALIASES.include?(@parsed_uri.host)
     end
 
     def host
@@ -96,6 +98,10 @@ module Typhoeus
         query_string_location = @url.index('?')
         return query_string_location ? @url.slice(0, query_string_location) : @url
       end
+    end
+
+    def host_domain
+      @parsed_uri.host
     end
 
     def headers
