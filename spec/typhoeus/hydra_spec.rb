@@ -430,6 +430,33 @@ describe Typhoeus::Hydra::ConnectOptions do
     end
   end
 
+  describe "#ignore_hosts" do
+    context 'when allow_net_connect is set to false' do
+      before(:each) do
+        @klass.ignore_localhost = false
+        @klass.allow_net_connect = false
+      end
+
+      Typhoeus::Request::LOCALHOST_ALIASES.each do |disallowed_host|
+        ignore_hosts = Typhoeus::Request::LOCALHOST_ALIASES - [disallowed_host]
+
+        context "when set to #{ignore_hosts.join(' and ')}" do
+          before(:each) { @klass.ignore_hosts = ignore_hosts }
+
+          it "does not allow a request to #{disallowed_host}" do
+            expect { hydra.queue(request_for(disallowed_host)) }.to raise_error(Typhoeus::Hydra::NetConnectNotAllowedError)
+          end
+
+          ignore_hosts.each do |host|
+            it "allows a request to #{host}" do
+              expect { hydra.queue(request_for(host)) }.to_not raise_error
+            end
+          end
+        end
+      end
+    end
+  end
+
   describe "#allow_net_connect" do
     it "should be settable" do
       @klass.allow_net_connect = true
