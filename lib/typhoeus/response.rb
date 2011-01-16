@@ -6,12 +6,15 @@ module Typhoeus
                 :requested_http_method, :start_time,
                 :effective_url, :start_transfer_time,
                 :app_connect_time, :pretransfer_time,
-                :connect_time, :name_lookup_time
+                :connect_time, :name_lookup_time,
+                :curl_return_code, :curl_error_message
 
     attr_writer :headers_hash
 
     def initialize(params = {})
       @code                  = params[:code]
+      @curl_return_code      = params[:curl_return_code]
+      @curl_error_message    = params[:curl_error_message]
       @status_message        = params[:status_message]
       @http_version          = params[:http_version]
       @headers               = params[:headers] || ''

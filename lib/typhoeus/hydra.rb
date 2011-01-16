@@ -82,8 +82,11 @@ module Typhoeus
       end
 
       @multi.perform
+    ensure
+      @multi.reset_easy_handles{|easy| release_easy_object(easy)}
       @memoized_requests = {}
       @retrieved_from_cache = {}
+      @running_requests = 0
     end
 
     def disable_memoization
@@ -222,6 +225,8 @@ module Typhoeus
                    :connect_time        => easy.connect_time,
                    :name_lookup_time    => easy.name_lookup_time,
                    :effective_url       => easy.effective_url,
+                   :curl_return_code => easy.curl_return_code,
+                   :curl_error_message => easy.curl_error_message,
                    :request             => request)
     end
     private :response_from_easy
