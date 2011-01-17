@@ -1,2 +1,4 @@
 --diff
 --color
+--backtrace
+--format nested

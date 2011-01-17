@@ -9,12 +9,13 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Paul Dix"]
-  s.date = %q{2011-01-08}
+  s.date = %q{2011-01-16}
   s.description = %q{Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.}
   s.email = %q{paul@pauldix.net}
   s.extensions = ["ext/typhoeus/extconf.rb"]
   s.extra_rdoc_files = [
-    "README.textile"
+    "LICENSE",
+     "README.textile"
   ]
   s.files = [
     ".gitignore",
@@ -22,6 +23,7 @@ Gem::Specification.new do |s|
      "CHANGELOG.markdown",
      "Gemfile",
      "Gemfile.lock",
+     "LICENSE",
      "README.textile",
      "Rakefile",
      "VERSION",
@@ -60,12 +62,16 @@ Gem::Specification.new do |s|
      "lib/typhoeus/service.rb",
      "lib/typhoeus/utils.rb",
      "profilers/valgrind.rb",
+     "spec/fixtures/placeholder.gif",
+     "spec/fixtures/placeholder.txt",
+     "spec/fixtures/placeholder.ukn",
      "spec/fixtures/result_set.xml",
      "spec/servers/app.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb",
      "spec/typhoeus/easy_spec.rb",
      "spec/typhoeus/filter_spec.rb",
+     "spec/typhoeus/form_spec.rb",
      "spec/typhoeus/hydra_mock_spec.rb",
      "spec/typhoeus/hydra_spec.rb",
      "spec/typhoeus/multi_spec.rb",
@@ -88,6 +94,7 @@ Gem::Specification.new do |s|
      "spec/spec_helper.rb",
      "spec/typhoeus/easy_spec.rb",
      "spec/typhoeus/filter_spec.rb",
+     "spec/typhoeus/form_spec.rb",
      "spec/typhoeus/hydra_mock_spec.rb",
      "spec/typhoeus/hydra_spec.rb",
      "spec/typhoeus/multi_spec.rb",

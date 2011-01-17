@@ -18,14 +18,14 @@ module Typhoeus
           when File
             filename = File.basename(value.path)
             types = MIME::Types.type_for(filename)
-            formadd_file(
+            return formadd_file(
               key.to_s,
               filename,
-              types.empty? ? 'application/octet-stream' : types[0],
+              types.empty? ? 'application/octet-stream' : types[0].to_s,
               File.expand_path(value.path)
             )
           else
-            formadd_param(key.to_s, value.to_s)
+            return formadd_param(key.to_s, value.to_s)
         end
       end
     end

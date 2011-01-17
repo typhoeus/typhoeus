@@ -7,7 +7,7 @@ static void dealloc(CurlForm *curl_form) {
   free(curl_form);
 }
 
-static void formadd_file(VALUE self,
+static VALUE formadd_file(VALUE self,
                          VALUE name,
                          VALUE filename,
                          VALUE content_type,
@@ -15,28 +15,28 @@ static void formadd_file(VALUE self,
   CurlForm *curl_form;
   Data_Get_Struct(self, CurlForm, curl_form);
 
-  curl_formadd(&curl_form->first, &curl_form->last,
+  return LONG2NUM(curl_formadd(&curl_form->first, &curl_form->last,
     CURLFORM_COPYNAME, RSTRING(name)->ptr,
     CURLFORM_NAMELENGTH, (long)RSTRING(name)->len,
     CURLFORM_FILENAME, RSTRING(filename)->ptr,
     CURLFORM_CONTENTTYPE, RSTRING(content_type)->ptr,
     CURLFORM_FILE, RSTRING(path)->ptr,
     CURLFORM_END
-  );
+  ));
 
 }
 
-static void formadd_param(VALUE self, VALUE name, VALUE value) {
+static VALUE formadd_param(VALUE self, VALUE name, VALUE value) {
   CurlForm *curl_form;
   Data_Get_Struct(self, CurlForm, curl_form);
 
-  curl_formadd(&curl_form->first, &curl_form->last,
+  return LONG2NUM(curl_formadd(&curl_form->first, &curl_form->last,
     CURLFORM_COPYNAME, RSTRING(name)->ptr,
     CURLFORM_NAMELENGTH, (long)RSTRING(name)->len,
     CURLFORM_COPYCONTENTS, RSTRING(value)->ptr,
     CURLFORM_CONTENTSLENGTH, (long)RSTRING(value)->len,
     CURLFORM_END
-  );
+  ));
 }
 
 static VALUE new(int argc, VALUE *argv, VALUE klass) {

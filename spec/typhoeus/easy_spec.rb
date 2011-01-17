@@ -246,6 +246,20 @@ describe Typhoeus::Easy do
       easy.response_code.should == 200
       easy.response_body.should include("name=\\\"foo\\\"\\r\\n\\r\\nbar")
     end
+
+    it "should handle a file upload" do
+      easy = Typhoeus::Easy.new
+      easy.url    = "http://localhost:3002/file"
+      easy.method = :post
+      easy.params = {:file => File.open(File.expand_path(File.dirname(__FILE__) + "/../fixtures/placeholder.txt"), "r")}
+      easy.perform
+      easy.response_code.should == 200
+      JSON.parse(easy.response_body).should == {
+        'content-type' => 'text/plain',
+        'filename' => 'placeholder.txt',
+        'content' => 'This file is used to test uploading.'
+      }
+    end
   end
   
   describe "delete" do
