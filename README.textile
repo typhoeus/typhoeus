@@ -89,7 +89,7 @@ response = Typhoeus::Request.post("http://localhost:3000/posts",
     :file => File.open("thesis.txt","r")
   }
 )
-
+</pre>
 
 *Making Parallel Requests*
 
