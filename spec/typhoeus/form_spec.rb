@@ -100,7 +100,7 @@ describe Typhoeus::Form do
         :name => "John Smith",
         :age => "29"
       })
-      form.to_s.should == "age=29&name=John+Smith&colors=brown&colors=green&colors=white"
+      form.to_s.should == "age=29&colors=brown&colors=green&colors=white&name=John+Smith"
     end
   end
 end
