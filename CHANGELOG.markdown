@@ -8,6 +8,7 @@ Current Master
 * provide curl return codes and corresponding curl error messages on classes Easy and Request [skaes, GH-54]
 * allow VCR to whitelist hosts in Typhoeus stubbing/mocking [myronmarston, GH-57]
 * added timed_out? documentation, method to Response [dbalatero, GH-34]
+* added abort to Hydra to prematurely stop a hydra.run [Zapotek]
 
 0.2.0
 ------
