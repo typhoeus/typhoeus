@@ -57,6 +57,36 @@ describe Typhoeus::Hydra do
     second.response.curl_return_code == 7
   end
 
+  it "aborts a batch of requests" do
+    urls = [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:3002'
+    ]
+
+    # this will make testing easier
+    hydra     = Typhoeus::Hydra.new( :max_concurrency => 1 )
+    completed = 0
+
+    10.times {
+        |i|
+
+        req = Typhoeus::Request.new( urls[ i % urls.size], :params => { :cnt => i } )
+        req.on_complete {
+            |res|
+            completed += 1
+            hydra.abort if completed == 5
+        }
+
+        hydra.queue( req )
+    }
+
+    hydra.run
+
+    # technically this should be '== 6' but I don't trust it...
+    completed.should < 10
+  end
+
   it "has a cache_setter proc" do
     hydra = Typhoeus::Hydra.new
     hydra.cache_setter do |request|
