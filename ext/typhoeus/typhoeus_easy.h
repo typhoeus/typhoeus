@@ -2,6 +2,7 @@
 #define TYPHOEUS_EASY
 
 #include <native.h>
+#include <typhoeus_form.h>
 
 void init_typhoeus_easy();
 typedef struct {

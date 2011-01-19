@@ -26,6 +26,17 @@ static VALUE easy_setopt_string(VALUE self, VALUE opt_name, VALUE parameter) {
   return opt_name;
 }
 
+static VALUE easy_setopt_form(VALUE self, VALUE opt_name, VALUE parameter) {
+  CurlEasy *curl_easy;
+  CurlForm *curl_form;
+  Data_Get_Struct(self, CurlEasy, curl_easy);
+  Data_Get_Struct(parameter, CurlForm, curl_form);
+
+  long opt = NUM2LONG(opt_name);
+  curl_easy_setopt(curl_easy->curl, opt, curl_form->first);
+  return opt_name;
+}
+
 static VALUE easy_setopt_long(VALUE self, VALUE opt_name, VALUE parameter) {
   CurlEasy *curl_easy;
   Data_Get_Struct(self, CurlEasy, curl_easy);
@@ -206,6 +217,7 @@ void init_typhoeus_easy() {
   rb_define_singleton_method(klass, "new", new, -1);
   rb_define_method(klass, "curl_error_message", curl_error_message, 0);
   rb_define_private_method(klass, "easy_setopt_string", easy_setopt_string, 2);
+  rb_define_private_method(klass, "easy_setopt_form", easy_setopt_form, 2);
   rb_define_private_method(klass, "easy_setopt_long", easy_setopt_long, 2);
   rb_define_private_method(klass, "easy_getinfo_string", easy_getinfo_string, 1);
   rb_define_private_method(klass, "easy_getinfo_long", easy_getinfo_long, 1);

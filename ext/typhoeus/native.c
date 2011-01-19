@@ -8,4 +8,5 @@ void Init_native()
 
   init_typhoeus_easy();
   init_typhoeus_multi();
+  init_typhoeus_form();
 }

@@ -79,6 +79,18 @@ response = Typhoeus::Request.post("http://localhost:3000/posts", :params => {:ti
 response = Typhoeus::Request.delete("http://localhost:3000/posts/1")
 </pre>
 
+*Handling file uploads*
+A File object can be passed as a param for a POST request to handle uploading files to the server. Typhoeus will upload the file as the original file name and use Mime::Types to set the content type.
+
+<pre>
+response = Typhoeus::Request.post("http://localhost:3000/posts",
+  :params => {
+    :title => "test post", :content => "this is my test",
+    :file => File.open("thesis.txt","r")
+  }
+)
+</pre>
+
 *Making Parallel Requests*
 
 <pre>

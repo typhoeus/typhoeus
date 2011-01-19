@@ -9,23 +9,28 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Paul Dix"]
-  s.date = %q{2010-11-11}
+  s.date = %q{2011-01-18}
   s.description = %q{Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.}
   s.email = %q{paul@pauldix.net}
   s.extensions = ["ext/typhoeus/extconf.rb"]
   s.extra_rdoc_files = [
-    "README.textile"
+    "LICENSE",
+     "README.textile"
   ]
   s.files = [
     ".gitignore",
+     ".idea/projectCodeStyle.xml",
      "CHANGELOG.markdown",
      "Gemfile",
      "Gemfile.lock",
+     "LICENSE",
      "README.textile",
      "Rakefile",
      "VERSION",
      "benchmarks/profile.rb",
      "benchmarks/vs_nethttp.rb",
+     "examples/file.rb",
+     "examples/times.rb",
      "examples/twitter.rb",
      "ext/typhoeus/.gitignore",
      "ext/typhoeus/extconf.rb",
@@ -33,12 +38,15 @@ Gem::Specification.new do |s|
      "ext/typhoeus/native.h",
      "ext/typhoeus/typhoeus_easy.c",
      "ext/typhoeus/typhoeus_easy.h",
+     "ext/typhoeus/typhoeus_form.c",
+     "ext/typhoeus/typhoeus_form.h",
      "ext/typhoeus/typhoeus_multi.c",
      "ext/typhoeus/typhoeus_multi.h",
      "lib/typhoeus.rb",
      "lib/typhoeus/.gitignore",
      "lib/typhoeus/easy.rb",
      "lib/typhoeus/filter.rb",
+     "lib/typhoeus/form.rb",
      "lib/typhoeus/hydra.rb",
      "lib/typhoeus/hydra/callbacks.rb",
      "lib/typhoeus/hydra/connect_options.rb",
@@ -54,12 +62,16 @@ Gem::Specification.new do |s|
      "lib/typhoeus/service.rb",
      "lib/typhoeus/utils.rb",
      "profilers/valgrind.rb",
+     "spec/fixtures/placeholder.gif",
+     "spec/fixtures/placeholder.txt",
+     "spec/fixtures/placeholder.ukn",
      "spec/fixtures/result_set.xml",
      "spec/servers/app.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb",
      "spec/typhoeus/easy_spec.rb",
      "spec/typhoeus/filter_spec.rb",
+     "spec/typhoeus/form_spec.rb",
      "spec/typhoeus/hydra_mock_spec.rb",
      "spec/typhoeus/hydra_spec.rb",
      "spec/typhoeus/multi_spec.rb",
@@ -82,6 +94,7 @@ Gem::Specification.new do |s|
      "spec/spec_helper.rb",
      "spec/typhoeus/easy_spec.rb",
      "spec/typhoeus/filter_spec.rb",
+     "spec/typhoeus/form_spec.rb",
      "spec/typhoeus/hydra_mock_spec.rb",
      "spec/typhoeus/hydra_spec.rb",
      "spec/typhoeus/multi_spec.rb",
@@ -92,6 +105,8 @@ Gem::Specification.new do |s|
      "spec/typhoeus/request_spec.rb",
      "spec/typhoeus/response_spec.rb",
      "spec/typhoeus/utils_spec.rb",
+     "examples/file.rb",
+     "examples/times.rb",
      "examples/twitter.rb"
   ]
 

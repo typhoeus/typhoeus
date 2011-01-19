@@ -40,7 +40,7 @@ module Typhoeus
       :CURLOPT_SSLKEYTYPE     => 10088,
       :CURLOPT_KEYPASSWD      => 10026,
       :CURLOPT_CAINFO         => 10065,
-      :CURLOPT_CAPATH         => 10097
+      :CURLOPT_CAPATH         => 10097,
     }
     INFO_VALUES = {
       :CURLINFO_RESPONSE_CODE      => 2097154,
@@ -217,24 +217,18 @@ module Typhoeus
       set_option(OPTION_VALUES[:CURLOPT_COPYPOSTFIELDS], data)
     end
 
+    def params
+      @form.nil? ? {} : @form.params
+    end
+    
     def params=(params)
-      @params = params
-      params_string = params.keys.collect do |k|
-        value = params[k]
-        if value.is_a? Hash
-          value.keys.collect {|sk| Typhoeus::Utils.escape("#{k}[#{sk}]") + "=" + Typhoeus::Utils.escape(value[sk].to_s)}
-        elsif value.is_a? Array
-          key = Typhoeus::Utils.escape(k.to_s)
-          value.collect { |v| "#{key}=#{Typhoeus::Utils.escape(v.to_s)}" }.join('&')
-        else
-          "#{Typhoeus::Utils.escape(k.to_s)}=#{Typhoeus::Utils.escape(params[k].to_s)}"
-        end
-      end.flatten.join("&")
+      @form = Typhoeus::Form.new(params)
 
       if method == :post
-        self.post_data = params_string
+        @form.process!
+        set_option(OPTION_VALUES[:CURLOPT_HTTPPOST], @form)
       else
-        self.url = "#{url}?#{params_string}"
+        self.url = "#{url}?#{@form.to_s}"
       end
     end
 
@@ -287,10 +281,13 @@ module Typhoeus
     end
 
     def set_option(option, value)
-      if value.class == String
-        easy_setopt_string(option, value)
-      elsif value
-        easy_setopt_long(option, value)
+      case value
+        when String
+          easy_setopt_string(option, value)
+        when Typhoeus::Form
+          easy_setopt_form(option, value)
+        else
+          easy_setopt_long(option, value) if value
       end
     end
 
