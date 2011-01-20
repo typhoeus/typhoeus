@@ -15,7 +15,7 @@ static VALUE formadd_file(VALUE self,
   CurlForm *curl_form;
   Data_Get_Struct(self, CurlForm, curl_form);
 
-  return LONG2NUM(curl_formadd(&curl_form->first, &curl_form->last,
+  return INT2NUM((int)curl_formadd(&curl_form->first, &curl_form->last,
     CURLFORM_COPYNAME, RSTRING(name)->ptr,
     CURLFORM_NAMELENGTH, (long)RSTRING(name)->len,
     CURLFORM_FILENAME, RSTRING(filename)->ptr,
@@ -30,7 +30,7 @@ static VALUE formadd_param(VALUE self, VALUE name, VALUE value) {
   CurlForm *curl_form;
   Data_Get_Struct(self, CurlForm, curl_form);
 
-  return LONG2NUM(curl_formadd(&curl_form->first, &curl_form->last,
+  return INT2NUM((int)curl_formadd(&curl_form->first, &curl_form->last,
     CURLFORM_COPYNAME, RSTRING(name)->ptr,
     CURLFORM_NAMELENGTH, (long)RSTRING(name)->len,
     CURLFORM_COPYCONTENTS, RSTRING(value)->ptr,
