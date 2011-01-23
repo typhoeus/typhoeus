@@ -1,6 +1,6 @@
 module Typhoeus
   class Response
-    attr_accessor :request, :mock
+    attr_accessor :request, :mock, :meta
     attr_reader :code, :headers, :body, :time,
                 :requested_url, :requested_remote_method,
                 :requested_http_method, :start_time,

@@ -206,7 +206,8 @@ module Typhoeus
 
     def handle_request(request, response, live_request = true)
       request.response = response
-
+      response.meta = request.meta
+      
       self.class.run_global_hooks_for(:after_request_before_on_complete,
                                       request)
 
