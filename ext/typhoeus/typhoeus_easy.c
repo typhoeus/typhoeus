@@ -32,7 +32,7 @@ static VALUE easy_setopt_form(VALUE self, VALUE opt_name, VALUE parameter) {
   Data_Get_Struct(self, CurlEasy, curl_easy);
   Data_Get_Struct(parameter, CurlForm, curl_form);
 
-  long opt = NUM2LONG(opt_name);
+  CURLoption opt = NUM2LONG(opt_name);
   curl_easy_setopt(curl_easy->curl, opt, curl_form->first);
   return opt_name;
 }
