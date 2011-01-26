@@ -13,6 +13,7 @@ begin
     gemspec.email = "paul@pauldix.net"
     gemspec.homepage = "http://github.com/pauldix/typhoeus"
     gemspec.authors = ["Paul Dix"]
+    gemspec.add_dependency "mime-types"
     gemspec.add_development_dependency "rspec"
     gemspec.add_development_dependency "jeweler"
     gemspec.add_development_dependency "diff-lcs"
