@@ -1,5 +1,5 @@
 module Typhoeus
-  USER_AGENT = "Typhoeus - http://github.com/pauldix/typhoeus/tree/master"
+  USER_AGENT = "Typhoeus - http://github.com/dbalatero/typhoeus/tree/master"
   
   def self.included(base)
     base.extend ClassMethods

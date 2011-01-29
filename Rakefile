@@ -10,9 +10,9 @@ begin
     gemspec.name = "typhoeus"
     gemspec.summary = "A library for interacting with web services (and building SOAs) at blinding speed."
     gemspec.description = "Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic."
-    gemspec.email = "paul@pauldix.net"
-    gemspec.homepage = "http://github.com/pauldix/typhoeus"
-    gemspec.authors = ["Paul Dix"]
+    gemspec.email = "dbalatero@gmail.com"
+    gemspec.homepage = "http://github.com/dbalatero/typhoeus"
+    gemspec.authors = ["Paul Dix", "David Balatero"]
     gemspec.add_dependency "mime-types"
     gemspec.add_development_dependency "rspec"
     gemspec.add_development_dependency "jeweler"
