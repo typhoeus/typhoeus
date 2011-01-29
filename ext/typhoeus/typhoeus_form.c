@@ -16,11 +16,11 @@ static VALUE formadd_file(VALUE self,
   Data_Get_Struct(self, CurlForm, curl_form);
 
   return INT2NUM((long) curl_formadd(&curl_form->first, &curl_form->last,
-    CURLFORM_COPYNAME, RSTRING(name)->ptr,
-    CURLFORM_NAMELENGTH, (long)RSTRING(name)->len,
-    CURLFORM_FILENAME, RSTRING(filename)->ptr,
-    CURLFORM_CONTENTTYPE, RSTRING(content_type)->ptr,
-    CURLFORM_FILE, RSTRING(path)->ptr,
+    CURLFORM_COPYNAME, RSTRING_PTR(name),
+    CURLFORM_NAMELENGTH, (long)RSTRING_LEN(name),
+    CURLFORM_FILENAME, RSTRING_PTR(filename),
+    CURLFORM_CONTENTTYPE, RSTRING_PTR(content_type),
+    CURLFORM_FILE, RSTRING_PTR(path),
     CURLFORM_END
   ));
 }
@@ -30,10 +30,10 @@ static VALUE formadd_param(VALUE self, VALUE name, VALUE value) {
   Data_Get_Struct(self, CurlForm, curl_form);
 
   return INT2NUM((long)curl_formadd(&curl_form->first, &curl_form->last,
-    CURLFORM_COPYNAME, RSTRING(name)->ptr,
-    CURLFORM_NAMELENGTH, (long)RSTRING(name)->len,
-    CURLFORM_COPYCONTENTS, RSTRING(value)->ptr,
-    CURLFORM_CONTENTSLENGTH, (long)RSTRING(value)->len,
+    CURLFORM_COPYNAME, RSTRING_PTR(name),
+    CURLFORM_NAMELENGTH, (long)RSTRING_LEN(name),
+    CURLFORM_COPYCONTENTS, RSTRING_PTR(value),
+    CURLFORM_CONTENTSLENGTH, (long)RSTRING_LEN(value),
     CURLFORM_END
   ));
 }
