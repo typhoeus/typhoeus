@@ -110,18 +110,23 @@ module Typhoeus
     end
 
     def params_string
-      params.keys.sort { |a, b| a.to_s <=> b.to_s }.collect do |k|
-        value = params[k]
-        if value.is_a? Hash
-          value.keys.collect {|sk| Typhoeus::Utils.escape("#{k}[#{sk}]") + "=" + Typhoeus::Utils.escape(value[sk].to_s)}
-        elsif value.is_a? Array
-          key = Typhoeus::Utils.escape(k.to_s)
-          value.collect { |v| "#{key}[]=#{Typhoeus::Utils.escape(v.to_s)}" }.join('&')
-        else
-          "#{Typhoeus::Utils.escape(k.to_s)}=#{Typhoeus::Utils.escape(params[k].to_s)}"
-        end
-      end.flatten.join("&")
+      traverse_hash(params).flatten.join('&')
     end
+
+    def traverse_hash(hash, current_key = nil)
+      hash.keys.sort { |a, b| a.to_s <=> b.to_s }.collect do |key|
+        new_key = current_key ? "#{current_key}[#{key}]" : key
+        if hash[key].is_a?(Hash)
+          traverse_hash(hash[key], new_key)
+        elsif hash[key].is_a?(Array)
+          array_key = Typhoeus::Utils.escape("#{new_key}[]")
+          hash[key].collect { |v| "#{array_key}=#{Typhoeus::Utils.escape(v.to_s)}" }.join('&')
+        else
+          "#{Typhoeus::Utils.escape(new_key)}=#{Typhoeus::Utils.escape(hash[key].to_s)}"
+        end
+      end
+    end
+    private :traverse_hash
 
     def on_complete(&block)
       @on_complete = block

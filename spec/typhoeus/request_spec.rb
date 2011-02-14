@@ -74,7 +74,23 @@ describe Typhoeus::Request do
                                       :params => {
                                         :a => ['789','2434']
                                       })
-      request.params_string.should == "a[]=789&a[]=2434"
+      request.params_string.should == "a%5B%5D=789&a%5B%5D=2434"
+    end
+
+    it "should nest arrays in hashes" do
+      request = Typhoeus::Request.new('http://google.com',
+                                      :params => {
+                                        :a => { :b => { :c => ['d','e'] } }
+                                      })
+      request.params_string.should == "a%5Bb%5D%5Bc%5D%5B%5D=d&a%5Bb%5D%5Bc%5D%5B%5D=e"
+    end
+
+    it "should translate nested params correctly" do
+      request = Typhoeus::Request.new('http://google.com',
+                                      :params => {
+                                        :a => { :b => { :c => 'd' } }
+                                      })
+      request.params_string.should == "a%5Bb%5D%5Bc%5D=d"
     end
   end
 
