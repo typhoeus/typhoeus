@@ -1,5 +1,9 @@
-Current Master
---------------
+0.2.2
+-----
+* Fixed a problem with nested URL params encoding incorrectly [dbalatero]
+
+0.2.1
+-----
 * Added extended proxy support [Zapotek, GH-46]
 * eliminated compile time warnings by using proper type declarations [skaes, GH-54]
 * fixed broken calls to rb_raise [skaes, GH-54]
