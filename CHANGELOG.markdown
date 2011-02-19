@@ -1,3 +1,7 @@
+0.2.3
+-----
+* Code duplication in Typhoeus::Form led to nested URL param errors on POST only. Fixed [dbalatero]
+
 0.2.2
 -----
 * Fixed a problem with nested URL params encoding incorrectly [dbalatero]
