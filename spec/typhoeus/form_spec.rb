@@ -36,9 +36,9 @@ describe Typhoeus::Form do
         :name => "John Smith",
         :age => "29"
       })
-      form.should_receive(:formadd_param).with("colors", "brown")
-      form.should_receive(:formadd_param).with("colors", "green")
-      form.should_receive(:formadd_param).with("colors", "white")
+      form.should_receive(:formadd_param).with("colors[]", "brown")
+      form.should_receive(:formadd_param).with("colors[]", "green")
+      form.should_receive(:formadd_param).with("colors[]", "white")
       form.should_receive(:formadd_param).with("name", "John Smith")
       form.should_receive(:formadd_param).with("age", "29")
       form.process!
@@ -52,13 +52,14 @@ describe Typhoeus::Form do
         form.should_receive(:formadd_file).with("file", "placeholder.txt", "text/plain", anything)
         form.process!
       end
+
       it "should handle more than one file" do
         form = Typhoeus::Form.new(
           :text_file => File.open(File.expand_path(File.dirname(__FILE__) + "/../fixtures/placeholder.txt"), "r"),
           :gif_file => File.open(File.expand_path(File.dirname(__FILE__) + "/../fixtures/placeholder.gif"), "r")
         )
-        form.should_receive(:formadd_file).with("text_file", "placeholder.txt", "text/plain", anything)
         form.should_receive(:formadd_file).with("gif_file", "placeholder.gif", "image/gif", anything)
+        form.should_receive(:formadd_file).with("text_file", "placeholder.txt", "text/plain", anything)
         form.process!
       end
       it "should default to 'application/octet-stream' if no content type can be determined" do
@@ -100,7 +101,7 @@ describe Typhoeus::Form do
         :name => "John Smith",
         :age => "29"
       })
-      form.to_s.should == "age=29&colors=brown&colors=green&colors=white&name=John+Smith"
+      form.to_s.should == "age=29&colors%5B%5D=brown&colors%5B%5D=green&colors%5B%5D=white&name=John+Smith"
     end
   end
 end

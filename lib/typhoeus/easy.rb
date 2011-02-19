@@ -220,7 +220,7 @@ module Typhoeus
     def params
       @form.nil? ? {} : @form.params
     end
-    
+
     def params=(params)
       @form = Typhoeus::Form.new(params)
 
