@@ -21,6 +21,10 @@ module Typhoeus
       traversal[:files].each { |file_args| formadd_file(*file_args) }
     end
 
+    def multipart?
+      !traversal[:files].empty?
+    end
+
     def to_s
       Typhoeus::Utils.traversal_to_param_string(traversal, false)
     end

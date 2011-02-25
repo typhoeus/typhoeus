@@ -244,21 +244,39 @@ describe Typhoeus::Easy do
       easy.params = {:foo => "bar"}
       easy.perform
       easy.response_code.should == 200
-      easy.response_body.should include("name=\\\"foo\\\"\\r\\n\\r\\nbar")
+      easy.response_body.should =~ /foo=bar/
     end
 
-    it "should handle a file upload" do
+    it "should use Content-Type: application/x-www-form-urlencoded for normal posts" do
+      easy = Typhoeus::Easy.new
+      easy.url = "http://localhost:3002/normal_post"
+      easy.method = :post
+      easy.params = { :a => 'b', :c => 'd',
+                      :e => { :f => { :g => 'h' } } }
+      easy.perform
+
+      request = JSON.parse(easy.response_body)
+      request['CONTENT_TYPE'].should == 'application/x-www-form-urlencoded' 
+      request['rack.request.form_vars'].should == 'a=b&c=d&e%5Bf%5D%5Bg%5D=h'
+    end
+
+    it "should handle a file upload, as multipart" do
       easy = Typhoeus::Easy.new
       easy.url    = "http://localhost:3002/file"
       easy.method = :post
       easy.params = {:file => File.open(File.expand_path(File.dirname(__FILE__) + "/../fixtures/placeholder.txt"), "r")}
       easy.perform
       easy.response_code.should == 200
-      JSON.parse(easy.response_body).should == {
-        'content-type' => 'text/plain',
+      result = JSON.parse(easy.response_body)
+      
+      { 'content-type' => 'text/plain',
         'filename' => 'placeholder.txt',
         'content' => 'This file is used to test uploading.'
-      }
+      }.each do |key, val|
+        result[key].should == val
+      end
+
+      result['request-content-type'].should =~ /multipart/
     end
   end
   

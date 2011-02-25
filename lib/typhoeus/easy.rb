@@ -226,7 +226,11 @@ module Typhoeus
 
       if method == :post
         @form.process!
-        set_option(OPTION_VALUES[:CURLOPT_HTTPPOST], @form)
+        if @form.multipart?
+          set_option(OPTION_VALUES[:CURLOPT_HTTPPOST], @form)
+        else
+          self.post_data = @form.to_s
+        end
       else
         self.url = "#{url}?#{@form.to_s}"
       end

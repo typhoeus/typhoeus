@@ -10,7 +10,8 @@ post '/file' do
   {
     'content-type' => params[:file][:type],
     'filename' => params[:file][:filename],
-    'content' => params[:file][:tempfile].read
+    'content' => params[:file][:tempfile].read,
+    'request-content-type' => request.env['CONTENT_TYPE']
   }.to_json
 end
 
