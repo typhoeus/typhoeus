@@ -84,6 +84,24 @@ response = Typhoeus::Request.post("http://localhost:3000/posts", :params => {:ti
 response = Typhoeus::Request.delete("http://localhost:3000/posts/1")
 </pre>
 
+*Handling HTTP errors*
+You can query the response object to figure out if you had a successful request or not. Here's some example code that you might use to handle errors.
+
+<pre>
+request.on_complete do |response|
+  if response.success?
+    # hell yeah
+  elsif response.timed_out?
+    # aw hell no
+    log("got a time out")
+  else
+    log(response.curl_error_message)
+  end
+end
+</pre>
+
+This also works with serial (blocking) requests in the same fashion. Both serial and parallel requests return a Response object.
+
 *Handling file uploads*
 A File object can be passed as a param for a POST request to handle uploading files to the server. Typhoeus will upload the file as the original file name and use Mime::Types to set the content type.
 
