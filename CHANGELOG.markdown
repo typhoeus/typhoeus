@@ -1,3 +1,7 @@
+0.2.4
+-----
+* Fix form POSTs to only use multipart for file uploads, otherwise use application/x-www-form-urlencoded [dbalatero]
+
 0.2.3
 -----
 * Code duplication in Typhoeus::Form led to nested URL param errors on POST only. Fixed [dbalatero]
