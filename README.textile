@@ -59,6 +59,11 @@ request = Typhoeus::Request.new("http://www.pauldix.net",
 # the options are all optional. The default for :method is :get. Timeout is measured in milliseconds.
 # cache_timeout is measured in seconds.
 
+# Run the request via Hydra.
+hydra = Typhoeus::Hydra.new
+hydra.queue(request)
+hydra.run
+
 # the response object will be set after the request is run
 response = request.response
 response.code    # http status code
