@@ -20,6 +20,7 @@ module Typhoeus
       # [Only works on unix-style/SIGALRM operating systems. IOW, does
       # not work on Windows.
       :CURLOPT_CONNECTTIMEOUT_MS  => 156,
+      :CURLOPT_INTERFACE      => 62,
       :CURLOPT_NOSIGNAL       => 99,
       :CURLOPT_HTTPHEADER     => 10023,
       :CURLOPT_FOLLOWLOCATION => 52,
@@ -81,6 +82,10 @@ module Typhoeus
 
     def headers=(hash)
       @headers = hash
+    end
+    
+    def interface=(interface)
+      set_option(OPTION_VALUES[:CURLOPT_INTERFACE], interface)
     end
 
     def proxy=(proxy)
