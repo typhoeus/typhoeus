@@ -1,6 +1,7 @@
 Current master
 ---------------------
 * Added CURLOPT_INTERFACE option via Request#interface=. [spiegela]
+
 0.2.4
 -----
 * Fix form POSTs to only use multipart for file uploads, otherwise use application/x-www-form-urlencoded [dbalatero]
