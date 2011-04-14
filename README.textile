@@ -352,12 +352,15 @@ We can see from this that NET::HTTP performs as expected, taking 10 seconds to r
 
 h2. Running the specs
 
-Running the specs requires a couple of Sinatra servers to be booted. Do this:
+Running the specs requires the native extensions to be built and a couple of Sinatra servers to be booted. Do this:
 
 <pre>
-  ruby spec/servers/app.rb -p 3000
-  ruby spec/servers/app.rb -p 3001
-  ruby spec/servers/app.rb -p 3002
+  # Make sure to build the native extensions
+  rake build_native
+  # Start up the test servers (in another terminal)
+  rake start_test_servers
+
+  # Run the specs
   rake spec
 </pre>
 
