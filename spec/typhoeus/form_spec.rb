@@ -62,6 +62,16 @@ describe Typhoeus::Form do
         form.should_receive(:formadd_file).with("text_file", "placeholder.txt", "text/plain", anything)
         form.process!
       end
+
+      it "should handle tempfiles (file subclasses)" do
+        tempfile = Tempfile.new('placeholder_temp')
+        form = Typhoeus::Form.new(
+          :file => tempfile
+        )
+        form.should_receive(:formadd_file).with("file", File.basename(tempfile.path), "application/octet-stream", anything)
+        form.process!
+      end
+
       it "should default to 'application/octet-stream' if no content type can be determined" do
         pending
         form = Typhoeus::Form.new(

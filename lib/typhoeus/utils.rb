@@ -1,3 +1,5 @@
+require 'tempfile'
+
 module Typhoeus
   module Utils
     # Taken from Rack::Utils, 1.2.1 to remove Rack dependency.
@@ -22,7 +24,7 @@ module Typhoeus
           hash[key].each do |v|
             result[:params] << [array_key, v.to_s]
           end
-        when File
+        when File, Tempfile
           filename = File.basename(hash[key].path)
           types = MIME::Types.type_for(filename)
           result[:files] << [
