@@ -1,6 +1,7 @@
 Current master
 ---------------------
 * Added CURLOPT_INTERFACE option via Request#interface=. [spiegela]
+* Added Tempfile support to Form#process! [richievos]
 
 0.2.4
 -----
