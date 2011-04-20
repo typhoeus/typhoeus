@@ -74,6 +74,14 @@ describe Typhoeus::Request do
                                       :params => {
                                         :a => ['789','2434']
                                       })
+      request.params_string.should == "a=789&a=2434"
+    end
+    
+    it "should allow the newer bracket notation for array params" do
+      request = Typhoeus::Request.new('http://google.com',
+                                      :params => {
+                                        "a[]" => ['789','2434']
+                                      })
       request.params_string.should == "a%5B%5D=789&a%5B%5D=2434"
     end
 
