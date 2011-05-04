@@ -1,6 +1,6 @@
 module Typhoeus
   class Response
-    attr_accessor :request, :mock
+    attr_accessor :request, :mock, :from_cache
     attr_reader :code, :headers, :body, :time,
                 :requested_url, :requested_remote_method,
                 :requested_http_method, :start_time,
@@ -32,6 +32,7 @@ module Typhoeus
       @effective_url         = params[:effective_url]
       @mock                  = params[:mock] || false  # default
       @headers_hash          = NormalizedHeaderHash.new(params[:headers_hash]) if params[:headers_hash]
+      @from_cache = false
     end
 
     # Returns true if this is a mock response.

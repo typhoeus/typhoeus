@@ -129,6 +129,7 @@ module Typhoeus
       if @cache_getter
         val = @cache_getter.call(request)
         if val
+          val.from_cache = true
           @retrieved_from_cache[request.url] = val
           @cached_queue << [request, val]
           queue_next
