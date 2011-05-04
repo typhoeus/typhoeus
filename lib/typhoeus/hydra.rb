@@ -19,6 +19,7 @@ module Typhoeus
       @retrieved_from_cache = {}
       @queued_requests = []
       @running_requests = 0
+      @cached_queue = []
 
       self.stubs = []
       @active_stubs = []
@@ -94,6 +95,10 @@ module Typhoeus
 
       @multi.perform
     ensure
+      @cached_queue.each do |cached|
+        handle_request(*cached, false)
+      end
+
       @multi.reset_easy_handles{|easy| release_easy_object(easy)}
       @memoized_requests = {}
       @retrieved_from_cache = {}
@@ -125,8 +130,9 @@ module Typhoeus
         val = @cache_getter.call(request)
         if val
           @retrieved_from_cache[request.url] = val
+          @cached_queue << [request, val]
           queue_next
-          handle_request(request, val, false)
+          #handle_request(request, val, false)
         else
           @multi.add(get_easy_object(request))
         end
