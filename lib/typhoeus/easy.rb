@@ -164,7 +164,7 @@ module Typhoeus
     
     def encoding=(encoding)
       # Enable encoding/compression support
-      set_option(OPTION_VALUES[:CURLOPT_ENCODING], '')
+      set_option(OPTION_VALUES[:CURLOPT_ENCODING], encoding)
     end
     
     def ssl_version=(version)
