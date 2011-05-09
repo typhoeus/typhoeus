@@ -11,7 +11,7 @@ module Typhoeus
                   :ssl_cert, :ssl_cert_type, :ssl_key, :ssl_key_type,
                   :ssl_key_password, :ssl_cacert, :ssl_capath, :verbose,
                   :username, :password, :auth_method, :user_agent,
-                  :proxy_auth_method, :proxy_type
+                  :proxy_auth_method, :proxy_type, :ssl_version
 
     # Initialize a new Request
     #
@@ -42,6 +42,7 @@ module Typhoeus
     # ** +:username
     # ** +:password
     # ** +:auth_method
+    # ** +:ssl_version
     #
     def initialize(url, options = {})
       @method           = options[:method] || :get
@@ -72,6 +73,7 @@ module Typhoeus
       @username         = options[:username]
       @password         = options[:password]
       @auth_method      = options[:auth_method]
+      @ssl_version      = options[:ssl_version]
 
       if @method == :post
         @url = url
