@@ -26,11 +26,11 @@ module Typhoeus
     end
 
     def self.hydra
-      @hydra ||= new
+      Thread.current[:typhoeus_hydra] ||= new
     end
 
     def self.hydra=(val)
-      @hydra = val
+      Thread.current[:typhoeus_hydra] = val
     end
 
     #
