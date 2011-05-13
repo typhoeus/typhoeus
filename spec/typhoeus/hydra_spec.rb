@@ -188,6 +188,31 @@ describe Typhoeus::Hydra do
     @cache.get(second.cache_key).should be_nil
   end
 
+  it "continues queued requests after a queued cache hit" do
+    # Set max_concurrency to 1 so that the second and third requests will end
+    # up in the request queue.
+    hydra  = Typhoeus::Hydra.new :max_concurrency => 1
+    hydra.cache_getter do |request|
+      @cache.get(request.cache_key) rescue nil
+    end
+    hydra.cache_setter do |request|
+      @cache.set(request.cache_key, request.response, request.cache_timeout)
+    end
+
+    first  = Typhoeus::Request.new("http://localhost:3000/first", :params => {:delay => 1})
+    second = Typhoeus::Request.new("http://localhost:3000/second", :params => {:delay => 1})
+    third = Typhoeus::Request.new("http://localhost:3000/third", :params => {:delay => 1})
+    @cache.set(second.cache_key, "second", 60)
+    hydra.queue first
+    hydra.queue second
+    hydra.queue third
+    hydra.run
+
+    first.response.body.should include("first")
+    second.response.should == "second"
+    third.response.body.should include("third")
+  end
+
   it "has a global on_complete" do
     foo = nil
     hydra  = Typhoeus::Hydra.new

@@ -125,6 +125,7 @@ module Typhoeus
         val = @cache_getter.call(request)
         if val
           @retrieved_from_cache[request.url] = val
+          queue_next
           handle_request(request, val, false)
         else
           @multi.add(get_easy_object(request))
