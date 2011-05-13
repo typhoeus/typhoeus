@@ -46,6 +46,29 @@ describe Typhoeus::Hydra do
     second.response.body.should include("second")
   end
 
+  it "runs queued requests in order of queuing" do
+    hydra  = Typhoeus::Hydra.new :max_concurrency => 1
+    first  = Typhoeus::Request.new("http://localhost:3000/first")
+    second = Typhoeus::Request.new("http://localhost:3001/second")
+    third = Typhoeus::Request.new("http://localhost:3001/third")
+    second.on_complete do |response|
+      first.response.should_not == nil
+      third.response.should == nil
+    end
+    third.on_complete do |response|
+      first.response.should_not == nil
+      second.response.should_not == nil
+    end
+
+    hydra.queue first
+    hydra.queue second
+    hydra.queue third
+    hydra.run
+    first.response.body.should include("first")
+    second.response.body.should include("second")
+    third.response.body.should include("third")
+  end
+
   it "should store the curl return codes on the reponses" do
     hydra  = Typhoeus::Hydra.new
     first  = Typhoeus::Request.new("http://localhost:3001/?delay=1", :timeout => 100)
