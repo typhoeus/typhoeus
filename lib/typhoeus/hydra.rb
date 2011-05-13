@@ -195,7 +195,7 @@ module Typhoeus
 
     def queue_next
       @running_requests -= 1
-      queue(@queued_requests.pop) unless @queued_requests.empty?
+      queue(@queued_requests.shift) unless @queued_requests.empty?
     end
     private :queue_next
 
