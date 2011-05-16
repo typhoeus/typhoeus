@@ -1,5 +1,6 @@
 Current master
 ---------------------
+* fixed problems related to put requests with empty bodies [skaes, GH-84]
 * Added CURLOPT_INTERFACE option via Request#interface=. [spiegela]
 * Added Tempfile support to Form#process! [richievos]
 
