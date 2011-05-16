@@ -125,6 +125,7 @@ module Typhoeus
         val = @cache_getter.call(request)
         if val
           @retrieved_from_cache[request.url] = val
+          queue_next
           handle_request(request, val, false)
         else
           @multi.add(get_easy_object(request))
@@ -195,7 +196,7 @@ module Typhoeus
 
     def queue_next
       @running_requests -= 1
-      queue(@queued_requests.pop) unless @queued_requests.empty?
+      queue(@queued_requests.shift) unless @queued_requests.empty?
     end
     private :queue_next
 
