@@ -2,7 +2,10 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 require "spec"
 require "spec/rake/spectask"
-require 'lib/typhoeus'
+
+module Typhoeus
+  VERSION = File.read(File.dirname(__FILE__) + "/VERSION").chomp
+end
 
 begin
   require 'jeweler'
