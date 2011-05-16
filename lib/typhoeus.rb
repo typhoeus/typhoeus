@@ -16,6 +16,7 @@ require 'typhoeus/response'
 require 'typhoeus/request'
 require 'typhoeus/hydra'
 require 'typhoeus/hydra_mock'
+require 'typhoeus/version'
 
 module Typhoeus
   def self.easy_object_pool
