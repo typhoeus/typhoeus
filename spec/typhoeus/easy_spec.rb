@@ -215,6 +215,24 @@ describe Typhoeus::Easy do
       easy.response_code.should == 200
       easy.response_body.should include("this is a body!")
     end
+
+    it "should be able perform put with empty bodies on the same easy handle" do
+      easy = Typhoeus::Easy.new
+      easy.url    = "http://localhost:3002"
+      easy.method = :put
+      easy.perform
+      easy.response_code.should == 200
+      JSON.parse(easy.response_body)["REQUEST_METHOD"].should == "PUT"
+
+      easy.reset
+
+      easy.url    = "http://localhost:3002"
+      easy.method = :put
+      easy.perform
+      easy.response_code.should == 200
+      JSON.parse(easy.response_body)["REQUEST_METHOD"].should == "PUT"
+    end
+
   end
   
   describe "post" do
