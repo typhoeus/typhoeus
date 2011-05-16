@@ -112,6 +112,31 @@ describe Typhoeus::Easy do
     end
   end
   
+  describe "ssl_version" do
+    before(:each) do
+      @easy = Typhoeus::Easy.new
+      @easy.url = "http://localhost:3000"      
+      @easy.method = :get
+    end
+    
+    it "should allow to set the SSL version to be used" do
+      Typhoeus::Easy::SSL_VERSIONS.each do |k,v|
+        @easy.ssl_version = Typhoeus::Easy::SSL_VERSIONS[k]
+        @easy.perform
+        @easy.response_code.should == 200
+        @easy.ssl_version.should == v
+      end
+    end
+    
+    it "complains when an incorrect SSL version is used" do
+      expect { @easy.ssl_version = 'bogus' }.to raise_error
+    end
+    
+    it "uses the default SSL version if nothing is supplied" do
+      @easy.ssl_version.should == Typhoeus::Easy::SSL_VERSIONS[:default]
+    end
+  end
+  
   describe "authentication" do
     it "should allow to set username and password" do
       e = Typhoeus::Easy.new

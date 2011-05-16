@@ -1,11 +1,12 @@
 module Typhoeus
   class Easy
-    attr_reader :response_body, :response_header, :method, :headers, :url, :params, :curl_return_code
+    attr_reader :response_body, :response_header, :method, :headers, :url, :params, :curl_return_code, :ssl_version
     attr_accessor :start_time
 
     # These integer codes are available in curl/curl.h
     CURLINFO_STRING = 1048576
     OPTION_VALUES = {
+      :CURLOPT_SSLVERSION     => 32,
       :CURLOPT_URL            => 10002,
       :CURLOPT_HTTPGET        => 80,
       :CURLOPT_HTTPPOST       => 10024,
@@ -70,14 +71,23 @@ module Typhoeus
       :CURLPROXY_SOCKS5       => 5,
       :CURLPROXY_SOCKS4A      => 6,
     }
-
+    SSL_VERSIONS = {
+      :CURL_SSLVERSION_DEFAULT => 0,
+      :CURL_SSLVERSION_TLSv1   => 1,
+      :CURL_SSLVERSION_SSLv2   => 2,
+      :CURL_SSLVERSION_SSLv3   => 3,
+            
+      :default                 => 0,
+      :tlsv1                   => 1,
+      :sslv2                   => 2,
+      :sslv3                   => 3
+    }
 
     def initialize
-      @method = :get
-      @headers = {}
-
-      # Enable encoding/compression support
-      set_option(OPTION_VALUES[:CURLOPT_ENCODING], '')
+      @method          = :get
+      @headers         = {}
+      self.encoding    = ''
+      self.ssl_version = SSL_VERSIONS[:default]
     end
 
     def headers=(hash)
@@ -150,6 +160,18 @@ module Typhoeus
       else
         set_option(OPTION_VALUES[:CURLOPT_FOLLOWLOCATION], 0)
       end
+    end
+    
+    def encoding=(encoding)
+      # Enable encoding/compression support
+      set_option(OPTION_VALUES[:CURLOPT_ENCODING], encoding)
+    end
+    
+    def ssl_version=(version)
+      raise "Invalid SSL version: '#{version}' supplied! Please supply one as listed in Typhoeus::Easy::SSL_VERSIONS" unless SSL_VERSIONS.values.include?(version)
+      
+      @ssl_version = version
+      set_option(OPTION_VALUES[:CURLOPT_SSLVERSION], version)
     end
 
     def max_redirects=(redirects)

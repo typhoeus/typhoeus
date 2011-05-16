@@ -177,6 +177,7 @@ module Typhoeus
       easy.ssl_cacert       = request.ssl_cacert
       easy.ssl_capath       = request.ssl_capath
       easy.verbose          = request.verbose
+      easy.ssl_version      = request.ssl_version || Typhoeus::Easy::SSL_VERSIONS[:default]
 
       easy.on_success do |easy|
         queue_next
