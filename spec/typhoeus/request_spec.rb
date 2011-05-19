@@ -132,6 +132,12 @@ describe Typhoeus::Request do
     Typhoeus::Request.new("http://localhost:3000").host.should == "http://localhost:3000"
   end
 
+  it "does not modify the passed options" do
+    options = {:headers => {"some header" => "some header value"}, :user_agent => "some agent"}
+    Typhoeus::Request.get("http://localhost:3000", options)
+    options.should == {:headers => {"some header" => "some header value"}, :user_agent => "some agent"}
+  end
+
   it "takes method as an option" do
     Typhoeus::Request.new("http://localhost:3000", :method => :get).method.should == :get
   end
@@ -139,7 +145,7 @@ describe Typhoeus::Request do
   it "takes headers as an option" do
     headers = {:foo => :bar}
     request = Typhoeus::Request.new("http://localhost:3000", :headers => headers)
-    request.headers.should == headers
+    request.headers.should include(headers)
   end
 
   it "takes params as an option and adds them to the url" do
