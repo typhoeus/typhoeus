@@ -89,7 +89,7 @@ describe Typhoeus::Form do
         :name => "John Smith",
         :age => "29"
       })
-      form.to_s.should == "age=29&name=John+Smith"
+      form.to_s.should == "age=29&name=John Smith"
     end
 
     it "should handle params that are a hash" do
@@ -102,7 +102,7 @@ describe Typhoeus::Form do
         :name => "John Smith",
         :age => "29"
       })
-      form.to_s.should == "age=29&attributes%5Beyes%5D=brown&attributes%5Bhair%5D=green&attributes%5Bteeth%5D=white&name=John+Smith"
+      form.to_s.should == "age=29&attributes[eyes]=brown&attributes[hair]=green&attributes[teeth]=white&name=John Smith"
     end
 
     it "should params that have mutliple values" do
@@ -111,7 +111,7 @@ describe Typhoeus::Form do
         :name => "John Smith",
         :age => "29"
       })
-      form.to_s.should == "age=29&colors%5B%5D=brown&colors%5B%5D=green&colors%5B%5D=white&name=John+Smith"
+      form.to_s.should == "age=29&colors[]=brown&colors[]=green&colors[]=white&name=John Smith"
     end
   end
 end
