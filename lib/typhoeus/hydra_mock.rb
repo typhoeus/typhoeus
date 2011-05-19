@@ -3,13 +3,22 @@ module Typhoeus
     attr_reader :url, :method, :requests, :uri
 
     def initialize(url, method, options = {})
-      @url      = url
-      @uri      = URI.parse(url) if url.kind_of?(String)
       @method   = method
       @requests = []
-      @options = options
+      @options  = options
       if @options[:headers]
         @options[:headers] = Typhoeus::NormalizedHeaderHash.new(@options[:headers])
+      end
+      
+      @url      = url
+      if url.kind_of?(String)
+        if @method != :post && params? && !params.nil?
+          @uri  = URI.parse("#{url}?#{params_string}")
+        else
+          @uri  = URI.parse(url)
+        end
+      else
+        @uri    = @url
       end
 
       @current_response_index = 0
@@ -29,6 +38,14 @@ module Typhoeus
 
     def headers?
       @options.has_key?(:headers)
+    end
+    
+    def params
+      @options[:params]
+    end
+    
+    def params?
+      @options.has_key?(:params)
     end
 
     def add_request(request)
@@ -75,6 +92,11 @@ module Typhoeus
     end
 
   private
+    def params_string
+      traversal = Typhoeus::Utils.traverse_params_hash(params)
+      Typhoeus::Utils.traversal_to_param_string(traversal)
+    end  
+  
     def method_matches?(request)
       self.method == :any or self.method == request.method
     end
@@ -82,6 +104,7 @@ module Typhoeus
     def url_matches?(request)
       if url.kind_of?(String)
         request_uri = URI.parse(request.url)
+        request_uri.query = nil unless params?
         request_uri == self.uri
       else
         self.url =~ request.url
