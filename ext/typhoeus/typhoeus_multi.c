@@ -1,4 +1,5 @@
 #include <typhoeus_multi.h>
+#include <errno.h>
 
 static void multi_read_info(VALUE self, CURLM *multi_handle);
 
@@ -158,7 +159,7 @@ static VALUE multi_perform(VALUE self) {
 
     rc = rb_thread_select(maxfd+1, &fdread, &fdwrite, &fdexcep, &tv);
     if (rc < 0) {
-      rb_raise(rb_eRuntimeError, "error on thread select");
+      rb_raise(rb_eRuntimeError, "error on thread select: %d", errno);
     }
     rb_curl_multi_run( self, curl_multi->multi, &(curl_multi->running) );
 
