@@ -36,9 +36,9 @@ describe Typhoeus::Form do
         :name => "John Smith",
         :age => "29"
       })
-      form.should_receive(:formadd_param).with("colors[]", "brown")
-      form.should_receive(:formadd_param).with("colors[]", "green")
-      form.should_receive(:formadd_param).with("colors[]", "white")
+      form.should_receive(:formadd_param).with("colors", "brown")
+      form.should_receive(:formadd_param).with("colors", "green")
+      form.should_receive(:formadd_param).with("colors", "white")
       form.should_receive(:formadd_param).with("name", "John Smith")
       form.should_receive(:formadd_param).with("age", "29")
       form.process!
@@ -105,13 +105,13 @@ describe Typhoeus::Form do
       form.to_s.should == "age=29&attributes[eyes]=brown&attributes[hair]=green&attributes[teeth]=white&name=John Smith"
     end
 
-    it "should params that have mutliple values" do
+    it "should params that have multiple values" do
       form = Typhoeus::Form.new({
         :colors => ["brown", "green", "white"],
         :name => "John Smith",
         :age => "29"
       })
-      form.to_s.should == "age=29&colors[]=brown&colors[]=green&colors[]=white&name=John Smith"
+      form.to_s.should == "age=29&colors=brown&colors=green&colors=white&name=John Smith"
     end
   end
 end
