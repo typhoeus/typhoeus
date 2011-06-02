@@ -1,3 +1,8 @@
+/* Make sure select() works with >1024 file handles open. */
+#include <sys/types.h>
+#undef __FD_SETSIZE
+#define __FD_SETSIZE 524288 
+
 #include <typhoeus_multi.h>
 #include <errno.h>
 
