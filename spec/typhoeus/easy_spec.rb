@@ -191,7 +191,7 @@ describe Typhoeus::Easy do
         :username => ['dbalatero', 'dbalatero2']
       }
       
-      easy.url.should =~ /\?.*username%5B%5D=dbalatero&username%5B%5D=dbalatero2/
+      easy.url.should =~ /\?.*foo=bar&username\[\]=dbalatero&username\[\]=dbalatero2/
     end
   end
 
@@ -275,7 +275,7 @@ describe Typhoeus::Easy do
 
       request = JSON.parse(easy.response_body)
       request['CONTENT_TYPE'].should == 'application/x-www-form-urlencoded' 
-      request['rack.request.form_vars'].should == 'a=b&c=d&e%5Bf%5D%5Bg%5D=h'
+      request['rack.request.form_vars'].should == 'a=b&c=d&e[f][g]=h'
     end
 
     it "should handle a file upload, as multipart" do
