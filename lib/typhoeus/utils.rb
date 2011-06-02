@@ -20,9 +20,8 @@ module Typhoeus
         when Hash
           traverse_params_hash(hash[key], result, new_key)
         when Array
-          array_key = "#{new_key}[]"
           hash[key].each do |v|
-            result[:params] << [array_key, v.to_s]
+            result[:params] << [new_key, v.to_s]
           end
         when File, Tempfile
           filename = File.basename(hash[key].path)

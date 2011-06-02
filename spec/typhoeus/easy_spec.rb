@@ -190,8 +190,7 @@ describe Typhoeus::Easy do
         :foo => 'bar',
         :username => ['dbalatero', 'dbalatero2']
       }
-      
-      easy.url.should =~ /\?.*foo=bar&username\[\]=dbalatero&username\[\]=dbalatero2/
+      easy.url.should =~ /\?.*foo=bar&username=dbalatero&username=dbalatero2/
     end
   end
 
