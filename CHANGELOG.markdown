@@ -1,5 +1,6 @@
 Current master
 ---------------------
+* Fix array params to be consistent with HTTP spec [gridaphobe]
 * traversal_to_params_hash should use the escape option [itsmeduncan]
 * Fix > 1024 open file descriptors [mschulkind]
 * Fixed a bug with internally queued requests being dropped [mschulkind]
