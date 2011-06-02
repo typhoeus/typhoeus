@@ -329,6 +329,16 @@ describe Typhoeus::Easy do
       easy.response_code.should == 200
       JSON.parse(easy.response_body)["HTTP_ACCEPT_ENCODING"].should == "deflate, gzip"
     end
+
+    it "should send valid encoding headers and decode the response after reset" do
+      easy = Typhoeus::Easy.new
+      easy.reset
+      easy.url = "http://localhost:3002/gzipped"
+      easy.method = :get
+      easy.perform
+      easy.response_code.should == 200
+      JSON.parse(easy.response_body)["HTTP_ACCEPT_ENCODING"].should == "deflate, gzip"
+    end
     
   end
 end
