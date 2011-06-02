@@ -7,6 +7,7 @@ Current master
 * Fixed problems related to put requests with empty bodies [skaes, GH-84]
 * Added CURLOPT_INTERFACE option via Request#interface=. [spiegela]
 * Added Tempfile support to Form#process! [richievos]
+* Hydra won't forget to accept gzip/deflate encoding [codesnik]
 
 0.2.4
 -----
