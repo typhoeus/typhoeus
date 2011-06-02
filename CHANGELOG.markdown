@@ -1,5 +1,6 @@
 Current master
 ---------------------
+* Fix >1024 open file descriptors [mschulkind]
 * Fixed a bug with internally queued requests being dropped [mschulkind]
 * Use gemspec in bundler to avoid duplication [mschulkind]
 * Run internally queued requests in FIFO order [mschulkind]
