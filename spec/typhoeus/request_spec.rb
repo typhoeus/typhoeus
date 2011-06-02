@@ -90,7 +90,7 @@ describe Typhoeus::Request do
                                       :params => {
                                         :a => { :b => { :c => ['d','e'] } }
                                       })
-      request.params_string.should == "a%5Bb%5D%5Bc%5D%5B%5D=d&a%5Bb%5D%5Bc%5D%5B%5D=e"
+      request.params_string.should == "a%5Bb%5D%5Bc%5D=d&a%5Bb%5D%5Bc%5D=e"
     end
 
     it "should translate nested params correctly" do
