@@ -76,6 +76,10 @@ module Typhoeus
       @method = :get
       @headers = {}
 
+      set_defaults
+    end
+
+    def set_defaults
       # Enable encoding/compression support
       set_option(OPTION_VALUES[:CURLOPT_ENCODING], '')
     end
@@ -179,9 +183,7 @@ module Typhoeus
     def request_body=(request_body)
       @request_body = request_body
       if @method == :put
-        easy_set_request_body(@request_body)
-        headers["Transfer-Encoding"] = ""
-        headers["Expect"] = ""
+        easy_set_request_body(@request_body.to_s)
       else
         self.post_data = request_body
       end
@@ -209,7 +211,7 @@ module Typhoeus
         self.post_data = ""
       elsif method == :put
         set_option(OPTION_VALUES[:CURLOPT_UPLOAD], 1)
-        self.request_body = "" unless @request_body
+        self.request_body = @request_body.to_s
       elsif method == :head
         set_option(OPTION_VALUES[:CURLOPT_NOBODY], 1)
       else
@@ -350,7 +352,9 @@ module Typhoeus
       @response_code = 0
       @response_header = ""
       @response_body = ""
+      @request_body = ""
       easy_reset()
+      set_defaults
     end
 
     def get_info_string(option)

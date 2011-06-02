@@ -1,3 +1,9 @@
+PATH
+  remote: .
+  specs:
+    typhoeus (0.2.4)
+      mime-types
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -27,6 +33,6 @@ DEPENDENCIES
   diff-lcs
   jeweler
   json
-  mime-types
-  rspec (= 1.3.1)
+  rspec
   sinatra
+  typhoeus!

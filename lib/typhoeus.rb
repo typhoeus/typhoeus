@@ -16,10 +16,9 @@ require 'typhoeus/response'
 require 'typhoeus/request'
 require 'typhoeus/hydra'
 require 'typhoeus/hydra_mock'
+require 'typhoeus/version'
 
 module Typhoeus
-  VERSION = File.read(File.dirname(__FILE__) + "/../VERSION").chomp
-
   def self.easy_object_pool
     @easy_objects ||= []
   end

@@ -42,7 +42,7 @@ module Typhoeus
 
     def traversal_to_param_string(traversal, escape = true)
       traversal[:params].collect { |param|
-        "#{Typhoeus::Utils.escape(param[0])}=#{Typhoeus::Utils.escape(param[1])}"
+        escape ? "#{Typhoeus::Utils.escape(param[0])}=#{Typhoeus::Utils.escape(param[1])}" : "#{param[0]}=#{param[1]}"
       }.join('&')
     end
     module_function :traversal_to_param_string
