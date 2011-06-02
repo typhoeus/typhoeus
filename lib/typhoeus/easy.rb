@@ -33,6 +33,7 @@ module Typhoeus
       :CURLOPT_PROXYTYPE      => 101,
       :CURLOPT_PROXYAUTH      => 111,
       :CURLOPT_VERIFYPEER     => 64,
+      :CURLOPT_VERIFYHOST    => 81,
       :CURLOPT_NOBODY         => 44,
       :CURLOPT_ENCODING       => 10000 + 102,
       :CURLOPT_SSLCERT        => 10025,
@@ -196,6 +197,10 @@ module Typhoeus
 
     def disable_ssl_peer_verification
       set_option(OPTION_VALUES[:CURLOPT_VERIFYPEER], 0)
+    end
+
+    def disable_ssl_host_verification
+      set_option(OPTION_VALUES[:CURLOPT_VERIFYHOST], 0)
     end
 
     def method=(method)
