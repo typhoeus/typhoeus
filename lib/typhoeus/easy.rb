@@ -254,7 +254,7 @@ module Typhoeus
     # Set SSL certificate type
     # " The string should be the format of your certificate. Supported formats are "PEM" and "DER" "
     def ssl_cert_type=(cert_type)
-      raise "Invalid ssl cert type : '#{cert_type}'..." if cert_type and !%w(PEM DER).include?(cert_type)
+      raise "Invalid ssl cert type : '#{cert_type}'..." if cert_type and !%w(PEM DER p12).include?(cert_type)
       set_option(OPTION_VALUES[:CURLOPT_SSLCERTTYPE], cert_type)
     end
 
