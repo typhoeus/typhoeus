@@ -248,6 +248,12 @@ Now, even if you have libcurl built with OpenSSL you may still have a messed up 
 Typhoeus::Request.get("https://mail.google.com/mail", :disable_ssl_peer_verification => true)
 </pre>
 
+If you are getting "SSL: certificate subject name does not match target host name" from curl (ex:- you are trying to access to b.c.host.com when the certificate subject is *.host.com). You can disable host verification. Like this:
+
+<pre>
+Typhoeus::Request.get("https://mail.google.com/mail", :disable_ssl_host_verification => true)
+</pre>
+
 *LibCurl*
 Typhoeus also has a more raw libcurl interface. These are the Easy and Multi objects. If you're into accessing just the raw libcurl style, those are your best bet.
 
