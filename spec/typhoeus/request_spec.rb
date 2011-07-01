@@ -114,7 +114,7 @@ describe Typhoeus::Request do
       response.code.should == 200
       json = JSON.parse(response.body)
       json["REQUEST_METHOD"].should == "POST"
-      json["rack.request.query_hash"]["q"]["a"].should == "hi"
+      json["rack.request.form_hash"]["q"]["a"].should == "hi"
     end
 
     it "can run a PUT synchronously" do
