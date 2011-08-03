@@ -228,6 +228,14 @@ easy.timed_out?  # for a raw Easy handle
 response.timed_out?  # for a Response handle
 </pre>
 
+*Following Redirections*
+
+Use <code>:follow_location => true</code>,
+eg:
+<pre>
+Typhoeus::Request.new("www.example.com", :follow_location => true)
+</pre>
+
 *Basic Authentication*
 
 <pre>
