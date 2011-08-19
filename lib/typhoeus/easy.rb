@@ -226,7 +226,7 @@ module Typhoeus
 
     def post_data=(data)
       @post_data_set = true
-      set_option(OPTION_VALUES[:CURLOPT_POSTFIELDSIZE], data.length)
+      set_option(OPTION_VALUES[:CURLOPT_POSTFIELDSIZE], data.bytesize)
       set_option(OPTION_VALUES[:CURLOPT_COPYPOSTFIELDS], data)
     end
 
