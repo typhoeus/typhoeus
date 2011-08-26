@@ -1,4 +1,8 @@
+# encoding: UTF-8
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+
+Encoding.default_internal = 'utf-8'
+Encoding.default_external = 'utf-8'
 
 describe Typhoeus::Easy do
   describe "#supports_zlib" do
@@ -214,6 +218,16 @@ describe Typhoeus::Easy do
       easy.perform
       easy.response_code.should == 200
       easy.response_body.should include("this is a body!")
+    end
+
+    it "should set content length correctly for a utf-8 string" do
+      body = "this is a body with utf-8 content: Motörhead!  WHÖÖ!"
+      easy = Typhoeus::Easy.new
+      easy.url    = "http://localhost:3002"
+      easy.method = :post
+      easy.should_receive(:set_option).with(Typhoeus::Easy::OPTION_VALUES[:CURLOPT_POSTFIELDSIZE], 55)
+      easy.should_receive(:set_option).with(Typhoeus::Easy::OPTION_VALUES[:CURLOPT_COPYPOSTFIELDS], body)
+      easy.request_body = body
     end
   end
   
