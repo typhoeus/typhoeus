@@ -48,12 +48,12 @@ module Typhoeus
       @method           = options[:method] || :get
       @params           = options[:params]
       @body             = options[:body]
-      @timeout          = options[:timeout]
-      @connect_timeout  = options[:connect_timeout]
+      @timeout          = safe_to_i(options[:timeout])
+      @connect_timeout  = safe_to_i(options[:connect_timeout])
       @interface        = options[:interface]
       @headers          = options[:headers] || {}
       @user_agent       = options[:user_agent] || Typhoeus::USER_AGENT
-      @cache_timeout    = options[:cache_timeout]
+      @cache_timeout    = safe_to_i(options[:cache_timeout])
       @follow_location  = options[:follow_location]
       @max_redirects    = options[:max_redirects]
       @proxy            = options[:proxy]
@@ -201,5 +201,14 @@ module Typhoeus
     def self.head(url, params = {})
       run(url, params.merge(:method => :head))
     end
+
+    private
+
+      def safe_to_i value
+        return value if value.is_a?(Fixnum)
+        return nil if value.nil?
+        return nil if value.respond_to?(:empty?) && value.empty?
+        value.to_i
+      end
   end
 end
