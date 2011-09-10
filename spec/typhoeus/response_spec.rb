@@ -89,6 +89,36 @@ describe Typhoeus::Response do
       response = Typhoeus::Response.new.headers_hash.should == {}
     end
 
+    context 'when the headers_hash is stubbed' do
+      after(:each) { Typhoeus::Hydra.clear_stubs }
+      let!(:orig_response) { Typhoeus::Request.get("http://localhost:3000/multiple-headers") }
+
+      it 'returns a properly formatted string built from the headers_hash, code, status_message and http_version' do
+        stub_response = Typhoeus::Response.new(
+          :code           => orig_response.code,
+          :headers_hash   => orig_response.headers_hash,
+          :status_message => orig_response.status_message,
+          :http_version   => orig_response.http_version
+        )
+
+        stub_response.headers.size.should == orig_response.headers.size
+
+        orig_header_lines = orig_response.headers.split("\n")
+        stub_header_lines = stub_response.headers.split("\n")
+
+        # HTTP version/status line should be identical
+        orig_header_lines.shift.should == stub_header_lines.shift
+
+        # we can't count on the header order being identical since ruby hashes are not always ordered
+        orig_header_lines.should =~ stub_header_lines
+      end
+
+      it 'returns a valid header string even with the code, status message and http_version are not stubbed' do
+        response = Typhoeus::Response.new(:headers_hash => orig_response.headers_hash)
+        response.headers.should =~ /Content-Type/
+      end
+    end
+
     describe "basic parsing" do
       before(:all) do
         @response = Typhoeus::Response.new(:headers => "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nConnection: close\r\nStatus: 200\r\nX-Powered-By: Phusion Passenger (mod_rails/mod_rack) 2.2.9\r\nX-Cache: miss\r\nX-Runtime: 184\r\nETag: e001d08d9354ab7bc7c27a00163a3afa\r\nCache-Control: private, max-age=0, must-revalidate\r\nContent-Length: 4725\r\nSet-Cookie: _some_session=BAh7CDoGciIAOg9zZXNzaW9uX2lkIiU1OTQ2OTcwMjljMWM5ZTQwODU1NjQwYTViMmQxMTkxMjoGcyIKL2NhcnQ%3D--b4c4663932243090c961bb93d4ad5e4327064730; path=/; HttpOnly\r\nServer: nginx/0.6.37 + Phusion Passenger 2.2.4 (mod_rails/mod_rack)\r\nSet-Cookie: foo=bar; path=/;\r\nP3P: CP=\"NOI DSP COR NID ADMa OPTa OUR NOR\"\r\n\r\n")
