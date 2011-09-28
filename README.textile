@@ -14,6 +14,10 @@ Like a modern code version of the mythical beast with 100 serpent heads, Typhoeu
 
 Some of the awesome features are parallel request execution, memoization of request responses (so you don't make the same request multiple times in a single group), built in support for caching responses to memcached (or whatever), and mocking capability baked in. It uses libcurl and libcurl-multi to work this speedy magic. I wrote the c bindings myself so it's yet another Ruby libcurl library, but with some extra awesomeness added in.
 
+h2. Windows Support
+
+Windows is not officially supported at this time. I don't have time/resources to devote to supporting that OS. I don't even have that OS. Thanks for your understanding!
+
 h2. Installation
 
 Typhoeus requires you to have a current version of libcurl installed. I've tested this with 7.19.4 and higher.
