@@ -16,7 +16,7 @@ Some of the awesome features are parallel request execution, memoization of requ
 
 h2. Windows Support
 
-Windows is not officially supported at this time. I don't have time/resources to devote to supporting that OS. I don't even have that OS. Thanks for your understanding!
+Windows is tricky to get up and running. A reported working version of curl is "curl-7.19.4-devel-mingw32", provided you point --with-opt-include and --with-opt-lib flags to the correct directory when you `gem install`. Patches to make Windows work seamlessly are welcome!
 
 h2. Installation
 
