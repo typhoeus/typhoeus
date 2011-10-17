@@ -11,8 +11,24 @@ module Typhoeus
           self.stubs = []
         end
 
+        def register_stub_finder(&block)
+          stub_finders << block
+        end
+
         def find_stub_from_request(request)
+          stub_finders.each do |finder|
+            if response = finder.call(request)
+              mock = HydraMock.new(/.*/, :any)
+              mock.and_return(response)
+              return mock
+            end
+          end
+
           stubs.detect { |stub| stub.matches?(request) }
+        end
+
+        def stub_finders
+          @stub_finders ||= []
         end
 
         def self.extended(base)
