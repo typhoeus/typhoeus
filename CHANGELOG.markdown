@@ -1,5 +1,5 @@
-Current master
----------------------
+0.3.0
+-----
 * Fix array params to be consistent with HTTP spec [gridaphobe]
 * traversal_to_params_hash should use the escape option [itsmeduncan]
 * Fix > 1024 open file descriptors [mschulkind]
@@ -11,6 +11,9 @@ Current master
 * Added CURLOPT_INTERFACE option via Request#interface=. [spiegela]
 * Added Tempfile support to Form#process! [richievos]
 * Hydra won't forget to accept gzip/deflate encoding [codesnik]
+* Accept and convert strings to integers in Typhoeus::Request#initialize for timeout/cache_timeout/connect_timeout values when using ruby 1.9.x. [djnawara]
+* Added interface for registering stub finders [myronmarston]
+* Fixed header stubbing [myronmarston]
 
 0.2.4
 -----
