@@ -208,7 +208,7 @@ module Typhoeus
     # `on_complete` and `after_complete` handlers, since they cannot be
     # marshalled.
     def marshal_dump
-      (instance_variables - [:@on_complete, :@after_complete]).map do |name|
+      (instance_variables - ['@on_complete', '@after_complete', :@on_complete, :@after_complete]).map do |name|
         [name, instance_variable_get(name)]
       end
     end
