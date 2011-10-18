@@ -49,6 +49,7 @@ module Typhoeus
       :CURLINFO_TOTAL_TIME         => 3145731,
       :CURLINFO_HTTPAUTH_AVAIL     => 0x200000 + 23,
       :CURLINFO_EFFECTIVE_URL      => 0x100000 + 1,
+      :CURLINFO_PRIMARY_IP         => 0x100000 + 32,
       :CURLINFO_NAMELOOKUP_TIME    => 0x300000 + 4,
       :CURLINFO_CONNECT_TIME       => 0x300000 + 5,
       :CURLINFO_PRETRANSFER_TIME   => 0x300000 + 6,
@@ -143,6 +144,10 @@ module Typhoeus
 
     def effective_url
       get_info_string(INFO_VALUES[:CURLINFO_EFFECTIVE_URL])
+    end
+    
+    def primary_ip
+      get_info_string(INFO_VALUES[:CURLINFO_PRIMARY_IP])
     end
 
     def response_code
