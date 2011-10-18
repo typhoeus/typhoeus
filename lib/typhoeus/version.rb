@@ -1,3 +1,3 @@
 module Typhoeus
-  VERSION = File.read(File.dirname(__FILE__) + "/../../VERSION").chomp
+  VERSION = '0.3.0'
 end
