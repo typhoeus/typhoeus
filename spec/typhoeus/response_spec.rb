@@ -109,6 +109,9 @@ describe Typhoeus::Response do
         # HTTP version/status line should be identical
         orig_header_lines.shift.should == stub_header_lines.shift
 
+        # "XSS" gets downcased, so we have to fix it here.
+        orig_header_lines.each { |line| line.sub!('XSS', 'Xss') }
+
         # we can't count on the header order being identical since ruby hashes are not always ordered
         orig_header_lines.should =~ stub_header_lines
       end
