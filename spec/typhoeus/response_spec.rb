@@ -36,6 +36,10 @@ describe Typhoeus::Response do
       Typhoeus::Response.new.status_message.should be_nil
     end
 
+    it "should return nil for status_message if a message-less header is given" do
+      Typhoeus::Response.new(:headers => "HTTP/1.1 200\r\n").status_message.should == nil
+    end
+
     it "should store http_version" do
       Typhoeus::Response.new(:http_version => '1.1').http_version.should == '1.1'
     end
@@ -44,6 +48,10 @@ describe Typhoeus::Response do
       Typhoeus::Response.new.http_version.should be_nil
     end
     
+    it "should return nil for http version if an invalid or incomplete header is given" do
+      Typhoeus::Response.new(:headers => "HTTP foo/bar 200 OK\r\n").http_version.should == nil
+    end
+
     it "should store response_headers" do
       Typhoeus::Response.new(:headers => "a header!").headers.should == "a header!"
     end
