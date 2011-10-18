@@ -18,6 +18,7 @@
 * Make a request with handlers marshallable [bernerdschaefer]
 * Upgraded to RSpec 2 [bernerdschaefer]
 * Fix HTTP status edge-case [balexis]
+* Expose primary_ip to easy object [balexis]
 
 0.2.4
 -----
