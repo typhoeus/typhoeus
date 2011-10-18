@@ -17,7 +17,7 @@ module Typhoeus
       @curl_error_message    = params[:curl_error_message]
       @status_message        = params[:status_message]
       @http_version          = params[:http_version]
-      @headers               = params[:headers] || ''
+      @headers               = params[:headers]
       @body                  = params[:body]
       @time                  = params[:time]
       @requested_url         = params[:requested_url]
@@ -37,6 +37,10 @@ module Typhoeus
     # Returns true if this is a mock response.
     def mock?
       @mock
+    end
+
+    def headers
+      @headers ||= @headers_hash ? construct_header_string : ''
     end
 
     def headers_hash
@@ -85,7 +89,20 @@ module Typhoeus
     private
 
       def first_header_line
-        @first_header_line ||= headers.split("\n").first
+        @first_header_line ||= @headers.to_s.split("\n").first
+      end
+
+      def construct_header_string
+        lines = ["HTTP/#{http_version} #{code} #{status_message}"]
+
+        @headers_hash.each do |key, values|
+          [values].flatten.each do |value|
+            lines << "#{key}: #{value}"
+          end
+        end
+
+        lines << '' << ''
+        lines.join("\r\n")
       end
   end
 end
