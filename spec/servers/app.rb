@@ -15,6 +15,10 @@ post '/file' do
   }.to_json
 end
 
+get '/multiple-headers' do
+  [200, { 'Set-Cookie' => %w[ foo bar ], 'Content-Type' => 'text/plain' }, ['']]
+end
+
 get '/fail/:number' do
   if @@fail_count >= params[:number].to_i
     "ok"
