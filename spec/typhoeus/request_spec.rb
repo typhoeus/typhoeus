@@ -122,7 +122,7 @@ describe Typhoeus::Request do
                                       })
       request.params_string.should == "a=789&a=2434"
     end
-    
+
     it "should allow the newer bracket notation for array params" do
       request = Typhoeus::Request.new('http://google.com',
                                       :params => {
@@ -158,6 +158,7 @@ describe Typhoeus::Request do
     it "can run a POST synchronously" do
       response = Typhoeus::Request.post("http://localhost:3000", :params => {:q => { :a => "hi" } }, :headers => {:foo => "bar"})
       response.code.should == 200
+
       json = JSON.parse(response.body)
       json["REQUEST_METHOD"].should == "POST"
       json["rack.request.form_hash"]["q"]["a"].should == "hi"
@@ -208,8 +209,48 @@ describe Typhoeus::Request do
     Typhoeus::Request.new("http://localhost:3000", :timeout => 10).timeout.should == 10
   end
 
+  it "accepts a string for the timeout option" do
+    Typhoeus::Request.new("http://localhost:3000", :timeout => "150").timeout.should == 150
+  end
+
+  it "doesn't convert a nil timeout to an integer" do
+    Typhoeus::Request.new("http://localhost:3000", :timeout => nil).timeout.should_not == nil.to_i
+  end
+
+  it "doesn't convert an empty timeout to an integer" do
+    Typhoeus::Request.new("http://localhost:3000", :timeout => "").timeout.should_not == "".to_i
+  end
+
+  it "takes connect_timeout as an option" do
+    Typhoeus::Request.new("http://localhost:3000", :connect_timeout => 14).connect_timeout.should == 14
+  end
+
+  it "accepts a string for the connect_timeout option" do
+    Typhoeus::Request.new("http://localhost:3000", :connect_timeout => "420").connect_timeout.should == 420
+  end
+
+  it "doesn't convert a nil connect_timeout to an integer" do
+    Typhoeus::Request.new("http://localhost:3000", :connect_timeout => nil).connect_timeout.should_not == nil.to_i
+  end
+
+  it "doesn't convert an empty connect_timeout to an integer" do
+    Typhoeus::Request.new("http://localhost:3000", :connect_timeout => "").connect_timeout.should_not == "".to_i
+  end
+
   it "takes cache_timeout as an option" do
     Typhoeus::Request.new("http://localhost:3000", :cache_timeout => 60).cache_timeout.should == 60
+  end
+
+  it "accepts a string for the cache_timeout option" do
+    Typhoeus::Request.new("http://localhost:3000", :cache_timeout => "42").cache_timeout.should == 42
+  end
+
+  it "doesn't convert a nil cache_timeout to an integer" do
+    Typhoeus::Request.new("http://localhost:3000", :cache_timeout => nil).cache_timeout.should_not == nil.to_i
+  end
+
+  it "doesn't convert an empty cache_timeout to an integer" do
+    Typhoeus::Request.new("http://localhost:3000", :cache_timeout => "").cache_timeout.should_not == "".to_i
   end
 
   it "takes follow_location as an option" do
