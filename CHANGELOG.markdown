@@ -17,6 +17,7 @@
 * Added PKCS12 support [jodell]
 * Make a request with handlers marshallable [bernerdschaefer]
 * Upgraded to RSpec 2 [bernerdschaefer]
+* Fix HTTP status edge-case [balexis]
 
 0.2.4
 -----
