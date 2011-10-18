@@ -14,6 +14,7 @@
 * Accept and convert strings to integers in Typhoeus::Request#initialize for timeout/cache_timeout/connect_timeout values when using ruby 1.9.x. [djnawara]
 * Added interface for registering stub finders [myronmarston]
 * Fixed header stubbing [myronmarston]
+* Added PKCS12 support [jodell]
 
 0.2.4
 -----
