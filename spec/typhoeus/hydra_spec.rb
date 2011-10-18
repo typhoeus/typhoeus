@@ -348,6 +348,34 @@ describe Typhoeus::Hydra::Stubbing do
 
     after(:each) do
       @stub_target.clear_stubs
+      @stub_target.stub_finders.clear
+    end
+
+    it 'allows users to register a custom stub finder' do
+      @stub_target.register_stub_finder do |request|
+        Typhoeus::Response.new :code => 200, :body => "stub for #{request.url.split('/').last}"
+      end
+
+      request = Typhoeus::Request.new("http://localhost:3000/foo")
+      returned_response = nil
+      request.on_complete { |response| returned_response = response }
+      @hydra.queue(request); @hydra.run
+
+      returned_response.code.should == 200
+      returned_response.body.should == "stub for foo"
+    end
+
+    it 'ignores the custom stub finder if it the block returns nil' do
+      @stub_target.register_stub_finder { |r| }
+
+      @stub_target.stub(:get, "http://localhost:3000/foo",
+                        :headers => { 'user-agent' => 'test'}).
+                        and_return(@response)
+
+      @hydra.queue(@request)
+      @hydra.run
+      @on_complete_handler_called.should be_true
+      @response.request.should == @request
     end
 
     it "should provide a stubs accessor" do
