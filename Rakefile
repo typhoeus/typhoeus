@@ -1,7 +1,5 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
-require "spec"
-require "spec/rake/spectask"
 require "lib/typhoeus/version"
 
 begin
@@ -14,7 +12,7 @@ begin
     gemspec.homepage = "http://github.com/dbalatero/typhoeus"
     gemspec.authors = ["Paul Dix", "David Balatero"]
     gemspec.add_dependency "mime-types"
-    gemspec.add_development_dependency "rspec"
+    gemspec.add_development_dependency "rspec", "~> 2.6"
     gemspec.add_development_dependency "jeweler"
     gemspec.add_development_dependency "diff-lcs"
     gemspec.add_development_dependency "sinatra"
@@ -26,9 +24,8 @@ rescue LoadError
   puts "Jeweler not available. Install it with: gem install jeweler"
 end
 
-Spec::Rake::SpecTask.new do |t|
-  t.spec_opts = ['--options', "\"#{File.dirname(__FILE__)}/spec/spec.opts\""]
-  t.spec_files = FileList['spec/**/*_spec.rb']
+require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new do |t|
 end
 
 task :install do

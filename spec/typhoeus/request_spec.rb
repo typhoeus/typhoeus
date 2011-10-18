@@ -31,6 +31,52 @@ describe Typhoeus::Request do
     end
   end
 
+  context "marshalling" do
+
+    let(:request) do
+      Typhoeus::Request.new("http://google.com")
+    end
+
+    describe "#marshal_dump" do
+      context "when an on_complete handler is defined" do
+
+        before do
+          request.on_complete {}
+        end
+
+        it "does not raise an error" do
+          lambda { Marshal.dump(request) }.should_not raise_error(TypeError)
+        end
+
+      end
+
+      context "when an after_complete handler is defined" do
+
+        before do
+          request.after_complete {}
+        end
+
+        it "does not raise an error" do
+          lambda { Marshal.dump(request) }.should_not raise_error(TypeError)
+        end
+
+      end
+
+    end
+
+    it "is reversible but exclude handlers" do
+      request.on_complete {}
+      request.after_complete {}
+
+      new_request = Marshal.load(Marshal.dump(request))
+
+      new_request.url.should == request.url
+      new_request.on_complete.should be_nil
+      new_request.after_complete.should be_nil
+    end
+
+  end
+
   describe "#localhost?" do
     %w(localhost 127.0.0.1 0.0.0.0).each do |host|
       it "should be true for the #{host} host" do
@@ -114,7 +160,7 @@ describe Typhoeus::Request do
       response.code.should == 200
       json = JSON.parse(response.body)
       json["REQUEST_METHOD"].should == "POST"
-      json["rack.request.query_hash"]["q"]["a"].should == "hi"
+      json["rack.request.form_hash"]["q"]["a"].should == "hi"
     end
 
     it "can run a PUT synchronously" do
