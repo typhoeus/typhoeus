@@ -15,6 +15,8 @@
 * Added interface for registering stub finders [myronmarston]
 * Fixed header stubbing [myronmarston]
 * Added PKCS12 support [jodell]
+* Make a request with handlers marshallable [bernerdschaefer]
+* Upgraded to RSpec 2 [bernerdschaefer]
 
 0.2.4
 -----
