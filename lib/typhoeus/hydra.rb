@@ -239,6 +239,7 @@ module Typhoeus
                    :connect_time        => easy.connect_time,
                    :name_lookup_time    => easy.name_lookup_time,
                    :effective_url       => easy.effective_url,
+                   :primary_ip          => easy.primary_ip,
                    :curl_return_code => easy.curl_return_code,
                    :curl_error_message => easy.curl_error_message,
                    :request             => request)

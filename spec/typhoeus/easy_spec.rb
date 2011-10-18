@@ -73,13 +73,13 @@ describe Typhoeus::Easy do
     end
 
     it "should allow you to set the user agent" do
-      easy = Typhoeus::Easy.new
-      easy.url    = "http://localhost:3002"
-      easy.method = :get
-      easy.user_agent = "myapp"
-      easy.perform
-      easy.response_code.should == 200
-      JSON.parse(easy.response_body)["HTTP_USER_AGENT"].should == "myapp"
+      e = Typhoeus::Easy.new
+      e.url    = "http://localhost:3002"
+      e.method = :get
+      e.user_agent = "myapp"
+      e.perform
+      e.response_code.should == 200
+      JSON.parse(e.response_body)["HTTP_USER_AGENT"].should == "myapp"
     end
 
     it "should provide a timeout in milliseconds" do
@@ -109,6 +109,15 @@ describe Typhoeus::Easy do
       e.max_redirects = 5
       e.perform
       e.response_code.should == 302
+    end
+
+    it "should provide the primary IP address that was used to perform the HTTP request" do
+      e = Typhoeus::Easy.new
+      e.url    = "http://localhost:3002"
+      e.method = :get
+      e.perform
+      e.response_code.should == 200
+      e.primary_ip.should == "127.0.0.1"
     end
   end
   
