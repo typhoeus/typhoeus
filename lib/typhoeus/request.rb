@@ -109,7 +109,9 @@ module Typhoeus
     end
 
     def headers
-      @headers["User-Agent"] = @user_agent
+      unless @headers.has_key?("User-Agent") 
+        @headers["User-Agent"] = @user_agent
+      end
       @headers
     end
 
