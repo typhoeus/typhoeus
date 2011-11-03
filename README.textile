@@ -1,5 +1,7 @@
 h1. Typhoeus
 
+<a href="http://travis-ci.org/myronmarston/vcr"><img src="https://secure.travis-ci.org/myronmarston/vcr.png?branch=master" /></a>
+
 "http://github.com/pauldix/typhoeus/tree/master":http://github.com/pauldix/typhoeus/tree/master
 
 "the mailing list":http://groups.google.com/group/typhoeus
