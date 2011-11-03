@@ -92,7 +92,7 @@ static void multi_read_info(VALUE self, CURLM *multi_handle) {
       else if ((response_code >= 200 && response_code < 300) || response_code == 0) {
         rb_funcall(easy, rb_intern("success"), 0);
       }
-      else if (response_code >= 300 && response_code < 600) {
+      else {
         rb_funcall(easy, rb_intern("failure"), 0);
       }
     }
