@@ -18,11 +18,25 @@ end
 desc "Start up the test servers"
 task :start_test_servers do
   puts "Starting 3 test servers"
-  (3000..3002).map do |port|
-    Thread.new do
-      system("ruby spec/servers/app.rb -p #{port}")
+
+  pids = []
+  [3000, 3001, 3002].each do |port|
+    if pid = fork
+      pids << pid
+    else
+      exec('ruby', 'spec/servers/app.rb', '-p', port.to_s)
     end
-  end.each(&:join)
+  end
+
+  at_exit do
+    pids.each do |pid|
+      puts "Killing pid #{pid}"
+      Process.kill("KILL", pid)
+    end
+  end
+
+  # Wait for kill.
+  sleep
 end
 
 desc "Build Typhoeus and run all the tests."
