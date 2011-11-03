@@ -29,4 +29,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'diff-lcs', [">= 0"]
   s.add_development_dependency 'sinatra', [">= 0"]
   s.add_development_dependency 'json', [">= 0"]
+  s.add_development_dependency 'rake', [">= 0"]
 end
