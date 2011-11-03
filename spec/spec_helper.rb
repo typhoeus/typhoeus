@@ -10,7 +10,7 @@ $LOAD_PATH.unshift(path) unless $LOAD_PATH.include?(path)
 
 require path + '/typhoeus'
 
-Dir.glob("spec/support/**/*.rb").each { |f| require f }
+Dir['./spec/support/**/*.rb'].each { |f| require f }
 
 RSpec.configure do |config|
   config.before(:suite) do
