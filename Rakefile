@@ -25,5 +25,5 @@ task :start_test_servers do
   end.each(&:join)
 end
 
-desc "Run all the tests"
-task :default => :spec
+desc "Build Typhoeus and run all the tests."
+task :default => [:build_native, :spec]
