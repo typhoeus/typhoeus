@@ -44,14 +44,16 @@ module Typhoeus
     # ** +:password
     # ** +:auth_method
     #
-    def initialize(url, options = {})
+    def initialize(url, opts = {})
+      options = opts.dup  # do not modify passed-in options
       @method           = options[:method] || :get
       @params           = options[:params]
       @body             = options[:body]
       @timeout          = safe_to_i(options[:timeout])
       @connect_timeout  = safe_to_i(options[:connect_timeout])
       @interface        = options[:interface]
-      @headers          = options[:headers] || {}
+      # the dup above only does a shallow copy, so we have to dup again for 'headers'
+      @headers          = options[:headers] ? options[:headers].dup : {} 
       @user_agent       = options[:user_agent] || Typhoeus::USER_AGENT
       @cache_timeout    = safe_to_i(options[:cache_timeout])
       @follow_location  = options[:follow_location]
