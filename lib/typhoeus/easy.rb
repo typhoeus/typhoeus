@@ -332,7 +332,8 @@ module Typhoeus
       easy_set_headers() unless headers.empty?
     end
 
-    # gets called when finished and response code is 200-299
+    # gets called when finished and response code is not 2xx,
+    # or curl returns an error code.
     def success
       @success.call(self) if @success
     end
@@ -345,7 +346,8 @@ module Typhoeus
       @success = block
     end
 
-    # gets called when finished and response code is 300-599 or curl returns an error code
+    # gets called when finished and response code is 300-599
+    # or curl returns an error code
     def failure
       @failure.call(self) if @failure
     end
