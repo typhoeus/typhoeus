@@ -1,5 +1,6 @@
 Current Master
 --------------
+* Make sure to call the Easy::failure callback on all non-success http response codes, even invalid ones. [balexis]
 * Use bytesize instead of length to determine Content-Length [dlamacchia]
 
 0.3.2
