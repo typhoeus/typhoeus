@@ -197,6 +197,18 @@ describe Typhoeus::Request do
     request.headers.should == headers
   end
 
+  it "sets user_agent from header option" do
+    headers = {"User-Agent" => "Foo Bar"}
+    request = Typhoeus::Request.new("http://localhost:3000", :headers => headers)
+    request.headers['User-Agent'].should == 'Foo Bar'
+  end
+
+  it "sets case-insensitive user_agent from header option" do
+    headers = {"user-agent" => "Foo Bar"}
+    request = Typhoeus::Request.new("http://localhost:3000", :headers => headers)
+    request.headers['user-agent'].should == 'Foo Bar'
+  end
+
   it "takes params as an option and adds them to the url" do
     Typhoeus::Request.new("http://localhost:3000", :params => {:foo => "bar"}).url.should == "http://localhost:3000?foo=bar"
   end
