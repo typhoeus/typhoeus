@@ -1,4 +1,8 @@
-0.3.0
+Current Master
+--------------
+* Use bytesize instead of length to determine Content-Length [dlamacchia]
+
+0.3.2
 -----
 * Fix array params to be consistent with HTTP spec [gridaphobe]
 * traversal_to_params_hash should use the escape option [itsmeduncan]
