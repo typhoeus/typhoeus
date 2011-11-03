@@ -1,8 +1,10 @@
 # encoding: UTF-8
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-Encoding.default_internal = 'utf-8'
-Encoding.default_external = 'utf-8'
+if defined?(Encoding)
+  Encoding.default_internal = 'utf-8'
+  Encoding.default_external = 'utf-8'
+end
 
 describe Typhoeus::Easy do
   describe "#supports_zlib" do
