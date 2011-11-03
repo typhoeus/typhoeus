@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    typhoeus (0.3.0)
+    typhoeus (0.3.2)
       mime-types
 
 GEM
