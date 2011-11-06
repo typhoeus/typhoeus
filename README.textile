@@ -1,6 +1,6 @@
 h1. Typhoeus
 
-<a href="http://travis-ci.org/myronmarston/vcr"><img src="https://secure.travis-ci.org/myronmarston/vcr.png?branch=master" /></a>
+<a href="http://travis-ci.org/dbalatero/typhoeus"><img src="https://secure.travis-ci.org/dbalatero/typhoeus.png?branch=master" /></a>
 
 "http://github.com/pauldix/typhoeus/tree/master":http://github.com/pauldix/typhoeus/tree/master
 
