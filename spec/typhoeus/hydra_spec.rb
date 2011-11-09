@@ -334,7 +334,7 @@ describe Typhoeus::Hydra::Stubbing do
     before(:each) do
       @on_complete_handler_called = nil
       @request  = Typhoeus::Request.new("http://localhost:3000/foo",
-                                        :user_agent => 'test')
+                                        :headers => { 'user-agent' => 'test' })
       @request.on_complete do |response|
         @on_complete_handler_called = true
         response.code.should == 404
