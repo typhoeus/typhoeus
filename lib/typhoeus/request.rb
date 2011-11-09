@@ -3,15 +3,14 @@ require 'uri'
 module Typhoeus
   class Request
     attr_reader   :url
-    attr_writer   :headers
     attr_accessor :method, :params, :body, :connect_timeout, :timeout,
                   :user_agent, :response, :cache_timeout, :follow_location,
                   :max_redirects, :proxy, :proxy_username,:proxy_password,
                   :disable_ssl_peer_verification, :disable_ssl_host_verification, :interface,
                   :ssl_cert, :ssl_cert_type, :ssl_key, :ssl_key_type,
                   :ssl_key_password, :ssl_cacert, :ssl_capath, :verbose,
-                  :username, :password, :auth_method, :user_agent,
-                  :proxy_auth_method, :proxy_type
+                  :username, :password, :auth_method,
+                  :proxy_auth_method, :proxy_type, :headers
 
     # Initialize a new Request
     #
@@ -25,7 +24,6 @@ module Typhoeus
     # ** +:interface+ : interface or ip address (string)
     # ** +:connect_timeout+ : connect timeout (ms)
     # ** +:headers+  : headers as Hash
-    # ** +:user_agent+ : user agent (string)
     # ** +:cache_timeout+ : cache timeout (ms)
     # ** +:follow_location
     # ** +:max_redirects
@@ -43,6 +41,7 @@ module Typhoeus
     # ** +:username
     # ** +:password
     # ** +:auth_method
+    # ** +:user_agent+ : user agent (string) - DEPRECATED
     #
     def initialize(url, options = {})
       @method           = options[:method] || :get
@@ -52,7 +51,11 @@ module Typhoeus
       @connect_timeout  = safe_to_i(options[:connect_timeout])
       @interface        = options[:interface]
       @headers          = options[:headers] || {}
-      @user_agent       = options[:user_agent] || Typhoeus::USER_AGENT
+
+      if options.has_key?(:user_agent)
+        self.user_agent = options[:user_agent]
+      end
+
       @cache_timeout    = safe_to_i(options[:cache_timeout])
       @follow_location  = options[:follow_location]
       @max_redirects    = options[:max_redirects]
@@ -94,6 +97,15 @@ module Typhoeus
       LOCALHOST_ALIASES.include?(@parsed_uri.host)
     end
 
+    def user_agent
+      headers['User-Agent']
+    end
+
+    def user_agent=(value)
+      puts "DEPRECATED: Typhoeus::Request#user_agent=(value). This will be removed in a later version."
+      headers['User-Agent'] = value
+    end
+
     def host
       slash_location = @url.index('/', 8)
       if slash_location
@@ -106,11 +118,6 @@ module Typhoeus
 
     def host_domain
       @parsed_uri.host
-    end
-
-    def headers
-      @headers["User-Agent"] = @user_agent
-      @headers
     end
 
     def params_string
