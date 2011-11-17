@@ -178,6 +178,7 @@ module Typhoeus
       easy.ssl_key_password = request.ssl_key_password
       easy.ssl_cacert       = request.ssl_cacert
       easy.ssl_capath       = request.ssl_capath
+      easy.ssl_version      = request.ssl_version || :default
       easy.verbose          = request.verbose
 
       easy.on_success do |easy|

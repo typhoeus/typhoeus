@@ -2,16 +2,22 @@ require 'uri'
 
 module Typhoeus
   class Request
+    ACCESSOR_OPTIONS = [
+      :method, :params, :body, :connect_timeout, :timeout,
+      :user_agent, :response, :cache_timeout, :follow_location,
+      :max_redirects, :proxy, :proxy_username,:proxy_password,
+      :disable_ssl_peer_verification, :disable_ssl_host_verification, :interface,
+      :ssl_cert, :ssl_cert_type, :ssl_key, :ssl_key_type,
+      :ssl_key_password, :ssl_cacert, :ssl_capath, :verbose,
+      :username, :password, :auth_method, :user_agent,
+      :proxy_auth_method, :proxy_type, :ssl_version
+    ]
+    WRITER_OPTIONS = [:headers]
+    OPTIONS = ACCESSOR_OPTIONS + WRITER_OPTIONS
+
     attr_reader   :url
-    attr_writer   :headers
-    attr_accessor :method, :params, :body, :connect_timeout, :timeout,
-                  :user_agent, :response, :cache_timeout, :follow_location,
-                  :max_redirects, :proxy, :proxy_username,:proxy_password,
-                  :disable_ssl_peer_verification, :disable_ssl_host_verification, :interface,
-                  :ssl_cert, :ssl_cert_type, :ssl_key, :ssl_key_type,
-                  :ssl_key_password, :ssl_cacert, :ssl_capath, :verbose,
-                  :username, :password, :auth_method, :user_agent,
-                  :proxy_auth_method, :proxy_type
+    attr_writer   *WRITER_OPTIONS
+    attr_accessor *ACCESSOR_OPTIONS
 
     # Initialize a new Request
     #
@@ -70,6 +76,7 @@ module Typhoeus
       @ssl_key_password = options[:ssl_key_password]
       @ssl_cacert       = options[:ssl_cacert]
       @ssl_capath       = options[:ssl_capath]
+      @ssl_version      = options[:ssl_version]
       @verbose          = options[:verbose]
       @username         = options[:username]
       @password         = options[:password]
@@ -215,6 +222,10 @@ module Typhoeus
 
     def marshal_load(attributes)
       attributes.each { |name, value| instance_variable_set(name, value) }
+    end
+
+    def self.options
+      OPTIONS
     end
 
   private
