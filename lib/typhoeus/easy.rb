@@ -1,6 +1,6 @@
 module Typhoeus
   class Easy
-    attr_reader :response_body, :response_header, :method, :headers, :url, :params, :curl_return_code
+    attr_reader :response_body, :response_header, :method, :headers, :url, :params, :curl_return_code, :ssl_version
     attr_accessor :start_time
 
     # These integer codes are available in curl/curl.h
@@ -40,6 +40,7 @@ module Typhoeus
       :CURLOPT_SSLCERTTYPE    => 10086,
       :CURLOPT_SSLKEY         => 10087,
       :CURLOPT_SSLKEYTYPE     => 10088,
+      :CURLOPT_SSLVERSION     => 32,
       :CURLOPT_KEYPASSWD      => 10026,
       :CURLOPT_CAINFO         => 10065,
       :CURLOPT_CAPATH         => 10097,
@@ -73,6 +74,16 @@ module Typhoeus
       :CURLPROXY_SOCKS4A      => 6,
     }
 
+    SSL_VERSIONS = {
+      :CURL_SSLVERSION_DEFAULT => 0,
+      :CURL_SSLVERSION_TLSv1   => 1,
+      :CURL_SSLVERSION_SSLv2   => 2,
+      :CURL_SSLVERSION_SSLv3   => 3,
+      :default                 => 0,
+      :tlsv1                   => 1,
+      :sslv2                   => 2,
+      :sslv3                   => 3
+    }
 
     def initialize
       @method = :get
@@ -83,13 +94,26 @@ module Typhoeus
 
     def set_defaults
       # Enable encoding/compression support
-      set_option(OPTION_VALUES[:CURLOPT_ENCODING], '')
+      self.encoding = ''
+      self.ssl_version = :default
+    end
+
+    def encoding=(encoding)
+      # Enable encoding/compression support
+      set_option(OPTION_VALUES[:CURLOPT_ENCODING], encoding)
+    end
+
+    def ssl_version=(version)
+      raise "Invalid SSL version: '#{version}' supplied! Please supply one as listed in Typhoeus::Easy::SSL_VERSIONS" unless SSL_VERSIONS.has_key?(version)
+      @ssl_version = version
+
+      set_option(OPTION_VALUES[:CURLOPT_SSLVERSION], SSL_VERSIONS[version])
     end
 
     def headers=(hash)
       @headers = hash
     end
-    
+
     def interface=(interface)
       @interface = interface
       set_option(OPTION_VALUES[:CURLOPT_INTERFACE], interface)
@@ -145,7 +169,7 @@ module Typhoeus
     def effective_url
       get_info_string(INFO_VALUES[:CURLINFO_EFFECTIVE_URL])
     end
-    
+
     def primary_ip
       get_info_string(INFO_VALUES[:CURLINFO_PRIMARY_IP])
     end
