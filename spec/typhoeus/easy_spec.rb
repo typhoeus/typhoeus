@@ -107,7 +107,7 @@ describe Typhoeus::Easy do
       e = Typhoeus::Easy.new
       e.url    = "http://localhost:3002"
       e.method = :get
-      e.user_agent = "myapp"
+      e.headers['User-Agent'] = 'myapp'
       e.perform
       e.response_code.should == 200
       JSON.parse(e.response_body)["HTTP_USER_AGENT"].should == "myapp"
