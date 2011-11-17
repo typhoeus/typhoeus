@@ -108,13 +108,18 @@ module Typhoeus
       @auth_method      = options[:auth_method]
 
       if @method == :post
-        @url = url
+        @url = url.to_s
       else
-        @url = @params ? "#{url}?#{params_string}" : url
+        @url = @params ? "#{url}?#{params_string}" : url.to_s
       end
 
-      @parsed_uri = URI.parse(@url)
-
+      # Addressable::URI, URI (stdlib).
+      if url.respond_to?(:host)
+        @parsed_uri = url
+      else
+        @parsed_uri = URI.parse(@url)
+      end
+        
       @on_complete      = nil
       @after_complete   = nil
       @handled_response = nil
