@@ -295,6 +295,45 @@ describe Typhoeus::HydraMock do
         mock.matches?(request).should be_true
       end
     end
+
+    describe "query string" do
+      it "should not bother matching on params if we don't turn the option on" do
+        request = Typhoeus::Request.new("http://localhost:3000",
+                                        :method => :get,
+                                        :params => {:a => 1, :b => 2})
+        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get)
+        mock.matches?(request).should be_true
+      end
+
+      it "should match nil correctly" do
+        request = Typhoeus::Request.new("http://localhost:3000",
+                                        :method => :get,
+                                        :params => {:a => 1, :b => 2})
+        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
+                                       :params => nil)
+        mock.matches?(request).should be_false
+      end
+
+      it "should not match if the queries do not match" do
+        request = Typhoeus::Request.new("http://localhost:3000",
+                                        :method => :get,
+                                        :params => {:a => 1, :b => 2})
+        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
+                                        :params => {:a => 3, :b => 4})
+        mock.matches?(request).should be_false
+      end
+
+      it "should match on optional params parameter" do
+        request = Typhoeus::Request.new("http://localhost:3000",
+                                        :method => :get,
+                                        :params => {:a => 1, :b => 2})
+        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
+                                        :params => {:a => 1, :b => 2})
+        mock.matches?(request).should be_true
+      end
+    end
+
+
   end
 end
 
