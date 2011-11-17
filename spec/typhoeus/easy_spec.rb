@@ -7,6 +7,31 @@ if defined?(Encoding)
 end
 
 describe Typhoeus::Easy do
+  describe "ssl_version" do
+    before(:each) do
+      @easy = Typhoeus::Easy.new
+      @easy.url = "http://localhost:3000"
+      @easy.method = :get
+    end
+
+    it "should allow to set the SSL version to be used" do
+      Typhoeus::Easy::SSL_VERSIONS.each do |k, v|
+        @easy.ssl_version = k
+        @easy.perform
+        @easy.response_code.should == 200
+        @easy.ssl_version.should == k
+      end
+    end
+
+    it "complains when an incorrect SSL version is used" do
+      expect { @easy.ssl_version = 'bogus' }.to raise_error
+    end
+
+    it "uses the default SSL version if nothing is supplied" do
+      @easy.ssl_version.should == :default
+    end
+  end
+
   describe "#supports_zlib" do
     before(:each) do
       @easy = Typhoeus::Easy.new
@@ -126,7 +151,7 @@ describe Typhoeus::Easy do
       e.primary_ip.should == "127.0.0.1"
     end
   end
-  
+
   describe "authentication" do
     it "should allow to set username and password" do
       e = Typhoeus::Easy.new
@@ -137,7 +162,7 @@ describe Typhoeus::Easy do
       e.perform
       e.response_code.should == 200
     end
-    
+
     it "should allow to query auth methods support by the server" do
       e = Typhoeus::Easy.new
       e.url = "http://localhost:3001/auth_basic/foo/bar"
@@ -155,7 +180,7 @@ describe Typhoeus::Easy do
       e.response_code.should == 200
     end
   end
-  
+
   describe "get" do
     it "should perform a get" do
       easy = Typhoeus::Easy.new
@@ -219,7 +244,7 @@ describe Typhoeus::Easy do
       easy.response_code.should == 200
       JSON.parse(easy.response_body)["REQUEST_METHOD"].should == "PUT"
     end
-    
+
     it "should send a request body" do
       easy = Typhoeus::Easy.new
       easy.url    = "http://localhost:3002"
@@ -257,7 +282,7 @@ describe Typhoeus::Easy do
       easy.request_body = body
     end
   end
-  
+
   describe "post" do
     it "should perform a post" do
       easy = Typhoeus::Easy.new
@@ -267,7 +292,7 @@ describe Typhoeus::Easy do
       easy.response_code.should == 200
       JSON.parse(easy.response_body)["REQUEST_METHOD"].should == "POST"
     end
-    
+
     it "should send a request body" do
       easy = Typhoeus::Easy.new
       easy.url    = "http://localhost:3002"
@@ -277,7 +302,7 @@ describe Typhoeus::Easy do
       easy.response_code.should == 200
       easy.response_body.should include("this is a body!")
     end
-    
+
     it "should handle params" do
       easy = Typhoeus::Easy.new
       easy.url    = "http://localhost:3002"
@@ -297,7 +322,7 @@ describe Typhoeus::Easy do
       easy.perform
 
       request = JSON.parse(easy.response_body)
-      request['CONTENT_TYPE'].should == 'application/x-www-form-urlencoded' 
+      request['CONTENT_TYPE'].should == 'application/x-www-form-urlencoded'
       request['rack.request.form_vars'].should == 'a=b&c=d&e[f][g]=h'
     end
 
@@ -309,7 +334,7 @@ describe Typhoeus::Easy do
       easy.perform
       easy.response_code.should == 200
       result = JSON.parse(easy.response_body)
-      
+
       { 'content-type' => 'text/plain',
         'filename' => 'placeholder.txt',
         'content' => 'This file is used to test uploading.'
@@ -320,7 +345,7 @@ describe Typhoeus::Easy do
       result['request-content-type'].should =~ /multipart/
     end
   end
-  
+
   describe "delete" do
     it "should perform a delete" do
       easy = Typhoeus::Easy.new
@@ -330,7 +355,7 @@ describe Typhoeus::Easy do
       easy.response_code.should == 200
       JSON.parse(easy.response_body)["REQUEST_METHOD"].should == "DELETE"
     end
-    
+
     it "should send a request body" do
       easy = Typhoeus::Easy.new
       easy.url    = "http://localhost:3002"
@@ -341,9 +366,9 @@ describe Typhoeus::Easy do
       easy.response_body.should include("this is a body!")
     end
   end
-  
+
   describe "encoding/compression support" do
-    
+
     it "should send valid encoding headers and decode the response" do
       easy = Typhoeus::Easy.new
       easy.url = "http://localhost:3002/gzipped"
@@ -362,6 +387,5 @@ describe Typhoeus::Easy do
       easy.response_code.should == 200
       JSON.parse(easy.response_body)["HTTP_ACCEPT_ENCODING"].should == "deflate, gzip"
     end
-    
   end
 end
