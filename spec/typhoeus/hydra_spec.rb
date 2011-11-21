@@ -91,23 +91,16 @@ describe Typhoeus::Hydra do
     hydra     = Typhoeus::Hydra.new( :max_concurrency => 1 )
     completed = 0
 
-    10.times {
-        |i|
-
+    10.times do |i|
         req = Typhoeus::Request.new( urls[ i % urls.size], :params => { :cnt => i } )
-        req.on_complete {
-            |res|
+        req.on_complete do |res|
             completed += 1
             hydra.abort if completed == 5
-        }
-
+        end
         hydra.queue( req )
-    }
-
+    end
     hydra.run
-
-    # technically this should be '== 6' but I don't trust it...
-    completed.should < 10
+    completed.should == 6
   end
 
   it "has a cache_setter proc" do
