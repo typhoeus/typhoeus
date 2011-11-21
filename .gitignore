@@ -2,3 +2,4 @@
 *.gem
 .bundle
 .idea
+._*
