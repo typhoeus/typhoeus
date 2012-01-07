@@ -1,6 +1,6 @@
 h1. Typhoeus
 
-<a href="http://travis-ci.org/dbalatero/typhoeus"><img src="https://secure.travis-ci.org/dbalatero/typhoeus.png?branch=master" /></a>
+"!https://secure.travis-ci.org/dbalatero/typhoeus.png!":http://travis-ci.org/dbalatero/typhoeus "!https://gemnasium.com/dbalatero/typhoeus.png!":https://gemnasium.com/dbalatero/typhoeus
 
 "http://github.com/pauldix/typhoeus/tree/master":http://github.com/pauldix/typhoeus/tree/master
 
