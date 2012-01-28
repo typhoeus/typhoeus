@@ -91,6 +91,15 @@ describe Typhoeus::Request do
     end
   end
 
+  describe "#user_agent=" do
+    it "should set the user agent header and emit a deprecation warning" do
+      $stderr.should_receive(:puts).with(/DEPRECATED:/)
+      req = Typhoeus::Request.new("http://google.com")
+      req.user_agent = "foobar agent"
+      req.user_agent.should == "foobar agent"
+    end
+  end
+
   describe "#params_string" do
     it "should dump a sorted string" do
       request = Typhoeus::Request.new(
