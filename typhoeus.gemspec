@@ -3,6 +3,15 @@
 $:.unshift File.expand_path('../lib', __FILE__)
 require 'typhoeus/version'
 
+def Dir.ls_files(*dirs)
+  dirs.map do |dir|
+    if File.directory?(dir) 
+      Dir.entries(dir).reject {|file| file[0] == '.' }.map {|file| ls_files(File.join(dir, file)) }
+    else dir
+    end
+  end.flatten
+end
+
 Gem::Specification.new do |s|
   s.name         = "typhoeus"
   s.version      = Typhoeus::VERSION
@@ -12,14 +21,17 @@ Gem::Specification.new do |s|
   s.summary      = "Parallel HTTP library on top of libcurl multi."
   s.description  = %q{Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.}
   s.extensions   = ["ext/typhoeus/extconf.rb"]
-  s.files        = (`git ls-files ext lib spec`.split("\n")) + [
+  s.files        = Dir.ls_files(
+                     'ext',
+                     'lib',
+                     'spec',
                      'CHANGELOG.markdown',
                      'Gemfile',
                      'Gemfile.lock',
                      'LICENSE',
                      'Rakefile',
                      'typhoeus.gemspec'
-                   ]
+                   )
   s.platform     = Gem::Platform::RUBY
   s.require_path = 'lib'
   s.rubyforge_project = '[none]'

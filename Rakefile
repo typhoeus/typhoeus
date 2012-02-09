@@ -5,6 +5,9 @@ RSpec::Core::RakeTask.new do |t|
 end
 
 task :install do
+  $:.unshift File.expand_path('../lib', __FILE__)
+  require 'typhoeus/version'
+
   rm_rf "*.gem"
   puts `gem build typhoeus.gemspec`
   puts `gem install typhoeus-#{Typhoeus::VERSION}.gem`
