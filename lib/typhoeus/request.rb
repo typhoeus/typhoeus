@@ -108,6 +108,7 @@ module Typhoeus
       @auth_method      = options[:auth_method]
 
       if @method == :post
+        @params = @params ? Typhoeus::Utils.escape_params(@params) : nil
         @url = url
       else
         @url = @params ? "#{url}?#{params_string}" : url

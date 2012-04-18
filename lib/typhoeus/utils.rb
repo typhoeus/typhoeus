@@ -10,6 +10,14 @@ module Typhoeus
     end
     module_function :escape
 
+    def escape_params(params)
+      traverse_params_hash(params)[:params].inject({}) do |memo, (k, v)|
+        memo[escape(k)] = escape(v)
+        memo
+      end
+    end
+    module_function :escape_params
+
     # Params are NOT escaped.
     def traverse_params_hash(hash, result = nil, current_key = nil)
       result ||= { :files => [], :params => [] }
