@@ -22,7 +22,7 @@ Windows is tricky to get up and running. A reported working version of curl is "
 
 h2. Installation
 
-Typhoeus requires you to have a current version of libcurl installed. I've tested this with 7.19.4 and higher.
+Typhoeus requires you to have a relatively recent version of libcurl installed. Libcurl versions prior to 7.21.5 had a serious bug related to specifying timeouts for multi handles. This lead to request/response mismatches: data returned would be from the previously timed out request, not the current one. Since you probably almost always need timeouts, you should use version 7.21.5 or higher.
 <pre>
 gem install typhoeus
 </pre>
@@ -32,14 +32,14 @@ sudo apt-get install libcurl4-gnutls-dev
 </pre>
 There's also something built in so that if you have a super old version of curl that you can't get rid of for some reason, you can install in a user directory and specify that during installation like so:
 <pre>
-gem install typhoeus --source http://gemcutter.org -- --with-curl=/usr/local/curl/7.19.7/
+gem install typhoeus --source http://gemcutter.org -- --with-curl=/usr/local/curl/7.23.1/
 </pre>
 
--Another problem could be if you are running Mac Ports and you have libcurl installed through there. You need to uninstall it for Typhoeus to work! The version in Mac Ports is old and doesn't play nice. You should "download curl":http://curl.haxx.se/download.html and build from source. Then you'll have to install the gem again.- The current version of Mac Ports (7.21.2) works just fine.
 
 If you're still having issues, please let me know on "the mailing list":http://groups.google.com/group/typhoeus.
 
 There's one other thing you should know. The Easy object (which is just a libcurl thing) allows you to set timeout values in milliseconds. However, for this to work you need to build libcurl with c-ares support built in.
+
 
 h2. Usage
 

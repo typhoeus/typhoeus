@@ -117,7 +117,7 @@ describe Typhoeus::Easy do
       e = Typhoeus::Easy.new
       e.url = "http://localhost:3001/?delay=1"
       e.method = :get
-      e.timeout = 10
+      e.timeout = 100
       e.perform
       e.timed_out?.should == true
     end

@@ -81,7 +81,7 @@ module Typhoeus
       @headers          = options[:headers] || {}
 
       if options.has_key?(:user_agent)
-        self.user_agent = options[:user_agent]
+        @headers['User-Agent'] = options[:user_agent]
       end
 
       @cache_timeout    = safe_to_i(options[:cache_timeout])
@@ -131,7 +131,7 @@ module Typhoeus
     end
 
     def user_agent=(value)
-      puts "DEPRECATED: Typhoeus::Request#user_agent=(value). This will be removed in a later version."
+      $stderr.puts "DEPRECATED: Typhoeus::Request#user_agent=(value). This will be removed in a later version."
       headers['User-Agent'] = value
     end
 
