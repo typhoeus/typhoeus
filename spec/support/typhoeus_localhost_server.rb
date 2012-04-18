@@ -1,17 +1,17 @@
 require 'net/http'
 require 'uri'
+require 'rbconfig'
+
+require File.expand_path(File.dirname(__FILE__) + '/spawn')
 
 class TyphoeusLocalhostServer
   class << self
     attr_accessor :pid
 
     def start_servers!
-      if self.pid = fork
-        start_parent
-        wait_for_servers_to_start
-      else
-        start_child
-      end
+      self.pid = start_child
+      start_parent
+      wait_for_servers_to_start
     end
 
   private
@@ -19,19 +19,19 @@ class TyphoeusLocalhostServer
     def start_parent
       # Cleanup.
       at_exit do
-        Process.kill('QUIT', self.pid) if self.pid
+        Process.kill('TERM', self.pid) if self.pid
       end
     end
 
     def start_child
-      exec('rake', 'start_test_servers')
+      spawn(RbConfig::CONFIG['ruby_install_name'].sub('ruby', 'rake'), 'start_test_servers')
     end
 
     def wait_for_servers_to_start
       puts "Waiting for servers to start..."
       ports = [3000, 3001, 3002]
-    
-      Timeout::timeout(10) do
+
+      Timeout::timeout(30) do
         loop do
           up = 0
           ports.each do |port|

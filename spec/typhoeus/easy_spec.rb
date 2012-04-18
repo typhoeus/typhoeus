@@ -148,7 +148,7 @@ describe Typhoeus::Easy do
       e.method = :get
       e.perform
       e.response_code.should == 200
-      e.primary_ip.should == "127.0.0.1"
+      e.primary_ip.should satisfy {|ip| ip == "127.0.0.1" or ip == "::1" }
     end
   end
 
@@ -168,12 +168,12 @@ describe Typhoeus::Easy do
       e.url = "http://localhost:3001/auth_basic/foo/bar"
       e.method = :get
       e.perform
-      e.auth_methods.should == Typhoeus::Easy::AUTH_TYPES[:CURLAUTH_BASIC]
+      e.auth_methods.should == Typhoeus::Easy::AUTH_TYPES[:basic]
     end
 
     it "should allow to set authentication method" do
       e = Typhoeus::Easy.new
-      e.auth = { :username => 'username', :password => 'password', :method => Typhoeus::Easy::AUTH_TYPES[:CURLAUTH_NTLM] }
+      e.auth = { :username => 'username', :password => 'password', :method => :ntlm }
       e.url = "http://localhost:3001/auth_ntlm"
       e.method = :get
       e.perform
@@ -195,7 +195,7 @@ describe Typhoeus::Easy do
   describe "purge" do
     it "should set custom request to purge" do
       easy = Typhoeus::Easy.new
-      easy.should_receive(:set_option).with(Typhoeus::Easy::OPTION_VALUES[:CURLOPT_CUSTOMREQUEST], "PURGE").once
+      easy.should_receive(:set_option).with(:customrequest, "PURGE").once
       easy.method = :purge
     end
   end
@@ -277,8 +277,8 @@ describe Typhoeus::Easy do
       easy = Typhoeus::Easy.new
       easy.url    = "http://localhost:3002"
       easy.method = :post
-      easy.should_receive(:set_option).with(Typhoeus::Easy::OPTION_VALUES[:CURLOPT_POSTFIELDSIZE], 55)
-      easy.should_receive(:set_option).with(Typhoeus::Easy::OPTION_VALUES[:CURLOPT_COPYPOSTFIELDS], body)
+      easy.should_receive(:set_option).with(:postfieldsize, 55)
+      easy.should_receive(:set_option).with(:copypostfields, body)
       easy.request_body = body
     end
   end

@@ -2,16 +2,46 @@ require 'mime/types'
 
 module Typhoeus
   class Form
+=begin
+    # XXX add a finalisation to cleanup the form? this is apparently essential
+    def dealloc(form)
+      Curl.formfree(form.first)
+    end
+=end
+
     attr_accessor :params
-    attr_reader :traversal
+    attr_reader :first, :traversal
 
     def initialize(params = {})
       @params = params
+      @first = FFI::MemoryPointer.new(:pointer)
+      @last = FFI::MemoryPointer.new(:pointer)
     end
 
     def traversal
       @traversal ||= Typhoeus::Utils.traverse_params_hash(params)
     end
+
+    def formadd_param(name, contents)
+      Curl.formadd(@first, @last,
+        :form_option, :copyname, :pointer, name,
+        :form_option, :namelength, :long, Utils.bytesize(name),
+        :form_option, :copycontents, :pointer, contents,
+        :form_option, :contentslength, :long, Utils.bytesize(contents),
+        :form_option, :end)
+    end
+    private :formadd_param
+
+    def formadd_file(name, filename, contenttype, file)
+      Curl.formadd(@first, @last,
+        :form_option, :copyname, :pointer, name,
+        :form_option, :namelength, :long, Utils.bytesize(name),
+        :form_option, :file, :string, file,
+        :form_option, :filename, :string, filename,
+        :form_option, :contenttype, :string, contenttype,
+        :form_option, :end)
+    end
+    private :formadd_file
 
     def process!
       # add params
