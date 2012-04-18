@@ -1,12 +1,5 @@
 module Typhoeus
   class Multi
-=begin
-    # XXX add a finalisation to cleanup the multi? this is apparently essential
-    def dealloc(multi)
-      Curl.multi_cleanup(multi.handle)
-    end
-=end
-
     attr_reader :easy_handles
 
     def initialize
@@ -16,6 +9,12 @@ module Typhoeus
       @active = 0
       @running = 0
       @easy_handles = []
+
+      ObjectSpace.define_finalizer(self, self.class.finalizer(self))
+    end
+
+    def self.finalizer(multi)
+      proc { Curl.multi_cleanup(multi.handle) }
     end
 
     def add(easy)

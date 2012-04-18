@@ -30,16 +30,15 @@ module Typhoeus
 
       set_defaults
 
-      ObjectSpace.define_finalizer(easy, easy.class.finalize(easy))
+      ObjectSpace.define_finalizer(self, self.class.finalizer(self))
     end
 
-    def self.finalize
-=begin
-      Curl.slist_free_all(easy.header_list) if easy.header_list
-      Curl.easy_cleanup(easy.handle)
-    }
-=end
-
+    def self.finalizer(easy)
+      proc {
+        Curl.slist_free_all(easy.header_list) if easy.header_list
+        Curl.easy_cleanup(easy.handle)
+      }
+    end
 
     def set_response_handlers
       @body_write_callback = proc {|stream, size, num, object|

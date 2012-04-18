@@ -2,13 +2,6 @@ require 'mime/types'
 
 module Typhoeus
   class Form
-=begin
-    # XXX add a finalisation to cleanup the form? this is apparently essential
-    def dealloc(form)
-      Curl.formfree(form.first)
-    end
-=end
-
     attr_accessor :params
     attr_reader :first, :traversal
 
@@ -16,6 +9,12 @@ module Typhoeus
       @params = params
       @first = FFI::MemoryPointer.new(:pointer)
       @last = FFI::MemoryPointer.new(:pointer)
+
+      ObjectSpace.define_finalizer(self, self.class.finalizer(self))
+    end
+
+    def self.finalizer(form)
+      proc { Curl.formfree(form.first) }
     end
 
     def traversal

@@ -20,9 +20,7 @@ Gem::Specification.new do |s|
   s.homepage     = "https://github.com/dbalatero/typhoeus"
   s.summary      = "Parallel HTTP library on top of libcurl multi."
   s.description  = %q{Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.}
-  s.extensions   = ["ext/typhoeus/extconf.rb"]
   s.files        = Dir.ls_files(
-                     'ext',
                      'lib',
                      'spec',
                      'CHANGELOG.markdown',
@@ -36,10 +34,12 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.rubyforge_project = '[none]'
 
+  s.add_runtime_dependency 'ffi', ['>= 0']
   s.add_runtime_dependency 'mime-types', ['>= 0']
   s.add_development_dependency 'rspec', ["~> 2.6"]
   s.add_development_dependency 'diff-lcs', [">= 0"]
   s.add_development_dependency 'sinatra', [">= 0"]
   s.add_development_dependency 'json', [">= 0"]
   s.add_development_dependency 'rake', [">= 0"]
+  s.add_development_dependency 'spoon', [">= 0"] if RUBY_PLATFORM == "java"
 end
