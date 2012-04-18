@@ -14,7 +14,7 @@ h2. Summary
 
 Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic. To be a little more specific, it's a library for accessing web services in Ruby. It's specifically designed for building RESTful service oriented architectures in Ruby that need to be fast enough to process calls to multiple services within the client's HTTP request/response life cycle.
 
-Some of the awesome features are parallel request execution, memoization of request responses (so you don't make the same request multiple times in a single group), built in support for caching responses to memcached (or whatever), and mocking capability baked in. It uses libcurl and libcurl-multi to work this speedy magic. I wrote the bindings myself so it's yet another Ruby libcurl library, but with some extra awesomeness added in. FFI is used to interface with library so it works with any Ruby implementation.
+Some of the awesome features are parallel request execution, memoization of request responses (so you don't make the same request multiple times in a single group), built in support for caching responses to memcached (or whatever), and mocking capability baked in. It uses libcurl and libcurl-multi to work this speedy magic. I wrote the bindings myself so it's yet another Ruby libcurl library, but with some extra awesomeness added in. FFI is used to interface with the library so it works with any Ruby implementation.
 
 h2. Windows Support
 
