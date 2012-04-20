@@ -64,7 +64,7 @@ describe Typhoeus::Easy do
       e = Typhoeus::Easy.new
       e.url = "http://localhost:3999"
       e.method = :get
-      e.connect_timeout = 100
+      e.connect_timeout = 10000
       e.perform
       e.curl_return_code.should == 7
       e.curl_error_message.should == "Couldn't connect to server"

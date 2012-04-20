@@ -43,10 +43,6 @@ module Typhoeus
       while @active > 0
         run
         while @running > 0
-          fd_read = Curl::FDSet.new
-          fd_write = Curl::FDSet.new
-          fd_excep = Curl::FDSet.new
-
           # get the curl-suggested timeout
           timeout = FFI::MemoryPointer.new(:long)
           code = Curl.multi_timeout(@handle, timeout)
@@ -60,16 +56,25 @@ module Typhoeus
           end
 
           # load the fd sets from the multi handle
+          fd_read = Curl::FDSet.new
+          fd_write = Curl::FDSet.new
+          fd_excep = Curl::FDSet.new
           max_fd = FFI::MemoryPointer.new(:int)
           code = Curl.multi_fdset(@handle, fd_read, fd_write, fd_excep, max_fd)
           raise RuntimeError.new("an error occured getting the fdset: #{code}: #{Curl.multi_strerror(code)}") if code != :ok
 
-          timeval = Curl::Timeval.new
-          timeval[:sec] = timeout / 1000
-          timeval[:usec] = (timeout * 1000) % 1000000
+          max_fd = max_fd.read_int
+          if max_fd == -1
+            # curl is doing something special so wait for the recommended 100ms
+            sleep(0.001)
+          else
+            timeval = Curl::Timeval.new
+            timeval[:sec] = timeout / 1000
+            timeval[:usec] = (timeout * 1000) % 1000000
 
-          code = Curl.select(max_fd.read_int + 1, fd_read, fd_write, fd_excep, timeval)
-          raise RuntimeError.new("error on thread select: %d", FFI.errno) if code < 0
+            code = Curl.select(max_fd + 1, fd_read, fd_write, fd_excep, timeval)
+            raise RuntimeError.new("error on thread select: #{FFI.errno}") if code < 0
+          end
 
           run
         end

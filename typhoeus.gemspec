@@ -30,8 +30,6 @@ Gem::Specification.new do |s|
                      'Rakefile',
                      'typhoeus.gemspec'
                    )
-  s.platform     = Gem::Platform::RUBY
-  s.require_path = 'lib'
   s.rubyforge_project = '[none]'
 
   s.add_runtime_dependency 'ffi', ['>= 0']
