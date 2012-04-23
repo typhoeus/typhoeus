@@ -1,5 +1,6 @@
 require 'ffi'
 require 'rbconfig'
+require 'thread'
 
 module Typhoeus
   module Curl
@@ -431,8 +432,6 @@ module Typhoeus
     @blocking = true
     attach_function :select, [:int, FDSet.ptr, FDSet.ptr, FDSet.ptr, Timeval.ptr], :int
 
-    class Exception; end
-
     @@initialized = false
     @@init_mutex = Mutex.new
 
@@ -440,7 +439,7 @@ module Typhoeus
       # ensure curl lib is initialised. not thread-safe so must be wrapped in a mutex
       @@init_mutex.synchronize {
         if not @@initialized
-          raise Exception.new('curl failed to initialise') if Curl.global_init(GLOBAL_ALL) != 0
+          raise RuntimeError.new('curl failed to initialise') if Curl.global_init(GLOBAL_ALL) != 0
           @@initialized = true
         end
       }
