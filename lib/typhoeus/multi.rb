@@ -65,7 +65,7 @@ module Typhoeus
 
           max_fd = max_fd.read_int
           if max_fd == -1
-            # curl is doing something special so wait for the recommended 100ms
+            # curl is doing something special so let it run for a moment
             sleep(0.001)
           else
             timeval = Curl::Timeval.new
