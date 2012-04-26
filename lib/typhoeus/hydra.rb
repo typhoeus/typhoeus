@@ -143,19 +143,19 @@ module Typhoeus
       easy.verbose          = request.verbose
       if request.username || request.password
         auth = { :username => request.username, :password => request.password }
-        auth[:method] = Typhoeus::Easy::AUTH_TYPES["CURLAUTH_#{request.auth_method.to_s.upcase}".to_sym] if request.auth_method
+        auth[:method] = request.auth_method if request.auth_method
         easy.auth = auth
       end
 
       if request.proxy
         proxy = { :server => request.proxy }
-        proxy[:type] = Typhoeus::Easy::PROXY_TYPES["CURLPROXY_#{request.proxy_type.to_s.upcase}".to_sym] if request.proxy_type
+        proxy[:type] = request.proxy_type if request.proxy_type
         easy.proxy = proxy if request.proxy
       end
 
       if request.proxy_username || request.proxy_password
         auth = { :username => request.proxy_username, :password => request.proxy_password }
-        auth[:method] = Typhoeus::Easy::AUTH_TYPES["CURLAUTH_#{request.proxy_auth_method.to_s.upcase}".to_sym] if request.proxy_auth_method
+        auth[:method] = request.proxy_auth_method if request.proxy_auth_method
         easy.proxy_auth = auth
       end
 

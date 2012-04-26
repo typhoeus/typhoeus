@@ -1,95 +1,57 @@
 module Typhoeus
   class Easy
-    attr_reader :response_body, :response_header, :method, :headers, :url, :params, :curl_return_code, :ssl_version
+    attr_reader :response_body, :response_header, :method, :headers, :url, :params, :ssl_version, :handle, :header_list
     attr_accessor :start_time
 
-    # These integer codes are available in curl/curl.h
-    CURLINFO_STRING = 1048576
-    OPTION_VALUES = {
-      :CURLOPT_URL            => 10002,
-      :CURLOPT_HTTPGET        => 80,
-      :CURLOPT_HTTPPOST       => 10024,
-      :CURLOPT_UPLOAD         => 46,
-      :CURLOPT_CUSTOMREQUEST  => 10036,
-      :CURLOPT_POSTFIELDS     => 10015,
-      :CURLOPT_COPYPOSTFIELDS     => 10165,
-      :CURLOPT_POSTFIELDSIZE  => 60,
-      :CURLOPT_USERAGENT      => 10018,
-      :CURLOPT_TIMEOUT_MS     => 155,
-      # Time-out connect operations after this amount of milliseconds.
-      # [Only works on unix-style/SIGALRM operating systems. IOW, does
-      # not work on Windows.
-      :CURLOPT_CONNECTTIMEOUT_MS  => 156,
-      :CURLOPT_INTERFACE      => 10000 + 62,
-      :CURLOPT_NOSIGNAL       => 99,
-      :CURLOPT_HTTPHEADER     => 10023,
-      :CURLOPT_FOLLOWLOCATION => 52,
-      :CURLOPT_MAXREDIRS      => 68,
-      :CURLOPT_HTTPAUTH       => 107,
-      :CURLOPT_USERPWD        => 10000 + 5,
-      :CURLOPT_VERBOSE        => 41,
-      :CURLOPT_PROXY          => 10004,
-      :CURLOPT_PROXYUSERPWD   => 10000 + 6,
-      :CURLOPT_PROXYTYPE      => 101,
-      :CURLOPT_PROXYAUTH      => 111,
-      :CURLOPT_VERIFYPEER     => 64,
-      :CURLOPT_VERIFYHOST    => 81,
-      :CURLOPT_NOBODY         => 44,
-      :CURLOPT_ENCODING       => 10000 + 102,
-      :CURLOPT_SSLCERT        => 10025,
-      :CURLOPT_SSLCERTTYPE    => 10086,
-      :CURLOPT_SSLKEY         => 10087,
-      :CURLOPT_SSLKEYTYPE     => 10088,
-      :CURLOPT_SSLVERSION     => 32,
-      :CURLOPT_KEYPASSWD      => 10026,
-      :CURLOPT_CAINFO         => 10065,
-      :CURLOPT_CAPATH         => 10097,
-    }
-    INFO_VALUES = {
-      :CURLINFO_RESPONSE_CODE      => 2097154,
-      :CURLINFO_TOTAL_TIME         => 3145731,
-      :CURLINFO_HTTPAUTH_AVAIL     => 0x200000 + 23,
-      :CURLINFO_EFFECTIVE_URL      => 0x100000 + 1,
-      :CURLINFO_PRIMARY_IP         => 0x100000 + 32,
-      :CURLINFO_NAMELOOKUP_TIME    => 0x300000 + 4,
-      :CURLINFO_CONNECT_TIME       => 0x300000 + 5,
-      :CURLINFO_PRETRANSFER_TIME   => 0x300000 + 6,
-      :CURLINFO_STARTTRANSFER_TIME => 0x300000 + 17,
-      :CURLINFO_APPCONNECT_TIME    => 0x300000 + 33,
-
-    }
-    AUTH_TYPES = {
-      :CURLAUTH_BASIC         => 1,
-      :CURLAUTH_DIGEST        => 2,
-      :CURLAUTH_GSSNEGOTIATE  => 4,
-      :CURLAUTH_NTLM          => 8,
-      :CURLAUTH_DIGEST_IE     => 16,
-      :CURLAUTH_AUTO          => 16 | 8 | 4 | 2 | 1
-    }
-    PROXY_TYPES = {
-      :CURLPROXY_HTTP         => 0,
-      :CURLPROXY_HTTP_1_0     => 1,
-      :CURLPROXY_SOCKS4       => 4,
-      :CURLPROXY_SOCKS5       => 5,
-      :CURLPROXY_SOCKS4A      => 6,
-    }
-
-    SSL_VERSIONS = {
-      :CURL_SSLVERSION_DEFAULT => 0,
-      :CURL_SSLVERSION_TLSv1   => 1,
-      :CURL_SSLVERSION_SSLv2   => 2,
-      :CURL_SSLVERSION_SSLv3   => 3,
-      :default                 => 0,
-      :tlsv1                   => 1,
-      :sslv2                   => 2,
-      :sslv3                   => 3
-    }
+    OPTION_VALUES = Curl::Option.to_hash.dup
+    Curl::Option.to_hash.each {|key, value| OPTION_VALUES["CURLOPT_#{key.to_s.upcase}".to_sym] = value }
+    INFO_VALUES = Curl::Info.to_hash.dup
+    Curl::Info.to_hash.each {|key, value| INFO_VALUES["CURLINFO_#{key.to_s.upcase}".to_sym] = value }
+    AUTH_TYPES = Curl::Auth.to_hash.dup
+    Curl::Auth.to_hash.each {|key, value| AUTH_TYPES["CURLAUTH_#{key.to_s.upcase}".to_sym] = value }
+    PROXY_TYPES = Curl::Proxy.to_hash.dup
+    Curl::Proxy.to_hash.each {|key, value| PROXY_TYPES["CURLPROXY_#{key.to_s.upcase}".to_sym] = value }
+    SSL_VERSIONS = Curl::SSLVersion.to_hash.dup
+    Curl::SSLVersion.to_hash.each {|key, value| SSL_VERSIONS["CURL_SSLVERSION_#{key.to_s.upcase}".to_sym] = value }
 
     def initialize
+      Curl.init
+
+      @handle = Curl.easy_init
+
+      @response_body = ""
+      @response_header = ""
+      @header_list = nil
+
+      set_response_handlers
+
       @method = :get
       @headers = {}
 
       set_defaults
+
+      ObjectSpace.define_finalizer(self, self.class.finalizer(self))
+    end
+
+    def self.finalizer(easy)
+      proc {
+        Curl.slist_free_all(easy.header_list) if easy.header_list
+        Curl.easy_cleanup(easy.handle)
+      }
+    end
+
+    def set_response_handlers
+      @body_write_callback = proc {|stream, size, num, object|
+        @response_body << stream.read_string(size * num)
+        size * num
+      }
+      set_option(:writefunction, @body_write_callback)
+
+      @header_write_callback = proc {|stream, size, num, object|
+        @response_header << stream.read_string(size * num)
+        size * num
+      }
+      set_option(:headerfunction, @header_write_callback)
     end
 
     def set_defaults
@@ -100,14 +62,14 @@ module Typhoeus
 
     def encoding=(encoding)
       # Enable encoding/compression support
-      set_option(OPTION_VALUES[:CURLOPT_ENCODING], encoding)
+      set_option(:encoding, encoding)
     end
 
     def ssl_version=(version)
       raise "Invalid SSL version: '#{version}' supplied! Please supply one as listed in Typhoeus::Easy::SSL_VERSIONS" unless SSL_VERSIONS.has_key?(version)
       @ssl_version = version
 
-      set_option(OPTION_VALUES[:CURLOPT_SSLVERSION], SSL_VERSIONS[version])
+      set_option(:sslversion, SSL_VERSIONS[version])
     end
 
     def headers=(hash)
@@ -116,94 +78,94 @@ module Typhoeus
 
     def interface=(interface)
       @interface = interface
-      set_option(OPTION_VALUES[:CURLOPT_INTERFACE], interface)
+      set_option(:interface, interface)
     end
 
     def proxy=(proxy)
-      set_option(OPTION_VALUES[:CURLOPT_PROXY], proxy[:server])
-      set_option(OPTION_VALUES[:CURLOPT_PROXYTYPE], proxy[:type]) if proxy[:type]
+      set_option(:proxy, proxy[:server])
+      set_option(:proxytype, PROXY_TYPES.has_key?(proxy[:type]) ? PROXY_TYPES[proxy[:type]] : proxy[:type]) if proxy[:type]
     end
 
     def proxy_auth=(authinfo)
-      set_option(OPTION_VALUES[:CURLOPT_PROXYUSERPWD], "#{authinfo[:username]}:#{authinfo[:password]}")
-      set_option(OPTION_VALUES[:CURLOPT_PROXYAUTH], authinfo[:method]) if authinfo[:method]
+      set_option(:proxyuserpwd, "#{authinfo[:username]}:#{authinfo[:password]}")
+      set_option(:proxyauth, AUTH_TYPES.has_key?(authinfo[:method]) ? AUTH_TYPES[authinfo[:method]] : authinfo[:method]) if authinfo[:method]
     end
 
     def auth=(authinfo)
-      set_option(OPTION_VALUES[:CURLOPT_USERPWD], "#{authinfo[:username]}:#{authinfo[:password]}")
-      set_option(OPTION_VALUES[:CURLOPT_HTTPAUTH], authinfo[:method]) if authinfo[:method]
+      set_option(:userpwd, "#{authinfo[:username]}:#{authinfo[:password]}")
+      set_option(:httpauth, AUTH_TYPES.has_key?(authinfo[:method]) ? AUTH_TYPES[authinfo[:method]] : authinfo[:method]) if authinfo[:method]
     end
 
     def auth_methods
-      get_info_long(INFO_VALUES[:CURLINFO_HTTPAUTH_AVAIL])
+      get_info_long(:httpauth_avail)
     end
 
     def verbose=(boolean)
-      set_option(OPTION_VALUES[:CURLOPT_VERBOSE], !!boolean ? 1 : 0)
+      set_option(:verbose, !!boolean ? 1 : 0)
     end
 
     def total_time_taken
-      get_info_double(INFO_VALUES[:CURLINFO_TOTAL_TIME])
+      get_info_double(:total_time)
     end
 
     def start_transfer_time
-      get_info_double(INFO_VALUES[:CURLINFO_STARTTRANSFER_TIME])
+      get_info_double(:starttransfer_time)
     end
 
     def app_connect_time
-      get_info_double(INFO_VALUES[:CURLINFO_APPCONNECT_TIME])
+      get_info_double(:appconnect_time)
     end
 
     def pretransfer_time
-      get_info_double(INFO_VALUES[:CURLINFO_PRETRANSFER_TIME])
+      get_info_double(:pretransfer_time)
     end
 
     def connect_time
-      get_info_double(INFO_VALUES[:CURLINFO_CONNECT_TIME])
+      get_info_double(:connect_time)
     end
 
     def name_lookup_time
-      get_info_double(INFO_VALUES[:CURLINFO_NAMELOOKUP_TIME])
+      get_info_double(:namelookup_time)
     end
 
     def effective_url
-      get_info_string(INFO_VALUES[:CURLINFO_EFFECTIVE_URL])
+      get_info_string(:effective_url)
     end
 
     def primary_ip
-      get_info_string(INFO_VALUES[:CURLINFO_PRIMARY_IP])
+      get_info_string(:primary_ip)
     end
 
     def response_code
-      get_info_long(INFO_VALUES[:CURLINFO_RESPONSE_CODE])
+      get_info_long(:response_code)
     end
 
     def follow_location=(boolean)
       if boolean
-        set_option(OPTION_VALUES[:CURLOPT_FOLLOWLOCATION], 1)
+        set_option(:followlocation, 1)
       else
-        set_option(OPTION_VALUES[:CURLOPT_FOLLOWLOCATION], 0)
+        set_option(:followlocation, 0)
       end
     end
 
     def max_redirects=(redirects)
-      set_option(OPTION_VALUES[:CURLOPT_MAXREDIRS], redirects)
+      set_option(:maxredirs, redirects)
     end
 
     def connect_timeout=(milliseconds)
       @connect_timeout = milliseconds
-      set_option(OPTION_VALUES[:CURLOPT_NOSIGNAL], 1)
-      set_option(OPTION_VALUES[:CURLOPT_CONNECTTIMEOUT_MS], milliseconds)
+      set_option(:nosignal, 1)
+      set_option(:connecttimeout_ms, milliseconds)
     end
 
     def timeout=(milliseconds)
       @timeout = milliseconds
-      set_option(OPTION_VALUES[:CURLOPT_NOSIGNAL], 1)
-      set_option(OPTION_VALUES[:CURLOPT_TIMEOUT_MS], milliseconds)
+      set_option(:nosignal, 1)
+      set_option(:timeout_ms, milliseconds)
     end
 
     def timed_out?
-      curl_return_code == 28
+      @curl_return_code == :operation_timedout
     end
 
     def supports_zlib?
@@ -213,50 +175,63 @@ module Typhoeus
     def request_body=(request_body)
       @request_body = request_body
       if @method == :put
-        easy_set_request_body(@request_body.to_s)
+        @request_body_read = 0
+        set_option(:infilesize, Utils.bytesize(@request_body))
+
+        @read_callback = proc {|stream, size, num, object|
+          size = size * num
+          left = Utils.bytesize(@request_body) - @request_body_read
+          size = left if size > left
+          if size > 0
+            stream.write_string(Utils.byteslice(@request_body, @request_body_read, size), size)
+            @request_body_read += size
+          end
+          size
+        }
+        set_option(:readfunction, @read_callback)
       else
         self.post_data = request_body
       end
     end
 
     def user_agent=(user_agent)
-      set_option(OPTION_VALUES[:CURLOPT_USERAGENT], user_agent)
+      set_option(:useragent, user_agent)
     end
 
     def url=(url)
       @url = url
-      set_option(OPTION_VALUES[:CURLOPT_URL], url)
+      set_option(:url, url)
     end
 
     def disable_ssl_peer_verification
-      set_option(OPTION_VALUES[:CURLOPT_VERIFYPEER], 0)
+      set_option(:verifypeer, 0)
     end
 
     def disable_ssl_host_verification
-      set_option(OPTION_VALUES[:CURLOPT_VERIFYHOST], 0)
+      set_option(:verifyhost, 0)
     end
 
     def method=(method)
       @method = method
       if method == :get
-        set_option(OPTION_VALUES[:CURLOPT_HTTPGET], 1)
+        set_option(:httpget, 1)
       elsif method == :post
-        set_option(OPTION_VALUES[:CURLOPT_HTTPPOST], 1)
+        set_option(:httppost, 1)
         self.post_data = ""
       elsif method == :put
-        set_option(OPTION_VALUES[:CURLOPT_UPLOAD], 1)
+        set_option(:upload, 1)
         self.request_body = @request_body.to_s
       elsif method == :head
-        set_option(OPTION_VALUES[:CURLOPT_NOBODY], 1)
+        set_option(:nobody, 1)
       else
-        set_option(OPTION_VALUES[:CURLOPT_CUSTOMREQUEST], method.to_s.upcase)
+        set_option(:customrequest, method.to_s.upcase)
       end
     end
 
     def post_data=(data)
       @post_data_set = true
-      set_option(OPTION_VALUES[:CURLOPT_POSTFIELDSIZE], data.bytesize)
-      set_option(OPTION_VALUES[:CURLOPT_COPYPOSTFIELDS], data)
+      set_option(:postfieldsize, Utils.bytesize(data))
+      set_option(:copypostfields, data)
     end
 
     def params
@@ -269,7 +244,7 @@ module Typhoeus
       if method == :post
         @form.process!
         if @form.multipart?
-          set_option(OPTION_VALUES[:CURLOPT_HTTPPOST], @form)
+          set_option(:httppost, @form)
         else
           self.post_data = @form.to_s
         end
@@ -282,14 +257,14 @@ module Typhoeus
     # " The string should be the file name of your certificate. "
     # The default format is "PEM" and can be changed with ssl_cert_type=
     def ssl_cert=(cert)
-      set_option(OPTION_VALUES[:CURLOPT_SSLCERT], cert)
+      set_option(:sslcert, cert)
     end
 
     # Set SSL certificate type
     # " The string should be the format of your certificate. Supported formats are "PEM" and "DER" "
     def ssl_cert_type=(cert_type)
       raise "Invalid ssl cert type : '#{cert_type}'..." if cert_type and !%w(PEM DER p12).include?(cert_type)
-      set_option(OPTION_VALUES[:CURLOPT_SSLCERTTYPE], cert_type)
+      set_option(:sslcerttype, cert_type)
     end
 
     # Set SSL Key file
@@ -297,7 +272,7 @@ module Typhoeus
     # The default format is "PEM" and can be changed with ssl_key_type=
     #
     def ssl_key=(key)
-      set_option(OPTION_VALUES[:CURLOPT_SSLKEY], key)
+      set_option(:sslkey, key)
     end
 
     # Set SSL Key type
@@ -305,41 +280,45 @@ module Typhoeus
     #
     def ssl_key_type=(key_type)
       raise "Invalid ssl key type : '#{key_type}'..." if key_type and !%w(PEM DER ENG).include?(key_type)
-      set_option(OPTION_VALUES[:CURLOPT_SSLKEYTYPE], key_type)
+      set_option(:sslkeytype, key_type)
     end
 
     def ssl_key_password=(key_password)
-      set_option(OPTION_VALUES[:CURLOPT_KEYPASSWD], key_password)
+      set_option(:keypasswd, key_password)
     end
 
     # Set SSL CACERT
     # " File holding one or more certificates to verify the peer with. "
     #
     def ssl_cacert=(cacert)
-      set_option(OPTION_VALUES[:CURLOPT_CAINFO], cacert)
+      set_option(:cainfo, cacert)
     end
 
     # Set CAPATH
     # " directory holding multiple CA certificates to verify the peer with. The certificate directory must be prepared using the openssl c_rehash utility. "
     #
     def ssl_capath=(capath)
-      set_option(OPTION_VALUES[:CURLOPT_CAPATH], capath)
+      set_option(:capath, capath)
     end
 
     def set_option(option, value)
       case value
         when String
-          easy_setopt_string(option, value)
+          Curl.easy_setopt_string(@handle, option, value.to_s)
+        when Integer
+          Curl.easy_setopt_long(@handle, option, value)
+        when Proc, FFI::Function
+          Curl.easy_setopt_callback(@handle, option, value)
         when Typhoeus::Form
-          easy_setopt_form(option, value)
+          Curl.easy_setopt(@handle, option, value.first.read_pointer)
         else
-          easy_setopt_long(option, value) if value
+          Curl.easy_setopt(@handle, option, value) if value
       end
     end
 
     def perform
       set_headers()
-      easy_perform()
+      @curl_return_code = Curl.easy_perform(@handle)
       resp_code = response_code()
       if resp_code >= 200 && resp_code <= 299
         success
@@ -350,10 +329,9 @@ module Typhoeus
     end
 
     def set_headers
-      headers.each_pair do |key, value|
-        easy_add_header("#{key}: #{value}")
-      end
-      easy_set_headers() unless headers.empty?
+      @header_list = nil
+      headers.each {|key, value| @header_list = Curl.slist_append(@header_list, "#{key}: #{value}") }
+      set_option(:httpheader, @header_list) unless headers.empty?
     end
 
     # gets called when finished and response code is not 2xx,
@@ -389,25 +367,60 @@ module Typhoeus
       @response_header = ""
       @response_body = ""
       @request_body = ""
-      easy_reset()
+
+      if @header_list
+        Curl.slist_free_all(@header_list)
+        @header_list = nil
+      end
+
+      Curl.easy_reset(@handle)
+      set_response_handlers
+
       set_defaults
     end
 
     def get_info_string(option)
-      easy_getinfo_string(option)
+      string = FFI::MemoryPointer.new(:pointer)
+      if Curl.easy_getinfo(@handle, option, string) == :ok
+        string.read_pointer.read_string
+      else nil
+      end
     end
 
     def get_info_long(option)
-      easy_getinfo_long(option)
+      long = FFI::MemoryPointer.new(:long)
+      if Curl.easy_getinfo(@handle, option, long) == :ok
+        long.read_long
+      else nil
+      end
     end
 
     def get_info_double(option)
-      easy_getinfo_double(option)
+      double = FFI::MemoryPointer.new(:double)
+      if Curl.easy_getinfo(@handle, option, double) == :ok
+        double.read_double
+      else nil
+      end
+    end
+
+    def curl_return_code
+      Curl::EasyCode[@curl_return_code]
+    end
+
+    def curl_return_code=(code)
+     @curl_return_code = (code.class == Symbol ? code : Curl::EasyCode[code])
+    end
+
+    def curl_error_message(code = @curl_return_code)
+      code ? Curl.easy_strerror(code) : nil
+    end
+
+    def escape(data, size = Utils.bytesize(data))
+      Curl.easy_escape(@handle, data, size)
     end
 
     def curl_version
-      version
+      Curl.version
     end
-
   end
 end
