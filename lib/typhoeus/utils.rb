@@ -12,14 +12,7 @@ module Typhoeus
 
     # Params are NOT escaped.
     def traverse_params_hash(hash, result = nil, current_key = nil)
-      result ||= { :files => [], :params => [] }
-
-      hash.keys.sort { |a, b| a.to_s <=> b.to_s }.collect do |key|
-        new_key = (current_key ? "#{current_key}[#{key}]" : key).to_s
-        current_value = hash[key]
-        process_value current_value, :result => result, :new_key => new_key
-      end
-      result
+      result = ParamProcessor.traverse_params_hash hash, result, current_key
     end
     module_function :traverse_params_hash
 
