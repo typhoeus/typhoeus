@@ -16,24 +16,25 @@ module Typhoeus
 
       hash.keys.sort { |a, b| a.to_s <=> b.to_s }.collect do |key|
         new_key = (current_key ? "#{current_key}[#{key}]" : key).to_s
-        case hash[key]
+        current_value = hash[key]
+        case current_value
         when Hash
-          traverse_params_hash(hash[key], result, new_key)
+          traverse_params_hash(current_value, result, new_key)
         when Array
-          hash[key].each do |v|
+          current_value.each do |v|
             result[:params] << [new_key, v.to_s]
           end
         when File, Tempfile
-          filename = File.basename(hash[key].path)
+          filename = File.basename(current_value.path)
           types = MIME::Types.type_for(filename)
           result[:files] << [
             new_key,
             filename,
             types.empty? ? 'application/octet-stream' : types[0].to_s,
-            File.expand_path(hash[key].path)
+            File.expand_path(current_value.path)
           ]
         else
-          result[:params] << [new_key, hash[key].to_s]
+          result[:params] << [new_key, current_value.to_s]
         end
       end
       result
