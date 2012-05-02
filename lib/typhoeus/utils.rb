@@ -35,33 +35,5 @@ module Typhoeus
       end
     end
     module_function :bytesize
-
-    private
-
-    def process_value(current_value, options)
-      result = options[:result]
-      new_key = options[:new_key]
-
-      case current_value
-      when Hash
-        traverse_params_hash(current_value, result, new_key)
-      when Array
-        current_value.each do |v|
-          result[:params] << [new_key, v.to_s]
-        end
-      when File, Tempfile
-        filename = File.basename(current_value.path)
-        types = MIME::Types.type_for(filename)
-        result[:files] << [
-          new_key,
-          filename,
-          types.empty? ? 'application/octet-stream' : types[0].to_s,
-          File.expand_path(current_value.path)
-        ]
-      else
-        result[:params] << [new_key, current_value.to_s]
-      end
-    end
-    module_function :process_value
   end
 end
