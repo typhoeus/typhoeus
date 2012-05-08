@@ -55,6 +55,7 @@ module Typhoeus
       :CURLINFO_CONNECT_TIME       => 0x300000 + 5,
       :CURLINFO_PRETRANSFER_TIME   => 0x300000 + 6,
       :CURLINFO_STARTTRANSFER_TIME => 0x300000 + 17,
+      :CURLINFO_PRIMARY_IP         => 0x100000 + 20,
       :CURLINFO_APPCONNECT_TIME    => 0x300000 + 33,
 
     }
@@ -168,6 +169,10 @@ module Typhoeus
 
     def effective_url
       get_info_string(INFO_VALUES[:CURLINFO_EFFECTIVE_URL])
+    end
+    
+    def primary_ip
+      get_info_string(1048608)
     end
 
     def primary_ip
