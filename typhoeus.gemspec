@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project = '[none]'
 
   s.add_runtime_dependency 'mime-types', ['>= 0']
-  s.add_development_dependency 'rspec', ["~> 2.6"]
+  s.add_development_dependency 'rspec', ["~> 2.10"]
   s.add_development_dependency 'diff-lcs', [">= 0"]
   s.add_development_dependency 'sinatra', [">= 0"]
   s.add_development_dependency 'json', [">= 0"]
