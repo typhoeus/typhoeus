@@ -352,6 +352,16 @@ describe Typhoeus::Request do
 
   end
 
+  describe 'cache_key_basis' do
+
+    it 'should allow overriding the cache key basis' do
+      req1 = Typhoeus::Request.new('http://localhost:3000')
+      req2 = Typhoeus::Request.new('http://localhost:3000')
+      req2.cache_key_basis = 'localhost'
+      req1.cache_key.should_not == req2.cache_key
+    end
+
+  end
 
   describe "authentication" do
 

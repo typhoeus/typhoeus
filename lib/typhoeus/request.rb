@@ -7,6 +7,7 @@ module Typhoeus
       :params,
       :body,
       :headers,
+      :cache_key_basis,
       :connect_timeout,
       :timeout,
       :user_agent,
@@ -208,7 +209,7 @@ module Typhoeus
     end
 
     def cache_key
-      Digest::SHA1.hexdigest(url)
+      Digest::SHA1.hexdigest(cache_key_basis || url)
     end
 
     def self.run(url, params)
