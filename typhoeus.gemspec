@@ -13,8 +13,8 @@ Gem::Specification.new do |s|
   s.summary      = "Parallel HTTP library on top of libcurl multi."
   s.description  = %q{Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.}
   s.extensions   = ["ext/typhoeus/extconf.rb"]
-  s.files        = FileList['ext/**/*', 
-                     'lib/**/*', 
+  s.files        = FileList['ext/**/*',
+                     'lib/**/*',
                      'spec/**/*',
                      'CHANGELOG.markdown',
                      'Gemfile',
@@ -28,9 +28,11 @@ Gem::Specification.new do |s|
   s.rubyforge_project = '[none]'
 
   s.add_runtime_dependency 'mime-types', ['>= 0']
-  s.add_development_dependency 'rspec', ["~> 2.10"]
   s.add_development_dependency 'diff-lcs', [">= 0"]
   s.add_development_dependency 'sinatra', [">= 0"]
   s.add_development_dependency 'json', [">= 0"]
   s.add_development_dependency 'rake', [">= 0"]
+  s.add_development_dependency("mocha", ["~> 0.10"])
+  s.add_development_dependency("rspec", ["~> 2.10"])
+  s.add_development_dependency("guard-rspec", ["~> 0.6"])
 end
