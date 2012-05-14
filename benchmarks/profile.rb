@@ -2,24 +2,15 @@ require File.dirname(__FILE__) + '/../lib/typhoeus.rb'
 require 'rubygems'
 require 'ruby-prof'
 
-calls = 20
-@klass = Class.new do
-  include Typhoeus
-end
-
-Typhoeus.init_easy_objects
+calls = 50
+url = "http://127.0.0.1:3000/"
+Typhoeus.init_easy_object_pool
 
 RubyProf.start
-
-responses = []
 calls.times do |i|
-  responses << @klass.get("http://127.0.0.1:3000/#{i}")
+  Typhoeus::Request.get(url+i.to_s)
 end
-
-responses.each {|r| }#raise unless r.response_body == "whatever"}
-
 result = RubyProf.stop
 
- # Print a flat profile to text
- printer = RubyProf::FlatPrinter.new(result)
- printer.print(STDOUT, 0)
+printer = RubyProf::FlatPrinter.new(result)
+printer.print(STDOUT)

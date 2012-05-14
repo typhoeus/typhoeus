@@ -7,7 +7,6 @@ calls = 50
 url = "http://127.0.0.1:3000/"
 Typhoeus.init_easy_object_pool
 
-
 Benchmark.bm do |bm|
   bm.report("net::http") do
     calls.times do |i|
