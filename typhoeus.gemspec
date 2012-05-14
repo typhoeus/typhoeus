@@ -21,7 +21,6 @@ Gem::Specification.new do |s|
   s.homepage     = "https://github.com/dbalatero/typhoeus"
   s.summary      = "Parallel HTTP library on top of libcurl multi."
   s.description  = %q{Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.}
-  s.extensions   = ["ext/typhoeus/extconf.rb"]
   s.files        = FileList['ext/**/*',
                      'lib/**/*',
                      'spec/**/*',
