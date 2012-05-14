@@ -30,8 +30,7 @@ Gem::Specification.new do |s|
                      'Gemfile.lock',
                      'LICENSE',
                      'Rakefile',
-                     'typhoeus.gemspec'
-                   )
+                     'typhoeus.gemspec']
   s.rubyforge_project = '[none]'
 
   s.add_runtime_dependency 'ffi', ['>= 0']
