@@ -39,7 +39,7 @@ module Typhoeus
     alias_method :merge!, :update
 
     def dup
-      self.class.new(self)
+      self.class.new(Marshal.load(Marshal.dump(self)))
     end
 
     def merge(hash)

@@ -9,7 +9,6 @@ describe Typhoeus::Header do
       :content_type ]
   }
 
-
   it "responds to has_key?" do
     header.should respond_to(:has_key?)
   end
@@ -39,4 +38,21 @@ describe Typhoeus::Header do
     end
   end
 
+  describe "#dup" do
+    context "when not nested" do
+      let(:options) { { 'a' => 'fu' } }
+
+      it "duplicates everything" do
+        header.dup.values.should_not be(options.values)
+      end
+    end
+
+    context "when nested" do
+      let(:options) { { 'a' => { 'b' => 'fu' } } }
+
+      it "duplicates everything" do
+        header.dup['a']['b'].should_not be(options['a']['b'])
+      end
+    end
+  end
 end
