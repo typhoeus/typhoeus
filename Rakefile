@@ -7,12 +7,7 @@ end
 task :install do
   rm_rf "*.gem"
   puts `gem build typhoeus.gemspec`
-  puts `gem install typhoeus-#{Typhoeus::VERSION}.gem`
-end
-
-desc "Builds the native code"
-task :build_native do
-  system("cd ext/typhoeus && ruby extconf.rb && make clean && make")
+  puts `gem install typhoeus-*.gem`
 end
 
 desc "Start up the test servers"
@@ -26,4 +21,4 @@ task :start_test_servers do
 end
 
 desc "Build Typhoeus and run all the tests."
-task :default => [:build_native, :spec]
+task :default => [:spec]

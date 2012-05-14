@@ -4,6 +4,15 @@ $:.unshift File.expand_path('../lib', __FILE__)
 require 'typhoeus/version'
 require 'rubygems/package_task'
 
+def Dir.ls_files(*dirs)
+  dirs.map do |dir|
+    if File.directory?(dir)
+      Dir.entries(dir).reject {|file| file[0] == '.' }.map {|file| ls_files(File.join(dir, file)) }
+    else dir
+    end
+  end.flatten
+end
+
 Gem::Specification.new do |s|
   s.name         = "typhoeus"
   s.version      = Typhoeus::VERSION
@@ -22,11 +31,10 @@ Gem::Specification.new do |s|
                      'LICENSE',
                      'Rakefile',
                      'typhoeus.gemspec'
-                   ]
-  s.platform     = Gem::Platform::RUBY
-  s.require_path = 'lib'
+                   )
   s.rubyforge_project = '[none]'
 
+  s.add_runtime_dependency 'ffi', ['>= 0']
   s.add_runtime_dependency 'mime-types', ['>= 0']
   s.add_development_dependency 'diff-lcs', [">= 0"]
   s.add_development_dependency 'sinatra', [">= 0"]
@@ -35,4 +43,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency("mocha", ["~> 0.10"])
   s.add_development_dependency("rspec", ["~> 2.10"])
   s.add_development_dependency("guard-rspec", ["~> 0.6"])
+  s.add_development_dependency 'spoon', [">= 0"] if RUBY_PLATFORM == "java"
 end

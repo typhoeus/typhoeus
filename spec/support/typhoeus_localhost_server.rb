@@ -1,5 +1,8 @@
 require 'net/http'
 require 'uri'
+require 'rbconfig'
+
+require File.expand_path(File.dirname(__FILE__) + '/spawn')
 
 class TyphoeusLocalhostServer
 
@@ -24,7 +27,7 @@ class TyphoeusLocalhostServer
     def start_parent
       # Cleanup.
       at_exit do
-        Process.kill('QUIT', self.pid) if self.pid
+        Process.kill('TERM', self.pid) if self.pid
       end
     end
 

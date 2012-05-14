@@ -59,5 +59,18 @@ module Typhoeus
       end
     end
     module_function :bytesize
+
+    # Return a byteslice from a string; uses String#[] under Ruby 1.8 and
+    # String#byteslice under 1.9.
+    if ''.respond_to?(:byteslice)
+      def byteslice(string, *args)
+        string.byteslice(*args)
+      end
+    else
+      def byteslice(string, *args)
+        string[*args]
+      end
+    end
+    module_function :byteslice
   end
 end
