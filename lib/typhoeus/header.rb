@@ -1,5 +1,5 @@
 module Typhoeus
-  class NormalizedHeaderHash < ::Hash
+  class Header < ::Hash
     def initialize(constructor = {})
       if constructor.is_a?(Hash)
         super

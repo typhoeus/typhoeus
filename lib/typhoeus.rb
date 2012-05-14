@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(File.dirname(__FILE__) + "/../ext")
 
 require 'digest/sha2'
 require 'typhoeus/utils'
-require 'typhoeus/normalized_header_hash'
+require 'typhoeus/header'
 require 'typhoeus/easy'
 require 'typhoeus/form'
 require 'typhoeus/multi'

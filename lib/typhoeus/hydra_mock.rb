@@ -9,7 +9,7 @@ module Typhoeus
       @requests = []
       @options = options
       if @options[:headers]
-        @options[:headers] = Typhoeus::NormalizedHeaderHash.new(@options[:headers])
+        @options[:headers] = Typhoeus::Header.new(@options[:headers])
       end
 
       @current_response_index = 0
@@ -93,7 +93,7 @@ module Typhoeus
     end
 
     def headers_match?(request)
-      request_headers = NormalizedHeaderHash.new(request.headers)
+      request_headers = Header.new(request.headers)
 
       if empty_headers?(self.headers)
         empty_headers?(request_headers)
