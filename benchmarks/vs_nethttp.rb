@@ -2,34 +2,22 @@ require 'rubygems'
 require File.dirname(__FILE__) + '/../lib/typhoeus.rb'
 require 'open-uri'
 require 'benchmark'
-include Benchmark
 
-
-calls = 20
-@klass = Class.new do
-  include Typhoeus
-end
-
+calls = 50
+url = "http://127.0.0.1:3000/"
 Typhoeus.init_easy_object_pool
 
-benchmark do |t|    
-  t.report("net::http") do
-    responses = []
-    
+
+Benchmark.bm do |bm|
+  bm.report("net::http") do
     calls.times do |i|
-      responses << open("http://127.0.0.1:3000/#{i}").read
+      open(url+i.to_s)
     end
-    
-    responses.each {|r| raise unless r == "whatever"}    
   end
-  
-  t.report("typhoeus") do
-    responses = []
-    
+
+  bm.report("typhoeus ") do
     calls.times do |i|
-      responses << @klass.get("http://127.0.0.1:3000/#{i}")
+      Typhoeus::Request.get(url+i.to_s)
     end
-    
-    responses.each {|r| raise unless r.body == "whatever"}
   end
 end
