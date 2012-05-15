@@ -7,6 +7,7 @@ module Typhoeus
       :params,
       :body,
       :headers,
+      :cache_key_basis,
       :connect_timeout,
       :timeout,
       :user_agent,
@@ -69,7 +70,6 @@ module Typhoeus
     # ** +:username
     # ** +:password
     # ** +:auth_method
-    # ** +:user_agent+ : user agent (string) - DEPRECATED
     #
     def initialize(url, options = {})
       @method           = options[:method] || :get
@@ -80,8 +80,8 @@ module Typhoeus
       @interface        = options[:interface]
       @headers          = options[:headers] || {}
 
-      if options.has_key?(:user_agent)
-        self.user_agent = options[:user_agent]
+      if options.key?(:user_agent)
+        @headers['User-Agent'] = options[:user_agent]
       end
 
       @cache_timeout    = safe_to_i(options[:cache_timeout])
@@ -128,11 +128,6 @@ module Typhoeus
 
     def user_agent
       headers['User-Agent']
-    end
-
-    def user_agent=(value)
-      puts "DEPRECATED: Typhoeus::Request#user_agent=(value). This will be removed in a later version."
-      headers['User-Agent'] = value
     end
 
     def host
@@ -208,7 +203,7 @@ module Typhoeus
     end
 
     def cache_key
-      Digest::SHA1.hexdigest(url)
+      Digest::SHA1.hexdigest(cache_key_basis || url)
     end
 
     def self.run(url, params)

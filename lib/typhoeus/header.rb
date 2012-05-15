@@ -1,5 +1,5 @@
 module Typhoeus
-  class NormalizedHeaderHash < ::Hash
+  class Header < ::Hash
     def initialize(constructor = {})
       if constructor.is_a?(Hash)
         super
@@ -15,10 +15,6 @@ module Typhoeus
 
     def key?(key)
       super(convert_key(key))
-    end
-
-    [:include?, :has_key?, :member?].each do |method|
-      alias_method method, :key?
     end
 
     def [](key)
@@ -39,7 +35,7 @@ module Typhoeus
     alias_method :merge!, :update
 
     def dup
-      self.class.new(self)
+      self.class.new(Marshal.load(Marshal.dump(self)))
     end
 
     def merge(hash)

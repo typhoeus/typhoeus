@@ -1,4 +1,5 @@
 require "rubygems"
+require "mocha"
 require 'json'
 require "rspec"
 
@@ -13,6 +14,8 @@ require path + '/typhoeus'
 Dir['./spec/support/**/*.rb'].each { |f| require f }
 
 RSpec.configure do |config|
+  config.mock_with(:mocha)
+
   config.before(:suite) do
     TyphoeusLocalhostServer.start_servers!
   end

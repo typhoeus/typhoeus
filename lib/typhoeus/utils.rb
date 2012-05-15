@@ -1,5 +1,3 @@
-require 'tempfile'
-
 module Typhoeus
   module Utils
     # Taken from Rack::Utils, 1.2.1 to remove Rack dependency.
@@ -12,31 +10,7 @@ module Typhoeus
 
     # Params are NOT escaped.
     def traverse_params_hash(hash, result = nil, current_key = nil)
-      result ||= { :files => [], :params => [] }
-
-      hash.keys.sort { |a, b| a.to_s <=> b.to_s }.collect do |key|
-        new_key = (current_key ? "#{current_key}[#{key}]" : key).to_s
-        case hash[key]
-        when Hash
-          traverse_params_hash(hash[key], result, new_key)
-        when Array
-          hash[key].each do |v|
-            result[:params] << [new_key, v.to_s]
-          end
-        when File, Tempfile
-          filename = File.basename(hash[key].path)
-          types = MIME::Types.type_for(filename)
-          result[:files] << [
-            new_key,
-            filename,
-            types.empty? ? 'application/octet-stream' : types[0].to_s,
-            File.expand_path(hash[key].path)
-          ]
-        else
-          result[:params] << [new_key, hash[key].to_s]
-        end
-      end
-      result
+      result = ParamProcessor.traverse_params_hash hash, result, current_key
     end
     module_function :traverse_params_hash
 
@@ -59,5 +33,18 @@ module Typhoeus
       end
     end
     module_function :bytesize
+
+    # Return a byteslice from a string; uses String#[] under Ruby 1.8 and
+    # String#byteslice under 1.9.
+    if ''.respond_to?(:byteslice)
+      def byteslice(string, *args)
+        string.byteslice(*args)
+      end
+    else
+      def byteslice(string, *args)
+        string[*args]
+      end
+    end
+    module_function :byteslice
   end
 end

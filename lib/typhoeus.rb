@@ -1,21 +1,16 @@
-$LOAD_PATH.unshift(File.dirname(__FILE__)) unless $LOAD_PATH.include?(File.dirname(__FILE__))
-$LOAD_PATH.unshift(File.dirname(__FILE__) + "/../ext")
-
 require 'digest/sha2'
 require 'typhoeus/utils'
-require 'typhoeus/normalized_header_hash'
+require 'typhoeus/header'
+require 'typhoeus/curl'
 require 'typhoeus/easy'
 require 'typhoeus/form'
 require 'typhoeus/multi'
-require 'typhoeus/native'
 require 'typhoeus/filter'
-require 'typhoeus/remote_method'
-require 'typhoeus/remote'
+require 'typhoeus/param_processor'
 require 'typhoeus/remote_proxy_object'
 require 'typhoeus/response'
 require 'typhoeus/request'
 require 'typhoeus/hydra'
-require 'typhoeus/hydra_mock'
 require 'typhoeus/version'
 
 module Typhoeus
