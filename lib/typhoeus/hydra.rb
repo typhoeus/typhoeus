@@ -1,11 +1,9 @@
 require 'typhoeus/hydra/callbacks'
 require 'typhoeus/hydra/connect_options'
-require 'typhoeus/hydra/stubbing'
 
 module Typhoeus
   class Hydra
     include ConnectOptions
-    include Stubbing
     extend Callbacks
 
     def initialize(options = {})
@@ -19,9 +17,6 @@ module Typhoeus
       @retrieved_from_cache = {}
       @queued_requests = []
       @running_requests = 0
-
-      self.stubs = []
-      @active_stubs = []
     end
 
     def self.hydra
@@ -54,8 +49,6 @@ module Typhoeus
     end
 
     def queue(request, obey_concurrency_limit = true)
-      return if assign_to_stub(request)
-
       # At this point, we are running over live HTTP. Make sure we haven't
       # disabled live requests.
       check_allow_net_connect!(request)
@@ -82,16 +75,6 @@ module Typhoeus
     end
 
     def run
-      while !@active_stubs.empty?
-        m = @active_stubs.first
-        while request = m.requests.shift
-          response = m.response
-          response.request = request
-          handle_request(request, response)
-        end
-        @active_stubs.delete(m)
-      end
-
       @multi.perform
     ensure
       @multi.reset_easy_handles{|easy| release_easy_object(easy)}

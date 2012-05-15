@@ -10,13 +10,10 @@ require 'typhoeus/form'
 require 'typhoeus/multi'
 require 'typhoeus/filter'
 require 'typhoeus/param_processor'
-require 'typhoeus/remote_method'
-require 'typhoeus/remote'
 require 'typhoeus/remote_proxy_object'
 require 'typhoeus/response'
 require 'typhoeus/request'
 require 'typhoeus/hydra'
-require 'typhoeus/hydra_mock'
 require 'typhoeus/version'
 
 module Typhoeus
