@@ -1,22 +1,29 @@
 require 'rubygems'
-require File.dirname(__FILE__) + '/../lib/typhoeus.rb'
+require 'typhoeus'
 require 'open-uri'
 require 'benchmark'
 
-calls = 5000
-url = "http://127.0.0.1:3000/"
+calls = 1000
+url = "http://127.0.0.1:300"
 Typhoeus.init_easy_object_pool
 
 Benchmark.bmbm do |bm|
-  bm.report("net::http") do
+  bm.report("net::http     ") do
     calls.times do |i|
-      open(url+i.to_s)
+      open(url+"#{i%3}/#{i}")
     end
   end
 
-  bm.report("typhoeus ") do
+  bm.report("typhoeus      ") do
     calls.times do |i|
-      Typhoeus::Request.get(url+i.to_s)
+      Typhoeus::Request.get(url+"#{i%3}/#{i}")
     end
+  end
+
+  bm.report("typhoeus hydra") do
+    calls.times do |i|
+      Typhoeus::Hydra.hydra.queue(Typhoeus::Request.new(url+"#{i%3}/#{i}"))
+    end
+    Typhoeus::Hydra.hydra.run
   end
 end
