@@ -93,6 +93,7 @@ connections.
     response.body    # the response body
 
 **Making Quick Requests**
+
 The request object has some convenience methods for performing single HTTP
 requests. The arguments are the same as those you pass into the request
 constructor.
@@ -104,6 +105,7 @@ constructor.
     response = Typhoeus::Request.delete("http://localhost:3000/posts/1")
 
 **Handling HTTP errors**
+
 You can query the response object to figure out if you had a successful
 request or not. Here’s some example code that you might use to handle errors.
 
@@ -198,6 +200,7 @@ memoization.
     hydra.run # this will result in a two requests.
 
 **Caching**
+
 Hydra includes built in support for creating cache getters and setters. In the
 following example, if there is a cache hit, the cached object is passed to the
 on\_complete handler of the request object.
@@ -231,6 +234,7 @@ Use `:follow_location => true`, eg:
                                      :username => username, :password => password)
 
 **SSL**
+
 SSL comes built in to libcurl so it’s in Typhoeus as well. If you pass in a
 url with “https” it should just work assuming that you have your [cert
 bundle](http://curl.haxx.se/docs/caextract.html) in order and the server is
@@ -253,6 +257,7 @@ this:
     Typhoeus::Request.get("https://mail.google.com/mail", :disable_ssl_host_verification => true)
 
 **LibCurl**
+
 Typhoeus also has a more raw libcurl interface. These are the Easy and Multi
 objects. If you’re into accessing just the raw libcurl style, those are your
 best bet.
