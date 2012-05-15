@@ -128,6 +128,7 @@ This also works with serial (blocking) requests in the same fashion. Both
 serial and parallel requests return a Response object.
 
 **Handling file uploads**
+
 A File object can be passed as a param for a POST request to handle uploading
 files to the server. Typhoeus will upload the file as the original file name
 and use Mime::Types to set the content type.
@@ -183,6 +184,7 @@ lower the concurrency limit through the Hydra constructor.
     hydra = Typhoeus::Hydra.new(:max_concurrency => 20) # keep from killing some servers
 
 **Memoization**
+
 Hydra memoizes requests within a single run call. You can also disable
 memoization.
 
