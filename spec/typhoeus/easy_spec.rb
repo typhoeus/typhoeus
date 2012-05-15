@@ -1,12 +1,55 @@
 # encoding: UTF-8
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
-
-if defined?(Encoding)
-  Encoding.default_internal = 'utf-8'
-  Encoding.default_external = 'utf-8'
-end
+require 'spec_helper'
 
 describe Typhoeus::Easy do
+  let(:easy) { Typhoeus::Easy.new }
+
+  describe "#ssl_version=" do
+    Typhoeus::Easy::SSL_VERSIONS.keys.each do |key|
+      context "when #{key}" do
+        it "can be set and get" do
+          easy.ssl_version = key
+          easy.ssl_version.should eq(key)
+        end
+      end
+    end
+
+    context "when invalid" do
+      it "raises" do
+        expect { easy.ssl_version = "invalid" }.to raise_error
+      end
+    end
+  end
+
+  describe "#ssl_version" do
+    context "when not set" do
+      it "defaults" do
+        easy.ssl_version.should eq(:default)
+      end
+    end
+  end
+
+  describe "#supports_zlib?" do
+    context "when version include zlib" do
+      it "returns true" do
+        Typhoeus::Curl.expects(:version).returns("libcurl/7.20.0 OpenSSL/0.9.8l zlib/1.2.3 libidn/1.16")
+        easy.supports_zlib?.should be_true
+      end
+    end
+
+    context "when version doesn't include zlib" do
+      it "returns false" do
+        Typhoeus::Curl.expects(:version).returns("libcurl/7.20.0 OpenSSL/0.9.8l libidn/1.16")
+        easy.supports_zlib?.should be_false
+      end
+    end
+  end
+
+  describe "#perform" do
+  end
+
+###############################################################################
+
   describe "ssl_version" do
     before(:each) do
       @easy = Typhoeus::Easy.new
@@ -21,30 +64,6 @@ describe Typhoeus::Easy do
         @easy.response_code.should == 200
         @easy.ssl_version.should == k
       end
-    end
-
-    it "complains when an incorrect SSL version is used" do
-      expect { @easy.ssl_version = 'bogus' }.to raise_error
-    end
-
-    it "uses the default SSL version if nothing is supplied" do
-      @easy.ssl_version.should == :default
-    end
-  end
-
-  describe "#supports_zlib" do
-    before(:each) do
-      @easy = Typhoeus::Easy.new
-    end
-
-    it "should return true if the version string has zlib" do
-      @easy.stub!(:curl_version).and_return("libcurl/7.20.0 OpenSSL/0.9.8l zlib/1.2.3 libidn/1.16")
-      @easy.supports_zlib?.should be_true
-    end
-
-    it "should return false if the version string doesn't have zlib" do
-      @easy.stub!(:curl_version).and_return("libcurl/7.20.0 OpenSSL/0.9.8l libidn/1.16")
-      @easy.supports_zlib?.should be_false
     end
   end
 
@@ -195,7 +214,7 @@ describe Typhoeus::Easy do
   describe "purge" do
     it "should set custom request to purge" do
       easy = Typhoeus::Easy.new
-      easy.should_receive(:set_option).with(:customrequest, "PURGE").once
+      easy.expects(:set_option).with(:customrequest, "PURGE").once
       easy.method = :purge
     end
   end
@@ -277,8 +296,8 @@ describe Typhoeus::Easy do
       easy = Typhoeus::Easy.new
       easy.url    = "http://localhost:3002"
       easy.method = :post
-      easy.should_receive(:set_option).with(:postfieldsize, 55)
-      easy.should_receive(:set_option).with(:copypostfields, body)
+      easy.expects(:set_option).with(:postfieldsize, 55)
+      easy.expects(:set_option).with(:copypostfields, body)
       easy.request_body = body
     end
   end

@@ -338,9 +338,6 @@ describe Typhoeus::Hydra::Callbacks do
                                           :headers => "whatever",
                                           :body => "not found",
                                           :time => 0.1)
-        hydra.stub(:get, 'http://localhost:3000').
-          and_return(response)
-
         hydra.queue(request)
         hydra.run
 
