@@ -81,7 +81,7 @@ module Typhoeus
       @interface        = options[:interface]
       @headers          = options[:headers] || {}
 
-      if options.has_key?(:user_agent)
+      if options.key?(:user_agent)
         @headers['User-Agent'] = options[:user_agent]
       end
 

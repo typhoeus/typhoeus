@@ -9,10 +9,6 @@ describe Typhoeus::Header do
       :content_type ]
   }
 
-  it "responds to has_key?" do
-    header.should respond_to(:has_key?)
-  end
-
   describe ".new" do
     let(:options) { { 'Content-Type' => 'text/html', :x_http_header => 'foo', 'X-HTTP-USER' => 'bar' } }
 

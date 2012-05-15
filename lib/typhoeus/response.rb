@@ -49,7 +49,7 @@ module Typhoeus
             key = o.slice(0, i)
             value = o.slice(i + 1, o.size)
             value = value.strip unless value.nil?
-            if hash.has_key? key
+            if hash.key? key
               hash[key] = [hash[key], value].flatten
             else
               hash[key] = value

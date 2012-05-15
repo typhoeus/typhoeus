@@ -1,5 +1,3 @@
-require 'tempfile'
-
 module Typhoeus
   module Utils
     # Taken from Rack::Utils, 1.2.1 to remove Rack dependency.

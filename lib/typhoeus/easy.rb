@@ -66,7 +66,7 @@ module Typhoeus
     end
 
     def ssl_version=(version)
-      raise "Invalid SSL version: '#{version}' supplied! Please supply one as listed in Typhoeus::Easy::SSL_VERSIONS" unless SSL_VERSIONS.has_key?(version)
+      raise "Invalid SSL version: '#{version}' supplied! Please supply one as listed in Typhoeus::Easy::SSL_VERSIONS" unless SSL_VERSIONS.key?(version)
       @ssl_version = version
 
       set_option(:sslversion, SSL_VERSIONS[version])
@@ -83,17 +83,17 @@ module Typhoeus
 
     def proxy=(proxy)
       set_option(:proxy, proxy[:server])
-      set_option(:proxytype, PROXY_TYPES.has_key?(proxy[:type]) ? PROXY_TYPES[proxy[:type]] : proxy[:type]) if proxy[:type]
+      set_option(:proxytype, PROXY_TYPES.key?(proxy[:type]) ? PROXY_TYPES[proxy[:type]] : proxy[:type]) if proxy[:type]
     end
 
     def proxy_auth=(authinfo)
       set_option(:proxyuserpwd, "#{authinfo[:username]}:#{authinfo[:password]}")
-      set_option(:proxyauth, AUTH_TYPES.has_key?(authinfo[:method]) ? AUTH_TYPES[authinfo[:method]] : authinfo[:method]) if authinfo[:method]
+      set_option(:proxyauth, AUTH_TYPES.key?(authinfo[:method]) ? AUTH_TYPES[authinfo[:method]] : authinfo[:method]) if authinfo[:method]
     end
 
     def auth=(authinfo)
       set_option(:userpwd, "#{authinfo[:username]}:#{authinfo[:password]}")
-      set_option(:httpauth, AUTH_TYPES.has_key?(authinfo[:method]) ? AUTH_TYPES[authinfo[:method]] : authinfo[:method]) if authinfo[:method]
+      set_option(:httpauth, AUTH_TYPES.key?(authinfo[:method]) ? AUTH_TYPES[authinfo[:method]] : authinfo[:method]) if authinfo[:method]
     end
 
     def auth_methods

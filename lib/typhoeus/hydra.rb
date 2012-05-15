@@ -57,7 +57,7 @@ module Typhoeus
         @queued_requests << request
       else
         if request.method == :get
-          if @memoize_requests && @memoized_requests.has_key?(request.url)
+          if @memoize_requests && @memoized_requests.key?(request.url)
             if response = @retrieved_from_cache[request.url]
               request.response = response
               request.call_handlers

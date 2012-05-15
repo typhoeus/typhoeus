@@ -1,6 +1,3 @@
-$LOAD_PATH.unshift(File.dirname(__FILE__)) unless $LOAD_PATH.include?(File.dirname(__FILE__))
-$LOAD_PATH.unshift(File.dirname(__FILE__) + "/../ext")
-
 require 'digest/sha2'
 require 'typhoeus/utils'
 require 'typhoeus/header'

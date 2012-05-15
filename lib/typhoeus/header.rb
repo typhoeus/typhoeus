@@ -17,10 +17,6 @@ module Typhoeus
       super(convert_key(key))
     end
 
-    [:include?, :has_key?, :member?].each do |method|
-      alias_method method, :key?
-    end
-
     def [](key)
       super(convert_key(key))
     end

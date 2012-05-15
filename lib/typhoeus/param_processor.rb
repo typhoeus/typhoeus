@@ -1,3 +1,5 @@
+require 'tempfile'
+
 module Typhoeus
   class ParamProcessor
     class << self
