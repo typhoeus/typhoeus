@@ -2,7 +2,7 @@ module Typhoeus
   class Response
     attr_accessor :request
     attr_reader :code, :headers, :body, :time,
-                :requested_url, :requested_remote_method,
+                :requested_url,
                 :requested_http_method, :start_time,
                 :effective_url, :start_transfer_time,
                 :app_connect_time, :pretransfer_time,
