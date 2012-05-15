@@ -70,7 +70,6 @@ module Typhoeus
     # ** +:username
     # ** +:password
     # ** +:auth_method
-    # ** +:user_agent+ : user agent (string) - DEPRECATED
     #
     def initialize(url, options = {})
       @method           = options[:method] || :get
@@ -129,11 +128,6 @@ module Typhoeus
 
     def user_agent
       headers['User-Agent']
-    end
-
-    def user_agent=(value)
-      $stderr.puts "DEPRECATED: Typhoeus::Request#user_agent=(value). This will be removed in a later version."
-      headers['User-Agent'] = value
     end
 
     def host
