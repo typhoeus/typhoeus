@@ -221,9 +221,7 @@ timed out with the following methods:
 
 **Following Redirections**
 
-Use `:follow_location => true`,
-
-eg:
+Use `:follow_location => true`, eg:
 
     Typhoeus::Request.new(“www.example.com”, :follow_location => true)
 
