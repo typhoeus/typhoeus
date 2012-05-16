@@ -47,7 +47,7 @@ describe Typhoeus::Response do
     it "should return nil for http version if none is given and no header is given" do
       Typhoeus::Response.new.http_version.should be_nil
     end
-
+    
     it "should return nil for http version if an invalid or incomplete header is given" do
       Typhoeus::Response.new(:headers => "HTTP foo/bar 200 OK\r\n").http_version.should == nil
     end
@@ -55,11 +55,11 @@ describe Typhoeus::Response do
     it "should store response_headers" do
       Typhoeus::Response.new(:headers => "a header!").headers.should == "a header!"
     end
-
+    
     it "should store response_body" do
       Typhoeus::Response.new(:body => "a body!").body.should == "a body!"
     end
-
+    
     it "should store request_time" do
       Typhoeus::Response.new(:time => 1.23).time.should == 1.23
     end
@@ -78,6 +78,18 @@ describe Typhoeus::Response do
       response = Typhoeus::Response.new(:request => "whatever")
       response.request.should == "whatever"
     end
+
+    it "should not default to be a mock response" do
+      response = Typhoeus::Response.new
+      response.should_not be_mock
+    end
+  end
+
+  describe "#mock?" do
+    it "should be true if it's a mock response" do
+      response = Typhoeus::Response.new(:mock => true)
+      response.should be_mock
+    end
   end
 
   describe "headers" do
@@ -86,6 +98,7 @@ describe Typhoeus::Response do
     end
 
     context 'when the headers_hash is stubbed' do
+      after(:each) { Typhoeus::Hydra.clear_stubs }
       let!(:orig_response) { Typhoeus::Request.get("http://localhost:3000/multiple-headers") }
 
       it 'returns a properly formatted string built from the headers_hash, code, status_message and http_version' do
