@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency('ffi', ['>= 0'])
   s.add_dependency('mime-types', ['>= 0'])
+  s.add_dependency('spoon') if RUBY_PLATFORM == "java"
 
   s.add_development_dependency('sinatra')
   s.add_development_dependency('json')
@@ -26,7 +27,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency("mocha", ["~> 0.10"])
   s.add_development_dependency("rspec", ["~> 2.10"])
   s.add_development_dependency("guard-rspec", ["~> 0.6"])
-  s.add_development_dependency('spoon') if RUBY_PLATFORM == "java"
 
   s.files        = Dir.glob("lib/**/*") + %w(CHANGELOG.md Gemfile LICENSE README.md Rakefile)
   s.require_path = lib
