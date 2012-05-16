@@ -13,7 +13,7 @@ describe Typhoeus::Header do
     let(:options) { { 'Content-Type' => 'text/html', :x_http_header => 'foo', 'X-HTTP-USER' => 'bar' } }
 
     it "normalizes keys" do
-      header.keys.should eq(['Content-Type', 'X-Http-Header', 'X-Http-User'])
+      header.keys.should include('Content-Type', 'X-Http-Header', 'X-Http-User')
     end
   end
 
