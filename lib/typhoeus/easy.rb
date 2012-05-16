@@ -22,11 +22,33 @@ module Typhoeus
       @response_body = ""
       @response_header = ""
       @header_list = nil
+      @headers = {}
+      @method = :get
 
+      @body_write_callback = proc {|stream, size, num, object|
+        @response_body << stream.read_string(size * num)
+        size * num
+      }
+      @header_write_callback = proc {|stream, size, num, object|
+        @response_header << stream.read_string(size * num)
+        size * num
+      }
       set_response_handlers
 
-      @method = :get
-      @headers = {}
+      @read_callback = proc {|stream, size, num, object|
+        size = size * num
+        left = Utils.bytesize(@request_body) - @request_body_read
+        size = left if size > left
+        if size > 0
+          stream.write_string(Utils.byteslice(@request_body, @request_body_read, size), size)
+          @request_body_read += size
+        end
+        size
+      }
+
+      @string_ptr = FFI::MemoryPointer.new(:pointer)
+      @long_ptr = FFI::MemoryPointer.new(:long)
+      @double_ptr = FFI::MemoryPointer.new(:double)
 
       set_defaults
 
@@ -41,16 +63,7 @@ module Typhoeus
     end
 
     def set_response_handlers
-      @body_write_callback = proc {|stream, size, num, object|
-        @response_body << stream.read_string(size * num)
-        size * num
-      }
       set_option(:writefunction, @body_write_callback)
-
-      @header_write_callback = proc {|stream, size, num, object|
-        @response_header << stream.read_string(size * num)
-        size * num
-      }
       set_option(:headerfunction, @header_write_callback)
     end
 
@@ -177,17 +190,6 @@ module Typhoeus
       if @method == :put
         @request_body_read = 0
         set_option(:infilesize, Utils.bytesize(@request_body))
-
-        @read_callback = proc {|stream, size, num, object|
-          size = size * num
-          left = Utils.bytesize(@request_body) - @request_body_read
-          size = left if size > left
-          if size > 0
-            stream.write_string(Utils.byteslice(@request_body, @request_body_read, size), size)
-            @request_body_read += size
-          end
-          size
-        }
         set_option(:readfunction, @read_callback)
       else
         self.post_data = request_body
@@ -380,25 +382,22 @@ module Typhoeus
     end
 
     def get_info_string(option)
-      string = FFI::MemoryPointer.new(:pointer)
-      if Curl.easy_getinfo(@handle, option, string) == :ok
-        string.read_pointer.read_string
+      if Curl.easy_getinfo(@handle, option, @string_ptr) == :ok
+        @string_ptr.read_pointer.read_string
       else nil
       end
     end
 
     def get_info_long(option)
-      long = FFI::MemoryPointer.new(:long)
-      if Curl.easy_getinfo(@handle, option, long) == :ok
-        long.read_long
+      if Curl.easy_getinfo(@handle, option, @long_ptr) == :ok
+        @long_ptr.read_long
       else nil
       end
     end
 
     def get_info_double(option)
-      double = FFI::MemoryPointer.new(:double)
-      if Curl.easy_getinfo(@handle, option, double) == :ok
-        double.read_double
+      if Curl.easy_getinfo(@handle, option, @double_ptr) == :ok
+        @double_ptr.read_double
       else nil
       end
     end

@@ -10,6 +10,13 @@ module Typhoeus
       @running = 0
       @easy_handles = []
 
+      @timeout = FFI::MemoryPointer.new(:long)
+      @timeval = Curl::Timeval.new
+      @fd_read = Curl::FDSet.new
+      @fd_write = Curl::FDSet.new
+      @fd_excep = Curl::FDSet.new
+      @max_fd = FFI::MemoryPointer.new(:int)
+
       ObjectSpace.define_finalizer(self, self.class.finalizer(self))
     end
 
@@ -44,10 +51,9 @@ module Typhoeus
         run
         while @running > 0
           # get the curl-suggested timeout
-          timeout = FFI::MemoryPointer.new(:long)
-          code = Curl.multi_timeout(@handle, timeout)
+          code = Curl.multi_timeout(@handle, @timeout)
           raise RuntimeError.new("an error occured getting the timeout: #{code}: #{Curl.multi_strerror(code)}") if code != :ok
-          timeout = timeout.read_long
+          timeout = @timeout.read_long
           if timeout == 0 # no delay
             run
             next
@@ -56,23 +62,21 @@ module Typhoeus
           end
 
           # load the fd sets from the multi handle
-          fd_read = Curl::FDSet.new
-          fd_write = Curl::FDSet.new
-          fd_excep = Curl::FDSet.new
-          max_fd = FFI::MemoryPointer.new(:int)
-          code = Curl.multi_fdset(@handle, fd_read, fd_write, fd_excep, max_fd)
+          @fd_read.clear
+          @fd_write.clear
+          @fd_excep.clear
+          code = Curl.multi_fdset(@handle, @fd_read, @fd_write, @fd_excep, @max_fd)
           raise RuntimeError.new("an error occured getting the fdset: #{code}: #{Curl.multi_strerror(code)}") if code != :ok
 
-          max_fd = max_fd.read_int
+          max_fd = @max_fd.read_int
           if max_fd == -1
             # curl is doing something special so let it run for a moment
             sleep(0.001)
           else
-            timeval = Curl::Timeval.new
-            timeval[:sec] = timeout / 1000
-            timeval[:usec] = (timeout * 1000) % 1000000
+            @timeval[:sec] = timeout / 1000
+            @timeval[:usec] = (timeout * 1000) % 1000000
 
-            code = Curl.select(max_fd + 1, fd_read, fd_write, fd_excep, timeval)
+            code = Curl.select(max_fd + 1, @fd_read, @fd_write, @fd_excep, @timeval)
             raise RuntimeError.new("error on thread select: #{FFI.errno}") if code < 0
           end
 

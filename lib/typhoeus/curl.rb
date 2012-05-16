@@ -385,8 +385,12 @@ module Typhoeus
       if Curl.windows?
         layout :fd_count, :u_int,
                :fd_array, [:u_int, 64] # 2048 FDs
+
+        def clear; self[:fd_count] = 0; end
       else
         layout :fds_bits, [:long, FD_SETSIZE / FFI::Type::LONG.size]
+
+        def clear; super; end
       end
     end
 
