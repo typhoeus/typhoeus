@@ -61,6 +61,26 @@ module Typhoeus
       def response_code
         get_info_long(:response_code)
       end
+
+      def timed_out?
+        @curl_return_code == :operation_timedout
+      end
+
+      def curl_return_code
+        Curl::EasyCode[@curl_return_code]
+      end
+
+      def curl_error_message(code = @curl_return_code)
+        code ? Curl.easy_strerror(code) : nil
+      end
+
+      def curl_version
+        Curl.version
+      end
+
+      def supports_zlib?
+        !!(curl_version.match(/zlib/))
+      end
     end
   end
 end

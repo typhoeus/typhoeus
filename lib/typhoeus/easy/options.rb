@@ -2,8 +2,8 @@ module Typhoeus
   module EasyFu
     module Options
       def set_response_handlers
-        set_option(:writefunction, @body_write_callback)
-        set_option(:headerfunction, @header_write_callback)
+        set_option(:writefunction, body_write_callback)
+        set_option(:headerfunction, header_write_callback)
       end
 
       def encoding=(encoding)
@@ -48,7 +48,7 @@ module Typhoeus
         if method == :put
           @request_body_read = 0
           set_option(:infilesize, Utils.bytesize(@request_body))
-          set_option(:readfunction, @read_callback)
+          set_option(:readfunction, read_callback)
         else
           self.post_data = request_body
         end
@@ -92,7 +92,7 @@ module Typhoeus
           Curl.easy_setopt_string(handle, option, value.to_s)
         when Integer
           Curl.easy_setopt_long(handle, option, value)
-        when Proc, FFI::Function
+        when Proc, ::FFI::Function
           Curl.easy_setopt_callback(handle, option, value)
         when Typhoeus::Form
           Curl.easy_setopt(handle, option, value.first.read_pointer)
