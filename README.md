@@ -216,6 +216,38 @@ on\_complete handler of the request object.
       @cache.get(request.cache_key) rescue nil
     end
 
+**Direct Stubbing**
+
+Hydra allows you to stub out specific urls and patterns to avoid hitting
+remote servers while testing.
+
+    hydra = Typhoeus::Hydra.new
+    response = Response.new(:code => 200, :headers => "", :body => "{'name' : 'paul'}", :time => 0.3)
+    hydra.stub(:get, "http://localhost:3000/users/1").and_return(response)
+
+    request = Typhoeus::Request.new("http://localhost:3000/users/1")
+    request.on_complete do |response|
+      JSON.parse(response.body)
+    end
+    hydra.queue request
+    hydra.run
+
+The queued request will hit the stub. The on\_complete handler will be called
+and will be passed the response object. You can also specify a regex to match
+urls.
+
+    hydra.stub(:get, /http\:\/\/localhost\:3000\/users\/.*/).and_return(response)
+    # any requests for a user will be stubbed out with the pre built response.
+
+**The Singleton**
+
+All of the quick requests are done using the singleton hydra object. If you
+want to enable caching or stubbing on the quick requests, set those options on
+the singleton.
+
+    hydra = Typhoeus::Hydra.hydra
+    hydra.stub(:get, "http://localhost:3000/users")
+
 **Timeouts**
 
 No exceptions are raised on HTTP timeouts. You can check whether a request
