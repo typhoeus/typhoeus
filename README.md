@@ -398,8 +398,9 @@ Do this:
 
 (The MIT License)
 
-Copyright © 2012:
-[Hans Hasselberg](http://www.hans.io)
+Copyright © 2009-2010 Paul Dix
+Copyright © 2011 David Balatero
+Copyright © 2012 [Hans Hasselberg](http://www.hans.io)
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
