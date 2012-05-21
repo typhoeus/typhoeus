@@ -17,12 +17,13 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   s.rubyforge_project         = '[none]'
 
-  s.add_dependency('ffi', ['>= 0'])
-  s.add_dependency('mime-types', ['>= 0'])
+  s.add_dependency('ffi', ['~> 1.0'])
+  s.add_dependency('mime-types', ['~> 1.18'])
+  s.add_dependency('activesupport', ['~> 3.2'])
 
-  s.add_development_dependency('sinatra')
-  s.add_development_dependency('json')
-  s.add_development_dependency('rake')
+  s.add_development_dependency('sinatra', ['~> 1.3'])
+  s.add_development_dependency('json', ['~> 1.7'])
+  s.add_development_dependency('rake', ['~> 0.9'])
   s.add_development_dependency("mocha", ["~> 0.10"])
   s.add_development_dependency("rspec", ["~> 2.10"])
   s.add_development_dependency("guard-rspec", ["~> 0.6"])
