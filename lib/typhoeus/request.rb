@@ -38,7 +38,6 @@ module Typhoeus
       :proxy_type
     ]
 
-    attr_reader   :url
     attr_accessor *ACCESSOR_OPTIONS
 
     # Initialize a new Request
@@ -72,6 +71,7 @@ module Typhoeus
     # ** +:auth_method
     #
     def initialize(url, options = {})
+      @url = url
       @method           = options[:method] || :get
       @params           = options[:params]
       @body             = options[:body]
@@ -107,14 +107,6 @@ module Typhoeus
       @password         = options[:password]
       @auth_method      = options[:auth_method]
 
-      if @method == :post
-        @url = url
-      else
-        @url = @params ? "#{url}?#{params_string}" : url
-      end
-
-      @parsed_uri = URI.parse(@url)
-
       @on_complete      = nil
       @after_complete   = nil
       @handled_response = nil
@@ -123,11 +115,25 @@ module Typhoeus
     LOCALHOST_ALIASES = %w[ localhost 127.0.0.1 0.0.0.0 ]
 
     def localhost?
-      LOCALHOST_ALIASES.include?(@parsed_uri.host)
+      LOCALHOST_ALIASES.include?(parsed_uri.host)
     end
 
     def user_agent
       headers['User-Agent']
+    end
+
+    def url
+      if @method == :post
+        @url
+      else
+        url = "#{@url}?#{params_string}"
+        url += "&#{URI.escape(@body)}" if @body
+        url.gsub("?&", "?").gsub(/\?$/, '')
+      end
+    end
+
+    def parsed_uri
+      @parsed_uri ||= URI.parse(@url)
     end
 
     def host
@@ -141,10 +147,11 @@ module Typhoeus
     end
 
     def host_domain
-      @parsed_uri.host
+      parsed_uri.host
     end
 
     def params_string
+      return nil unless params
       traversal = Typhoeus::Utils.traverse_params_hash(params)
       Typhoeus::Utils.traversal_to_param_string(traversal)
     end
