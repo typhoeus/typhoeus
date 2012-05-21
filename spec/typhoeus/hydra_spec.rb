@@ -411,7 +411,7 @@ describe Typhoeus::Hydra::Stubbing do
                         and_return(@response)
 
       call_count = 0
-      request = Typhoeus::Request.new("http://localhost:3000/asdf", :user_agent => 'test')
+      request = Typhoeus::Request.new("http://localhost:3000/asdf")
       request.on_complete do |response|
         call_count += 1
       end
