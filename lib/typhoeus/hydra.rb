@@ -120,6 +120,8 @@ module Typhoeus
       @on_complete = proc
     end
 
+    private
+
     def get_from_cache_or_queue(request)
       if @cache_getter
         val = @cache_getter.call(request)
@@ -134,7 +136,6 @@ module Typhoeus
         @multi.add(get_easy_object(request))
       end
     end
-    private :get_from_cache_or_queue
 
     def get_easy_object(request)
       @running_requests += 1
@@ -194,19 +195,16 @@ module Typhoeus
       easy.set_headers
       easy
     end
-    private :get_easy_object
 
     def queue_next
       @running_requests -= 1
       queue(@queued_requests.shift) unless @queued_requests.empty?
     end
-    private :queue_next
 
     def release_easy_object(easy)
       easy.reset
       @easy_pool.push easy
     end
-    private :release_easy_object
 
     def handle_request(request, response, live_request = true)
       request.response = response
@@ -227,7 +225,6 @@ module Typhoeus
         end
       end
     end
-    private :handle_request
 
     def response_from_easy(easy, request)
       Response.new(:code                => easy.response_code,
@@ -245,6 +242,5 @@ module Typhoeus
                    :curl_error_message => easy.curl_error_message,
                    :request             => request)
     end
-    private :response_from_easy
   end
 end
