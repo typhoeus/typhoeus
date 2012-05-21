@@ -5,6 +5,7 @@
 * FFI integration (Daniel Cavanagh #issue)
 * Refactor upload code (Marnen #issue)
 * Fix travis-ci build (Ezekiel Templin #issue)
+* Remove user_agent shortcut
 
 0.3.3
 -----
