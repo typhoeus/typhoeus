@@ -1,7 +1,10 @@
 0.4.0
 -----
-* Deprecated RemoteMethod deleted
 * Deprecated User Agent setter removed
+* Allow cache key basis overwrite (NAME #issue)
+* FFI integration (Daniel Cavanagh #issue)
+* Refactor upload code (Marnen #issue)
+* Fix travis-ci build (Ezekiel Templin #issue)
 
 0.3.3
 -----
