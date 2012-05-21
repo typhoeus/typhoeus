@@ -43,6 +43,7 @@ module Typhoeus
         set_option(:nosignal, 1)
         set_option(:timeout_ms, milliseconds)
       end
+
       def request_body=(request_body)
         @request_body = request_body
         if method == :put
