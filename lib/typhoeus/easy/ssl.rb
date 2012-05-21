@@ -6,12 +6,8 @@ module Typhoeus
       end
 
       module ClassMethods
-        def ssl_versions
-          @ssl_versions ||= Curl::SSLVersion.to_hash
-        end
-
         def valid_ssl_version(version)
-          ssl_versions.key?(version.to_sym)
+          Typhoeus::Easy::SSL_VERSIONS.key?(version.to_sym)
         end
       end
 
@@ -23,7 +19,7 @@ module Typhoeus
         raise "Invalid SSL version: '#{version}' supplied! Please supply one as listed in Typhoeus::Easy::SSL_VERSIONS" unless self.class.valid_ssl_version(version)
         @ssl_version = version
 
-        set_option(:sslversion, self.class.ssl_versions[version])
+        set_option(:sslversion, Typhoeus::Easy::SSL_VERSIONS[version])
       end
 
       def disable_ssl_peer_verification

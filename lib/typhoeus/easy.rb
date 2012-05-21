@@ -16,6 +16,17 @@ module Typhoeus
     include Typhoeus::EasyFu::Callbacks
     include Typhoeus::EasyFu::Infos
 
+    OPTION_VALUES = Curl::Option.to_hash.dup
+    Curl::Option.to_hash.each {|key, value| OPTION_VALUES["CURLOPT_#{key.to_s.upcase}".to_sym] = value }
+    INFO_VALUES = Curl::Info.to_hash.dup
+    Curl::Info.to_hash.each {|key, value| INFO_VALUES["CURLINFO_#{key.to_s.upcase}".to_sym] = value }
+    AUTH_TYPES = Curl::Auth.to_hash.dup
+    Curl::Auth.to_hash.each {|key, value| AUTH_TYPES["CURLAUTH_#{key.to_s.upcase}".to_sym] = value }
+    PROXY_TYPES = Curl::Proxy.to_hash.dup
+    Curl::Proxy.to_hash.each {|key, value| PROXY_TYPES["CURLPROXY_#{key.to_s.upcase}".to_sym] = value }
+    SSL_VERSIONS = Curl::SSLVersion.to_hash.dup
+    Curl::SSLVersion.to_hash.each {|key, value| SSL_VERSIONS["CURL_SSLVERSION_#{key.to_s.upcase}".to_sym] = value }
+
     attr_reader :url, :header_list
     attr_accessor :start_time
 

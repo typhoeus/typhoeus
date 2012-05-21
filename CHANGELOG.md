@@ -1,5 +1,10 @@
+0.4.0
+-----
+* Deprecated RemoteMethod deleted
+* Deprecated User Agent setter removed
+
 0.3.3
---------------
+-----
 * Make sure to call the Easy::failure callback on all non-success http response codes, even invalid ones. [balexis]
 * Use bytesize instead of length to determine Content-Length [dlamacchia]
 * Added SSL version option to Easy/Request [michelbarbosa/dbalatero]

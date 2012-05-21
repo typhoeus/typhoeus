@@ -5,7 +5,7 @@ describe Typhoeus::Easy do
   let(:easy) { Typhoeus::Easy.new }
 
   describe "#ssl_version=" do
-    Typhoeus::Easy.ssl_versions.keys.each do |key|
+    Typhoeus::Easy::SSL_VERSIONS.keys.each do |key|
       context "when #{key}" do
         it "can be set and get" do
           easy.ssl_version = key
@@ -54,7 +54,7 @@ describe Typhoeus::Easy do
       end
 
       it "should allow to set the SSL version to be used" do
-        Typhoeus::Easy.ssl_versions.each do |k, v|
+        Typhoeus::Easy::SSL_VERSIONS.each do |k, v|
           @easy.ssl_version = k
           @easy.perform
           @easy.response_code.should == 200
@@ -183,7 +183,7 @@ describe Typhoeus::Easy do
         e.url = "http://localhost:3001/auth_basic/foo/bar"
         e.method = :get
         e.perform
-        e.auth_methods.should == Typhoeus::Easy.auth_types[:basic]
+        e.auth_methods.should == Typhoeus::Easy::AUTH_TYPES[:basic]
       end
 
       it "should allow to set authentication method" do
