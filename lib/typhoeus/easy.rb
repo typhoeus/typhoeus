@@ -32,10 +32,7 @@ module Typhoeus
 
     def initialize
       Curl.init
-
-      set_response_handlers
-      set_defaults
-
+      reset(true)
       ObjectSpace.define_finalizer(self, self.class.finalizer(self))
     end
 
@@ -53,12 +50,6 @@ module Typhoeus
 
     def response_header
       @response_header ||= ""
-    end
-
-    def set_defaults
-      # Enable encoding/compression support
-      self.encoding = ''
-      self.ssl_version = :default
     end
 
     def headers=(hash)
@@ -96,21 +87,25 @@ module Typhoeus
       resp_code
     end
 
-    def reset
-      @response_code = 0
-      @response_header = ""
-      @response_body = ""
-      @request_body = ""
+    def reset(fresh = nil)
+      unless fresh
+        @response_code = 0
+        @response_header = ""
+        @response_body = ""
+        @request_body = ""
 
-      if @header_list
-        Curl.slist_free_all(@header_list)
-        @header_list = nil
+        if @header_list
+          Curl.slist_free_all(@header_list)
+          @header_list = nil
+        end
+
+        Curl.easy_reset(handle)
       end
 
-      Curl.easy_reset(handle)
-      set_response_handlers
-
-      set_defaults
+      self.write_function = body_write_callback
+      self.header_function = header_write_callback
+      self.encoding = ''
+      self.ssl_version = :default
     end
 
     def curl_return_code=(code)

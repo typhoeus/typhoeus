@@ -1,8 +1,11 @@
 module Typhoeus
   module EasyFu
     module Options
-      def set_response_handlers
+      def write_function=(callback)
         set_option(:writefunction, body_write_callback)
+      end
+
+      def header_function=(callback)
         set_option(:headerfunction, header_write_callback)
       end
 
