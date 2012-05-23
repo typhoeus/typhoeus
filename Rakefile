@@ -15,7 +15,6 @@ task :start_test_servers do
   require 'spec/support/typhoeus_localhost_server'
   begin
     TyphoeusLocalhostServer.start_servers!(:rake)
-    sleep
   rescue Exception
   end
 end
