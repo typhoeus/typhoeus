@@ -33,7 +33,7 @@ module Typhoeus
       @effective_url         = params[:effective_url]
       @primary_ip            = params[:primary_ip]
       @mock                  = params[:mock] || false  # default
-      @headers_hash          = NormalizedHeaderHash.new(params[:headers_hash]) if params[:headers_hash]
+      @headers_hash          = Header.new(params[:headers_hash]) if params[:headers_hash]
     end
 
     # Returns true if this is a mock response.
@@ -47,7 +47,7 @@ module Typhoeus
 
     def headers_hash
       @headers_hash ||= begin
-        headers.split("\n").map {|o| o.strip}.inject(Typhoeus::NormalizedHeaderHash.new) do |hash, o|
+        headers.split("\n").map {|o| o.strip}.inject(Typhoeus::Header.new) do |hash, o|
           if o.empty? || o =~ /^HTTP\/[\d\.]+/
             hash
           else
@@ -55,7 +55,7 @@ module Typhoeus
             key = o.slice(0, i)
             value = o.slice(i + 1, o.size)
             value = value.strip unless value.nil?
-            if hash.has_key? key
+            if hash.key? key
               hash[key] = [hash[key], value].flatten
             else
               hash[key] = value

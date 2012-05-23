@@ -12,26 +12,12 @@ end
 
 desc "Start up the test servers"
 task :start_test_servers do
-  require 'rbconfig'
-  require File.expand_path('../spec/support/spawn', __FILE__)
-
-  puts "Starting 3 test servers"
-
-  pids = []
-  [3000, 3001, 3002].each do |port|
-    pids << spawn(RbConfig::CONFIG['ruby_install_name'], 'spec/servers/app.rb', '-p', port.to_s)
+  require 'spec/support/typhoeus_localhost_server'
+  begin
+    TyphoeusLocalhostServer.start_servers!(:rake)
+    sleep
+  rescue Exception
   end
-
-  at_exit do
-    pids.each do |pid|
-      puts "Killing pid #{pid}"
-      Process.kill("KILL", pid)
-    end
-  end
-
-  # Wait for kill.
-  trap("TERM") { exit } # for jruby to handle kill properly
-  sleep
 end
 
 desc "Build Typhoeus and run all the tests."

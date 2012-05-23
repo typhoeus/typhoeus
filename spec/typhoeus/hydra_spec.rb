@@ -91,23 +91,16 @@ describe Typhoeus::Hydra do
     hydra     = Typhoeus::Hydra.new( :max_concurrency => 1 )
     completed = 0
 
-    10.times {
-        |i|
-
+    10.times do |i|
         req = Typhoeus::Request.new( urls[ i % urls.size], :params => { :cnt => i } )
-        req.on_complete {
-            |res|
+        req.on_complete do |res|
             completed += 1
             hydra.abort if completed == 5
-        }
-
+        end
         hydra.queue( req )
-    }
-
+    end
     hydra.run
-
-    # technically this should be '== 6' but I don't trust it...
-    completed.should < 10
+    completed.should == 6
   end
 
   it "has a cache_setter proc" do
@@ -418,7 +411,7 @@ describe Typhoeus::Hydra::Stubbing do
                         and_return(@response)
 
       call_count = 0
-      request = Typhoeus::Request.new("http://localhost:3000/asdf", :user_agent => 'test')
+      request = Typhoeus::Request.new("http://localhost:3000/asdf")
       request.on_complete do |response|
         call_count += 1
       end
@@ -488,9 +481,6 @@ describe Typhoeus::Hydra::Callbacks do
                                           :headers => "whatever",
                                           :body => "not found",
                                           :time => 0.1)
-        hydra.stub(:get, 'http://localhost:3000').
-          and_return(response)
-
         hydra.queue(request)
         hydra.run
 

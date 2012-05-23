@@ -7,6 +7,7 @@ module Typhoeus
       :params,
       :body,
       :headers,
+      :cache_key_basis,
       :connect_timeout,
       :timeout,
       :user_agent,
@@ -37,7 +38,6 @@ module Typhoeus
       :proxy_type
     ]
 
-    attr_reader   :url
     attr_accessor *ACCESSOR_OPTIONS
 
     # Initialize a new Request
@@ -69,9 +69,9 @@ module Typhoeus
     # ** +:username
     # ** +:password
     # ** +:auth_method
-    # ** +:user_agent+ : user agent (string) - DEPRECATED
     #
     def initialize(url, options = {})
+      @url = url
       @method           = options[:method] || :get
       @params           = options[:params]
       @body             = options[:body]
@@ -80,8 +80,8 @@ module Typhoeus
       @interface        = options[:interface]
       @headers          = options[:headers] || {}
 
-      if options.has_key?(:user_agent)
-        self.user_agent = options[:user_agent]
+      if options.key?(:user_agent)
+        @headers['User-Agent'] = options[:user_agent]
       end
 
       @cache_timeout    = safe_to_i(options[:cache_timeout])
@@ -107,14 +107,6 @@ module Typhoeus
       @password         = options[:password]
       @auth_method      = options[:auth_method]
 
-      if @method == :post
-        @url = url
-      else
-        @url = @params ? "#{url}?#{params_string}" : url
-      end
-
-      @parsed_uri = URI.parse(@url)
-
       @on_complete      = nil
       @after_complete   = nil
       @handled_response = nil
@@ -123,16 +115,25 @@ module Typhoeus
     LOCALHOST_ALIASES = %w[ localhost 127.0.0.1 0.0.0.0 ]
 
     def localhost?
-      LOCALHOST_ALIASES.include?(@parsed_uri.host)
+      LOCALHOST_ALIASES.include?(parsed_uri.host)
     end
 
     def user_agent
       headers['User-Agent']
     end
 
-    def user_agent=(value)
-      puts "DEPRECATED: Typhoeus::Request#user_agent=(value). This will be removed in a later version."
-      headers['User-Agent'] = value
+    def url
+      if @method == :post
+        @url
+      else
+        url = "#{@url}?#{params_string}"
+        url += "&#{URI.escape(@body)}" if @body
+        url.gsub("?&", "?").gsub(/\?$/, '')
+      end
+    end
+
+    def parsed_uri
+      @parsed_uri ||= URI.parse(@url)
     end
 
     def host
@@ -146,10 +147,11 @@ module Typhoeus
     end
 
     def host_domain
-      @parsed_uri.host
+      parsed_uri.host
     end
 
     def params_string
+      return nil unless params
       traversal = Typhoeus::Utils.traverse_params_hash(params)
       Typhoeus::Utils.traversal_to_param_string(traversal)
     end
@@ -208,7 +210,7 @@ module Typhoeus
     end
 
     def cache_key
-      Digest::SHA1.hexdigest(url)
+      Digest::SHA1.hexdigest(cache_key_basis || url)
     end
 
     def self.run(url, params)

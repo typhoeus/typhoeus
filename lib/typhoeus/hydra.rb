@@ -64,7 +64,7 @@ module Typhoeus
         @queued_requests << request
       else
         if request.method == :get
-          if @memoize_requests && @memoized_requests.has_key?(request.url)
+          if @memoize_requests && @memoized_requests.key?(request.url)
             if response = @retrieved_from_cache[request.url]
               request.response = response
               request.call_handlers
@@ -161,9 +161,9 @@ module Typhoeus
 
       easy.url          = request.url
       easy.method       = request.method
-      easy.params       = request.params  if request.method == :post && !request.params.nil?
+      easy.params       = request.params  if request.method == :post && request.params.present?
       easy.headers      = request.headers if request.headers
-      easy.request_body = request.body    if request.body
+      easy.request_body = request.body    if request.method == :post && request.body.present?
       easy.timeout      = request.timeout if request.timeout
       easy.connect_timeout = request.connect_timeout if request.connect_timeout
       easy.interface       = request.interface if request.interface

@@ -247,10 +247,10 @@ describe Typhoeus::HydraMock do
     describe "post body matching" do
       it "should not bother matching on body if we don't turn the option on" do
         request = Typhoeus::Request.new("http://localhost:3000",
-                                        :method => :get,
+                                        :method => :post,
                                         :headers => { 'user-agent' => 'test' },
                                         :body => "fdsafdsa")
-        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
+        mock = Typhoeus::HydraMock.new("http://localhost:3000", :post,
                                        :headers => { 'user-agent' => 'test' })
         mock.matches?(request).should be_true
       end
@@ -275,10 +275,10 @@ describe Typhoeus::HydraMock do
 
       it "should match on optional body parameter" do
         request = Typhoeus::Request.new("http://localhost:3000",
-                                        :method => :get,
+                                        :method => :post,
                                         :headers => { 'user-agent' => 'test' },
                                         :body => "fdsafdsa")
-        mock = Typhoeus::HydraMock.new("http://localhost:3000", :get,
+        mock = Typhoeus::HydraMock.new("http://localhost:3000", :post,
                                        :body => 'fdsafdsa',
                                        :headers => {
                                          'User-Agent' => 'test'

@@ -7,8 +7,8 @@ describe Typhoeus::Form do
         :name => "John Smith",
         :age => "29"
       })
-      form.should_receive(:formadd_param).with("name", "John Smith")
-      form.should_receive(:formadd_param).with("age", "29")
+      form.expects(:formadd_param).with("name", "John Smith")
+      form.expects(:formadd_param).with("age", "29")
       form.process!
     end
 
@@ -22,11 +22,11 @@ describe Typhoeus::Form do
         :name => "John Smith",
         :age => "29"
       })
-      form.should_receive(:formadd_param).with("attributes[eyes]", "brown")
-      form.should_receive(:formadd_param).with("attributes[hair]", "green")
-      form.should_receive(:formadd_param).with("attributes[teeth]", "white")
-      form.should_receive(:formadd_param).with("name", "John Smith")
-      form.should_receive(:formadd_param).with("age", "29")
+      form.expects(:formadd_param).with("attributes[eyes]", "brown")
+      form.expects(:formadd_param).with("attributes[hair]", "green")
+      form.expects(:formadd_param).with("attributes[teeth]", "white")
+      form.expects(:formadd_param).with("name", "John Smith")
+      form.expects(:formadd_param).with("age", "29")
       form.process!
     end
 
@@ -36,11 +36,11 @@ describe Typhoeus::Form do
         :name => "John Smith",
         :age => "29"
       })
-      form.should_receive(:formadd_param).with("colors", "brown")
-      form.should_receive(:formadd_param).with("colors", "green")
-      form.should_receive(:formadd_param).with("colors", "white")
-      form.should_receive(:formadd_param).with("name", "John Smith")
-      form.should_receive(:formadd_param).with("age", "29")
+      form.expects(:formadd_param).with("colors", "brown")
+      form.expects(:formadd_param).with("colors", "green")
+      form.expects(:formadd_param).with("colors", "white")
+      form.expects(:formadd_param).with("name", "John Smith")
+      form.expects(:formadd_param).with("age", "29")
       form.process!
     end
 
@@ -49,7 +49,7 @@ describe Typhoeus::Form do
         form = Typhoeus::Form.new(
           :file => File.open(File.expand_path(File.dirname(__FILE__) + "/../fixtures/placeholder.txt"), "r")
         )
-        form.should_receive(:formadd_file).with("file", "placeholder.txt", "text/plain", anything)
+        form.expects(:formadd_file).with("file", "placeholder.txt", "text/plain", anything)
         form.process!
       end
 
@@ -58,8 +58,8 @@ describe Typhoeus::Form do
           :text_file => File.open(File.expand_path(File.dirname(__FILE__) + "/../fixtures/placeholder.txt"), "r"),
           :gif_file => File.open(File.expand_path(File.dirname(__FILE__) + "/../fixtures/placeholder.gif"), "r")
         )
-        form.should_receive(:formadd_file).with("gif_file", "placeholder.gif", "image/gif", anything)
-        form.should_receive(:formadd_file).with("text_file", "placeholder.txt", "text/plain", anything)
+        form.expects(:formadd_file).with("gif_file", "placeholder.gif", "image/gif", anything)
+        form.expects(:formadd_file).with("text_file", "placeholder.txt", "text/plain", anything)
         form.process!
       end
 
@@ -68,7 +68,7 @@ describe Typhoeus::Form do
         form = Typhoeus::Form.new(
           :file => tempfile
         )
-        form.should_receive(:formadd_file).with("file", File.basename(tempfile.path), "application/octet-stream", anything)
+        form.expects(:formadd_file).with("file", File.basename(tempfile.path), "application/octet-stream", anything)
         form.process!
       end
 
@@ -77,7 +77,7 @@ describe Typhoeus::Form do
         form = Typhoeus::Form.new(
           :file => File.open(File.expand_path(File.dirname(__FILE__) + "/../fixtures/placeholder.txt"), "r")
         )
-        form.should_receive(:formadd_file).with("file", "placeholder.ukn", "application/octet-stream", anything)
+        form.expects(:formadd_file).with("file", "placeholder.ukn", "application/octet-stream", anything)
         form.process!
       end
     end
