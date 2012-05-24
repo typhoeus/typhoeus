@@ -401,6 +401,7 @@ module Typhoeus
 
     callback :callback, [:pointer, :size_t, :size_t, :pointer], :size_t
 
+    ffi_lib_flags :now, :global
     ffi_lib 'libcurl'
 
     attach_function :global_init, :curl_global_init, [:long], :int
