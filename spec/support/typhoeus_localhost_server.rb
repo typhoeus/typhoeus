@@ -12,36 +12,19 @@ class TyphoeusLocalhostServer
     attr_accessor :pid
 
     def start_servers!(mode = :spec)
-      return if servers_running?
-
-      if self.pid = fork
-        start_parent if mode == :spec
-        wait_for_servers_to_start
-      else
-        start_children(mode)
+      if servers_running?
+        puts "Servers are up!"
+        return
       end
-    end
 
-  private
-
-    def start_parent
-      # Cleanup.
-      at_exit do
-        Process.kill('TERM', self.pid) if self.pid
-      end
-    end
-
-    def start_children(mode)
       puts "Starting 3 test servers"
-      silence_sinatra = mode == :spec
+      silence_sinatra = (mode == :spec and RUBY_PLATFORM != 'java' and RbConfig::CONFIG['ruby_host_os'] !~ /mingw|mswin|bccwin/)
       pids = []
       PORTS.each do |port|
-        if pid = fork
-          pids << pid
-        elsif silence_sinatra
-          exec("exec ruby spec/servers/app.rb -p #{port.to_s} >/dev/null 2>&1")
+        pids << if silence_sinatra
+          spawn("exec #{RbConfig::CONFIG['ruby_install_name']} spec/servers/app.rb -p #{port.to_s} >/dev/null 2>&1")
         else
-          exec("ruby", "spec/servers/app.rb", "-p", port.to_s)
+          spawn(RbConfig::CONFIG['ruby_install_name'], "spec/servers/app.rb", "-p", port.to_s)
         end
       end
 
@@ -51,9 +34,12 @@ class TyphoeusLocalhostServer
           Process.kill("KILL", pid)
         end
       end
+      trap('TERM', 'EXIT')
+
+      wait_for_servers_to_start
 
       # Wait for kill.
-      sleep
+      sleep if mode != :spec
     end
 
     def servers_running?
@@ -74,7 +60,7 @@ class TyphoeusLocalhostServer
     def wait_for_servers_to_start
       puts "Waiting for servers to start..."
 
-      Timeout::timeout(10) do
+      Timeout::timeout(30) do
         loop do
           sleep 0.5 # give the forked server processes some time to start
 
