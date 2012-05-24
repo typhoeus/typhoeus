@@ -1,6 +1,6 @@
 module Typhoeus
   module EasyFu
-    module FFI
+    module FFIHelper
       def self.included(base)
         base.extend(ClassMethods)
       end

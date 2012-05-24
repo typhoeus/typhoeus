@@ -1,4 +1,4 @@
-require 'typhoeus/easy/ffi'
+require 'typhoeus/easy/ffi_helper'
 require 'typhoeus/easy/options'
 require 'typhoeus/easy/ssl'
 require 'typhoeus/easy/auth'
@@ -8,7 +8,7 @@ require 'typhoeus/easy/infos'
 
 module Typhoeus
   class Easy
-    include Typhoeus::EasyFu::FFI
+    include Typhoeus::EasyFu::FFIHelper
     include Typhoeus::EasyFu::Options
     include Typhoeus::EasyFu::SSL
     include Typhoeus::EasyFu::Auth
