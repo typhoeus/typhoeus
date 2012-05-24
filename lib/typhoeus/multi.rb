@@ -10,12 +10,12 @@ module Typhoeus
       @running = 0
       @easy_handles = []
 
-      @timeout = FFI::MemoryPointer.new(:long)
+      @timeout = ::FFI::MemoryPointer.new(:long)
       @timeval = Curl::Timeval.new
       @fd_read = Curl::FDSet.new
       @fd_write = Curl::FDSet.new
       @fd_excep = Curl::FDSet.new
-      @max_fd = FFI::MemoryPointer.new(:int)
+      @max_fd = ::FFI::MemoryPointer.new(:int)
 
       ObjectSpace.define_finalizer(self, self.class.finalizer(self))
     end
@@ -77,7 +77,7 @@ module Typhoeus
             @timeval[:usec] = (timeout * 1000) % 1000000
 
             code = Curl.select(max_fd + 1, @fd_read, @fd_write, @fd_excep, @timeval)
-            raise RuntimeError.new("error on thread select: #{FFI.errno}") if code < 0
+            raise RuntimeError.new("error on thread select: #{::FFI.errno}") if code < 0
           end
 
           run
@@ -92,14 +92,14 @@ module Typhoeus
 
     # check for finished easy handles and remove from the multi handle
     def read_info
-      msgs_left = FFI::MemoryPointer.new(:int)
+      msgs_left = ::FFI::MemoryPointer.new(:int)
       while not (msg = Curl.multi_info_read(@handle, msgs_left)).null?
         next if msg[:code] != :done
 
         easy = @easy_handles.find {|easy| easy.handle == msg[:easy_handle] }
         next if not easy
 
-        response_code = FFI::MemoryPointer.new(:long)
+        response_code = ::FFI::MemoryPointer.new(:long)
         response_code.write_long(-1)
         Curl.easy_getinfo(easy.handle, :response_code, response_code)
         response_code = response_code.read_long
@@ -137,7 +137,7 @@ module Typhoeus
     end
 
     def do_perform
-      running = FFI::MemoryPointer.new(:int)
+      running = ::FFI::MemoryPointer.new(:int)
       code = Curl.multi_perform(@handle, running)
       @running = running.read_int
       code

@@ -7,8 +7,8 @@ module Typhoeus
 
     def initialize(params = {})
       @params = params
-      @first = FFI::MemoryPointer.new(:pointer)
-      @last = FFI::MemoryPointer.new(:pointer)
+      @first = ::FFI::MemoryPointer.new(:pointer)
+      @last = ::FFI::MemoryPointer.new(:pointer)
 
       ObjectSpace.define_finalizer(self, self.class.finalizer(self))
     end

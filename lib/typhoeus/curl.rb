@@ -10,7 +10,7 @@ module Typhoeus
       !(RbConfig::CONFIG['host_os'] !~ /mingw|mswin|bccwin/)
     end
 
-    extend FFI::Library
+    extend ::FFI::Library
 
     VERSION_NOW = 3
 
@@ -367,18 +367,18 @@ module Typhoeus
 
     MsgCode = enum :msg_code, [:none, :done, :last]
 
-    class MsgData < FFI::Union
+    class MsgData < ::FFI::Union
       layout :whatever, :pointer,
              :code, :easy_code
     end
 
-    class Msg < FFI::Struct
+    class Msg < ::FFI::Struct
       layout :code, :msg_code,
              :easy_handle, :pointer,
              :data, MsgData
     end
 
-    class FDSet < FFI::Struct
+    class FDSet < ::FFI::Struct
       # XXX how does this work on non-windows? how can curl know the new size...
       FD_SETSIZE = 524288 # set a higher maximum number of fds. this has never applied to windows, so just use the default there
 
@@ -388,13 +388,13 @@ module Typhoeus
 
         def clear; self[:fd_count] = 0; end
       else
-        layout :fds_bits, [:long, FD_SETSIZE / FFI::Type::LONG.size]
+        layout :fds_bits, [:long, FD_SETSIZE / ::FFI::Type::LONG.size]
 
         def clear; super; end
       end
     end
 
-    class Timeval < FFI::Struct
+    class Timeval < ::FFI::Struct
       layout :sec, :time_t,
              :usec, :suseconds_t
     end
@@ -433,7 +433,7 @@ module Typhoeus
     attach_function :slist_append, :curl_slist_append, [:pointer, :string], :pointer
     attach_function :slist_free_all, :curl_slist_free_all, [:pointer], :void
 
-    ffi_lib (windows? ? 'ws2_32' :  FFI::Library::LIBC)
+    ffi_lib (windows? ? 'ws2_32' :  ::FFI::Library::LIBC)
     @blocking = true
     attach_function :select, [:int, FDSet.ptr, FDSet.ptr, FDSet.ptr, Timeval.ptr], :int
 
