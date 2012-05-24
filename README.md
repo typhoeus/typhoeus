@@ -1,4 +1,4 @@
-#  Typhoeus [![Build Status](https://secure.travis-ci.org/dbalatero/typhoeus.png?branch=master)](http://travis-ci.org/dbalatero/typhoeus)
+#  Typhoeus [![Build Status](https://secure.travis-ci.org/typhoeus/typhoeus.png?branch=master)](http://travis-ci.org/typhoeus/typhoeus)
 
 [the mailing list](http://groups.google.com/group/typhoeus)
 
