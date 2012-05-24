@@ -96,7 +96,7 @@ module Typhoeus
           Curl.easy_setopt_string(handle, option, value.to_s)
         when Integer
           Curl.easy_setopt_long(handle, option, value)
-        when Proc, ::FFI::Function
+        when Proc, FFI::Function
           Curl.easy_setopt_callback(handle, option, value)
         when Typhoeus::Form
           Curl.easy_setopt(handle, option, value.first.read_pointer)

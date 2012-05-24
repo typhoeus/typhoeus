@@ -46,15 +46,15 @@ module Typhoeus
       end
 
       def string_ptr
-        @string_ptr ||= ::FFI::MemoryPointer.new(:pointer)
+        @string_ptr ||= FFI::MemoryPointer.new(:pointer)
       end
 
       def long_ptr
-        @long_ptr ||= ::FFI::MemoryPointer.new(:long)
+        @long_ptr ||= FFI::MemoryPointer.new(:long)
       end
 
       def double_ptr
-        @double_ptr ||= ::FFI::MemoryPointer.new(:double)
+        @double_ptr ||= FFI::MemoryPointer.new(:double)
       end
     end
   end
