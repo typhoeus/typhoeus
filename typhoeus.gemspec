@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.platform     = Gem::Platform::RUBY
   s.authors      = ["David Balatero", "Paul Dix", "Hans Hasselberg"]
   s.email        = "hans.hasselberg@gmail.com"
-  s.homepage     = "https://github.com/dbalatero/typhoeus"
+  s.homepage     = "https://github.com/typhoeus/typhoeus"
   s.summary      = "Parallel HTTP library on top of libcurl multi."
   s.description  = %q{Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.}
 
