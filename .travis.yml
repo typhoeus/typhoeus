@@ -6,3 +6,5 @@ rvm:
   - jruby-head
   - jruby-18mode
   - jruby-19mode
+before_install:
+  - sudo gem uninstall ffi -a
