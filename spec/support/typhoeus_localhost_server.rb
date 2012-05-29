@@ -60,7 +60,7 @@ class TyphoeusLocalhostServer
     def wait_for_servers_to_start
       puts "Waiting for servers to start..."
 
-      Timeout::timeout(30) do
+      Timeout::timeout(RUBY_PLATFORM == 'java' ? 60 : 10) do
         loop do
           sleep 0.5 # give the forked server processes some time to start
 
