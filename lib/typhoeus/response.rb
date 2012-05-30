@@ -8,7 +8,7 @@ module Typhoeus
                 :app_connect_time, :pretransfer_time,
                 :connect_time, :name_lookup_time,
                 :curl_return_code, :curl_error_message,
-                :primary_ip
+                :primary_ip, :redirect_count
 
     attr_writer :headers_hash
 
@@ -32,6 +32,7 @@ module Typhoeus
       @request               = params[:request]
       @effective_url         = params[:effective_url]
       @primary_ip            = params[:primary_ip]
+      @redirect_count        = params[:redirect_count]
       @mock                  = params[:mock] || false  # default
       @headers_hash          = Header.new(params[:headers_hash]) if params[:headers_hash]
     end

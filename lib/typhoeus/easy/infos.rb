@@ -66,6 +66,10 @@ module Typhoeus
         @curl_return_code == :operation_timedout
       end
 
+      def redirect_count
+        get_info_long(:redirect_count)
+      end
+
       def curl_return_code
         Curl::EasyCode[@curl_return_code]
       end
