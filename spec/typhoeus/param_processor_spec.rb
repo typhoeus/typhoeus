@@ -44,7 +44,9 @@ module Typhoeus
           it 'should write file information to result[:files]' do
             ParamProcessor.process_value file, :result => result, :new_key => 'file'
             path = file.path
-            files.should == [['file', File.basename(path), MIME::Types.type_for(path).first, File.absolute_path(path)]]
+            files.first.should include('file')
+            files.first.should include(File.basename(path))
+            files.first.should include(MIME::Types.type_for(path).first)
           end
         end
 
