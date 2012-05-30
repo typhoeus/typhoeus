@@ -38,7 +38,7 @@ module Typhoeus
 
           after :each do
             file.close
-            FileUtils.remove_entry_secure file
+            FileUtils.remove_entry_secure file.path
           end
 
           it 'should write file information to result[:files]' do
