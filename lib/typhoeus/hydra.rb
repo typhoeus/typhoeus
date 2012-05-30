@@ -162,9 +162,9 @@ module Typhoeus
 
       easy.url          = request.url
       easy.method       = request.method
-      easy.params       = request.params  if request.method == :post && !request.params.nil?
+      easy.params       = request.params  if [:post, :put].include?(request.method) && !request.params.nil?
       easy.headers      = request.headers if request.headers
-      easy.request_body = request.body    if request.method == :post && !request.body.nil?
+      easy.request_body = request.body    if [:post, :put].include?(request.method) && !request.body.nil?
       easy.timeout      = request.timeout if request.timeout
       easy.connect_timeout = request.connect_timeout if request.connect_timeout
       easy.interface       = request.interface if request.interface
