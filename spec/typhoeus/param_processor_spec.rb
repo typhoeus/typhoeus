@@ -30,22 +30,21 @@ module Typhoeus
         let(:files) { result[:files] }
 
         context 'regular files' do
-          let(:temp_directory) { Dir.mktmpdir }
           let(:file) do
-            file = File.new File.join(temp_directory, 'testfile.txt'), 'w'
+            file = File.new 'spec_testfile.txt', 'w'
             file.puts 'some text'
             file
           end
 
           after :each do
             file.close
-            FileUtils.remove_entry_secure temp_directory if temp_directory
+            FileUtils.remove_entry_secure file
           end
 
           it 'should write file information to result[:files]' do
             ParamProcessor.process_value file, :result => result, :new_key => 'file'
             path = file.path
-            files.should == [['file', File.basename(path), MIME::Types.type_for(path).first, path]]
+            files.should == [['file', File.basename(path), MIME::Types.type_for(path).first, File.absolute_path(path)]]
           end
         end
 
