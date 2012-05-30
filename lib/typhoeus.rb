@@ -1,5 +1,4 @@
 require 'digest/sha2'
-require 'active_support/core_ext'
 
 require 'typhoeus/utils'
 require 'typhoeus/header'
