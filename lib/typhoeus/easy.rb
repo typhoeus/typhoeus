@@ -41,7 +41,7 @@ module Typhoeus
     end
 
     def headers
-      @header ||= {}
+      @headers ||= {}
     end
 
     def response_body
@@ -62,17 +62,16 @@ module Typhoeus
 
     def params=(params)
       @form = Typhoeus::Form.new(params)
-
-      if method == :post
-        @form.process!
-        if @form.multipart?
-          set_option(:httppost, @form)
-        else
-          self.post_data = @form.to_s
-        end
-      else
-        self.url = "#{url}?#{@form.to_s}"
-      end
+      # if method == :post
+      #   @form.process!
+      #   if @form.multipart?
+      #     set_option(:httppost, @form)
+      #   else
+      #     self.post_data = @form.to_s
+      #   end
+      # else
+        self.url = url
+      # end
     end
 
     def perform
