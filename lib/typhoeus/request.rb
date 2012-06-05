@@ -123,13 +123,10 @@ module Typhoeus
     end
 
     def url
-      if [:post, :put].include?(@method)
-        @url
-      else
-        url = "#{@url}?#{params_string}"
-        url += "&#{URI.escape(@body)}" if @body
-        url.gsub("?&", "?").gsub(/\?$/, '')
-      end
+      url = @url.gsub(/\?&?$/, '')
+      params = params_string
+      url << "?#{params}" if params
+      url
     end
 
     def parsed_uri
