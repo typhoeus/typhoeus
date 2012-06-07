@@ -1,11 +1,11 @@
 0.4.0
 -----
+* Make a GET even when a body is given
 * Deprecated User Agent setter removed
-* Allow cache key basis overwrite (NAME #issue)
-* FFI integration (Daniel Cavanagh #issue)
-* Refactor upload code (Marnen #issue)
-* Fix travis-ci build (Ezekiel Templin #issue)
-* Remove user_agent shortcut
+* Allow cache key basis overwrite (John Crepezzi, #147)
+* FFI integration (Daniel Cavanagh, #151)
+* Refactor upload code (Marnen Laibow-Koser, #152)
+* Fix travis-ci build (Ezekiel Templin, #160)
 
 0.3.3
 -----
