@@ -33,7 +33,6 @@ module Typhoeus
       :username,
       :password,
       :auth_method,
-      :user_agent,
       :proxy_auth_method,
       :proxy_type
     ]
@@ -79,10 +78,6 @@ module Typhoeus
       @connect_timeout  = safe_to_i(options[:connect_timeout])
       @interface        = options[:interface]
       @headers          = options[:headers] || {}
-
-      if options.key?(:user_agent)
-        @headers['User-Agent'] = options[:user_agent]
-      end
 
       @cache_timeout    = safe_to_i(options[:cache_timeout])
       @follow_location  = options[:follow_location]
