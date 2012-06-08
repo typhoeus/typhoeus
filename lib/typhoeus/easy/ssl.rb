@@ -23,11 +23,11 @@ module Typhoeus
       end
 
       def disable_ssl_peer_verification
-        set_option(:verifypeer, 0)
+        set_option(:ssl_verifypeer, 0)
       end
 
       def disable_ssl_host_verification
-        set_option(:verifyhost, 0)
+        set_option(:ssl_verifyhost, 0)
       end
 
       # Set SSL certificate
