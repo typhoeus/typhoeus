@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version      = Typhoeus::VERSION
   s.platform     = Gem::Platform::RUBY
   s.authors      = ["David Balatero", "Paul Dix", "Hans Hasselberg"]
-  s.email        = "hans.hasselberg@gmail.com"
+  s.email        = ["hans.hasselberg@gmail.com"]
   s.homepage     = "https://github.com/typhoeus/typhoeus"
   s.summary      = "Parallel HTTP library on top of libcurl multi."
   s.description  = %q{Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.}
@@ -29,5 +29,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency('spoon') if RUBY_PLATFORM == "java"
 
   s.files        = Dir.glob("lib/**/*") + %w(CHANGELOG.md Gemfile LICENSE README.md Rakefile)
-  s.require_path = lib
+  s.require_path = 'lib'
 end
