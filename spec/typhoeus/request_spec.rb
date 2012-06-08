@@ -205,6 +205,11 @@ describe Typhoeus::Request do
       request.headers.should == headers
     end
 
+    it "has a default user agent" do
+      request = Typhoeus::Request.new("http://localhost:3000")
+      request.user_agent.should == Typhoeus::USER_AGENT
+    end
+
     it "takes params as an option and adds them to the url" do
       Typhoeus::Request.new("http://localhost:3000", :params => {:foo => "bar"}).url.should == "http://localhost:3000?foo=bar"
     end

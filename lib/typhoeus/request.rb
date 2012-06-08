@@ -105,6 +105,7 @@ module Typhoeus
       @on_complete      = nil
       @after_complete   = nil
       @handled_response = nil
+      @headers['User-Agent'] = Typhoeus::USER_AGENT unless @headers['User-Agent']
     end
 
     LOCALHOST_ALIASES = %w[ localhost 127.0.0.1 0.0.0.0 ]
