@@ -10,6 +10,12 @@ task :install do
   puts `gem install typhoeus-*.gem`
 end
 
+task :release => :build do
+  system "git tag -a v#{Typhoeus::VERSION} -m 'Tagging #{Typhoeus::VERSION}'"
+  system "git push --tags"
+  system "gem push typhoeus-#{Typhoeus::VERSION}.gem"
+end
+
 desc "Start up the test servers"
 task :start_test_servers do
   require 'spec/support/typhoeus_localhost_server'
