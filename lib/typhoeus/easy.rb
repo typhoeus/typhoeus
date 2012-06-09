@@ -41,7 +41,7 @@ module Typhoeus
     end
 
     def headers
-      @header ||= {}
+      @headers ||= {}
     end
 
     def response_body
