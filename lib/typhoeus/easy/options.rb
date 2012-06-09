@@ -107,8 +107,8 @@ module Typhoeus
 
       def set_headers
         @header_list = nil
-        headers.each {|key, value| @header_list = Curl.slist_append(@header_list, "#{key}: #{value}") }
-        set_option(:httpheader, @header_list) unless headers.empty?
+        @headers.each {|key, value| @header_list = Curl.slist_append(@header_list, "#{key}: #{value}") }
+        set_option(:httpheader, @header_list) unless @headers.empty?
       end
     end
   end
