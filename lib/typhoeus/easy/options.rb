@@ -107,8 +107,12 @@ module Typhoeus
 
       def set_headers
         @header_list = nil
-        headers.each {|key, value| @header_list = Curl.slist_append(@header_list, "#{key}: #{value}") }
+        headers.each {|key, value| @header_list = Curl.slist_append(@header_list, "#{key}: #{escape_zero_byte(value)}") }
         set_option(:httpheader, @header_list) unless headers.empty?
+      end
+
+      def escape_zero_byte(value)
+        value.gsub(0.chr, '\\\0')
       end
     end
   end
