@@ -77,7 +77,8 @@ module Typhoeus
       @timeout          = safe_to_i(options[:timeout])
       @connect_timeout  = safe_to_i(options[:connect_timeout])
       @interface        = options[:interface]
-      @headers          = options[:headers] || {}
+      @headers          = Marshal.load(Marshal.dump(options[:headers])) || {}
+      @headers['User-Agent'] = Typhoeus::USER_AGENT unless @headers['User-Agent']
 
       @cache_timeout    = safe_to_i(options[:cache_timeout])
       @follow_location  = options[:follow_location]
@@ -101,11 +102,9 @@ module Typhoeus
       @username         = options[:username]
       @password         = options[:password]
       @auth_method      = options[:auth_method]
-
       @on_complete      = nil
       @after_complete   = nil
       @handled_response = nil
-      @headers['User-Agent'] = Typhoeus::USER_AGENT unless @headers['User-Agent']
     end
 
     LOCALHOST_ALIASES = %w[ localhost 127.0.0.1 0.0.0.0 ]
