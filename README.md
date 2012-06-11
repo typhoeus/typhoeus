@@ -4,8 +4,8 @@ Like a modern code version of the mythical beast with 100 serpent heads, Typhoeu
 
 ## Project Tracking
 
-[Typhoeus Documentation](http://typhoeus.github.com/)
-[Typhoeus Mailinglist](http://groups.google.com/group/typhoeus)
+* [Typhoeus Documentation](http://typhoeus.github.com/)
+* [Typhoeus Mailinglist](http://groups.google.com/group/typhoeus)
 
 ## LICENSE
 
