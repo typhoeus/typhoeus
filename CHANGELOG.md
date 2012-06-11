@@ -1,3 +1,12 @@
+0.4.2
+-----
+* A header hotfix
+
+0.4.1
+-----
+* Fix verifypeer and verifyhost options
+* Fix header sending
+
 0.4.0
 -----
 * Make a GET even when a body is given
