@@ -1,3 +1,7 @@
+0.4.3
+-----
+* Escape zero bytes in header values
+
 0.4.2
 -----
 * A header hotfix
