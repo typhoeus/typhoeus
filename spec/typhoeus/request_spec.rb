@@ -202,7 +202,20 @@ describe Typhoeus::Request do
     it "takes headers as an option" do
       headers = {:foo => :bar}
       request = Typhoeus::Request.new("http://localhost:3000", :headers => headers)
-      request.headers.should == headers
+      request.headers.should == headers.merge("User-Agent" => Typhoeus::USER_AGENT)
+    end
+
+    it "has a default user agent" do
+      request = Typhoeus::Request.new("http://localhost:3000")
+      request.headers.should == {"User-Agent" => Typhoeus::USER_AGENT}
+      request.user_agent.should == Typhoeus::USER_AGENT
+    end
+
+    it "accepts a user agent" do
+      options = {:headers => {"User-Agent" => "Test-Agent"}}
+      request = Typhoeus::Request.new("http://localhost:3000", options)
+      request.headers.should == options[:headers]
+      request.user_agent.should == "Test-Agent"
     end
 
     it "takes params as an option and adds them to the url" do
