@@ -1,6 +1,8 @@
 0.4.3
 -----
 * Escape zero bytes in header values
+* Set default user agent (Steven Shingler, #176)
+* Add support for socks5 hostname proxy type (eweathers, #183)
 
 0.4.2
 -----
