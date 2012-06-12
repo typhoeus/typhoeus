@@ -11,9 +11,9 @@ Like a modern code version of the mythical beast with 100 serpent heads, Typhoeu
 
 (The MIT License)
 
-Copyright © 2009-2010 Paul Dix
+Copyright © 2009-2010 [Paul Dix](http://www.pauldix.net/)
 
-Copyright © 2011 David Balatero
+Copyright © 2011 [David Balatero](https://github.com/dbalatero/)
 
 Copyright © 2012 [Hans Hasselberg](http://www.hans.io)
 
