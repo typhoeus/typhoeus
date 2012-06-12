@@ -353,11 +353,12 @@ module Typhoeus
       :auto,         0x1f] # all options or'd together
 
     Proxy = enum [
-      :http,     0,
-      :http_1_0, 1,
-      :socks4,   4,
-      :socks5,   5,
-      :socks4a,  6]
+      :http,            0,
+      :http_1_0,        1,
+      :socks4,          4,
+      :socks5,          5,
+      :socks4a,         6,
+      :socks5_hostname, 7]
 
     SSLVersion = enum [
       :default, 0,
