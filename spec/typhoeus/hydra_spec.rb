@@ -20,6 +20,27 @@ describe Typhoeus::Hydra do
     @cache = cache_class.new
   end
 
+  describe "#get_easy_object" do
+    let(:headers) { {} }
+    let(:request) { Typhoeus::Request.new("fubar", :headers => headers) }
+    let(:hydra) { Typhoeus::Hydra.hydra }
+    let(:easy) { hydra.method(:get_easy_object).call(request) }
+
+    context "when header with user agent" do
+      let(:headers) { {'User-Agent' => "Custom"} }
+
+      it "doesn't modify user agent" do
+        easy.headers['User-Agent'].should eq("Custom")
+      end
+    end
+
+    context "when header without user agent" do
+      it "add user agent" do
+        easy.headers['User-Agent'].should eq(Typhoeus::USER_AGENT)
+      end
+    end
+  end
+
   it "has a singleton" do
     Typhoeus::Hydra.hydra.should be_a Typhoeus::Hydra
   end

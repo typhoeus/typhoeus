@@ -77,8 +77,7 @@ module Typhoeus
       @timeout          = safe_to_i(options[:timeout])
       @connect_timeout  = safe_to_i(options[:connect_timeout])
       @interface        = options[:interface]
-      @headers          = Marshal.load(Marshal.dump(options[:headers])) || {}
-      @headers['User-Agent'] = Typhoeus::USER_AGENT unless @headers['User-Agent']
+      @headers          = options[:headers] || {}
 
       @cache_timeout    = safe_to_i(options[:cache_timeout])
       @follow_location  = options[:follow_location]
