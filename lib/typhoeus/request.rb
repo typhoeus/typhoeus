@@ -117,7 +117,7 @@ module Typhoeus
     end
 
     def url
-      if [:post, :put].include?(@method)
+      if [:post, :put, :delete].include?(@method)
         @url
       else
         url = "#{@url}?#{params_string}"
