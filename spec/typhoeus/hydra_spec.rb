@@ -39,6 +39,22 @@ describe Typhoeus::Hydra do
         easy.headers['User-Agent'].should eq(Typhoeus::USER_AGENT)
       end
     end
+
+    context "when params are supplied"  do
+      let(:hydra) { Typhoeus::Hydra.hydra }
+
+      [:post, :put, :delete].each do |method|
+        it "should not delete the params if the request is a #{method.upcase}" do
+          request = Typhoeus::Request.new("fubar", :method => method, :params => {:coffee => 'black'})
+          hydra.send(:get_easy_object, request).params.should == {:coffee => 'black'}
+        end
+      end
+
+      it "should delete the params if the request is a GET" do
+        request = Typhoeus::Request.new("fubar", :params => {:coffee => 'black'})
+        hydra.send(:get_easy_object, request).params.should == {}
+      end
+    end
   end
 
   it "has a singleton" do

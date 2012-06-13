@@ -162,7 +162,7 @@ module Typhoeus
 
       easy.url          = request.url
       easy.method       = request.method
-      easy.params       = request.params  if [:post, :put].include?(request.method) && !request.params.nil?
+      easy.params       = request.params  if [:post, :put, :delete].include?(request.method) && !request.params.nil?
       if request.headers
         easy.headers = {'User-Agent' => Typhoeus::USER_AGENT}.merge(request.headers)
       else
