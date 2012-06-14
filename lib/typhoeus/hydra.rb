@@ -168,23 +168,24 @@ module Typhoeus
       else
         easy.headers = {'User-Agent' => Typhoeus::USER_AGENT}
       end
-      easy.request_body = request.body    if [:post, :put].include?(request.method) && !request.body.nil?
-      easy.timeout      = request.timeout if request.timeout
-      easy.connect_timeout = request.connect_timeout if request.connect_timeout
-      easy.interface       = request.interface if request.interface
-      easy.follow_location = request.follow_location if request.follow_location
-      easy.max_redirects = request.max_redirects if request.max_redirects
+      easy.request_body      = request.body    if [:post, :put].include?(request.method) && !request.body.nil?
+      easy.timeout           = request.timeout if request.timeout
+      easy.connect_timeout   = request.connect_timeout if request.connect_timeout
+      easy.interface         = request.interface if request.interface
+      easy.follow_location   = request.follow_location if request.follow_location
+      easy.max_redirects     = request.max_redirects if request.max_redirects
       easy.disable_ssl_peer_verification if request.disable_ssl_peer_verification
       easy.disable_ssl_host_verification if request.disable_ssl_host_verification
-      easy.ssl_cert         = request.ssl_cert
-      easy.ssl_cert_type    = request.ssl_cert_type
-      easy.ssl_key          = request.ssl_key
-      easy.ssl_key_type     = request.ssl_key_type
-      easy.ssl_key_password = request.ssl_key_password
-      easy.ssl_cacert       = request.ssl_cacert
-      easy.ssl_capath       = request.ssl_capath
-      easy.ssl_version      = request.ssl_version || :default
-      easy.verbose          = request.verbose
+      easy.ssl_cert          = request.ssl_cert
+      easy.ssl_cert_type     = request.ssl_cert_type
+      easy.ssl_key           = request.ssl_key
+      easy.ssl_key_type      = request.ssl_key_type
+      easy.ssl_key_password  = request.ssl_key_password
+      easy.ssl_cacert        = request.ssl_cacert
+      easy.ssl_capath        = request.ssl_capath
+      easy.ssl_version       = request.ssl_version || :default
+      easy.verbose           = request.verbose
+      easy.set_option        :dns_cache_timeout, request.dns_cache_timeout if request.dns_cache_timeout
 
       easy.on_success do |easy|
         queue_next

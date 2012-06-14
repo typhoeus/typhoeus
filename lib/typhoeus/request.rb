@@ -13,6 +13,7 @@ module Typhoeus
       :user_agent,
       :response,
       :cache_timeout,
+      :dns_cache_timeout,
       :follow_location,
       :max_redirects,
       :proxy,
@@ -71,39 +72,41 @@ module Typhoeus
     #
     def initialize(url, options = {})
       @url = url
-      @method           = options[:method] || :get
-      @params           = options[:params]
-      @body             = options[:body]
-      @timeout          = safe_to_i(options[:timeout])
-      @connect_timeout  = safe_to_i(options[:connect_timeout])
-      @interface        = options[:interface]
-      @headers          = options[:headers] || {}
+      @method            = options[:method] || :get
+      @params            = options[:params]
+      @body              = options[:body]
+      @timeout           = safe_to_i(options[:timeout])
+      @connect_timeout   = safe_to_i(options[:connect_timeout])
+      @interface         = options[:interface]
+      @headers           = options[:headers] || {}
 
-      @cache_timeout    = safe_to_i(options[:cache_timeout])
-      @follow_location  = options[:follow_location]
-      @max_redirects    = options[:max_redirects]
-      @proxy            = options[:proxy]
-      @proxy_type       = options[:proxy_type]
-      @proxy_username   = options[:proxy_username]
-      @proxy_password   = options[:proxy_password]
+      @cache_timeout     = safe_to_i(options[:cache_timeout])
+      @follow_location   = options[:follow_location]
+      @max_redirects     = options[:max_redirects]
+      @proxy             = options[:proxy]
+      @proxy_type        = options[:proxy_type]
+      @proxy_username    = options[:proxy_username]
+      @proxy_password    = options[:proxy_password]
       @proxy_auth_method = options[:proxy_auth_method]
+      @ssl_cert          = options[:ssl_cert]
+      @ssl_cert_type     = options[:ssl_cert_type]
+      @ssl_key           = options[:ssl_key]
+      @ssl_key_type      = options[:ssl_key_type]
+      @ssl_key_password  = options[:ssl_key_password]
+      @ssl_cacert        = options[:ssl_cacert]
+      @ssl_capath        = options[:ssl_capath]
+      @ssl_version       = options[:ssl_version]
+      @verbose           = options[:verbose]
+      @username          = options[:username]
+      @password          = options[:password]
+      @auth_method       = options[:auth_method]
+      @dns_cache_timeout = options[:dns_cache_timeout]
       @disable_ssl_peer_verification = options[:disable_ssl_peer_verification]
       @disable_ssl_host_verification = options[:disable_ssl_host_verification]
-      @ssl_cert         = options[:ssl_cert]
-      @ssl_cert_type    = options[:ssl_cert_type]
-      @ssl_key          = options[:ssl_key]
-      @ssl_key_type     = options[:ssl_key_type]
-      @ssl_key_password = options[:ssl_key_password]
-      @ssl_cacert       = options[:ssl_cacert]
-      @ssl_capath       = options[:ssl_capath]
-      @ssl_version      = options[:ssl_version]
-      @verbose          = options[:verbose]
-      @username         = options[:username]
-      @password         = options[:password]
-      @auth_method      = options[:auth_method]
-      @on_complete      = nil
-      @after_complete   = nil
-      @handled_response = nil
+
+      @on_complete       = nil
+      @after_complete    = nil
+      @handled_response  = nil
     end
 
     LOCALHOST_ALIASES = %w[ localhost 127.0.0.1 0.0.0.0 ]
