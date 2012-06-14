@@ -27,7 +27,7 @@ module Typhoeus
     SSL_VERSIONS = Curl::SSLVersion.to_hash.dup
     Curl::SSLVersion.to_hash.each {|key, value| SSL_VERSIONS["CURL_SSLVERSION_#{key.to_s.upcase}".to_sym] = value }
 
-    attr_reader :url, :header_list
+    attr_reader :url, :header_list, :request_body
     attr_accessor :start_time
 
     def initialize
