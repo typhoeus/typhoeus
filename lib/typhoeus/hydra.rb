@@ -222,7 +222,7 @@ module Typhoeus
       @on_complete.call(response) if @on_complete
 
       request.call_handlers
-      if requests = @memoized_requests[request.url]
+      if requests = @memoized_requests.delete(request.url)
         requests.each do |r|
           r.response = response
           r.call_handlers
