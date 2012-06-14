@@ -50,7 +50,7 @@ describe Typhoeus::Hydra do
     end
 
     describe "the body of the request" do
-      [:post, :put, :delete, :get, :head, :patch, :options, :trace, :connect].each do |method|
+      [:post, :put, :delete, :head, :patch, :options, :trace, :connect].each do |method|
         it "should not remove the body of the request, when the request is a #{method.upcase}" do
           request = Typhoeus::Request.new("fubar", :method => method, :body => "kill the body and you kill the head")
           hydra.send(:get_easy_object, request).request_body.should == "kill the body and you kill the head"

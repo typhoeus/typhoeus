@@ -168,7 +168,7 @@ module Typhoeus
       else
         easy.headers = {'User-Agent' => Typhoeus::USER_AGENT}
       end
-      easy.request_body = request.body unless request.body.nil?
+      easy.request_body = request.body unless request.method == :get || request.body.nil?
       easy.timeout      = request.timeout if request.timeout
       easy.connect_timeout = request.connect_timeout if request.connect_timeout
       easy.interface       = request.interface if request.interface
