@@ -162,13 +162,13 @@ module Typhoeus
 
       easy.url          = request.url
       easy.method       = request.method
-      easy.params       = request.params unless request.params.nil?
+      easy.params       = request.params unless request.method == :get || request.params.nil?
       if request.headers
         easy.headers = {'User-Agent' => Typhoeus::USER_AGENT}.merge(request.headers)
       else
         easy.headers = {'User-Agent' => Typhoeus::USER_AGENT}
       end
-      easy.request_body = request.body unless request.method == :get || request.body.nil?
+      easy.request_body = request.body unless request.body.nil?
       easy.timeout      = request.timeout if request.timeout
       easy.connect_timeout = request.connect_timeout if request.connect_timeout
       easy.interface       = request.interface if request.interface

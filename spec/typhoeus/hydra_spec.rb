@@ -41,7 +41,7 @@ describe Typhoeus::Hydra do
     end
 
     context "when params are supplied"  do
-      [:post, :put, :delete, :get, :head, :patch, :options, :trace, :connect].each do |method|
+      [:post, :put, :delete, :head, :patch, :options, :trace, :connect].each do |method|
         it "should not delete the params if the request is a #{method.upcase}" do
           request = Typhoeus::Request.new("fubar", :method => method, :params => {:coffee => 'black'})
           hydra.send(:get_easy_object, request).params.should == {:coffee => 'black'}

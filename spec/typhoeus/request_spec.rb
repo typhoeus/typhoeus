@@ -408,13 +408,13 @@ describe Typhoeus::Request do
   describe "#url" do
     context "for a GET request" do
       it "should encode the body of the request as URL params if they are supplied" do
-        Typhoeus::Request.new("http://google.com", {:method => :get, :body => "a=b"}).url.
-          should == "http://google.com?a=b"
+        Typhoeus::Request.new("http://google.com", {:method => :get, :params => {'c' => 9}, :body => "a=b"}).url.
+          should == "http://google.com?c=9&a=b"
       end
     end
 
-    context "for a PUT, POST or DELETE request" do
-      [:put, :post, :delete].each do |method|
+    context "for all other requests" do
+      [:put, :post, :delete, :patch].each do |method|
         it "should not encode the body of the request as URL params when the method is #{method.upcase}" do
           Typhoeus::Request.new("http://google.com", {:method => method, :body => "a=b"}).url.
             should_not match /\?a=b/

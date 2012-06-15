@@ -117,12 +117,15 @@ module Typhoeus
     end
 
     def url
-      if [:post, :put, :delete].include?(@method)
-        @url
-      else
+      if @method == :get
         url = "#{@url}?#{params_string}"
-        url += "&#{URI.escape(@body)}" if @body
+        if @body
+          url += "&#{URI.escape(@body)}"
+          @body = nil
+        end
         url.gsub("?&", "?").gsub(/\?$/, '')
+      else
+        @url
       end
     end
 
