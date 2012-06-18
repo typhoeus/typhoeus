@@ -1,6 +1,17 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Typhoeus::Form do
+
+  describe "#initialize" do
+    context "when given an array for initalization" do
+      it "raises an error" do
+        lambda {
+          Typhoeus::Form.new([])
+        }.should raise_error ArgumentError
+      end
+    end
+  end
+
   describe "#process!" do
     it "should generate a valid form object" do
       form = Typhoeus::Form.new({

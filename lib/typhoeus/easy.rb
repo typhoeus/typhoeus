@@ -7,7 +7,15 @@ require 'typhoeus/easy/callbacks'
 require 'typhoeus/easy/infos'
 
 module Typhoeus
+
+  # Is a wrapper over Easy interface of libcurl.
+  #
   class Easy
+
+    #
+    # Behavior
+    #
+
     include Typhoeus::EasyFu::FFIHelper
     include Typhoeus::EasyFu::Options
     include Typhoeus::EasyFu::SSL
@@ -15,6 +23,10 @@ module Typhoeus
     include Typhoeus::EasyFu::Proxy
     include Typhoeus::EasyFu::Callbacks
     include Typhoeus::EasyFu::Infos
+
+    #
+    # Options
+    #
 
     OPTION_VALUES = Curl::Option.to_hash.dup
     Curl::Option.to_hash.each {|key, value| OPTION_VALUES["CURLOPT_#{key.to_s.upcase}".to_sym] = value }
@@ -27,8 +39,16 @@ module Typhoeus
     SSL_VERSIONS = Curl::SSLVersion.to_hash.dup
     Curl::SSLVersion.to_hash.each {|key, value| SSL_VERSIONS["CURL_SSLVERSION_#{key.to_s.upcase}".to_sym] = value }
 
+    #
+    # Accerssors
+    #
+
     attr_reader :url, :header_list
     attr_accessor :start_time
+
+    #
+    # API
+    #
 
     def initialize
       Curl.init
@@ -36,30 +56,45 @@ module Typhoeus
       ObjectSpace.define_finalizer(self, self.class.finalizer(self))
     end
 
+    # Returns @method.
+    #
+    # Default method is :get
+    #
     def method
       @method ||= :get
     end
 
-    def headers
-      @headers ||= {}
-    end
-
+    # Returns a response body
+    #
     def response_body
       @response_body ||= ""
     end
 
+    # Returns reponse headers
+    #
     def response_header
       @response_header ||= ""
     end
 
+    # Returns headers
+    #
+    def headers
+      @headers ||= {}
+    end
+
+    # Setter for @headers attribute
+    #
     def headers=(hash)
       @headers = hash
     end
 
+    # Returns [Typhoeus::Form] form params
+    #
     def params
       @form.nil? ? {} : @form.params
     end
 
+    #
     def params=(params)
       @form = Typhoeus::Form.new(params)
 
