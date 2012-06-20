@@ -38,7 +38,6 @@ describe Typhoeus::Request do
       request.run
     end
 
-
     it "releases easy" do
       Typhoeus.expects(:release_easy_object)
       request.run
@@ -92,7 +91,7 @@ describe Typhoeus::Request do
       end
     end
 
-    it "executes"
+    it "executes #{callback}"
   end
 
   describe 'cache_key' do
