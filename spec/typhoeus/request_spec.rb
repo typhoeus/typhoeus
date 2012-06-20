@@ -15,6 +15,40 @@ describe Typhoeus::Request do
     end
   end
 
+  describe "#run" do
+    let(:easy) { Ethon::Easy.new }
+    before { Typhoeus.expects(:get_easy_object).returns(easy) }
+
+    it "grabs an easy" do
+      request.run
+    end
+
+    it "generates settings" do
+      easy.expects(:http_request)
+      request.run
+    end
+
+    it "prepares" do
+      easy.expects(:prepare)
+      request.run
+    end
+
+    it "performs" do
+      easy.expects(:perform)
+      request.run
+    end
+
+
+    it "releases easy" do
+      Typhoeus.expects(:release_easy_object)
+      request.run
+    end
+
+    it "returns a response" do
+      request.run.should be_a(Typhoeus::Response)
+    end
+  end
+
   describe "#marshal_dump" do
     let(:url) { "http://www.google.com" }
 
@@ -57,6 +91,8 @@ describe Typhoeus::Request do
         request.should respond_to("#{callback}=")
       end
     end
+
+    it "executes"
   end
 
   describe 'cache_key' do

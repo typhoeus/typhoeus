@@ -61,24 +61,17 @@ module Typhoeus
 
     def self.run(url, params = {})
       r = new(url, params)
-      r.easy.prepare
-      r.easy.perform
-      @response = Response.new(r.easy.to_hash)
-      Typhoeus.release_easy_object(r.easy)
-      @response
-    end
-
-    def easy
-      return @easy if @easy
-      @easy = Typhoeus.get_easy_object
-      @easy.http_request(url, options[:method], options)
-      @easy
+      r.run
     end
 
     def run
+      easy = Typhoeus.get_easy_object
+      easy.http_request(url, options[:method] || :get, options)
       easy.prepare
       easy.perform
-      Response.new(easy.to_hash)
+      @response = Response.new(easy.to_hash)
+      Typhoeus.release_easy_object(easy)
+      @response
     end
 
     module ClassMethods
