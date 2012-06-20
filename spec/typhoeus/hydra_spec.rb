@@ -157,9 +157,26 @@ describe Typhoeus::Hydra do
         third.response.should be
       end
 
-      it "sends first first"
-      it "sends second second"
-      it "sends thirds last"
+      it "sends first first" do
+        first.on_complete do
+          second.response.should be_nil
+          third.response.should be_nil
+        end
+      end
+
+      it "sends second second" do
+        first.on_complete do
+          first.response.should be
+          third.response.should be_nil
+        end
+      end
+
+      it "sends thirds last" do
+        first.on_complete do
+          second.response.should be
+          third.response.should be
+        end
+      end
     end
 
     context "when really queued request" do
