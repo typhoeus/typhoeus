@@ -4,38 +4,45 @@ require 'open-uri'
 require 'benchmark'
 
 calls = 1000
-URL = "http://127.0.0.1:300"
+URL = "http://localhost:300"
 Typhoeus.init_easy_object_pool
+Typhoeus::Hydra.hydra = Typhoeus::Hydra.new(max_concurrency: 3)
 
 def url_for(i)
   "#{URL}#{i%3}/#{i}"
 end
 
-Benchmark.bmbm do |bm|
-  bm.report("net/http      ") do
+Benchmark.bm do |bm|
+  bm.report("net/http     ") do
     calls.times do |i|
       uri = URI.parse(url_for(i))
       Net::HTTP.get_response(uri)
     end
   end
 
-  bm.report("open          ") do
+  bm.report("open         ") do
     calls.times do |i|
       open(url_for(i))
     end
   end
 
-  bm.report("typhoeus      ") do
+  bm.report("request      ") do
     calls.times do |i|
-      Typhoeus::Request.get(url_for(i))
+      Typhoeus::Request.get(url_for(i), {})
     end
   end
 
-  bm.report("typhoeus hydra") do
+  bm.report("hydra        ") do
     calls.times do |i|
       Typhoeus::Hydra.hydra.queue(Typhoeus::Request.new(url_for(i)))
     end
     Typhoeus::Hydra.hydra.run
   end
-end
 
+  bm.report("delayed hydra") do
+    3.times do |i|
+      Typhoeus::Hydra.hydra.queue(Typhoeus::Request.new("localhost:3001/i?delay=1"))
+    end
+    Typhoeus::Hydra.hydra.run
+  end
+end
