@@ -1,15 +1,6 @@
 require 'digest/sha2'
+require 'ethon'
 
-require 'typhoeus/utils'
-require 'typhoeus/header'
-require 'typhoeus/curl'
-require 'typhoeus/easy'
-require 'typhoeus/form'
-require 'typhoeus/multi'
-require 'typhoeus/filter'
-require 'typhoeus/param_processor'
-require 'typhoeus/remote'
-require 'typhoeus/remote_proxy_object'
 require 'typhoeus/response'
 require 'typhoeus/request'
 require 'typhoeus/hydra'
@@ -17,13 +8,15 @@ require 'typhoeus/hydra_mock'
 require 'typhoeus/version'
 
 module Typhoeus
+  USER_AGENT = "Typhoeus - https://github.com/typhoeus/typhoeus"
+
   def self.easy_object_pool
     @easy_objects ||= []
   end
 
   def self.init_easy_object_pool
     20.times do
-      easy_object_pool << Typhoeus::Easy.new
+      easy_object_pool << Ethon::Easy.new
     end
   end
 
@@ -33,15 +26,11 @@ module Typhoeus
   end
 
   def self.get_easy_object
-    if easy_object_pool.empty?
-      Typhoeus::Easy.new
-    else
-      easy_object_pool.pop
-    end
+    easy_object_pool.pop || Ethon::Easy.new
   end
 
   def self.add_easy_request(easy_object)
-    Thread.current[:curl_multi] ||= Typhoeus::Multi.new
+    Thread.current[:curl_multi] ||= Ethon::Multi.new
     Thread.current[:curl_multi].add(easy_object)
   end
 
