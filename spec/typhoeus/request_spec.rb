@@ -43,6 +43,11 @@ describe Typhoeus::Request do
       request.run
     end
 
+    it "calls on_complete" do
+      request.instance_variable_set(:@on_complete, mock(:call))
+      request.run
+    end
+
     it "returns a response" do
       request.run.should be_a(Typhoeus::Response)
     end
@@ -51,7 +56,7 @@ describe Typhoeus::Request do
   describe "#marshal_dump" do
     let(:url) { "http://www.google.com" }
 
-    ['on_complete', 'after_complete'].each do |name|
+    ['on_complete'].each do |name|
       context "when #{name} handler" do
         before { request.instance_variable_set("@#{name}", Proc.new{}) }
 
@@ -78,20 +83,21 @@ describe Typhoeus::Request do
     end
   end
 
-  [:on_complete, :after_complete].each do |callback|
-    describe "##{callback}" do
-      it "responds to" do
-        request.should respond_to(callback)
-      end
+  describe "#on_complete" do
+    it "responds to" do
+      request.should respond_to(:on_complete)
+    end
+  end
+
+  describe "#complete" do
+    before do
+      request.on_complete {|r| String.new(r.url) }
+      String.expects(:new).with(request.url)
     end
 
-    describe "##{callback}=" do
-      it "responds to" do
-        request.should respond_to("#{callback}=")
-      end
+    it "executes block and passes self" do
+      request.complete
     end
-
-    it "executes #{callback}"
   end
 
   describe 'cache_key' do

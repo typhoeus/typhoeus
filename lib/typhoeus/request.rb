@@ -35,16 +35,8 @@ module Typhoeus
       @on_complete = block
     end
 
-    def on_complete=(proc)
-      @on_complete = proc
-    end
-
-    def after_complete(&block)
-      @after_complete = block
-    end
-
-    def after_complete=(proc)
-      @after_complete = proc
+    def complete
+      @on_complete.call(self) if @on_complete
     end
 
     def cache_key_basis=(value)
@@ -71,6 +63,7 @@ module Typhoeus
       easy.perform
       @response = Response.new(easy.to_hash)
       Typhoeus.release_easy_object(easy)
+      complete
       @response
     end
 

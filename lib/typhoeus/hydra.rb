@@ -89,6 +89,7 @@ module Typhoeus
         easy.reset
         easy_pool.push easy
         queue(queued_requests.shift) unless queued_requests.empty?
+        request.complete
       end
     end
   end

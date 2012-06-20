@@ -186,6 +186,19 @@ describe Typhoeus::Hydra do
     end
   end
 
+  describe "#set_callback" do
+    let(:easy) { Ethon::Easy.new }
+    let(:request) { Typhoeus::Request.new(url) }
+    let(:set_callbacks) { hydra.send(:set_callback, easy, request) }
+
+    it "sets easy.on_complete callback" do
+      easy.expects(:on_complete)
+      set_callbacks
+    end
+
+    it "runs requests complete callback"
+  end
+
   # it "aborts a batch of requests" do
   #   urls = [
   #       'http://localhost:3000',
