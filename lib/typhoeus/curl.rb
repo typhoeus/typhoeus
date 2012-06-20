@@ -414,7 +414,7 @@ module Typhoeus
     callback :callback, [:pointer, :size_t, :size_t, :pointer], :size_t
 
     ffi_lib_flags :now, :global
-    ffi_lib 'libcurl'
+    ffi_lib ['libcurl', 'libcurl.so.4']
 
     #
     # FFI function bindings definition
