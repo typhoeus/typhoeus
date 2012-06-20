@@ -43,7 +43,7 @@ module Typhoeus
     # Accerssors
     #
 
-    attr_reader :url, :header_list
+    attr_reader :url, :header_list, :request_body
     attr_accessor :start_time
 
     #
