@@ -187,16 +187,46 @@ describe Typhoeus::Hydra do
   end
 
   describe "#set_callback" do
+    let(:hydra) { Typhoeus::Hydra.new(:max_concurrency => 0) }
     let(:easy) { Ethon::Easy.new }
     let(:request) { Typhoeus::Request.new(url) }
-    let(:set_callbacks) { hydra.send(:set_callback, easy, request) }
+    let(:set_callback) { hydra.send(:set_callback, easy, request) }
 
     it "sets easy.on_complete callback" do
       easy.expects(:on_complete)
-      set_callbacks
+      set_callback
     end
 
-    it "runs requests complete callback"
+    it "sets response on request" do
+      set_callback
+      easy.complete
+      request.response.should be
+    end
+
+    it "resets easy" do
+      set_callback
+      easy.expects(:reset)
+      easy.complete
+    end
+
+    it "pushes easy back into the pool" do
+      set_callback
+      easy.complete
+      hydra.easy_pool.should include(easy)
+    end
+
+    it "queues next request" do
+      hydra.instance_variable_set(:@queued_requests, [request])
+      set_callback
+      easy.complete
+      hydra.queued_requests.should include(request)
+    end
+
+    it "runs requests complete callback" do
+      request.instance_variable_set(:@on_complete, mock(:call))
+      set_callback
+      easy.complete
+    end
   end
 
   # it "aborts a batch of requests" do
