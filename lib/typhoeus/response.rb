@@ -1,6 +1,6 @@
 module Typhoeus
   class Response
-    attr_accessor :request, :mock
+    attr_accessor :request, :mock, :options
     attr_writer :headers_hash
 
     def initialize(options = {})
@@ -15,8 +15,19 @@ module Typhoeus
       end
     end
 
-    def options
-      @options
+    LEGACY_MAPPING = {
+      :body => :response_body,
+      :headers => :response_headers,
+      :code => :response_code,
+      :curl_return_code => :return_code,
+      :time => :total_time,
+      :app_connect_time => :appconnect_time,
+      :start_transfer_time => :starttransfer_time,
+      :name_lookup_time => :namelookup_time
+    }
+
+    LEGACY_MAPPING.each do |old, new|
+      eval("alias #{old} #{new}")
     end
 
     # Returns true if this is a mock response.

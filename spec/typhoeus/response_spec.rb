@@ -142,5 +142,16 @@ describe Typhoeus::Response do
     end
   end
 
-  it "provides old getters to not break the api"
+  context "legacy support" do
+    Typhoeus::Response::LEGACY_MAPPING.each do |old, new|
+      describe "##{old}" do
+        let(:value) { "fubar" }
+        let(:options) { {new => value} }
+
+        it "aliases #{new}" do
+          response.method(old).call.should eq(value)
+        end
+      end
+    end
+  end
 end
