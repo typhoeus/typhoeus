@@ -1,156 +1,34 @@
-require 'uri'
-
 module Typhoeus
   class Request
-    ACCESSOR_OPTIONS = [
-      :method,
-      :params,
-      :body,
-      :headers,
-      :cache_key_basis,
-      :connect_timeout,
-      :timeout,
-      :user_agent,
-      :response,
-      :cache_timeout,
-      :follow_location,
-      :max_redirects,
-      :proxy,
-      :proxy_username,
-      :proxy_password,
-      :disable_ssl_peer_verification,
-      :disable_ssl_host_verification,
-      :interface,
-      :ssl_cert,
-      :ssl_cert_type,
-      :ssl_key,
-      :ssl_key_type,
-      :ssl_key_password,
-      :ssl_cacert,
-      :ssl_capath,
-      :ssl_version,
-      :verbose,
-      :username,
-      :password,
-      :auth_method,
-      :proxy_auth_method,
-      :proxy_type
-    ]
-
-    attr_accessor *ACCESSOR_OPTIONS
-
-    # Initialize a new Request
-    #
-    # Options:
-    # * +url+ : Endpoint (URL) of the request
-    # * +options+   : A hash containing options among :
-    # ** +:method+  : :get (default) / :post / :put
-    # ** +:params+  : params as a Hash
-    # ** +:body+
-    # ** +:timeout+ : timeout (ms)
-    # ** +:interface+ : interface or ip address (string)
-    # ** +:connect_timeout+ : connect timeout (ms)
-    # ** +:headers+  : headers as Hash
-    # ** +:cache_timeout+ : cache timeout (ms)
-    # ** +:follow_location
-    # ** +:max_redirects
-    # ** +:proxy
-    # ** +:disable_ssl_peer_verification
-    # ** +:disable_ssl_host_verification
-    # ** +:ssl_cert
-    # ** +:ssl_cert_type
-    # ** +:ssl_key
-    # ** +:ssl_key_type
-    # ** +:ssl_key_password
-    # ** +:ssl_cacert
-    # ** +:ssl_capath
-    # ** +:verbose
-    # ** +:username
-    # ** +:password
-    # ** +:auth_method
-    #
     def initialize(url, options = {})
       @url = url
-      @method           = options[:method] || :get
-      @params           = options[:params]
-      @body             = options[:body]
-      @timeout          = safe_to_i(options[:timeout])
-      @connect_timeout  = safe_to_i(options[:connect_timeout])
-      @interface        = options[:interface]
-      @headers          = options[:headers] || {}
+      @options = options.dup
 
-      @cache_timeout    = safe_to_i(options[:cache_timeout])
-      @follow_location  = options[:follow_location]
-      @max_redirects    = options[:max_redirects]
-      @proxy            = options[:proxy]
-      @proxy_type       = options[:proxy_type]
-      @proxy_username   = options[:proxy_username]
-      @proxy_password   = options[:proxy_password]
-      @proxy_auth_method = options[:proxy_auth_method]
-      @disable_ssl_peer_verification = options[:disable_ssl_peer_verification]
-      @disable_ssl_host_verification = options[:disable_ssl_host_verification]
-      @ssl_cert         = options[:ssl_cert]
-      @ssl_cert_type    = options[:ssl_cert_type]
-      @ssl_key          = options[:ssl_key]
-      @ssl_key_type     = options[:ssl_key_type]
-      @ssl_key_password = options[:ssl_key_password]
-      @ssl_cacert       = options[:ssl_cacert]
-      @ssl_capath       = options[:ssl_capath]
-      @ssl_version      = options[:ssl_version]
-      @verbose          = options[:verbose]
-      @username         = options[:username]
-      @password         = options[:password]
-      @auth_method      = options[:auth_method]
-      @on_complete      = nil
-      @after_complete   = nil
-      @handled_response = nil
-    end
-
-    LOCALHOST_ALIASES = %w[ localhost 127.0.0.1 0.0.0.0 ]
-
-    def localhost?
-      LOCALHOST_ALIASES.include?(parsed_uri.host)
-    end
-
-    def user_agent
-      headers['User-Agent']
+      if options[:headers]
+        options[:headers] = {'User-Agent' => Typhoeus::USER_AGENT}.merge(options[:headers])
+      else
+        options[:headers] = {'User-Agent' => Typhoeus::USER_AGENT}
+      end
     end
 
     def url
-      if @method == :get
-        url = "#{@url}?#{params_string}"
-        if @body
-          url += "&#{URI.escape(@body)}"
-          @body = nil
-        end
-        url.gsub("?&", "?").gsub(/\?$/, '')
-      else
-        @url
-      end
+      @url
     end
 
-    def parsed_uri
-      @parsed_uri ||= URI.parse(@url)
+    def options
+      @options
     end
 
-    def host
-      slash_location = @url.index('/', 8)
-      if slash_location
-        @url.slice(0, slash_location)
-      else
-        query_string_location = @url.index('?')
-        return query_string_location ? @url.slice(0, query_string_location) : @url
-      end
+    def action
+      @options[:method]
     end
 
-    def host_domain
-      parsed_uri.host
+    def response
+      @response
     end
 
-    def params_string
-      return nil unless params
-      traversal = Typhoeus::Utils.traverse_params_hash(params)
-      Typhoeus::Utils.traversal_to_param_string(traversal)
+    def response=(value)
+      @response = value
     end
 
     def on_complete(&block)
@@ -169,73 +47,48 @@ module Typhoeus
       @after_complete = proc
     end
 
-    def call_handlers
-      if @on_complete
-        @handled_response = @on_complete.call(response)
-        call_after_complete
-      end
+    def cache_key_basis=(value)
+      @cache_key_basis = value
     end
 
-    def call_after_complete
-      @after_complete.call(@handled_response) if @after_complete
-    end
-
-    def handled_response=(val)
-      @handled_response = val
-    end
-
-    def handled_response
-      @handled_response || response
-    end
-
-    def inspect
-      result = ":method => #{self.method.inspect},\n" <<
-               "\t:url => #{URI.parse(self.url).to_s}"
-      if self.body and !self.body.empty?
-        result << ",\n\t:body => #{self.body.inspect}"
-      end
-
-      if self.params and !self.params.empty?
-        result << ",\n\t:params => #{self.params.inspect}"
-      end
-
-      if self.headers and !self.headers.empty?
-        result << ",\n\t:headers => #{self.headers.inspect}"
-      end
-
-      result
+    def cache_key_basis
+      @cache_key_basis
     end
 
     def cache_key
       Digest::SHA1.hexdigest(cache_key_basis || url)
     end
 
-    def self.run(url, params)
+    def self.run(url, params = {})
       r = new(url, params)
-      Typhoeus::Hydra.hydra.queue r
-      Typhoeus::Hydra.hydra.run
-      r.response
+      r.easy.prepare
+      r.easy.perform
+      @response = Response.new(r.easy.to_hash)
+      Typhoeus.release_easy_object(r.easy)
+      @response
     end
 
-    def self.get(url, params = {})
-      run(url, params.merge(:method => :get))
+    def easy
+      return @easy if @easy
+      @easy = Typhoeus.get_easy_object
+      @easy.http_request(url, options[:method], options)
+      @easy
     end
 
-    def self.post(url, params = {})
-      run(url, params.merge(:method => :post))
+    def run
+      easy.prepare
+      easy.perform
+      Response.new(easy.to_hash)
     end
 
-    def self.put(url, params = {})
-      run(url, params.merge(:method => :put))
+    module ClassMethods
+      [:get, :post, :put, :delete, :head, :patch, :options].each do |name|
+        define_method(name) do |url, params|
+          run(url, params.merge(:method => name))
+        end
+      end
     end
-
-    def self.delete(url, params = {})
-      run(url, params.merge(:method => :delete))
-    end
-
-    def self.head(url, params = {})
-      run(url, params.merge(:method => :head))
-    end
+    extend ClassMethods
 
   protected
 
@@ -250,19 +103,6 @@ module Typhoeus
 
     def marshal_load(attributes)
       attributes.each { |name, value| instance_variable_set(name, value) }
-    end
-
-    def self.options
-      ACCESSOR_OPTIONS
-    end
-
-  private
-
-    def safe_to_i(value)
-      return value if value.is_a?(Fixnum)
-      return nil if value.nil?
-      return nil if value.respond_to?(:empty?) && value.empty?
-      value.to_i
     end
   end
 end
