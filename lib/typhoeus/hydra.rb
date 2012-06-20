@@ -13,11 +13,6 @@ module Typhoeus
 
     def initialize(options = {})
       @options = options
-      initial_pool_size.times do
-        e = Ethon::Easy.new
-        e.handle
-        easy_pool << e
-      end
     end
 
     def queued_requests
