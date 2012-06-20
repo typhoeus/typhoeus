@@ -3,6 +3,9 @@ require 'typhoeus/hydra/connect_options'
 require 'typhoeus/hydra/stubbing'
 
 module Typhoeus
+
+  # Hydra manages making parallel HTTP requests
+  #
   class Hydra
     include ConnectOptions
     include Stubbing

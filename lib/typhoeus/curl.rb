@@ -3,6 +3,9 @@ require 'rbconfig'
 require 'thread'
 
 module Typhoeus
+
+  # FFI Wrapper for Curl
+  #
   module Curl
     # this does not implement the full curl lib. just what is needed for typhoeus
 
@@ -14,11 +17,19 @@ module Typhoeus
 
     VERSION_NOW = 3
 
+    # Initialize SSL
     GLOBAL_SSL     = 0x01
+
+    # Initialize the Win32 socket libraries.
     GLOBAL_WIN32   = 0x02
+
+    #  Initialize everything possible. This sets all known bits.
     GLOBAL_ALL     = (GLOBAL_SSL | GLOBAL_WIN32)
     GLOBAL_DEFAULT = GLOBAL_ALL
 
+    #
+    # Libcurl error codes, refer to https://github.com/bagder/curl/blob/master/include/curl/curl.h for details
+    #
     EasyCode = enum :easy_code, [
       :ok,
       :unsupported_protocol,
@@ -404,6 +415,10 @@ module Typhoeus
 
     ffi_lib_flags :now, :global
     ffi_lib 'libcurl'
+
+    #
+    # FFI function bindings definition
+    #
 
     attach_function :global_init, :curl_global_init, [:long], :int
 
