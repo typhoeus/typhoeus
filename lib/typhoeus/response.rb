@@ -1,75 +1,31 @@
 module Typhoeus
   class Response
     attr_accessor :request, :mock
-    attr_reader :code, :headers, :body, :time,
-                :requested_url, :requested_remote_method,
-                :requested_http_method, :start_time,
-                :effective_url, :start_transfer_time,
-                :app_connect_time, :pretransfer_time,
-                :connect_time, :name_lookup_time,
-                :curl_return_code, :curl_error_message,
-                :primary_ip, :redirect_count
-
     attr_writer :headers_hash
 
-    def initialize(params = {})
-      @code                  = params[:code]
-      @curl_return_code      = params[:curl_return_code]
-      @curl_error_message    = params[:curl_error_message]
-      @status_message        = params[:status_message]
-      @http_version          = params[:http_version]
-      @headers               = params[:headers]
-      @body                  = params[:body]
-      @time                  = params[:time]
-      @requested_url         = params[:requested_url]
-      @requested_http_method = params[:requested_http_method]
-      @start_time            = params[:start_time]
-      @start_transfer_time   = params[:start_transfer_time]
-      @app_connect_time      = params[:app_connect_time]
-      @pretransfer_time      = params[:pretransfer_time]
-      @connect_time          = params[:connect_time]
-      @name_lookup_time      = params[:name_lookup_time]
-      @request               = params[:request]
-      @effective_url         = params[:effective_url]
-      @primary_ip            = params[:primary_ip]
-      @redirect_count        = params[:redirect_count]
-      @mock                  = params[:mock] || false  # default
-      @headers_hash          = Header.new(params[:headers_hash]) if params[:headers_hash]
+    def initialize(options = {})
+      @options = options
+    end
+
+    (
+      Ethon::Easies::Informations::AVAILABLE_INFORMATIONS.keys+[:return_code, :response_body, :response_headers]
+    ).each do |name|
+      define_method(name) do
+        options[name.to_sym]
+      end
+    end
+
+    def options
+      @options
     end
 
     # Returns true if this is a mock response.
     def mock?
-      @mock
-    end
-
-    def headers
-      @headers ||= @headers_hash ? construct_header_string : ''
-    end
-
-    def headers_hash
-      @headers_hash ||= begin
-        headers.split("\n").map {|o| o.strip}.inject(Typhoeus::Header.new) do |hash, o|
-          if o.empty? || o =~ /^HTTP\/[\d\.]+/
-            hash
-          else
-            i = o.index(":") || o.size
-            key = o.slice(0, i)
-            value = o.slice(i + 1, o.size)
-            value = value.strip unless value.nil?
-            if hash.key? key
-              hash[key] = [hash[key], value].flatten
-            else
-              hash[key] = value
-            end
-
-            hash
-          end
-        end
-      end
+      options[:mock] || false
     end
 
     def status_message
-      return @status_message if @status_message != nil
+      return @status_message if @status_message
 
       # HTTP servers can choose not to include the explanation to HTTP codes. The RFC
       # states this (http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4):
@@ -90,34 +46,21 @@ module Typhoeus
     end
 
     def success?
-      @code >= 200 && @code < 300
+      (200..299).include?(response_code)
     end
 
     def modified?
-      @code != 304
+      response_code != 304
     end
 
     def timed_out?
-      curl_return_code == 28
+      return_code == 28
     end
 
     private
 
-      def first_header_line
-        @first_header_line ||= @headers.to_s.split("\n").first
-      end
-
-      def construct_header_string
-        lines = ["HTTP/#{http_version} #{code} #{status_message}"]
-
-        @headers_hash.each do |key, values|
-          [values].flatten.each do |value|
-            lines << "#{key}: #{value}"
-          end
-        end
-
-        lines << '' << ''
-        lines.join("\r\n")
-      end
+    def first_header_line
+      @first_header_line ||= response_headers.to_s.split("\n").first
+    end
   end
 end
