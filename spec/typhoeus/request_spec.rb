@@ -415,7 +415,7 @@ describe Typhoeus::Request do
 
     context "for all other requests" do
       [:put, :post, :delete, :patch].each do |method|
-        it "should not encode the body of the request as URL params when the method is #{method.upcase}" do
+        it "should not encode the body of the request as URL params when the method is #{method.to_s.upcase}" do
           Typhoeus::Request.new("http://google.com", {:method => method, :body => "a=b"}).url.
             should_not match /\?a=b/
         end

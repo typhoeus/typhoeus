@@ -42,7 +42,7 @@ describe Typhoeus::Hydra do
 
     context "when params are supplied"  do
       [:post, :put, :delete, :head, :patch, :options, :trace, :connect].each do |method|
-        it "should not delete the params if the request is a #{method.upcase}" do
+        it "should not delete the params if the request is a #{method.to_s.upcase}" do
           request = Typhoeus::Request.new("fubar", :method => method, :params => {:coffee => 'black'})
           hydra.send(:get_easy_object, request).params.should == {:coffee => 'black'}
         end
@@ -51,7 +51,7 @@ describe Typhoeus::Hydra do
 
     describe "the body of the request" do
       [:post, :put, :delete, :head, :patch, :options, :trace, :connect].each do |method|
-        it "should not remove the body of the request, when the request is a #{method.upcase}" do
+        it "should not remove the body of the request, when the request is a #{method.to_s.upcase}" do
           request = Typhoeus::Request.new("fubar", :method => method, :body => "kill the body and you kill the head")
           hydra.send(:get_easy_object, request).request_body.should == "kill the body and you kill the head"
         end
