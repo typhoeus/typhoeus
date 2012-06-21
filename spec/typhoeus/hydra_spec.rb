@@ -160,7 +160,7 @@ describe Typhoeus::Hydra do
     it
   end
 
-  context "caching" do
+  context "caching and memoization" do
     it
   end
 end
