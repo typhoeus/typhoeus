@@ -1,10 +1,9 @@
 require 'digest/sha2'
 require 'ethon'
 
-require 'typhoeus/response'
 require 'typhoeus/request'
+require 'typhoeus/response'
 require 'typhoeus/hydra'
-require 'typhoeus/hydra_mock'
 require 'typhoeus/version'
 
 module Typhoeus

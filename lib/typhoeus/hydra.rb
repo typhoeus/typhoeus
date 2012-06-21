@@ -1,52 +1,33 @@
-# require 'typhoeus/hydra/callbacks'
-# require 'typhoeus/hydra/connect_options'
-# require 'typhoeus/hydra/stubbing'
-
 module Typhoeus
 
   # Hydra manages making parallel HTTP requests
   #
   class Hydra
-    # include ConnectOptions
-    # include Stubbing
-    # extend Callbacks
+    attr_reader :initial_pool_size, :queued_requests,
+      :max_concurrency, :easy_pool, :multi
+
+    class << self
+      def hydra
+        @hydra ||= new
+      end
+
+      def hydra=(val)
+        @hydra = val
+      end
+    end
 
     def initialize(options = {})
       @options = options
-    end
-
-    def queued_requests
-      @queued_requests ||= []
-    end
-
-    def initial_pool_size
-      @initial_pool_size ||= (@options[:initial_pool_size] || 10)
-    end
-
-    def max_concurrency
-      @max_concurrency ||= (@options[:max_concurrency] || 200)
-    end
-
-    def easy_pool
-      @easy_pool ||= []
-    end
-
-    def self.hydra
-      @hydra ||= new
-    end
-
-    def self.hydra=(val)
-      @hydra = val
+      @queued_requests = []
+      @easy_pool = []
+      @initial_pool_size = @options[:initial_pool_size] || 10
+      @max_concurrency = @options[:max_concurrency] || 200
+      @multi = Ethon::Multi.new
     end
 
     def abort
       queued_requests.clear
     end
-
-    # def fire_and_forget
-    #   @queued_requests.each {|r| queue(r, false)}
-    #   @multi.fire_and_forget
-    # end
 
     def queue(request)
       if multi.easy_handles.size < max_concurrency
@@ -56,12 +37,7 @@ module Typhoeus
       end
     end
 
-    def multi
-      @multi ||= Ethon::Multi.new
-    end
-
     def run
-      return if multi.easy_handles.empty?
       multi.perform
     end
 
