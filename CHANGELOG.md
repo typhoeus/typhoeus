@@ -1,20 +1,18 @@
-0.4.3
------
+# Changelog
+
+## 0.5.0
 * Escape zero bytes in header values
 * Set default user agent (Steven Shingler, #176)
 * Add support for socks5 hostname proxy type (eweathers, #183)
 
-0.4.2
------
+## 0.4.2
 * A header hotfix
 
-0.4.1
------
+## 0.4.1
 * Fix verifypeer and verifyhost options
 * Fix header sending
 
-0.4.0
------
+## 0.4.0
 * Make a GET even when a body is given
 * Deprecated User Agent setter removed
 * Allow cache key basis overwrite (John Crepezzi, #147)
@@ -22,14 +20,12 @@
 * Refactor upload code (Marnen Laibow-Koser, #152)
 * Fix travis-ci build (Ezekiel Templin, #160)
 
-0.3.3
------
+## 0.3.3
 * Make sure to call the Easy::failure callback on all non-success http response codes, even invalid ones. [balexis]
 * Use bytesize instead of length to determine Content-Length [dlamacchia]
 * Added SSL version option to Easy/Request [michelbarbosa/dbalatero]
 
-0.3.2
------
+## 0.3.2
 * Fix array params to be consistent with HTTP spec [gridaphobe]
 * traversal\_to\_params\_hash should use the escape option [itsmeduncan]
 * Fix > 1024 open file descriptors [mschulkind]
@@ -50,20 +46,16 @@
 * Fix HTTP status edge-case [balexis]
 * Expose primary\_ip to easy object [balexis]
 
-0.2.4
------
+## 0.2.4
 * Fix form POSTs to only use multipart for file uploads, otherwise use application/x-www-form-urlencoded [dbalatero]
 
-0.2.3
------
+## 0.2.3
 * Code duplication in Typhoeus::Form led to nested URL param errors on POST only. Fixed [dbalatero]
 
-0.2.2
------
+## 0.2.2
 * Fixed a problem with nested URL params encoding incorrectly [dbalatero]
 
-0.2.1
------
+## 0.2.1
 * Added extended proxy support [Zapotek, GH-46]
 * eliminated compile time warnings by using proper type declarations [skaes, GH-54]
 * fixed broken calls to rb\_raise [skaes, GH-54]
@@ -75,34 +67,27 @@
 * added abort to Hydra to prematurely stop a hydra.run [Zapotek]
 * added file upload support for POST requests [jtarchie, GH-59]
 
-0.2.0
-------
+## 0.2.0
 * Fix warning in Request#headers from attr\_accessor
-* Params with array values were not parsing into the format that rack expects
-[GH-39, smartocci]
+* Params with array values were not parsing into the format that rack expects [GH-39, smartocci]
 * Removed Rack as a dependency [GH-45]
 * Added integration hooks for VCR!
 
-0.1.31
-------
+## 0.1.31
 * Fixed bug in setting compression encoding [morhekil]
 * Exposed authentication control methods through Request interface [morhekil]
 
-0.1.30
------------
+## 0.1.30
 * Exposed CURLOPT\_CONNECTTIMEOUT\_MS to Requests [balexis]
 
-0.1.29
-------
+## 0.1.29
 * Fixed a memory corruption with using CURLOPT\_POSTFIELDS [gravis,
 32531d0821aecc4]
 
-0.1.28
-----------------
+## 0.1.28
 * Added SSL cert options for Typhoeus::Easy [GH-25, gravis]
 * Ported SSL cert options to Typhoeus::Request interface [gravis]
 * Added support for any HTTP method (purge for Varnish) [ryana]
 
-0.1.27
-------
+## 0.1.27
 * Added rack as dependency, added dev dependencies to Rakefile [GH-21]
