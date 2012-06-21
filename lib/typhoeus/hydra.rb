@@ -1,3 +1,5 @@
+require 'typhoeus/hydras/easy_factory'
+
 module Typhoeus
 
   # Hydra manages making parallel HTTP requests
@@ -31,7 +33,7 @@ module Typhoeus
 
     def queue(request)
       if multi.easy_handles.size < max_concurrency
-        multi.add(get_easy_object(request))
+        multi.add(Hydras::EasyFactory.new(request, self).get)
       else
         queued_requests << request
       end
@@ -39,34 +41,6 @@ module Typhoeus
 
     def run
       multi.perform
-    end
-
-    private
-
-    def get_easy_object(request)
-      easy = easy_pool.pop || Ethon::Easy.new
-      agent_options = request.options.dup
-
-      if agent_options[:headers]
-        agent_options[:headers] = {'User-Agent' => Typhoeus::USER_AGENT}.merge(agent_options[:headers])
-      else
-        agent_options[:headers] = {'User-Agent' => Typhoeus::USER_AGENT}
-      end
-
-      easy.http_request(request.url, request.action || :get, agent_options)
-      easy.prepare
-      set_callback(easy, request)
-      easy
-    end
-
-    def set_callback(easy, request)
-      easy.on_complete do |easy|
-        request.response = Response.new(easy.to_hash)
-        easy.reset
-        easy_pool.push easy
-        queue(queued_requests.shift) unless queued_requests.empty?
-        request.complete
-      end
     end
   end
 end

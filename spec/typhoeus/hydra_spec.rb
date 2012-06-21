@@ -51,45 +51,6 @@ describe Typhoeus::Hydra do
     end
   end
 
-  describe "#get_easy_object" do
-    let(:headers) { {} }
-    let(:request) { Typhoeus::Request.new("fubar", :headers => headers) }
-    let(:hydra) { Typhoeus::Hydra.hydra }
-    let(:easy) { hydra.method(:get_easy_object).call(request) }
-
-    context "when header with user agent" do
-      let(:headers) { {'User-Agent' => "Custom"} }
-
-      it "doesn't modify user agent" do
-        easy.headers['User-Agent'].should eq("Custom")
-      end
-    end
-
-    context "when header without user agent" do
-      it "add user agent" do
-        easy.headers['User-Agent'].should eq(Typhoeus::USER_AGENT)
-      end
-    end
-
-    context "when params are supplied"  do
-      [:post, :put, :delete, :head, :patch, :options, :trace, :connect].each do |method|
-        it "should not delete the params if the request is a #{method.to_s.upcase}" do
-          request = Typhoeus::Request.new("fubar", :method => method, :params => {:coffee => 'black'})
-          hydra.send(:get_easy_object, request).params.should == {:coffee => 'black'}
-        end
-      end
-    end
-
-    describe "the body of the request" do
-      [:post, :put, :delete, :head, :patch, :options, :trace, :connect].each do |method|
-        it "should not remove the body of the request, when the request is a #{method.to_s.upcase}" do
-          request = Typhoeus::Request.new("fubar", :method => method, :body => "kill the body and you kill the head")
-          hydra.send(:get_easy_object, request).request_body.should == "kill the body and you kill the head"
-        end
-      end
-    end
-  end
-
   describe "#run" do
     before do
       requests.each { |r| hydra.queue r }
@@ -188,49 +149,6 @@ describe Typhoeus::Hydra do
         hydra.run
         third.response.should be
       end
-    end
-  end
-
-  describe "#set_callback" do
-    let(:hydra) { Typhoeus::Hydra.new(:max_concurrency => 0) }
-    let(:easy) { Ethon::Easy.new }
-    let(:request) { Typhoeus::Request.new(url) }
-    let(:set_callback) { hydra.send(:set_callback, easy, request) }
-
-    it "sets easy.on_complete callback" do
-      easy.expects(:on_complete)
-      set_callback
-    end
-
-    it "sets response on request" do
-      set_callback
-      easy.complete
-      request.response.should be
-    end
-
-    it "resets easy" do
-      set_callback
-      easy.expects(:reset)
-      easy.complete
-    end
-
-    it "pushes easy back into the pool" do
-      set_callback
-      easy.complete
-      hydra.easy_pool.should include(easy)
-    end
-
-    it "queues next request" do
-      hydra.instance_variable_set(:@queued_requests, [request])
-      set_callback
-      easy.complete
-      hydra.queued_requests.should include(request)
-    end
-
-    it "runs requests complete callback" do
-      request.instance_variable_set(:@on_complete, mock(:call))
-      set_callback
-      easy.complete
     end
   end
 
