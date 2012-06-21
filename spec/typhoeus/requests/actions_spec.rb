@@ -11,7 +11,7 @@ describe Typhoeus::Requests::Actions do
 
       unless name == :head
         it "makes #{name.to_s.upcase} requests" do
-          response.response_body.should include("\"REQUEST_METHOD\":\"#{name.upcase}\"")
+          response.response_body.should include("\"REQUEST_METHOD\":\"#{name.to_s.upcase}\"")
         end
       end
     end
