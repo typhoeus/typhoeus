@@ -17,10 +17,10 @@ task :release => :build do
 end
 
 desc "Start up the test servers"
-task :start_test_servers do
-  require 'spec/support/typhoeus_localhost_server'
+task :start do
+  require 'spec/support/boot'
   begin
-    TyphoeusLocalhostServer.start_servers!(:rake)
+    Boot.start_servers(:rake)
   rescue Exception
   end
 end

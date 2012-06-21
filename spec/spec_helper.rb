@@ -17,6 +17,6 @@ RSpec.configure do |config|
   config.mock_with(:mocha)
 
   config.before(:suite) do
-    TyphoeusLocalhostServer.start_servers!
+    Boot.start_servers
   end
 end
