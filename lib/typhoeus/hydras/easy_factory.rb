@@ -13,15 +13,7 @@ module Typhoeus
       end
 
       def get
-        agent_options = request.options.dup
-
-        if agent_options[:headers]
-          agent_options[:headers] = {'User-Agent' => Typhoeus::USER_AGENT}.merge(agent_options[:headers])
-        else
-          agent_options[:headers] = {'User-Agent' => Typhoeus::USER_AGENT}
-        end
-
-        easy.http_request(request.url, request.action || :get, agent_options)
+        easy.http_request(request.url, request.action || :get, request.options)
         easy.prepare
         set_callback
         easy

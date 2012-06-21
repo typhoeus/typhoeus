@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Typhoeus::Request do
   let(:url) { "localhost:3001" }
-  let(:options) { {:headers => {'User-Agent' => "Fu"}} }
+  let(:options) { {:headers => { 'User-Agent' => "Fuabr" }} }
   let(:request) { Typhoeus::Request.new(url, options) }
 
   describe ".new" do
@@ -13,124 +13,20 @@ describe Typhoeus::Request do
     it "stores options" do
       request.options.should eq(options)
     end
-  end
 
-  describe "#run" do
-    let(:easy) { Ethon::Easy.new }
-    before { Typhoeus.expects(:get_easy_object).returns(easy) }
+    context "when header with user agent" do
+      let(:options) { {:headers => {'User-Agent' => "Custom"} } }
 
-    it "grabs an easy" do
-      request.run
-    end
-
-    it "generates settings" do
-      easy.expects(:http_request)
-      request.run
-    end
-
-    it "prepares" do
-      easy.expects(:prepare)
-      request.run
-    end
-
-    it "performs" do
-      easy.expects(:perform)
-      request.run
-    end
-
-    it "releases easy" do
-      Typhoeus.expects(:release_easy_object)
-      request.run
-    end
-
-    it "calls on_complete" do
-      request.instance_variable_set(:@on_complete, mock(:call))
-      request.run
-    end
-
-    it "returns a response" do
-      request.run.should be_a(Typhoeus::Response)
-    end
-  end
-
-  describe "#marshal_dump" do
-    let(:url) { "http://www.google.com" }
-
-    ['on_complete'].each do |name|
-      context "when #{name} handler" do
-        before { request.instance_variable_set("@#{name}", Proc.new{}) }
-
-        it "doesn't include @#{name}" do
-          request.send(:marshal_dump).map(&:first).should_not include("@#{name}")
-        end
-
-        it "doesn't raise when dumped" do
-          expect { Marshal.dump(request) }.to_not raise_error
-        end
-
-        context "when loading" do
-          let(:loaded) { Marshal.load(Marshal.dump(request)) }
-
-          it "includes url" do
-            loaded.url.should eq(request.url)
-          end
-
-          it "doesn't include #{name}" do
-            loaded.send(name).should be_nil
-          end
-        end
-      end
-    end
-  end
-
-  describe "#on_complete" do
-    it "responds to" do
-      request.should respond_to(:on_complete)
-    end
-  end
-
-  describe "#complete" do
-    before do
-      request.on_complete {|r| String.new(r.url) }
-      String.expects(:new).with(request.url)
-    end
-
-    it "executes block and passes self" do
-      request.complete
-    end
-  end
-
-  describe 'cache_key' do
-    context "when cache_key_basis" do
-      let(:cache_key_basis) { "basis" }
-      before { request.cache_key_basis = cache_key_basis }
-
-      it "uses cache_key_basis" do
-        Digest::SHA1.expects(:hexdigest).with(cache_key_basis)
-        request.cache_key
+      it "doesn't modify user agent" do
+        request.options[:headers]['User-Agent'].should eq("Custom")
       end
     end
 
-    context "when no cache key_basis" do
-      it "uses url" do
-        Digest::SHA1.expects(:hexdigest).with(url)
-        request.cache_key
-      end
-    end
-  end
+    context "when header without user agent" do
+      let(:options) { {:headers => {} } }
 
-  [:get, :post, :put, :delete, :head, :patch, :options].each do |name|
-    describe ".#{name}" do
-      let(:response) { Typhoeus::Request.method(name).call(url, options) }
-
-      it "returns ok" do
-        response.return_code.should eq(:ok)
-      end
-
-      unless name == :head
-        it "makes #{name.upcase} requests" do
-          response.response_body.should include("\"REQUEST_METHOD\":\"#{name.upcase}\"")
-        end
+      it "add user agent" do
+        request.options[:headers]['User-Agent'].should eq(Typhoeus::USER_AGENT)
       end
     end
   end

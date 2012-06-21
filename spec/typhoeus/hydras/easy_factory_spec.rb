@@ -6,25 +6,6 @@ describe Typhoeus::Hydras::EasyFactory do
   let(:headers) { {} }
   let(:request) { Typhoeus::Request.new(url, :headers => headers) }
 
-  describe "#get" do
-    let(:headers) { {} }
-    let(:easy) { described_class.new(request, hydra).get }
-
-    context "when header with user agent" do
-      let(:headers) { {'User-Agent' => "Custom"} }
-
-      it "doesn't modify user agent" do
-        easy.headers['User-Agent'].should eq("Custom")
-      end
-    end
-
-    context "when header without user agent" do
-      it "add user agent" do
-        easy.headers['User-Agent'].should eq(Typhoeus::USER_AGENT)
-      end
-    end
-  end
-
   describe "#set_callback" do
     let(:easy_factory) { described_class.new(request, hydra) }
 
