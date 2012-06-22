@@ -13,7 +13,7 @@ module Typhoeus
       end
 
       def get
-        easy.http_request(request.url, request.action || :get, request.options)
+        easy.http_request(request.url, request.options[:method] || :get, request.options)
         easy.prepare
         set_callback
         easy
