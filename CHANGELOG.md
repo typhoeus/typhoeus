@@ -1,9 +1,36 @@
 # Changelog
 
 ## 0.5.0
-* Escape zero bytes in header values
-* Set default user agent (Steven Shingler, #176)
-* Add support for socks5 hostname proxy type (eweathers, #183)
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.4.2...master)
+
+Major Changes:
+
+* Ethon integration
+  * Params are url params and a body is always a body for every request type
+  * Request parameter and body are properly encoded (only POST multiform body is not)
+  * No more header sanitizing
+
+      Before: `:headers => { 'user_agent' => 'Custom' }` was modified to
+        `:headers => { 'User-Agent' => 'Custom' }`
+
+  * The options you can set might have a slightly other name, as Ethon sticks to
+    libcurl names. See XXX for a description.
+
+Enhancements:
+
+* Documentation
+  ( [Alex P](https://github.com/ifesdjeen), [\#188](https://github.com/typhoeus/typhoeus/issues/188) )
+
+Bug Fixes:
+
+* Zero bytes in strings are escaped for libcurl
+* Add support for socks5 hostname proxy type
+  ( [eweathers](https://github.com/eweathers), [\#183](https://github.com/typhoeus/typhoeus/issues/183) )
+* Post body is encoded
+  ( [Rohan Deshpande](https://github.com/rdeshpande), [\#143](https://github.com/typhoeus/typhoeus/issues/143) )
+* Set default user agent
+  ( [Steven Shingler](https://github.com/sshingler), [\#176](https://github.com/typhoeus/typhoeus/issues/176) )
 
 ## 0.4.2
 * A header hotfix
