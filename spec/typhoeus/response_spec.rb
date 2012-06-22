@@ -13,5 +13,4 @@ describe Typhoeus::Response do
       end
     end
   end
-
 end
