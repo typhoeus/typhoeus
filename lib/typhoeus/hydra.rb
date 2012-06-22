@@ -5,8 +5,7 @@ module Typhoeus
   # Hydra manages making parallel HTTP requests
   #
   class Hydra
-    attr_reader :initial_pool_size, :queued_requests,
-      :max_concurrency, :easy_pool, :multi
+    attr_reader :queued_requests, :max_concurrency, :easy_pool, :multi
 
     class << self
       def hydra
@@ -22,7 +21,6 @@ module Typhoeus
       @options = options
       @queued_requests = []
       @easy_pool = []
-      @initial_pool_size = @options[:initial_pool_size] || 10
       @max_concurrency = @options[:max_concurrency] || 200
       @multi = Ethon::Multi.new
     end
