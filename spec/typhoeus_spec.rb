@@ -2,6 +2,9 @@ require 'spec_helper'
 
 describe Typhoeus do
   describe ".configure" do
+    before { Typhoeus.configure { |config| config.verbose = true } }
+    after { Typhoeus.configure { |config| config.verbose = false } }
+
     it "yields config" do
       Typhoeus.configure do |config|
         config.should be_a(Typhoeus::Config)
@@ -9,7 +12,6 @@ describe Typhoeus do
     end
 
     it "sets values config" do
-      Typhoeus.configure { |config| config.verbose = true }
       Typhoeus::Config.verbose.should be_true
     end
   end

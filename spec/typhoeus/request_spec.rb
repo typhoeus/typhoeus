@@ -32,7 +32,7 @@ describe Typhoeus::Request do
 
     context "when Config.verbose set" do
       before { Typhoeus.configure { |config| config.verbose = true} }
-      before { Typhoeus.configure { |config| config.verbose = false} }
+      after { Typhoeus.configure { |config| config.verbose = false} }
 
       it "respects" do
         request.options[:verbose].should be_true
