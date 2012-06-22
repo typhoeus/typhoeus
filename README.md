@@ -1,4 +1,4 @@
-# Typhoeus [![Build Status](https://secure.travis-ci.org/typhoeus/typhoeus.png?branch=master)](http://travis-ci.org/typhoeus/typhoeus)
+# Typhoeus [![Build Status](https://secure.travis-ci.org/typhoeus/typhoeus.png)](http://travis-ci.org/typhoeus/typhoeus)
 
 Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.
 
