@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Typhoeus::Request do
   let(:url) { "localhost:3001" }
-  let(:options) { {:verbose => true, :headers => { 'User-Agent' => "Fuabr" }} }
+  let(:options) { {:verbose => true, :headers => { 'User-Agent' => "Fubar" }} }
   let(:request) { Typhoeus::Request.new(url, options) }
 
   describe ".new" do
@@ -36,6 +36,60 @@ describe Typhoeus::Request do
 
       it "respects" do
         request.options[:verbose].should be_true
+      end
+    end
+  end
+
+  describe "#eql?" do
+    context "when another class" do
+      let(:other) { "" }
+
+      it "returns false" do
+        request.eql?(other).should be_false
+      end
+    end
+
+    context "when same class" do
+      let(:other) { Typhoeus::Request.new("url", options) }
+
+      context "when other url" do
+        it "returns false" do
+          request.eql?(other).should be_false
+        end
+      end
+
+      context "when same url and other options" do
+        let(:other) { Typhoeus::Request.new(url, {}) }
+
+        it "returns false" do
+          request.eql?(other).should be_false
+        end
+      end
+
+      context "when same url and options" do
+        let(:other) { Typhoeus::Request.new(url, options) }
+
+        it "returns true" do
+          request.eql?(other).should be_true
+        end
+      end
+    end
+  end
+
+  describe "#hash" do
+    context "when request.eql?(other)" do
+      let(:other) { Typhoeus::Request.new(url, options) }
+
+      it "has same hashes" do
+        request.hash.should eq(other.hash)
+      end
+    end
+
+    context "when not request.eql?(other)" do
+      let(:other) { Typhoeus::Request.new("url", {}) }
+
+      it "has different hashes" do
+        request.hash.should_not eq(other.hash)
       end
     end
   end

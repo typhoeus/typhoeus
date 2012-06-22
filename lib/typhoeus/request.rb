@@ -26,8 +26,14 @@ module Typhoeus
       @options[:verbose] = Typhoeus::Config.verbose if @options[:verbose].nil?
     end
 
-    def action
-      @options[:method]
+    def eql?(other)
+      self.class == other.class &&
+        self.url == other.url &&
+        self.options == other.options
+    end
+
+    def hash
+      [ self.class, self.url, self.options ].hash
     end
   end
 end
