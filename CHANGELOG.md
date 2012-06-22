@@ -16,7 +16,7 @@ Major Changes:
 
   * The options you can set might have a slightly other name, as Ethon sticks to
     libcurl names. See
-    http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy#initialize-instance_method
+    [Easy.new](http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy#initialize-instance_method)
     for a description.
 
 Enhancements:
