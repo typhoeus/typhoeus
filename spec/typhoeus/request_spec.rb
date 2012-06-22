@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Typhoeus::Request do
   let(:url) { "localhost:3001" }
-  let(:options) { {:headers => { 'User-Agent' => "Fuabr" }} }
+  let(:options) { {:verbose => true, :headers => { 'User-Agent' => "Fuabr" }} }
   let(:request) { Typhoeus::Request.new(url, options) }
 
   describe ".new" do
@@ -27,6 +27,15 @@ describe Typhoeus::Request do
 
       it "add user agent" do
         request.options[:headers]['User-Agent'].should eq(Typhoeus::USER_AGENT)
+      end
+    end
+
+    context "when Config.verbose set" do
+      before { Typhoeus.configure { |config| config.verbose = true} }
+      before { Typhoeus.configure { |config| config.verbose = false} }
+
+      it "respects" do
+        request.options[:verbose].should be_true
       end
     end
   end

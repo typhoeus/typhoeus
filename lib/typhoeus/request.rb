@@ -23,6 +23,7 @@ module Typhoeus
       else
         @options[:headers] = {'User-Agent' => Typhoeus::USER_AGENT}
       end
+      @options[:verbose] = Typhoeus::Config.verbose if @options[:verbose].nil?
     end
 
     def action
