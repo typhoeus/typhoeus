@@ -15,7 +15,9 @@ Major Changes:
         `:headers => { 'User-Agent' => 'Custom' }`
 
   * The options you can set might have a slightly other name, as Ethon sticks to
-    libcurl names. See XXX for a description.
+    libcurl names. See
+    http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy#initialize-instance_method
+    for a description.
 
 Enhancements:
 
