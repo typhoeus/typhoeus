@@ -43,4 +43,11 @@ describe Typhoeus::Hydras::Memoizable do
       end
     end
   end
+
+  describe "#run" do
+    it "clears memory before starting" do
+      hydra.memory.expects(:clear)
+      hydra.run
+    end
+  end
 end

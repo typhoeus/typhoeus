@@ -13,6 +13,11 @@ module Typhoeus
           super
         end
       end
+
+      def run
+        memory.clear
+        super
+      end
     end
   end
 end
