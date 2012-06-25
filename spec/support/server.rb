@@ -27,7 +27,7 @@ get '/fail/:number' do
   else
     @@fail_count += 1
     error 500, "oh noes!"
-   end
+  end
 end
 
 get '/fail_forever' do

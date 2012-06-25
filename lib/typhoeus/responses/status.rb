@@ -2,7 +2,7 @@ module Typhoeus
   module Responses
     module Status
       def status_message
-        return @status_message if @status_message
+        return @status_message if defined?(@status_message) && @status_message
 
         # HTTP servers can choose not to include the explanation to HTTP codes. The RFC
         # states this (http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4):

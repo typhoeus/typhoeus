@@ -6,7 +6,7 @@ module Typhoeus
       end
 
       def complete
-        @on_complete.call(self) if @on_complete
+        @on_complete.call(self) if defined?(@on_complete)
       end
     end
   end

@@ -6,7 +6,7 @@ module Typhoeus
       end
 
       def response
-        @response
+        @response ||= nil
       end
     end
   end
