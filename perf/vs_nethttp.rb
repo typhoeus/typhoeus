@@ -8,7 +8,7 @@ Typhoeus.init_easy_object_pool
 Typhoeus::Hydra.hydra = Typhoeus::Hydra.new(max_concurrency: 3)
 
 def url_for(i)
-  "#{URL}#{i%3}/#{i}"
+  "#{URL}#{i%3}/"
 end
 
 Benchmark.bm do |bm|
@@ -40,6 +40,15 @@ Benchmark.bm do |bm|
         Typhoeus::Hydra.hydra.queue(Typhoeus::Request.new(url_for(i)))
       end
       Typhoeus::Hydra.hydra.run
+    end
+
+    bm.report("hydra memoize") do
+      Typhoeus::Config.memoize = true
+      calls.times do |i|
+        Typhoeus::Hydra.hydra.queue(Typhoeus::Request.new(url_for(i)))
+      end
+      Typhoeus::Hydra.hydra.run
+      Typhoeus::Config.memoize = false
     end
   end
 

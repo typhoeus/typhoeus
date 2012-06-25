@@ -20,37 +20,6 @@ describe Typhoeus::Hydra do
     end
   end
 
-  describe "#queue" do
-    let(:request) { Typhoeus::Request.new("") }
-
-    it "accepts requests" do
-      hydra.queue(request)
-    end
-
-    context "when max concurrency limit not reached" do
-      let(:options) { { :max_concurrency => 10 } }
-
-      it "adds to multi" do
-        hydra.multi.expects(:add)
-        hydra.queue(request)
-      end
-    end
-
-    context "when max concurrency limit reached" do
-      let(:options) { { :max_concurrency => 0 } }
-
-      it "doesn't add to multi" do
-        hydra.multi.expects(:add).never
-        hydra.queue(request)
-      end
-
-      it "adds to queued requests" do
-        hydra.queue(request)
-        hydra.queued_requests.should include(request)
-      end
-    end
-  end
-
   describe "#run" do
     before do
       requests.each { |r| hydra.queue r }

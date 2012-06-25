@@ -1,10 +1,15 @@
 require 'typhoeus/hydras/easy_factory'
+require 'typhoeus/hydras/memoizable'
+require 'typhoeus/hydras/queueable'
 
 module Typhoeus
 
   # Hydra manages making parallel HTTP requests
   #
   class Hydra
+    include Hydras::Queueable
+    include Hydras::Memoizable
+
     attr_reader :queued_requests, :max_concurrency, :easy_pool, :multi
 
     class << self
@@ -23,18 +28,6 @@ module Typhoeus
       @easy_pool = []
       @max_concurrency = @options[:max_concurrency] || 200
       @multi = Ethon::Multi.new
-    end
-
-    def abort
-      queued_requests.clear
-    end
-
-    def queue(request)
-      if multi.easy_handles.size < max_concurrency
-        multi.add(Hydras::EasyFactory.new(request, self).get)
-      else
-        queued_requests << request
-      end
     end
 
     def run

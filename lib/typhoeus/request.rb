@@ -3,6 +3,8 @@ require 'typhoeus/requests/actions'
 require 'typhoeus/requests/operations'
 require 'typhoeus/requests/marshal'
 require 'typhoeus/requests/cache_key'
+require 'typhoeus/requests/responseable'
+require 'typhoeus/requests/memoizable'
 
 module Typhoeus
   class Request
@@ -11,8 +13,10 @@ module Typhoeus
     include Requests::Operations
     include Requests::Actions
     include Requests::CacheKey
+    include Requests::Responseable
+    include Requests::Memoizable
 
-    attr_accessor :response, :options, :url
+    attr_accessor :options, :url, :hydra
 
     def initialize(url, options = {})
       @url = url
