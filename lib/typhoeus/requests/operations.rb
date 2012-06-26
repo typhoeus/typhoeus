@@ -13,12 +13,12 @@ module Typhoeus
       end
 
       def run
-        easy = Typhoeus.get_easy_object
+        easy = Typhoeus.get_easy
         easy.http_request(url, options[:method] || :get, options)
         easy.prepare
         easy.perform
         @response = Response.new(easy.to_hash)
-        Typhoeus.release_easy_object(easy)
+        Typhoeus.release_easy(easy)
         complete
         @response
       end

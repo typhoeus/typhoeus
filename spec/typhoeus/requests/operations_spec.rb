@@ -6,7 +6,7 @@ describe Typhoeus::Requests::Operations do
 
   describe "#run" do
     let(:easy) { Ethon::Easy.new }
-    before { Typhoeus.expects(:get_easy_object).returns(easy) }
+    before { Typhoeus.expects(:get_easy).returns(easy) }
 
     it "grabs an easy" do
       request.run
@@ -28,7 +28,7 @@ describe Typhoeus::Requests::Operations do
     end
 
     it "releases easy" do
-      Typhoeus.expects(:release_easy_object)
+      Typhoeus.expects(:release_easy)
       request.run
     end
 

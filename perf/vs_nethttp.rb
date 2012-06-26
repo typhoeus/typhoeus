@@ -4,7 +4,6 @@ require 'open-uri'
 require 'benchmark'
 
 URL = "http://localhost:300"
-Typhoeus.init_easy_object_pool
 Typhoeus::Hydra.hydra = Typhoeus::Hydra.new(max_concurrency: 3)
 
 def url_for(i)
