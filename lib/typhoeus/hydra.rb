@@ -16,16 +16,6 @@ module Typhoeus
 
     attr_reader :queued_requests, :max_concurrency, :multi
 
-    class << self
-      def hydra
-        @hydra ||= new
-      end
-
-      def hydra=(val)
-        @hydra = val
-      end
-    end
-
     def initialize(options = {})
       @options = options
       @queued_requests = []

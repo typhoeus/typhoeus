@@ -5,21 +5,6 @@ describe Typhoeus::Hydra do
   let(:options) { {} }
   let(:hydra) { Typhoeus::Hydra.new(options) }
 
-  describe ".hydra" do
-    it "returns a hydra" do
-      Typhoeus::Hydra.hydra.should be_a(Typhoeus::Hydra)
-    end
-  end
-
-  describe ".hydra=" do
-    after { Typhoeus::Hydra.hydra = Typhoeus::Hydra.new }
-
-    it "sets hydra" do
-      Typhoeus::Hydra.hydra = :foo
-      Typhoeus::Hydra.hydra.should eq(:foo)
-    end
-  end
-
   describe "#fire_and_forget" do
     it
   end
