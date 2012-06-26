@@ -11,7 +11,7 @@ module Typhoeus
     include Requests::Callbacks
     include Requests::Marshal
     include Requests::Operations
-    include Requests::Actions
+    extend  Requests::Actions
     include Requests::CacheKey
     include Requests::Responseable
     include Requests::Memoizable

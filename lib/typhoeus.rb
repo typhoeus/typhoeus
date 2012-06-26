@@ -10,6 +10,7 @@ require 'typhoeus/version'
 module Typhoeus
   extend self
   extend Hydras::EasyPool
+  extend Requests::Actions
   USER_AGENT = "Typhoeus - https://github.com/typhoeus/typhoeus"
 
   def configure
