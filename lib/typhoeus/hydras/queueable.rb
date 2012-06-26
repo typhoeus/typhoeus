@@ -1,6 +1,10 @@
 module Typhoeus
   module Hydras
     module Queueable
+      def queued_requests
+        @queued_requests ||= []
+      end
+
       def abort
         queued_requests.clear
       end

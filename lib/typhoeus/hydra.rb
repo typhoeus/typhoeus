@@ -14,11 +14,10 @@ module Typhoeus
     include Hydras::Runnable
     include Hydras::Memoizable
 
-    attr_reader :queued_requests, :max_concurrency, :multi
+    attr_reader :max_concurrency, :multi
 
     def initialize(options = {})
       @options = options
-      @queued_requests = []
       @max_concurrency = @options[:max_concurrency] || 200
       @multi = Ethon::Multi.new
     end
