@@ -18,6 +18,7 @@ Major Changes:
     libcurl names. See
     [Easy.new](http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy#initialize-instance_method)
     for a description.
+* Request shortcuts: `Typhoeus.get("www.google.de", {:params => {:a => 1}})`
 
 Enhancements:
 
