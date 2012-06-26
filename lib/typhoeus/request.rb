@@ -2,7 +2,6 @@ require 'typhoeus/requests/callbacks'
 require 'typhoeus/requests/actions'
 require 'typhoeus/requests/operations'
 require 'typhoeus/requests/marshal'
-require 'typhoeus/requests/cache_key'
 require 'typhoeus/requests/responseable'
 require 'typhoeus/requests/memoizable'
 
@@ -12,7 +11,6 @@ module Typhoeus
     include Requests::Marshal
     include Requests::Operations
     extend  Requests::Actions
-    include Requests::CacheKey
     include Requests::Responseable
     include Requests::Memoizable
 
