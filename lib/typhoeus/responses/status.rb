@@ -1,6 +1,16 @@
 module Typhoeus
   module Responses
+
+    # This module contains logic about the http
+    # status.
     module Status
+
+      # Return the status message if present.
+      #
+      # @example Return status message.
+      #   reesponse.status_message
+      #
+      # @return [ String ] The message.
       def status_message
         return @status_message if defined?(@status_message) && @status_message
 
@@ -18,22 +28,47 @@ module Typhoeus
         end
       end
 
+      # Return the http version.
+      #
+      # @example Return http version.
+      #  response.http_version
+      #
+      # @return [ String ] The http version.
       def http_version
         @http_version ||= first_header_line ? first_header_line[/HTTP\/(\S+)/, 1] : nil
       end
 
+      # Return wether the response is a success.
+      #
+      # @example Return if the response was successful.
+      #  response.success?
+      #
+      # @return [ Boolean ] Return true if successful, false else.
       def success?
         (200..299).include?(response_code)
       end
 
+      # Return wether the response is modified.
+      #
+      # @example Return if the response was modified.
+      #  response.modified?
+      #
+      # @return [ Boolean ] Return true if modified, false else.
       def modified?
         response_code != 304
       end
 
+      # Return wether the response is timed out.
+      #
+      # @example Return if the response timed out..
+      #  response.time_out?
+      #
+      # @return [ Boolean ] Return true if timed out, false else.
       def timed_out?
         return_code == 28
       end
 
+      # :nodoc:
       def first_header_line
         @first_header_line ||= response_headers.to_s.split("\n").first
       end

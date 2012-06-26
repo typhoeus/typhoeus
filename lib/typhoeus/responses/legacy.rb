@@ -1,6 +1,11 @@
 module Typhoeus
-  module Responses
+  module Responses # :nodoc:
+
+    # This module contains logic for providing the
+    # old accessors.
     module Legacy
+
+      # The legacy mapping.
       MAPPING = {
         :body => :response_body,
         :headers => :response_headers,
