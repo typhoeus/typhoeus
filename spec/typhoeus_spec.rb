@@ -18,7 +18,7 @@ describe Typhoeus do
 
   [:get, :post, :put, :delete, :head, :patch, :options].each do |name|
     describe ".#{name}" do
-      let(:response) { Typhoeus::Request.method(name).call("http://localhost:3001", {}) }
+      let(:response) { Typhoeus::Request.method(name).call("http://localhost:3001") }
 
       it "returns ok" do
         response.return_code.should eq(:ok)
