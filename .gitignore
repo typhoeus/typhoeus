@@ -1,7 +1,4 @@
-.*.sw?
 *.gem
-.bundle
-.idea
-._*
-*.so
 Gemfile.lock
+doc/
+.yardoc
