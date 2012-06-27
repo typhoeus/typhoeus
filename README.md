@@ -14,8 +14,8 @@ Parallel requests:
 
 ```ruby
 hydra = Typhoeus::Hydra.new
-requests = (1..10).map{ Typhoeus::Request.new("www.example.com") }
-requests.each{ |request| hydra.queue(request) }
+10.times.map{ Typhoeus::Request.new("www.example.com") }.
+  each{ |request| hydra.queue(request) }
 hydra.run
 ```
 
