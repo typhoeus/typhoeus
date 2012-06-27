@@ -2,6 +2,23 @@
 
 Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.
 
+## Example
+
+Single request:
+
+```ruby
+Typhoeus.get("www.example.com")
+```
+
+Parallel requests:
+
+```ruby
+hydra = Typhoeus::Hydra.new
+requests = (1..10).map{ Typhoeus::Request.new("www.example.com") }
+requests.each{ |request| hydra.queue(request) }
+hydra.run
+```
+
 ## Project Tracking
 
 * [Documentation](http://rubydoc.info/github/typhoeus/typhoeus)
