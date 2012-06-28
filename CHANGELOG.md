@@ -24,6 +24,7 @@ Enhancements:
 
 * Documentation
   ( [Alex P](https://github.com/ifesdjeen), [\#188](https://github.com/typhoeus/typhoeus/issues/188) )
+* Request#on_complete can hold multiple blocks.
 
 Bug Fixes:
 
