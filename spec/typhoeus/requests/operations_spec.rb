@@ -33,7 +33,7 @@ describe Typhoeus::Requests::Operations do
     end
 
     it "calls on_complete" do
-      request.instance_variable_set(:@on_complete, mock(:call))
+      request.instance_variable_set(:@on_complete, [mock(:call)])
       request.run
     end
 

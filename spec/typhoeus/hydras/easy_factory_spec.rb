@@ -40,7 +40,7 @@ describe Typhoeus::Hydras::EasyFactory do
     end
 
     it "runs requests complete callback" do
-      request.instance_variable_set(:@on_complete, mock(:call))
+      request.instance_variable_set(:@on_complete, [mock(:call)])
       easy_factory.set_callback
       easy_factory.easy.complete
     end

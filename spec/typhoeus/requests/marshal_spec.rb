@@ -27,7 +27,7 @@ describe Typhoeus::Requests::Marshal do
           end
 
           it "doesn't include #{name}" do
-            loaded.send(name).should be_nil
+            loaded.instance_variable_get("@#{name}").should be_nil
           end
         end
       end

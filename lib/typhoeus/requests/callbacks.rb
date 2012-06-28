@@ -13,15 +13,19 @@ module Typhoeus
       #
       # @param [ Block ] block The block to execute.
       def on_complete(&block)
-        @on_complete = block
+        @on_complete ||= []
+        @on_complete << block if block_given?
+        @on_complete
       end
 
-      # Execute on_complete callback.
+      # Execute on_complete callbacks.
       #
-      # @example Execute on_complete.
+      # @example Execute on_completes.
       #   request.complete
       def complete
-        @on_complete.call(self) if defined?(@on_complete)
+        if defined?(@on_complete)
+          @on_complete.map{ |callback| callback.call(self) }
+        end
       end
     end
   end
