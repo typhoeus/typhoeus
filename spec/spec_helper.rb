@@ -13,7 +13,12 @@ require "bundler"
 Bundler.setup
 require "typhoeus"
 require "rspec"
-require_relative 'support/boot.rb'
+
+if RUBY_VERSION =~ /1.9/
+  require_relative 'support/boot.rb'
+else
+  require 'spec/support/boot.rb'
+end
 
 Dir['./spec/support/**/*.rb'].each { |f| require f }
 
