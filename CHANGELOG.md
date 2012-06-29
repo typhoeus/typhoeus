@@ -14,11 +14,11 @@ Major Changes:
       Before: `:headers => { 'user_agent' => 'Custom' }` was modified to
         `:headers => { 'User-Agent' => 'Custom' }`
 
-  * The options you can set might have a slightly other name, as Ethon sticks to
+  * The options you can set might have a slightly other names, as Ethon sticks to
     libcurl names. See
     [Easy.new](http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy#initialize-instance_method)
     for a description.
-* Request shortcuts: `Typhoeus.get("www.google.de", {:params => {:a => 1}})`
+* Request shortcuts: `Typhoeus.get("www.google.de")`
 
 Enhancements:
 
