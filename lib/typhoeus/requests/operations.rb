@@ -34,7 +34,11 @@ module Typhoeus
       # @return [ Response ] The response.
       def run
         easy = Typhoeus.get_easy
-        easy.http_request(url, options[:method] || :get, options)
+        easy.http_request(
+          url,
+          options[:method] || :get,
+          options.reject{|k,_| k==:method}
+        )
         easy.prepare
         easy.perform
         @response = Response.new(easy.to_hash)

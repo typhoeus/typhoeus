@@ -37,7 +37,11 @@ module Typhoeus
       #
       # @return [ Ethon::Easy ] The prepared easy.
       def get
-        easy.http_request(request.url, request.options[:method] || :get, request.options)
+        easy.http_request(
+          request.url,
+          request.options[:method] || :get,
+          request.options.reject{|k,_| k==:method}
+        )
         easy.prepare
         set_callback
         easy
