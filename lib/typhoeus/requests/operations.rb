@@ -21,8 +21,8 @@ module Typhoeus
         # @param [ Hash ] options The options hash.
         #
         # @return [ Response ] The response.
-        def run(url, params = {})
-          new(url, params).run
+        def run(url, options = {})
+          new(url, options).run
         end
       end
 
