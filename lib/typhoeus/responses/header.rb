@@ -1,19 +1,38 @@
 module Typhoeus
   module Responses
+
+    # This class represents the response header.
+    # It can be accessed like a hash.
     class Header < Hash
       attr_accessor :raw_header
 
-      def initialize(raw_header)
-        @raw_header = raw_header
+      # Create a new header.
+      #
+      # @example Create new header.
+      #   Header.new(raw_header)
+      #
+      # @param [ String ] raw_header The raw header.
+      def initialize(raw)
+        @raw = raw
         parse
       end
 
-      def raw_header
-        @raw_header ||= ''
+      # Returns the raw header or empty string.
+      #
+      # @example Return raw header.
+      #   header.raw
+      #
+      # @return [ String ] The raw header.
+      def raw
+        @raw ||= ''
       end
 
+      # Parses the raw header.
+      #
+      # @example Parse header.
+      #   header.parse
       def parse
-        raw_header.lines.each do |header|
+        raw.lines.each do |header|
           unless header =~ /^HTTP\/1.[01]/
             parts = header.split(':', 2)
             unless parts.empty?

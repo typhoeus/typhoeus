@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe Typhoeus::Responses::Header do
-  let(:raw_header) { nil }
-  let(:header) { Typhoeus::Responses::Header.new(raw_header) }
+  let(:raw) { nil }
+  let(:header) { Typhoeus::Responses::Header.new(raw) }
 
   describe "#parse" do
     context "when no header" do
@@ -12,7 +12,7 @@ describe Typhoeus::Responses::Header do
     end
 
     context "when header" do
-      let(:raw_header) do
+      let(:raw) do
         'HTTP/1.1 200 OK
         Set-Cookie: NID=61=LblqYgUOu; expires=Sat, 29-Dec-2012 10:09:23 GMT; path=/; domain=.google.de; HttpOnly
         Date: Fri, 29 Jun 2012 10:09:23 GMT
@@ -28,8 +28,8 @@ describe Typhoeus::Responses::Header do
         Transfer-Encoding: chunked'
       end
 
-      it "sets raw_header" do
-        header.raw_header.should eq(raw_header)
+      it "sets raw" do
+        header.raw.should eq(raw)
       end
 
       it "sets Set-Cookie" do

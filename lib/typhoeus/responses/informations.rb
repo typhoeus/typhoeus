@@ -15,11 +15,24 @@ module Typhoeus
         end
       end
 
+      # Returns the response header.
+      #
+      # @example Return header.
+      #   response.header
+      #
+      # @return [ Header ] The response header.
       def header
         return nil unless response_header
         @header ||= Responses::Header.new(response_header.split("\r\n\r\n").last)
       end
 
+      # Return all redirections in between as multiple
+      # responses with header.
+      #
+      # @example Return redirections.
+      #   response.redirections
+      #
+      # @return [ Array ] The redirections
       def redirections
         return [] unless response_header
         response_header.split("\r\n\r\n")[0..-2].map{ |h| Response.new(:response_header => h) }
