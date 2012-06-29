@@ -31,7 +31,7 @@ describe Typhoeus::Responses::Status do
 
     context "when header" do
       context "when no message" do
-        let(:options) { {:response_headers => "HTTP/1.1 200\r\n"} }
+        let(:options) { {:response_header => "HTTP/1.1 200\r\n"} }
 
         it "returns nil" do
           response.status_message.should be_nil
@@ -39,7 +39,7 @@ describe Typhoeus::Responses::Status do
       end
 
       context "when messsage" do
-        let(:options) { {:response_headers => "HTTP/1.1 200 message\r\n"} }
+        let(:options) { {:response_header => "HTTP/1.1 200 message\r\n"} }
 
         it "returns message" do
           response.status_message.should eq("message")
@@ -57,7 +57,7 @@ describe Typhoeus::Responses::Status do
 
     context "when header" do
       context "when no http version" do
-        let(:options) { {:response_headers => "HTTP OK"} }
+        let(:options) { {:response_header => "HTTP OK"} }
 
         it "returns nil" do
           response.http_version.should be_nil
@@ -65,7 +65,7 @@ describe Typhoeus::Responses::Status do
       end
 
       context "when invalid http_version" do
-        let(:options) { {:response_headers => "HTTP foo/bar OK"} }
+        let(:options) { {:response_header => "HTTP foo/bar OK"} }
 
         it "returns nil" do
           response.http_version.should be_nil
@@ -73,7 +73,7 @@ describe Typhoeus::Responses::Status do
       end
 
       context "when valid http_version" do
-        let(:options) { {:response_headers => "HTTP/1.1 OK"} }
+        let(:options) { {:response_header => "HTTP/1.1 OK"} }
 
         it "returns http_version" do
           response.http_version.should eq("1.1")

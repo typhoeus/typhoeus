@@ -8,7 +8,7 @@ module Typhoeus
       # The legacy mapping.
       MAPPING = {
         :body => :response_body,
-        :headers => :response_headers,
+        # :headers => :response_header,
         :code => :response_code,
         :curl_return_code => :return_code,
         :time => :total_time,

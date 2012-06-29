@@ -1,6 +1,7 @@
 require 'typhoeus/responses/legacy'
 require 'typhoeus/responses/informations'
 require 'typhoeus/responses/status'
+require 'typhoeus/responses/header'
 
 module Typhoeus
 

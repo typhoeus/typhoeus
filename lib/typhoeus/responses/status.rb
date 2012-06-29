@@ -70,7 +70,7 @@ module Typhoeus
 
       # :nodoc:
       def first_header_line
-        @first_header_line ||= response_headers.to_s.split("\n").first
+        @first_header_line ||= response_header.to_s.split("\n").first
       end
     end
   end
