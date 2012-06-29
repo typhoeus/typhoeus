@@ -28,7 +28,7 @@ end
 
 desc "Start up the test servers"
 task :start do
-  require 'spec/support/boot'
+  require_relative 'spec/support/boot'
   begin
     Boot.start_servers(:rake)
   rescue Exception
