@@ -9,9 +9,9 @@ if RUBY_VERSION =~ /1.9/ && RUBY_ENGINE == 'ruby'
   end
 end
 
+require "bundler"
+Bundler.setup
 require "typhoeus"
-require "mocha"
-require "json"
 require "rspec"
 require_relative 'support/boot.rb'
 
