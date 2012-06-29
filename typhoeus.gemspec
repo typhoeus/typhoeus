@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency("rspec", ["~> 2.10"])
   s.add_development_dependency("guard-rspec", ["~> 1.1.0"])
   s.add_development_dependency('spoon') if RUBY_PLATFORM == "java"
+  s.add_development_dependency 'simplecov', '~> 0.5.3'
 
   s.files        = Dir.glob("lib/**/*") + %w(CHANGELOG.md Gemfile LICENSE README.md Rakefile)
   s.require_path = 'lib'

@@ -1,15 +1,19 @@
-require "rubygems"
+$LOAD_PATH.unshift(File.dirname(__FILE__))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
+
+if RUBY_VERSION =~ /1.9/ && RUBY_ENGINE == 'ruby'
+  require 'simplecov'
+
+  SimpleCov.start do
+    add_filter 'spec'
+  end
+end
+
+require "typhoeus"
 require "mocha"
-require 'json'
+require "json"
 require "rspec"
-
-# gem install redgreen for colored test output
-begin require "redgreen" unless ENV['TM_CURRENT_LINE']; rescue LoadError; end
-
-path = File.expand_path(File.dirname(__FILE__) + "/../lib/")
-$LOAD_PATH.unshift(path) unless $LOAD_PATH.include?(path)
-
-require path + '/typhoeus'
+require_relative 'support/boot.rb'
 
 Dir['./spec/support/**/*.rb'].each { |f| require f }
 
@@ -20,3 +24,4 @@ RSpec.configure do |config|
     Boot.start_servers
   end
 end
+
