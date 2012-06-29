@@ -1,9 +1,25 @@
 module Typhoeus
   module Requests
 
-    # This module contains logic about the available
-    # callbacks on requests. Its only on_complete at
-    # the moment.
+    # This module contains the logic for the response callbacks.
+    # The on_complete callback is the only one at the moment.
+    #
+    # You can set multiple callbacks, which are then executed
+    # in the same order.
+    #
+    #   request.on_complete { p 1 }
+    #   request.on_complete { p 2 }
+    #   request.complete
+    #   #=> 1
+    #   #=> 2
+    #
+    # You can clear the callbacks:
+    #
+    #   request.on_complete { p 1 }
+    #   request.on_complete { p 2 }
+    #   request.on_complete.clear
+    #   request.on_complete
+    #   #=> []
     module Callbacks
 
       # Set on_complete callback.

@@ -40,4 +40,13 @@ describe Typhoeus::Hydras::Queueable do
       end
     end
   end
+
+  describe "#abort" do
+    before { hydra.queued_requests << 1 }
+
+    it "clears queue" do
+      hydra.abort
+      hydra.queued_requests.should be_empty
+    end
+  end
 end
