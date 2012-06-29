@@ -4,14 +4,12 @@ module Typhoeus
     # This class represents the response header.
     # It can be accessed like a hash.
     class Header < Hash
-      attr_accessor :raw_header
-
       # Create a new header.
       #
       # @example Create new header.
-      #   Header.new(raw_header)
+      #   Header.new(raw)
       #
-      # @param [ String ] raw_header The raw header.
+      # @param [ String ] raw The raw header.
       def initialize(raw)
         @raw = raw
         parse
