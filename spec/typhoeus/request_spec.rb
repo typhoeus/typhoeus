@@ -45,7 +45,7 @@ describe Typhoeus::Request do
       let(:other) { "" }
 
       it "returns false" do
-        request.eql?(other).should be_false
+        request.should_not eql other
       end
     end
 
@@ -54,7 +54,7 @@ describe Typhoeus::Request do
 
       context "when other url" do
         it "returns false" do
-          request.eql?(other).should be_false
+          request.should_not eql other
         end
       end
 
@@ -62,16 +62,16 @@ describe Typhoeus::Request do
         let(:other) { Typhoeus::Request.new(url, {}) }
 
         it "returns false" do
-          request.eql?(other).should be_false
+          request.should_not eql other
         end
       end
 
       context "when same url and same options are given, but options have different order" do
-        let(:other_options) { {:headers => { 'User-Agent' => "Fubar" }, :verbose => true } }
+        let(:other_options) { {:headers => { 'User-Agent' => "Fubar",  }, :verbose => true } }
         let(:other) { Typhoeus::Request.new(url, other_options)}
 
         it "returns true" do
-          request.eql?(other).should be_true
+          request.should eql other
         end
       end
 
@@ -79,7 +79,7 @@ describe Typhoeus::Request do
         let(:other) { Typhoeus::Request.new(url, options) }
 
         it "returns true" do
-          request.eql?(other).should be_true
+          request.should eql other
         end
       end
     end
