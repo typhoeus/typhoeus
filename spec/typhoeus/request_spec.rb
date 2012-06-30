@@ -66,6 +66,15 @@ describe Typhoeus::Request do
         end
       end
 
+      context "when same url and same options are given, but options have different order" do
+        let(:other_options) { {:headers => { 'User-Agent' => "Fubar" }, :verbose => true } }
+        let(:other) { Typhoeus::Request.new(url, other_options)}
+
+        it "returns true" do
+          request.eql?(other).should be_true
+        end
+      end
+
       context "when same url and options" do
         let(:other) { Typhoeus::Request.new(url, options) }
 
