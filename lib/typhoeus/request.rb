@@ -36,7 +36,7 @@ module Typhoeus
       else
         @options[:headers] = {'User-Agent' => Typhoeus::USER_AGENT}
       end
-      @options[:verbose] = Typhoeus::Config.verbose if @options[:verbose].nil?
+      @options[:verbose] = Typhoeus::Config.verbose unless @options[:verbose]
     end
 
     # Returns wether other is equal to self.

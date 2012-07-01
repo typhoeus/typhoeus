@@ -39,7 +39,7 @@ module Typhoeus
       def get
         easy.http_request(
           request.url,
-          request.options[:method] || :get,
+          request.options.fetch(:method, :get),
           request.options.reject{|k,_| k==:method}
         )
         easy.prepare

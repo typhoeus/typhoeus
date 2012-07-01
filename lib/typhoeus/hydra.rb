@@ -30,7 +30,7 @@ module Typhoeus
     #  200.
     def initialize(options = {})
       @options = options
-      @max_concurrency = @options[:max_concurrency] || 200
+      @max_concurrency = @options.fetch(:max_concurrency, 200)
       @multi = Ethon::Multi.new
     end
   end

@@ -66,20 +66,23 @@ describe Typhoeus::Request do
         end
       end
 
-      context "when same url and same options are given, but options have different order" do
-        let(:other_options) { {:headers => { 'User-Agent' => "Fubar",  }, :verbose => true } }
-        let(:other) { Typhoeus::Request.new(url, other_options)}
-
-        it "returns true" do
-          request.should eql other
-        end
-      end
 
       context "when same url and options" do
-        let(:other) { Typhoeus::Request.new(url, options) }
+        context "when same order" do
+          let(:other) { Typhoeus::Request.new(url, options) }
 
-        it "returns true" do
-          request.should eql other
+          it "returns true" do
+            request.should eql other
+          end
+        end
+
+        context "when different order" do
+          let(:other_options) { {:headers => { 'User-Agent' => "Fubar",  }, :verbose => true } }
+          let(:other) { Typhoeus::Request.new(url, other_options)}
+
+          it "returns true" do
+            request.should eql other
+          end
         end
       end
     end

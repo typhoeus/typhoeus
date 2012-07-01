@@ -36,7 +36,7 @@ module Typhoeus
         easy = Typhoeus.get_easy
         easy.http_request(
           url,
-          options[:method] || :get,
+          options.fetch(:method, :get),
           options.reject{|k,_| k==:method}
         )
         easy.prepare
