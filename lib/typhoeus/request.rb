@@ -50,7 +50,7 @@ module Typhoeus
     def eql?(other)
       self.class == other.class &&
         self.url == other.url &&
-        self.options == other.options
+        fuzzy_hash_eql?(self.options, other.options)
     end
 
     # Overrides Object#hash.
@@ -59,5 +59,23 @@ module Typhoeus
     def hash
       [ self.class, self.url, self.options ].hash
     end
+
+    protected
+
+    # Checks if two hashes are equal or not, discarding first-level hash order
+    #
+    # @param [ Hash ] hash
+    # @param [ Hash ] other hash to check for equality
+    #
+    # @return [ Boolean ] Returns true if hashes have same values for same keys and same length,
+    #     even if the keys are given in a different order.
+    def fuzzy_hash_eql?(left, right)
+      return true if (left == right)
+
+      (left.count == right.count) && left.inject(true) do |res, kvp|
+        res && (kvp[1] == right[kvp[0]])
+      end
+    end
+
   end
 end
