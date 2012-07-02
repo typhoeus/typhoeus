@@ -19,7 +19,7 @@ Major Changes:
     [Easy.new](http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy#initialize-instance_method)
     for a description.
   * The following classes were deleted because they do not seemed to be uesed at all. If that
-    turns out to be wrong, they will be restored: Typhoeus::Filter, Typhoeus::Remote, Typhoeus::RemoteMethod, Typhoeus::RemoteProxyObject
+    turns out to be wrong, they will be restored: `Typhoeus::Filter`, `Typhoeus::Remote`, `Typhoeus::RemoteMethod`, `Typhoeus::RemoteProxyObject`
 
 * Request shortcuts: `Typhoeus.get("www.google.de")`
 
