@@ -24,10 +24,10 @@ Major Changes:
 * Request shortcuts: `Typhoeus.get("www.google.de")`
 * Global configuration:
 ```ruby
-Typhoeus.configure do |config|
-  config.verbose = true
-  config.memoize = true
-end
+  Typhoeus.configure do |config|
+    config.verbose = true
+    config.memoize = true
+  end
 ```
 
 Enhancements:
