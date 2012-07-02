@@ -18,13 +18,20 @@ Major Changes:
     libcurl names. See
     [Easy.new](http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy#initialize-instance_method)
     for a description.
+  * The following classes were deleted because they do not seemed to be uesed at all. If that
+    turns out to be wrong, they will be restored.
+    * Typhoeus::Filter
+    * Typhoeus::Remote
+    * Typhoeus::RemoteMethod
+    * Typhoeus::RemoteProxyObject
+
 * Request shortcuts: `Typhoeus.get("www.google.de")`
 
 Enhancements:
 
 * Documentation
   ( [Alex P](https://github.com/ifesdjeen), [\#188](https://github.com/typhoeus/typhoeus/issues/188) )
-* Request#on_complete can hold multiple blocks.
+* Request#on\_complete can hold multiple blocks.
 
 Bug Fixes:
 
