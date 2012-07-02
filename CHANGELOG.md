@@ -22,12 +22,19 @@ Major Changes:
     turns out to be wrong, they will be restored: `Typhoeus::Filter`, `Typhoeus::Remote`, `Typhoeus::RemoteMethod`, `Typhoeus::RemoteProxyObject`
 
 * Request shortcuts: `Typhoeus.get("www.google.de")`
+* Global configuration:
+         Typhoeus.configure do |config|
+           config.verbose = true
+           config.memoize = true
+         end
 
 Enhancements:
 
 * Documentation
   ( [Alex P](https://github.com/ifesdjeen), [\#188](https://github.com/typhoeus/typhoeus/issues/188) )
 * Request#on\_complete can hold multiple blocks.
+* Request#eql? recognizes when header/params/body has a different order, but still same keys and values
+  ( [Alex P](https://github.com/ifesdjeen), [\#194](https://github.com/typhoeus/typhoeus/issues/194) )
 
 Bug Fixes:
 
