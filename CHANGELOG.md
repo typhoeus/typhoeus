@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.5.0
+## 0.5.0.pre
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.4.2...master)
 
