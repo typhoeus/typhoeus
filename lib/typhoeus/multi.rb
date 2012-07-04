@@ -114,7 +114,7 @@ module Typhoeus
     end
 
     def cleanup
-      Curl.multi_cleanup(@handle)
+      #Curl.multi_cleanup(@handle)
       @active = 0
       @running = 0
       @easy_handles = []
