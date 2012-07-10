@@ -32,11 +32,11 @@ describe Typhoeus::Requests::Callbacks do
 
   describe "#complete" do
     before do
-      request.on_complete {|r| String.new(r.url) }
+      request.response = Typhoeus::Response.new
+      request.on_complete {|r| r.should be_a(Typhoeus::Response) }
     end
 
-    it "executes blocks and passes self" do
-      String.expects(:new).with(request.url)
+    it "executes blocks and passes response" do
       request.complete
     end
   end

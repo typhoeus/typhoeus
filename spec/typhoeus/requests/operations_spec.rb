@@ -27,6 +27,11 @@ describe Typhoeus::Requests::Operations do
       request.run
     end
 
+    it "sets response" do
+      request.run
+      request.response.should be
+    end
+
     it "releases easy" do
       Typhoeus.expects(:release_easy)
       request.run

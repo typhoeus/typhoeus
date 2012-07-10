@@ -42,6 +42,7 @@ module Typhoeus
         easy.prepare
         easy.perform
         @response = Response.new(easy.to_hash)
+        @response.request = self
         Typhoeus.release_easy(easy)
         complete
         @response

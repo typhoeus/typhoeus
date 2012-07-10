@@ -34,13 +34,14 @@ module Typhoeus
         @on_complete
       end
 
-      # Execute on_complete callbacks.
+      # Execute on_complete callbacks and yields
+      # response.
       #
       # @example Execute on_completes.
       #   request.complete
       def complete
         if defined?(@on_complete)
-          @on_complete.map{ |callback| callback.call(self) }
+          @on_complete.map{ |callback| callback.call(self.response) }
         end
       end
     end
