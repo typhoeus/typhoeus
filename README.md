@@ -7,7 +7,7 @@ Like a modern code version of the mythical beast with 100 serpent heads, Typhoeu
 Single request:
 
 ```ruby
-Typhoeus.get("www.example.com")
+Typhoeus::Request.get("www.example.com")
 ```
 
 Parallel requests:
