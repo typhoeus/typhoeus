@@ -7,8 +7,9 @@ require 'typhoeus/hydras/runnable'
 module Typhoeus
 
   # Hydra manages making parallel HTTP requests. This
-  # is archived by using libcurls multi interface. The
-  # benefits are that you don't have to worry running
+  # is achieved by using libcurls multi interface:
+  # http://curl.haxx.se/libcurl/c/libcurl-multi.html
+  # The benefits are that you don't have to worry running
   # the requests by yourself.
   class Hydra
     include Hydras::EasyPool
