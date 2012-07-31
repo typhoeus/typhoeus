@@ -17,7 +17,7 @@ describe Typhoeus::Hydras::EasyFactory do
     it "sets response on request" do
       easy_factory.set_callback
       easy_factory.easy.complete
-      request.response.should be
+      expect(request.response).to be
     end
 
     it "resets easy" do
@@ -29,14 +29,14 @@ describe Typhoeus::Hydras::EasyFactory do
     it "pushes easy back into the pool" do
       easy_factory.set_callback
       easy_factory.easy.complete
-      easy_factory.hydra.easy_pool.should include(easy_factory.easy)
+      expect(easy_factory.hydra.easy_pool).to include(easy_factory.easy)
     end
 
     it "queues next request" do
       easy_factory.hydra.instance_variable_set(:@queued_requests, [request])
       easy_factory.set_callback
       easy_factory.easy.complete
-      easy_factory.hydra.queued_requests.should include(request)
+      expect(easy_factory.hydra.queued_requests).to include(request)
     end
 
     it "runs requests complete callback" do

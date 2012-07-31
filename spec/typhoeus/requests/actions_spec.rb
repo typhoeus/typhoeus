@@ -6,12 +6,12 @@ describe Typhoeus::Requests::Actions do
       let(:response) { Typhoeus::Request.method(name).call("http://localhost:3001") }
 
       it "returns ok" do
-        response.return_code.should eq(:ok)
+        expect(response.return_code).to eq(:ok)
       end
 
       unless name == :head
         it "makes #{name.to_s.upcase} requests" do
-          response.response_body.should include("\"REQUEST_METHOD\":\"#{name.to_s.upcase}\"")
+          expect(response.response_body).to include("\"REQUEST_METHOD\":\"#{name.to_s.upcase}\"")
         end
       end
     end

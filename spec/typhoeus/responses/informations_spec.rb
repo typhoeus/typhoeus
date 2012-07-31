@@ -6,7 +6,7 @@ describe Typhoeus::Responses::Informations do
   Typhoeus::Responses::Informations::AVAILABLE_INFORMATIONS.each do |name|
     describe name do
       it "responds to" do
-        response.should respond_to(name)
+        expect(response).to respond_to(name)
       end
     end
   end
@@ -14,7 +14,7 @@ describe Typhoeus::Responses::Informations do
   describe "#header" do
     context "when no header" do
       it "returns nil" do
-        response.header.should be_nil
+        expect(response.header).to be_nil
       end
     end
 
@@ -22,15 +22,15 @@ describe Typhoeus::Responses::Informations do
       let(:options) { {:response_header => "Expire: -1\nServer: gws"} }
 
       it "returns nonempty header" do
-        response.header.should_not be_empty
+        expect(response.header).to_not be_empty
       end
 
       it "has Expire" do
-        response.header['Expire'].should eq('-1')
+        expect(response.header['Expire']).to eq('-1')
       end
 
       it "has Server" do
-        response.header['Server'].should eq('gws')
+        expect(response.header['Server']).to eq('gws')
       end
     end
 
@@ -38,7 +38,7 @@ describe Typhoeus::Responses::Informations do
       let(:options) { {:response_header => "Server: A\r\n\r\nServer: B"} }
 
       it "returns the last" do
-        response.header['Server'].should eq("B")
+        expect(response.header['Server']).to eq("B")
       end
     end
   end
@@ -46,7 +46,7 @@ describe Typhoeus::Responses::Informations do
   describe "#redirections" do
     context "when no response_header" do
       it "returns empty array" do
-        response.redirections.should be_empty
+        expect(response.redirections).to be_empty
       end
     end
 
@@ -54,7 +54,7 @@ describe Typhoeus::Responses::Informations do
       let(:options) { {:response_header => "Expire: -1\nServer: gws"} }
 
       it "returns empty array" do
-        response.redirections.should be_empty
+        expect(response.redirections).to be_empty
       end
     end
 
@@ -62,7 +62,7 @@ describe Typhoeus::Responses::Informations do
       let(:options) { {:response_header => "Server: A\r\n\r\nServer: B"} }
 
       it "returns response from all but last header" do
-        response.redirections.should have(1).item
+        expect(response.redirections).to have(1).item
       end
     end
   end

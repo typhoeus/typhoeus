@@ -7,7 +7,7 @@ describe Typhoeus::Requests::Responseable do
   describe "#response=" do
     it "stores response" do
       request.response = response
-      request.response.should eq(response)
+      expect(request.response).to eq(response)
     end
   end
 end

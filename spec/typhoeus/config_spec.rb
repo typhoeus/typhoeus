@@ -5,11 +5,11 @@ describe Typhoeus::Config do
 
   [:verbose, :memoize].each do |name|
     it "responds to #{name}" do
-      config.should respond_to(name)
+      expect(config).to respond_to(name)
     end
 
     it "responds to #{name}=" do
-      config.should respond_to("#{name}=")
+      expect(config).to respond_to("#{name}=")
     end
   end
 end

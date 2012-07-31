@@ -7,18 +7,18 @@ describe Typhoeus::Request do
 
   describe ".new" do
     it "stores url" do
-      request.url.should eq(url)
+      expect(request.url).to eq(url)
     end
 
     it "stores options" do
-      request.options.should eq(options)
+      expect(request.options).to eq(options)
     end
 
     context "when header with user agent" do
       let(:options) { {:headers => {'User-Agent' => "Custom"} } }
 
       it "doesn't modify user agent" do
-        request.options[:headers]['User-Agent'].should eq("Custom")
+        expect(request.options[:headers]['User-Agent']).to eq("Custom")
       end
     end
 
@@ -26,7 +26,7 @@ describe Typhoeus::Request do
       let(:options) { {:headers => {} } }
 
       it "add user agent" do
-        request.options[:headers]['User-Agent'].should eq(Typhoeus::USER_AGENT)
+        expect(request.options[:headers]['User-Agent']).to eq(Typhoeus::USER_AGENT)
       end
     end
 
@@ -35,7 +35,7 @@ describe Typhoeus::Request do
       after { Typhoeus.configure { |config| config.verbose = false} }
 
       it "respects" do
-        request.options[:verbose].should be_true
+        expect(request.options[:verbose]).to be_true
       end
     end
   end
@@ -45,7 +45,7 @@ describe Typhoeus::Request do
       let(:other) { "" }
 
       it "returns false" do
-        request.should_not eql other
+        expect(request).to_not eql other
       end
     end
 
@@ -54,7 +54,7 @@ describe Typhoeus::Request do
 
       context "when other url" do
         it "returns false" do
-          request.should_not eql other
+          expect(request).to_not eql other
         end
       end
 
@@ -62,7 +62,7 @@ describe Typhoeus::Request do
         let(:other) { Typhoeus::Request.new(url, {}) }
 
         it "returns false" do
-          request.should_not eql other
+          expect(request).to_not eql other
         end
       end
 
@@ -72,7 +72,7 @@ describe Typhoeus::Request do
           let(:other) { Typhoeus::Request.new(url, options) }
 
           it "returns true" do
-            request.should eql other
+            expect(request).to eql other
           end
         end
 
@@ -81,7 +81,7 @@ describe Typhoeus::Request do
           let(:other) { Typhoeus::Request.new(url, other_options)}
 
           it "returns true" do
-            request.should eql other
+            expect(request).to eql other
           end
         end
       end
@@ -93,7 +93,7 @@ describe Typhoeus::Request do
       let(:other) { Typhoeus::Request.new(url, options) }
 
       it "has same hashes" do
-        request.hash.should eq(other.hash)
+        expect(request.hash).to eq(other.hash)
       end
     end
 
@@ -101,7 +101,7 @@ describe Typhoeus::Request do
       let(:other) { Typhoeus::Request.new("url", {}) }
 
       it "has different hashes" do
-        request.hash.should_not eq(other.hash)
+        expect(request.hash).to_not eq(other.hash)
       end
     end
   end

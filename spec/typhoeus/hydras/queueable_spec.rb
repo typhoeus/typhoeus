@@ -14,7 +14,7 @@ describe Typhoeus::Hydras::Queueable do
 
     it "sets hydra on request" do
       hydra.queue(request)
-      request.hydra.should eq(hydra)
+      expect(request.hydra).to eq(hydra)
     end
 
     context "when max concurrency limit not reached" do
@@ -36,7 +36,7 @@ describe Typhoeus::Hydras::Queueable do
 
       it "adds to queued requests" do
         hydra.queue(request)
-        hydra.queued_requests.should include(request)
+        expect(hydra.queued_requests).to include(request)
       end
     end
   end
@@ -46,7 +46,7 @@ describe Typhoeus::Hydras::Queueable do
 
     it "clears queue" do
       hydra.abort
-      hydra.queued_requests.should be_empty
+      expect(hydra.queued_requests).to be_empty
     end
   end
 end

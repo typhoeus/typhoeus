@@ -9,7 +9,7 @@ describe Typhoeus::Responses::Legacy do
       let(:options) { {new => value} }
 
       it "aliases #{new}" do
-        response.method(old).call.should eq(value)
+        expect(response.method(old).call).to eq(value)
       end
     end
   end

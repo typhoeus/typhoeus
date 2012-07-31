@@ -7,7 +7,7 @@ describe Typhoeus::Responses::Header do
   describe "#parse" do
     context "when no header" do
       it "returns nil" do
-        header.should be_empty
+        expect(header).to be_empty
       end
     end
 
@@ -29,11 +29,11 @@ describe Typhoeus::Responses::Header do
       end
 
       it "sets raw" do
-        header.raw.should eq(raw)
+        expect(header.raw).to eq(raw)
       end
 
       it "sets Set-Cookie" do
-        header['Set-Cookie'].should have(3).items
+        expect(header['Set-Cookie']).to have(3).items
       end
 
       [
@@ -42,7 +42,7 @@ describe Typhoeus::Responses::Header do
         'NID=61=LblqYgh5Ou; expires=Sat, 29-Dec-2012 10:09:23 GMT; path=/; domain=.google.de; HttpOnly'
       ].each_with_index do |cookie, i|
         it "sets Cookie##{i}" do
-          header['Set-Cookie'].should include(cookie)
+          expect(header['Set-Cookie']).to include(cookie)
         end
       end
 
@@ -55,7 +55,7 @@ describe Typhoeus::Responses::Header do
         'X-Frame-Options' => 'SAMEORIGIN', 'Transfer-Encoding' => 'chunked'
       }.each do |name, value|
         it "sets #{name}" do
-          header[name].should eq(value)
+          expect(header[name]).to eq(value)
         end
       end
     end

@@ -13,7 +13,7 @@ describe Typhoeus::Hydras::Memoizable do
       context "when request new" do
         it "sets no response" do
           hydra.queue(request)
-          request.response.should be_nil
+          expect(request.response).to be_nil
         end
 
         it "doesn't call complete" do
@@ -28,7 +28,7 @@ describe Typhoeus::Hydras::Memoizable do
 
         it "sets response" do
           hydra.queue(request)
-          request.response.should be
+          expect(request.response).to be
         end
 
         it "sets response via instance_variable_set to avoid short circuit" do

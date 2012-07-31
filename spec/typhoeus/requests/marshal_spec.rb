@@ -12,7 +12,7 @@ describe Typhoeus::Requests::Marshal do
         before { request.instance_variable_set("@#{name}", Proc.new{}) }
 
         it "doesn't include @#{name}" do
-          request.send(:marshal_dump).map(&:first).should_not include("@#{name}")
+          expect(request.send(:marshal_dump).map(&:first)).to_not include("@#{name}")
         end
 
         it "doesn't raise when dumped" do
@@ -23,11 +23,11 @@ describe Typhoeus::Requests::Marshal do
           let(:loaded) { Marshal.load(Marshal.dump(request)) }
 
           it "includes url" do
-            loaded.url.should eq(request.url)
+            expect(loaded.url).to eq(request.url)
           end
 
           it "doesn't include #{name}" do
-            loaded.instance_variables.should_not include("@#{name}")
+            expect(loaded.instance_variables).to_not include("@#{name}")
           end
         end
       end

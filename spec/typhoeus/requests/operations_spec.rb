@@ -29,7 +29,7 @@ describe Typhoeus::Requests::Operations do
 
     it "sets response" do
       request.run
-      request.response.should be
+      expect(request.response).to be
     end
 
     it "releases easy" do
@@ -45,7 +45,7 @@ describe Typhoeus::Requests::Operations do
     end
 
     it "returns a response" do
-      request.run.should be_a(Typhoeus::Response)
+      expect(request.run).to be_a(Typhoeus::Response)
     end
   end
 end

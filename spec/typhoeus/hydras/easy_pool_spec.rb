@@ -5,7 +5,7 @@ describe Typhoeus::Hydras::EasyPool do
 
   describe "#easy_pool" do
     it "returns array" do
-      Typhoeus.easy_pool.should be_a(Array)
+      expect(Typhoeus.easy_pool).to be_a(Array)
     end
   end
 
@@ -17,7 +17,7 @@ describe Typhoeus::Hydras::EasyPool do
 
     it "puts easy back into pool" do
       Typhoeus.release_easy(easy)
-      Typhoeus.easy_pool.should include(easy)
+      expect(Typhoeus.easy_pool).to include(easy)
     end
   end
 
@@ -27,7 +27,7 @@ describe Typhoeus::Hydras::EasyPool do
       after { Typhoeus.easy_pool.clear }
 
       it "takes" do
-        Typhoeus.get_easy.should eq(easy)
+        expect(Typhoeus.get_easy).to eq(easy)
       end
     end
 

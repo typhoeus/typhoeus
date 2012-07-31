@@ -17,7 +17,7 @@ describe Typhoeus::Requests::Memoizable do
 
         it "stores response in memory" do
           request.response = response
-          hydra.memory[request].should be
+          expect(hydra.memory[request]).to be
         end
       end
 
@@ -26,7 +26,7 @@ describe Typhoeus::Requests::Memoizable do
 
         it "doesn't store response in memory" do
           request.response = response
-          hydra.memory[request].should be_nil
+          expect(hydra.memory[request]).to be_nil
         end
       end
     end

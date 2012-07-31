@@ -7,12 +7,12 @@ describe Typhoeus do
 
     it "yields config" do
       Typhoeus.configure do |config|
-        config.should be_a(Typhoeus::Config)
+        expect(config).to be_a(Typhoeus::Config)
       end
     end
 
     it "sets values config" do
-      Typhoeus::Config.verbose.should be_true
+      expect(Typhoeus::Config.verbose).to be_true
     end
   end
 
@@ -21,12 +21,12 @@ describe Typhoeus do
       let(:response) { Typhoeus::Request.method(name).call("http://localhost:3001") }
 
       it "returns ok" do
-        response.return_code.should eq(:ok)
+        expect(response.return_code).to eq(:ok)
       end
 
       unless name == :head
         it "makes #{name.to_s.upcase} requests" do
-          response.response_body.should include("\"REQUEST_METHOD\":\"#{name.to_s.upcase}\"")
+          expect(response.response_body).to include("\"REQUEST_METHOD\":\"#{name.to_s.upcase}\"")
         end
       end
     end

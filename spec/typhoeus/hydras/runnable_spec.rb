@@ -30,7 +30,7 @@ describe Typhoeus::Hydras::Runnable do
 
       it "sends" do
         hydra.run
-        first.response.should be
+        expect(first.response).to be
       end
     end
 
@@ -47,37 +47,37 @@ describe Typhoeus::Hydras::Runnable do
 
       it "sends first" do
         hydra.run
-        first.response.should be
+        expect(first.response).to be
       end
 
       it "sends second" do
         hydra.run
-        second.response.should be
+        expect(second.response).to be
       end
 
       it "sends third" do
         hydra.run
-        third.response.should be
+        expect(third.response).to be
       end
 
       it "sends first first" do
         first.on_complete do
-          second.response.should be_nil
-          third.response.should be_nil
+          expect(second.response).to be_nil
+          expect(third.response).to be_nil
         end
       end
 
       it "sends second second" do
         first.on_complete do
-          first.response.should be
-          third.response.should be_nil
+          expect(first.response).to be
+          expect(third.response).to be_nil
         end
       end
 
       it "sends thirds last" do
         first.on_complete do
-          second.response.should be
-          third.response.should be
+          expect(second.response).to be
+          expect(third.response).to be
         end
       end
     end
@@ -91,17 +91,17 @@ describe Typhoeus::Hydras::Runnable do
 
       it "sends first" do
         hydra.run
-        first.response.should be
+        expect(first.response).to be
       end
 
       it "sends second" do
         hydra.run
-        second.response.should be
+        expect(second.response).to be
       end
 
       it "sends third" do
         hydra.run
-        third.response.should be
+        expect(third.response).to be
       end
     end
   end

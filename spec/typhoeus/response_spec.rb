@@ -9,7 +9,7 @@ describe Typhoeus::Response do
       let(:options) { {:return_code => 2} }
 
       it "stores" do
-        response.options.should eq(options)
+        expect(response.options).to eq(options)
       end
     end
   end
