@@ -14,7 +14,7 @@ describe Typhoeus::Hydras::Runnable do
       let(:requests) { [] }
 
       it "does nothing" do
-        hydra.multi.expects(:perform)
+        hydra.multi.should_receive(:perform)
         hydra.run
       end
     end
@@ -24,7 +24,7 @@ describe Typhoeus::Hydras::Runnable do
       let(:requests) { [first] }
 
       it "runs multi#perform" do
-        hydra.multi.expects(:perform)
+        hydra.multi.should_receive(:perform)
         hydra.run
       end
 
@@ -41,7 +41,7 @@ describe Typhoeus::Hydras::Runnable do
       let(:requests) { [first, second, third] }
 
       it "runs multi#perform" do
-        hydra.multi.expects(:perform)
+        hydra.multi.should_receive(:perform)
         hydra.run
       end
 

@@ -11,7 +11,7 @@ describe Typhoeus::Hydras::EasyPool do
 
   describe "#release_easy" do
     it "resets easy" do
-      easy.expects(:reset)
+      easy.should_receive(:reset)
       Typhoeus.release_easy(easy)
     end
 
@@ -33,7 +33,7 @@ describe Typhoeus::Hydras::EasyPool do
 
     context "when no easy in pool" do
       it "creates" do
-        Ethon::Easy.expects(:new)
+        Ethon::Easy.should_receive(:new)
         Typhoeus.get_easy
       end
     end

@@ -17,7 +17,7 @@ describe Typhoeus::Hydras::Memoizable do
         end
 
         it "doesn't call complete" do
-          request.expects(:complete).never
+          request.should_receive(:complete).never
           hydra.queue(request)
         end
       end
@@ -32,12 +32,12 @@ describe Typhoeus::Hydras::Memoizable do
         end
 
         it "sets response via instance_variable_set to avoid short circuit" do
-          request.expects(:instance_variable_set).with(:@response, response)
+          request.should_receive(:instance_variable_set).with(:@response, response)
           hydra.queue(request)
         end
 
         it "calls complete" do
-          request.expects(:complete)
+          request.should_receive(:complete)
           hydra.queue(request)
         end
       end
@@ -46,7 +46,7 @@ describe Typhoeus::Hydras::Memoizable do
 
   describe "#run" do
     it "clears memory before starting" do
-      hydra.memory.expects(:clear)
+      hydra.memory.should_receive(:clear)
       hydra.run
     end
   end

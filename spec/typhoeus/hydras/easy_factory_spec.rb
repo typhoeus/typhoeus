@@ -10,7 +10,7 @@ describe Typhoeus::Hydras::EasyFactory do
     let(:easy_factory) { described_class.new(request, hydra) }
 
     it "sets easy.on_complete callback" do
-      easy_factory.easy.expects(:on_complete)
+      easy_factory.easy.should_receive(:on_complete)
       easy_factory.set_callback
     end
 
@@ -22,7 +22,7 @@ describe Typhoeus::Hydras::EasyFactory do
 
     it "resets easy" do
       easy_factory.set_callback
-      easy_factory.easy.expects(:reset)
+      easy_factory.easy.should_receive(:reset)
       easy_factory.easy.complete
     end
 
@@ -40,7 +40,9 @@ describe Typhoeus::Hydras::EasyFactory do
     end
 
     it "runs requests complete callback" do
-      request.instance_variable_set(:@on_complete, [mock(:call)])
+      callback = mock(:call)
+      callback.should_receive(:call)
+      request.instance_variable_set(:@on_complete, [callback])
       easy_factory.set_callback
       easy_factory.easy.complete
     end

@@ -21,7 +21,7 @@ describe Typhoeus::Hydras::Queueable do
       let(:options) { { :max_concurrency => 10 } }
 
       it "adds to multi" do
-        hydra.multi.expects(:add)
+        hydra.multi.should_receive(:add)
         hydra.queue(request)
       end
     end
@@ -30,7 +30,7 @@ describe Typhoeus::Hydras::Queueable do
       let(:options) { { :max_concurrency => 0 } }
 
       it "doesn't add to multi" do
-        hydra.multi.expects(:add).never
+        hydra.multi.should_receive(:add).never
         hydra.queue(request)
       end
 
