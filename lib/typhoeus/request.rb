@@ -16,7 +16,7 @@ module Typhoeus
     include Requests::Responseable
     include Requests::Memoizable
 
-    attr_accessor :options, :url, :hydra
+    attr_accessor :options, :url, :hydra, :original_options
 
     # Create a new request.
     #
@@ -29,14 +29,10 @@ module Typhoeus
     # #return [ Request ] The new request.
     def initialize(url, options = {})
       @url = url
+      @original_options = options
       @options = options.dup
 
-      if @options[:headers]
-        @options[:headers] = {'User-Agent' => Typhoeus::USER_AGENT}.merge(options[:headers])
-      else
-        @options[:headers] = {'User-Agent' => Typhoeus::USER_AGENT}
-      end
-      @options[:verbose] = Typhoeus::Config.verbose unless @options[:verbose]
+      set_defaults
     end
 
     # Returns wether other is equal to self.
@@ -77,5 +73,14 @@ module Typhoeus
       end
     end
 
+    # Sets default header and verbose when turned on.
+    def set_defaults
+      if @options[:headers]
+        @options[:headers] = {'User-Agent' => Typhoeus::USER_AGENT}.merge(options[:headers])
+      else
+        @options[:headers] = {'User-Agent' => Typhoeus::USER_AGENT}
+      end
+      @options[:verbose] = Typhoeus::Config.verbose if @options[:verbose].nil? && !Typhoeus::Config.verbose.nil?
+    end
   end
 end

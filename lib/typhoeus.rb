@@ -2,9 +2,10 @@ require 'digest/sha2'
 require 'ethon'
 
 require 'typhoeus/config'
+require 'typhoeus/expectation'
+require 'typhoeus/hydra'
 require 'typhoeus/request'
 require 'typhoeus/response'
-require 'typhoeus/hydra'
 require 'typhoeus/version'
 
 # Typhoeus is a http client library based on Ethon which
@@ -38,5 +39,15 @@ module Typhoeus
   # @return [ Config ] The configuration object.
   def configure
     yield Config
+  end
+
+  def stub(url, options = {})
+    Expectation.new(url, options).tap do |expectation|
+      expectations << expectation
+    end
+  end
+
+  def expectations
+    @expectations ||= []
   end
 end

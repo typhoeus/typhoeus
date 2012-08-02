@@ -3,6 +3,7 @@ require 'typhoeus/hydras/easy_pool'
 require 'typhoeus/hydras/memoizable'
 require 'typhoeus/hydras/queueable'
 require 'typhoeus/hydras/runnable'
+require 'typhoeus/hydras/stubable'
 
 module Typhoeus
 
@@ -16,6 +17,7 @@ module Typhoeus
     include Hydras::Queueable
     include Hydras::Runnable
     include Hydras::Memoizable
+    include Hydras::Stubable
 
     attr_reader :max_concurrency, :multi
 

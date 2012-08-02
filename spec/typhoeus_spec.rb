@@ -16,6 +16,19 @@ describe Typhoeus do
     end
   end
 
+  describe ".stub" do
+    before { Typhoeus.expectations.clear }
+
+    it "returns expectation" do
+      expect(Typhoeus.stub("www.example.com")).to be_a(Typhoeus::Expectation)
+    end
+
+    it "adds expectation" do
+      Typhoeus.stub(:get, "")
+      expect(Typhoeus.expectations).to have(1).item
+    end
+  end
+
   [:get, :post, :put, :delete, :head, :patch, :options].each do |name|
     describe ".#{name}" do
       let(:response) { Typhoeus::Request.method(name).call("http://localhost:3001") }
