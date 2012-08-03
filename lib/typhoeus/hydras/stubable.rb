@@ -12,5 +12,3 @@ module Typhoeus
     end
   end
 end
-
-# Typhoeus.stub("www.example.com").and_return(Typhoeus::Response.new)
