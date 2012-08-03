@@ -1,20 +1,22 @@
-require 'typhoeus/requests/callbacks'
 require 'typhoeus/requests/actions'
-require 'typhoeus/requests/operations'
+require 'typhoeus/requests/callbacks'
 require 'typhoeus/requests/marshal'
-require 'typhoeus/requests/responseable'
 require 'typhoeus/requests/memoizable'
+require 'typhoeus/requests/operations'
+require 'typhoeus/requests/responseable'
+require 'typhoeus/requests/stubable'
 
 module Typhoeus
 
   # This class represents a request.
   class Request
+    extend  Requests::Actions
     include Requests::Callbacks
     include Requests::Marshal
     include Requests::Operations
-    extend  Requests::Actions
     include Requests::Responseable
     include Requests::Memoizable
+    include Requests::Stubable
 
     attr_accessor :options, :url, :hydra, :original_options
 
