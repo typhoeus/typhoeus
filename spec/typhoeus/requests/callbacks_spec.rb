@@ -3,6 +3,11 @@ require 'spec_helper'
 describe Typhoeus::Requests::Callbacks do
   let(:request) { Typhoeus::Request.new("fubar") }
 
+  after do
+    request.on_complete.clear
+    Typhoeus.on_complete.clear
+  end
+
   describe "#on_complete" do
     it "responds" do
       expect(request).to respond_to(:on_complete)
@@ -31,13 +36,38 @@ describe Typhoeus::Requests::Callbacks do
   end
 
   describe "#complete" do
-    before do
-      request.response = Typhoeus::Response.new
-      request.on_complete {|r| expect(r).to be_a(Typhoeus::Response) }
+    context "when local callback" do
+      before do
+        request.response = Typhoeus::Response.new
+        request.on_complete {|r| expect(r).to be_a(Typhoeus::Response) }
+      end
+
+      it "executes blocks and passes response" do
+        request.complete
+      end
     end
 
-    it "executes blocks and passes response" do
-      request.complete
+    context "when global callback" do
+      before do
+        request.response = Typhoeus::Response.new
+        Typhoeus.on_complete {|r| expect(r).to be_a(Typhoeus::Response) }
+      end
+
+      it "executes blocks and passes response" do
+        request.complete
+      end
+    end
+
+    context "when global and local callbacks" do
+      before do
+        request.response = Typhoeus::Response.new
+        Typhoeus.on_complete {|r| r.instance_variable_set(:@fu, 1) }
+        request.on_complete {|r| expect(r.instance_variable_get(:@fu)).to eq(1) }
+      end
+
+      it "runs global first" do
+        request.complete
+      end
     end
   end
 end

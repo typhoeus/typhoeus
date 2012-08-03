@@ -50,4 +50,16 @@ module Typhoeus
   def expectations
     @expectations ||= []
   end
+
+  # Set on_complete callback.
+  #
+  # @example Set on_complete.
+  #   Typhoeus.on_complete { p "yay" }
+  #
+  # @param [ Block ] block The block to execute.
+  def on_complete(&block)
+    @on_complete ||= []
+    @on_complete << block if block_given?
+    @on_complete
+  end
 end

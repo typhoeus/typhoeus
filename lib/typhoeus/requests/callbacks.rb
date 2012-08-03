@@ -40,9 +40,7 @@ module Typhoeus
       # @example Execute on_completes.
       #   request.complete
       def complete
-        if defined?(@on_complete)
-          @on_complete.map{ |callback| callback.call(self.response) }
-        end
+        (Typhoeus.on_complete + on_complete).map{ |callback| callback.call(self.response) }
       end
     end
   end
