@@ -59,7 +59,7 @@ module Typhoeus
           request.response = Response.new(easy.to_hash)
           hydra.release_easy(easy)
           hydra.queue(hydra.queued_requests.shift) unless hydra.queued_requests.empty?
-          request.complete
+          request.execute_callbacks
         end
       end
     end

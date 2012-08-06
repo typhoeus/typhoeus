@@ -42,6 +42,35 @@ module Typhoeus
       def complete
         (Typhoeus.on_complete + on_complete).map{ |callback| callback.call(self.response) }
       end
+
+      def on_success(&block)
+        @on_success ||= []
+        @on_success << block if block_given?
+        @on_success
+      end
+
+      def success
+        (Typhoeus.on_success + on_success).map{ |callback| callback.call(self.response) }
+      end
+
+      def on_failure(&block)
+        @on_failure ||= []
+        @on_failure << block if block_given?
+        @on_failure
+      end
+
+      def failure
+        (Typhoeus.on_failure + on_failure).map{ |callback| callback.call(self.response) }
+      end
+
+      def execute_callbacks
+        complete
+        if response && response.return_code == :ok && (response.response_code == 200 || (response.response_code >= 300 && response.response_code <= 399))
+          success
+        elsif response
+          failure
+        end
+      end
     end
   end
 end

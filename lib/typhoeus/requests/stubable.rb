@@ -4,7 +4,7 @@ module Typhoeus
       def run
         if expectation = Expectation.find_by(self)
           @response = expectation.response
-          complete
+          execute_callbacks
         else
           super
         end

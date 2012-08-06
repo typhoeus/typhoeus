@@ -63,4 +63,28 @@ module Typhoeus
     @on_complete << block if block_given?
     @on_complete
   end
+
+  # Set on_success callback.
+  #
+  # @example Set on_success.
+  #   Typhoeus.on_success { p "yay" }
+  #
+  # @param [ Block ] block The block to execute.
+  def on_success(&block)
+    @on_success ||= []
+    @on_success << block if block_given?
+    @on_success
+  end
+
+  # Set on_failure callback.
+  #
+  # @example Set on_failure.
+  #   Typhoeus.on_failure { p "yay" }
+  #
+  # @param [ Block ] block The block to execute.
+  def on_failure(&block)
+    @on_failure ||= []
+    @on_failure << block if block_given?
+    @on_failure
+  end
 end

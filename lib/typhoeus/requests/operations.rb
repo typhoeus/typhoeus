@@ -44,7 +44,7 @@ module Typhoeus
         @response = Response.new(easy.to_hash)
         @response.request = self
         Typhoeus.release_easy(easy)
-        complete
+        execute_callbacks
         @response
       end
     end
