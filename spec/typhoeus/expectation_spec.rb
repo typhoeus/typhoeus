@@ -11,10 +11,10 @@ describe Typhoeus::Expectation do
   describe ".find_by" do
     let(:request) { Typhoeus::Request.new("") }
 
-    before { Typhoeus.expectations.clear }
+    before { Typhoeus::Expectation.clear }
 
     it "returns a dummy when expectations not empty" do
-      Typhoeus.expectations << expectation
+      Typhoeus::Expectation.all << expectation
       expectation.should_receive(:matches?).with(request).and_return(true)
       expect(Typhoeus::Expectation.find_by(request)).to eq(expectation)
     end

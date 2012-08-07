@@ -17,7 +17,7 @@ describe Typhoeus do
   end
 
   describe ".stub" do
-    before { Typhoeus.expectations.clear }
+    before { Typhoeus::Expectation.clear }
 
     it "returns expectation" do
       expect(Typhoeus.stub("www.example.com")).to be_a(Typhoeus::Expectation)
@@ -25,7 +25,7 @@ describe Typhoeus do
 
     it "adds expectation" do
       Typhoeus.stub(:get, "")
-      expect(Typhoeus.expectations).to have(1).item
+      expect(Typhoeus::Expectation.all).to have(1).item
     end
   end
 

@@ -3,8 +3,16 @@ module Typhoeus
     attr_reader :url, :options
 
     class << self
+      def all
+        @expectations ||= []
+      end
+
+      def clear
+        all.clear
+      end
+
       def find_by(request)
-        Typhoeus.expectations.find do |expectation|
+        all.find do |expectation|
           expectation.matches?(request)
         end
       end

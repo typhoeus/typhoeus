@@ -7,7 +7,7 @@ describe Typhoeus::Hydras::Stubable do
   let(:response) { Typhoeus::Response.new }
 
   before { Typhoeus.stub(url).and_return(response) }
-  after { Typhoeus.expectations.clear }
+  after { Typhoeus::Expectation.clear }
 
   describe "#queue" do
     it "checks expactations" do

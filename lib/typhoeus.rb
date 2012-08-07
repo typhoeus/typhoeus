@@ -42,14 +42,10 @@ module Typhoeus
   end
 
   def stub(url, options = {})
-    expectation = expectations.find{ |e| e.url == url && e.options == options }
+    expectation = Expectation.all.find{ |e| e.url == url && e.options == options }
     (expectation || Expectation.new(url, options)).tap do |expectation|
-      expectations << expectation
+      Expectation.all << expectation
     end
-  end
-
-  def expectations
-    @expectations ||= []
   end
 
   # Set on_complete callback.
