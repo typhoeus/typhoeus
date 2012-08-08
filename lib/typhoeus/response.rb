@@ -11,7 +11,7 @@ module Typhoeus
     include Responses::Legacy
     include Responses::Status
 
-    attr_accessor :request, :options
+    attr_accessor :request, :options, :mock
 
     # Create a new response.
     #
@@ -23,6 +23,7 @@ module Typhoeus
     # @return [ Response ] The new response.
     def initialize(options = {})
       @options = options
+      @header = options[:header]
     end
   end
 end
