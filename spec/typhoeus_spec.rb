@@ -17,15 +17,32 @@ describe Typhoeus do
   end
 
   describe ".stub" do
+    let(:url) { "www.example.com" }
     before { Typhoeus::Expectation.clear }
 
-    it "returns expectation" do
-      expect(Typhoeus.stub("www.example.com")).to be_a(Typhoeus::Expectation)
+    context "when no similar expectation exists" do
+      it "returns expectation" do
+        expect(Typhoeus.stub(url)).to be_a(Typhoeus::Expectation)
+      end
+
+      it "adds expectation" do
+        Typhoeus.stub(:get, "")
+        expect(Typhoeus::Expectation.all).to have(1).item
+      end
     end
 
-    it "adds expectation" do
-      Typhoeus.stub(:get, "")
-      expect(Typhoeus::Expectation.all).to have(1).item
+    context "when similar expectation exists" do
+      let(:expectation) { Typhoeus::Expectation.new(url) }
+      before { Typhoeus::Expectation.all << expectation }
+
+      it "returns expectation" do
+        expect(Typhoeus.stub(url)).to be_a(Typhoeus::Expectation)
+      end
+
+      it "doesn't add expectation" do
+        Typhoeus.stub(url)
+        expect(Typhoeus::Expectation.all).to have(1).item
+      end
     end
   end
 

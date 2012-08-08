@@ -41,9 +41,20 @@ module Typhoeus
     yield Config
   end
 
+  # Stub out specific request.
+  #
+  # @example Stub.
+  #   Typhoeus.stub("www.example.com").and_return(Typhoeus::Response.new)
+  #
+  # @param [ String ] url The url to stub out.
+  # @param [ Hash ] options The options to stub out.
+  #
+  # @return [ Expection ] The expection.
   def stub(url, options = {})
     expectation = Expectation.all.find{ |e| e.url == url && e.options == options }
-    (expectation || Expectation.new(url, options)).tap do |expectation|
+    return expectation if expectation
+
+    Expectation.new(url, options).tap do |expectation|
       Expectation.all << expectation
     end
   end
