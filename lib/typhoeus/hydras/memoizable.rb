@@ -4,7 +4,7 @@ module Typhoeus
     # This module handles the GET request memoization
     # on the hydra side. Memoization needs to be turned
     # on:
-    #   Typhoeus.configre do |config|
+    #   Typhoeus.configure do |config|
     #     config.memoize = true
     #   end
     module Memoizable
