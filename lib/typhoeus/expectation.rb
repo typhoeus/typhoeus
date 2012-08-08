@@ -13,6 +13,7 @@ module Typhoeus
     def initialize(url, options = {})
       @url = url
       @options = options
+      @response_counter = 0
     end
 
     def and_return(response)
@@ -20,7 +21,7 @@ module Typhoeus
     end
 
     def matches?(request)
-      (url ? url == request.url : true) &&
+      url_match?(request.url) &&
         (options ? options.all?{ |k,v| request.original_options[k] == v } : true)
     end
 
@@ -29,7 +30,24 @@ module Typhoeus
     end
 
     def response
-      responses.last
+      response = responses.fetch(@response_counter, responses.last)
+      @response_counter += 1
+      response
+    end
+
+    private
+
+    def url_match?(request_url)
+      case url
+      when String
+        url == request_url
+      when Regexp
+        !!request_url.match(url)
+      when nil
+        true
+      else
+        false
+      end
     end
   end
 end

@@ -34,12 +34,25 @@ describe Typhoeus::Expectation do
   end
 
   describe "#response" do
-    it "returns last response" do
-      expectation.responses << 1 << 2
-      expect(expectation.response).to eq(2)
+    before { expectation.instance_variable_set(:@responses, responses) }
+
+    context "when one response in responses" do
+      let(:responses) { [Typhoeus::Response.new] }
+
+      it "returns response" do
+        expect(expectation.response).to be(responses[0])
+      end
     end
 
-    it "is clever"
+    context "when multiple responses in responses" do
+      let(:responses) { [Typhoeus::Response.new, Typhoeus::Response.new, Typhoeus::Response.new] }
+
+      it "returns one by one" do
+        3.times do |i|
+          expect(expectation.response).to eq(responses[i])
+        end
+      end
+    end
   end
 
   describe "#matches" do
@@ -48,42 +61,62 @@ describe Typhoeus::Expectation do
     let(:request) { Typhoeus::Request.new(request_url, request_options) }
 
     context "when url" do
-      context "when match" do
-        it "returns true" do
-          expect(expectation.matches?(request)).to be_true
+      context "when string" do
+        context "when match" do
+          it "returns true" do
+            expect(expectation.matches?(request)).to be_true
+          end
+
+          context "when options" do
+            context "when match" do
+              let(:options) { { :a => 1 } }
+              let(:request_options) { options }
+
+              it "returns true" do
+                expect(expectation.matches?(request)).to be_true
+              end
+            end
+
+            context "when options are a subset from request_options" do
+              let(:options) { { :a => 1 } }
+              let(:request_options) { { :a => 1, :b => 2 } }
+
+              it "returns true" do
+                expect(expectation.matches?(request)).to be_true
+              end
+            end
+
+            context "when options are nested" do
+              let(:options) { { :a => { :b => 1 } } }
+              let(:request_options) { options }
+
+              it "returns true" do
+                expect(expectation.matches?(request)).to be_true
+              end
+            end
+
+            context "when options contains an array" do
+              let(:options) { { :a => [1, 2] } }
+              let(:request_options) { options }
+
+              it "returns true" do
+                expect(expectation.matches?(request)).to be_true
+              end
+            end
+
+            context "when no match" do
+              let(:options) { { :a => 1 } }
+
+              it "returns false" do
+                expect(expectation.matches?(request)).to be_false
+              end
+            end
+          end
         end
 
-        context "when options" do
+        context "when regexp" do
           context "when match" do
-            let(:options) { { :a => 1 } }
-            let(:request_options) { options }
-
-            it "returns true" do
-              expect(expectation.matches?(request)).to be_true
-            end
-          end
-
-          context "when options are a subset from request_options" do
-            let(:options) { { :a => 1 } }
-            let(:request_options) { { :a => 1, :b => 2 } }
-
-            it "returns true" do
-              expect(expectation.matches?(request)).to be_true
-            end
-          end
-
-          context "when options are nested" do
-            let(:options) { { :a => { :b => 1 } } }
-            let(:request_options) { options }
-
-            it "returns true" do
-              expect(expectation.matches?(request)).to be_true
-            end
-          end
-
-          context "when options contains an array" do
-            let(:options) { { :a => [1, 2] } }
-            let(:request_options) { options }
+            let(:url) { /example/ }
 
             it "returns true" do
               expect(expectation.matches?(request)).to be_true
@@ -91,7 +124,7 @@ describe Typhoeus::Expectation do
           end
 
           context "when no match" do
-            let(:options) { { :a => 1 } }
+            let(:url) { /nomatch/ }
 
             it "returns false" do
               expect(expectation.matches?(request)).to be_false
