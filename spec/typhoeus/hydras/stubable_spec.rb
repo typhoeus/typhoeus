@@ -21,7 +21,7 @@ describe Typhoeus::Hydras::Stubable do
       end
 
       it "executes callbacks" do
-        request.should_receive(:complete)
+        request.should_receive(:execute_callbacks)
         hydra.queue(request)
       end
     end

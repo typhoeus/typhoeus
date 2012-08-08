@@ -20,7 +20,7 @@ describe Typhoeus::Requests::Stubable do
       end
 
       it "executes callbacks" do
-        request.should_receive(:complete)
+        request.should_receive(:execute_callbacks)
         request.run
       end
     end

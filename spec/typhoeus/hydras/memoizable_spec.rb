@@ -37,7 +37,7 @@ describe Typhoeus::Hydras::Memoizable do
         end
 
         it "calls complete" do
-          request.should_receive(:complete)
+          request.should_receive(:execute_callbacks)
           hydra.queue(request)
         end
       end
