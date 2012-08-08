@@ -4,7 +4,7 @@ require 'typhoeus/requests/marshal'
 require 'typhoeus/requests/memoizable'
 require 'typhoeus/requests/operations'
 require 'typhoeus/requests/responseable'
-require 'typhoeus/requests/stubable'
+require 'typhoeus/requests/stubbable'
 
 module Typhoeus
 
@@ -17,7 +17,7 @@ module Typhoeus
     include Requests::Operations
     include Requests::Responseable
     include Requests::Memoizable
-    include Requests::Stubable
+    include Requests::Stubbable
 
     attr_accessor :options, :url, :hydra, :original_options
 

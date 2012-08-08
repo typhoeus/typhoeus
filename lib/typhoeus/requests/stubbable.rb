@@ -1,6 +1,6 @@
 module Typhoeus
   module Requests
-    module Stubable
+    module Stubbable
       def run
         if expectation = Expectation.find_by(self)
           @response = expectation.response

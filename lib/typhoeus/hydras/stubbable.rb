@@ -1,6 +1,6 @@
 module Typhoeus
   module Hydras
-    module Stubable
+    module Stubbable
       def queue(request)
         if expectation = Expectation.find_by(request)
           request.response = expectation.response
