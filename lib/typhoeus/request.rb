@@ -11,6 +11,7 @@ module Typhoeus
   # This class represents a request.
   class Request
     extend  Requests::Actions
+    include Requests::Callbacks::Types
     include Requests::Callbacks
     include Requests::Marshal
     include Requests::Operations

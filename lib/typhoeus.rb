@@ -25,6 +25,7 @@ module Typhoeus
   extend self
   extend Hydras::EasyPool
   extend Requests::Actions
+  extend Requests::Callbacks::Types
 
   # The default typhoeus user agent.
   USER_AGENT = "Typhoeus - https://github.com/typhoeus/typhoeus"
@@ -57,41 +58,5 @@ module Typhoeus
     Expectation.new(url, options).tap do |expectation|
       Expectation.all << expectation
     end
-  end
-
-  # Set on_complete callback.
-  #
-  # @example Set on_complete.
-  #   Typhoeus.on_complete { p "yay" }
-  #
-  # @param [ Block ] block The block to execute.
-  def on_complete(&block)
-    @on_complete ||= []
-    @on_complete << block if block_given?
-    @on_complete
-  end
-
-  # Set on_success callback.
-  #
-  # @example Set on_success.
-  #   Typhoeus.on_success { p "yay" }
-  #
-  # @param [ Block ] block The block to execute.
-  def on_success(&block)
-    @on_success ||= []
-    @on_success << block if block_given?
-    @on_success
-  end
-
-  # Set on_failure callback.
-  #
-  # @example Set on_failure.
-  #   Typhoeus.on_failure { p "yay" }
-  #
-  # @param [ Block ] block The block to execute.
-  def on_failure(&block)
-    @on_failure ||= []
-    @on_failure << block if block_given?
-    @on_failure
   end
 end

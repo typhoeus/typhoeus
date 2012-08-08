@@ -9,7 +9,7 @@ module Typhoeus
     #
     #   request.on_complete { p 1 }
     #   request.on_complete { p 2 }
-    #   request.complete
+    #   request.execute_callbacks
     #   #=> 1
     #   #=> 2
     #
@@ -18,58 +18,64 @@ module Typhoeus
     #   request.on_complete { p 1 }
     #   request.on_complete { p 2 }
     #   request.on_complete.clear
-    #   request.on_complete
+    #   request.execute_callbacks
     #   #=> []
     module Callbacks
 
-      # Set on_complete callback.
-      #
-      # @example Set on_complete.
-      #   request.on_complete { p "yay" }
-      #
-      # @param [ Block ] block The block to execute.
-      def on_complete(&block)
-        @on_complete ||= []
-        @on_complete << block if block_given?
-        @on_complete
-      end
-
-      # Execute on_complete callbacks and yields
-      # response.
-      #
-      # @example Execute on_completes.
-      #   request.complete
-      def complete
-        (Typhoeus.on_complete + on_complete).map{ |callback| callback.call(self.response) }
-      end
-
-      def on_success(&block)
-        @on_success ||= []
-        @on_success << block if block_given?
-        @on_success
-      end
-
-      def success
-        (Typhoeus.on_success + on_success).map{ |callback| callback.call(self.response) }
-      end
-
-      def on_failure(&block)
-        @on_failure ||= []
-        @on_failure << block if block_given?
-        @on_failure
-      end
-
-      def failure
-        (Typhoeus.on_failure + on_failure).map{ |callback| callback.call(self.response) }
-      end
-
-      def execute_callbacks
-        complete
-        if response && response.success?
-          success
-        elsif response
-          failure
+      module Types
+        # Set on_complete callback.
+        #
+        # @example Set on_complete.
+        #   request.on_complete { p "yay" }
+        #
+        # @param [ Block ] block The block to execute.
+        def on_complete(&block)
+          @on_complete ||= []
+          @on_complete << block if block_given?
+          @on_complete
         end
+
+        # Set on_success callback.
+        #
+        # @example Set on_success.
+        #   request.on_success { p "yay" }
+        #
+        # @param [ Block ] block The block to execute.
+        def on_success(&block)
+          @on_success ||= []
+          @on_success << block if block_given?
+          @on_success
+        end
+
+        # Set on_failure callback.
+        #
+        # @example Set on_failure.
+        #   request.on_failure { p "yay" }
+        #
+        # @param [ Block ] block The block to execute.
+        def on_failure(&block)
+          @on_failure ||= []
+          @on_failure << block if block_given?
+          @on_failure
+        end
+      end
+
+      # Execute nessecary callback and yields response. This
+      # include in every case on_complete, on_success if
+      # successful and on_failure if not.
+      #
+      # @example Execute callbacks.
+      #   request.execute_callbacks
+      def execute_callbacks
+        callbacks = Typhoeus.on_complete + on_complete
+
+        if response && response.success?
+          callbacks += Typhoeus.on_success + on_success
+        elsif response
+          callbacks += Typhoeus.on_failure + on_failure
+        end
+
+        callbacks.map{ |callback| callback.call(self.response) }
       end
     end
   end
