@@ -2,10 +2,11 @@ module Typhoeus
 
   # The Typhoeus configuration used to set global
   # options. Available options:
-  # * verbose
-  # * memoize.
+  # * fake: only stubbed requests are allowed
+  # * verbose: show curls debug out
+  # * memoize: memoize GET requests.
   module Config
     extend self
-    attr_accessor :verbose, :memoize
+    attr_accessor :fake, :memoize, :verbose
   end
 end
