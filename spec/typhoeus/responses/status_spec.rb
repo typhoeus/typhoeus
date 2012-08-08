@@ -84,7 +84,7 @@ describe Typhoeus::Responses::Status do
 
   describe "#success?" do
     context "when response code 200-299" do
-      let(:options) { {:response_code => 201} }
+      let(:options) { {:return_code => :ok, :response_code => 201} }
 
       it "returns true" do
         expect(response.success?).to be_true
@@ -92,7 +92,7 @@ describe Typhoeus::Responses::Status do
     end
 
     context "when response code is not 200-299" do
-      let(:options) { {:response_code => 500} }
+      let(:options) { {:return_code => :ok, :response_code => 500} }
 
       it "returns false" do
         expect(response.success?).to be_false
@@ -102,7 +102,7 @@ describe Typhoeus::Responses::Status do
 
   describe "#modified?" do
     context "when response code 304" do
-      let(:options) { {:response_code => 304} }
+      let(:options) { {:return_code => :ok, :response_code => 304} }
 
       it "returns false" do
         expect(response.modified?).to be_false
@@ -110,7 +110,7 @@ describe Typhoeus::Responses::Status do
     end
 
     context "when response code is not 304" do
-      let(:options) { {:response_code => 500} }
+      let(:options) { {:return_code => :ok, :response_code => 500} }
 
       it "returns true" do
         expect(response.modified?).to be_true
