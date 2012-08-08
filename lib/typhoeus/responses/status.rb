@@ -13,6 +13,7 @@ module Typhoeus
       # @return [ String ] The message.
       def status_message
         return @status_message if defined?(@status_message) && @status_message
+        return options[:status_message] unless options[:status_message].nil?
 
         # HTTP servers can choose not to include the explanation to HTTP codes. The RFC
         # states this (http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4):
