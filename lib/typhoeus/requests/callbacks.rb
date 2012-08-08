@@ -65,7 +65,7 @@ module Typhoeus
 
       def execute_callbacks
         complete
-        if response.try(:success?)
+        if response && response.success?
           success
         elsif response
           failure
