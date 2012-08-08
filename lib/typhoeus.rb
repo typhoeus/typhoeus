@@ -42,7 +42,8 @@ module Typhoeus
   end
 
   def stub(url, options = {})
-    Expectation.new(url, options).tap do |expectation|
+    expectation = expectations.find{ |e| e.url == url && e.options == options }
+    (expectation || Expectation.new(url, options)).tap do |expectation|
       expectations << expectation
     end
   end
