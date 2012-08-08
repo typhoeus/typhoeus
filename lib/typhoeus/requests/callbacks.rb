@@ -65,7 +65,7 @@ module Typhoeus
 
       def execute_callbacks
         complete
-        if response && response.return_code == :ok && (response.response_code == 200 || (response.response_code >= 300 && response.response_code <= 399))
+        if response.try(:success?)
           success
         elsif response
           failure
