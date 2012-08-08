@@ -11,7 +11,7 @@ module Typhoeus
     include Responses::Legacy
     include Responses::Status
 
-    attr_accessor :request, :options, :mock
+    attr_accessor :request, :options
 
     # Create a new response.
     #
