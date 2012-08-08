@@ -8,12 +8,4 @@ describe Typhoeus::Hydra do
   describe "#fire_and_forget" do
     it
   end
-
-  context "mocking and stubbing" do
-    it
-  end
-
-  context "caching" do
-    it
-  end
 end
