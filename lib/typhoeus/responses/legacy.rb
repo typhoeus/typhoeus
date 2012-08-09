@@ -13,7 +13,8 @@ module Typhoeus
         :time => :total_time,
         :app_connect_time => :appconnect_time,
         :start_transfer_time => :starttransfer_time,
-        :name_lookup_time => :namelookup_time
+        :name_lookup_time => :namelookup_time,
+        :headers_hash => :header
       }
 
       MAPPING.each do |old, new|

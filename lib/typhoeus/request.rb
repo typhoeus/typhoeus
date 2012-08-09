@@ -1,4 +1,5 @@
 require 'typhoeus/requests/actions'
+require 'typhoeus/requests/block_connection'
 require 'typhoeus/requests/callbacks'
 require 'typhoeus/requests/marshal'
 require 'typhoeus/requests/memoizable'
@@ -17,6 +18,7 @@ module Typhoeus
     include Requests::Operations
     include Requests::Responseable
     include Requests::Memoizable
+    include Requests::BlockConnection
     include Requests::Stubbable
 
     attr_accessor :options, :url, :hydra, :original_options

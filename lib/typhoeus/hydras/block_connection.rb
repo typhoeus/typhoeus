@@ -1,19 +1,19 @@
 module Typhoeus
   module Hydras
 
-    # This module handles the fake request mode on
+    # This module handles the blocked connection request mode on
     # the hydra side, where only stubbed requests
     # are allowed.
-    # Fake needs to be turned on:
+    # Connection blocking needs to be turned on:
     #   Typhoeus.configure do |config|
-    #     config.fake = true
+    #     config.block_connection = true
     #   end
     #
     # When trying to do real requests a NoStub error
     # is raised.
-    module Fake
+    module BlockConnection
 
-      # Overrides queue in order to check before if fake
+      # Overrides queue in order to check before if block connection
       # is turned on. If thats the case a NoStub error is
       # raised.
       #
@@ -22,7 +22,7 @@ module Typhoeus
       #
       # @param [ Request ] request The request to enqueue.
       def queue(request)
-        if Typhoeus::Config.fake
+        if Typhoeus::Config.block_connection
           raise Typhoeus::Errors::NoStub.new(request)
         else
           super

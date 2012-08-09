@@ -7,6 +7,6 @@ module Typhoeus
   # * memoize: memoize GET requests.
   module Config
     extend self
-    attr_accessor :fake, :memoize, :verbose
+    attr_accessor :block_connection, :memoize, :verbose
   end
 end
