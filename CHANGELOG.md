@@ -20,6 +20,7 @@ Major Changes:
     for a description.
   * The following classes were deleted because they do not seemed to be uesed at all. If that
     turns out to be wrong, they will be restored: `Typhoeus::Filter`, `Typhoeus::Remote`, `Typhoeus::RemoteMethod`, `Typhoeus::RemoteProxyObject`
+  * `Typhoeus::Easy` and `Typhoeus::Multi` are now `Ethon::Easy` and `Ethon::Multi`
 
 * Request shortcuts: `Typhoeus.get("www.google.de")`
 * Global configuration:
