@@ -19,7 +19,7 @@ module Typhoeus
 
       MAPPING.each do |old, new|
         define_method(old) do
-          options[new]
+          options[new] || options[old]
         end
       end
     end

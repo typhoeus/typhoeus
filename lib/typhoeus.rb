@@ -60,4 +60,11 @@ module Typhoeus
       Expectation.all << expectation
     end
   end
+
+  def with_connection
+    old = Config.block_connection
+    Config.block_connection = false
+    yield if block_given?
+    Config.block_connection = old
+  end
 end

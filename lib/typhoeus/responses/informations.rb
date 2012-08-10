@@ -26,10 +26,6 @@ module Typhoeus
         @header ||= Responses::Header.new(response_header.split("\r\n\r\n").last)
       end
 
-      def header=(value)
-        @header = value
-      end
-
       # Return all redirections in between as multiple
       # responses with header.
       #
