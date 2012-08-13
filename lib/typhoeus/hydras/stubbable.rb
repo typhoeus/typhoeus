@@ -6,6 +6,7 @@ module Typhoeus
           request.response = expectation.response
           request.response.mock = true
           request.execute_callbacks
+          request.response
         else
           super
         end
