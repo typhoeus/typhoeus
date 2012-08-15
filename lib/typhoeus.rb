@@ -56,8 +56,8 @@ module Typhoeus
     expectation = Expectation.all.find{ |e| e.url == url && e.options == options }
     return expectation if expectation
 
-    Expectation.new(url, options).tap do |expectation|
-      Expectation.all << expectation
+    Expectation.new(url, options).tap do |new_expectation|
+      Expectation.all << new_expectation
     end
   end
 
