@@ -61,6 +61,9 @@ module Typhoeus
     end
   end
 
+  # Execute given block as if block connection is turned off.
+  #
+  # @param [ Block ] block The block to execute.
   def with_connection
     old = Config.block_connection
     Config.block_connection = false

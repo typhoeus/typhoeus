@@ -39,7 +39,7 @@ module Typhoeus
         end
       end
 
-      # Overrides run to clear the memory is cleared after
+      # Overrides run to make sure the memory is cleared after
       # each run.
       #
       # @example Run hydra.

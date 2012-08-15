@@ -1,10 +1,11 @@
 require 'spec_helper'
 
 describe Typhoeus do
-  describe ".configure" do
-    before { Typhoeus.configure { |config| config.verbose = true } }
-    after { Typhoeus.configure { |config| config.verbose = false } }
+  before(:each) do
+    Typhoeus.configure { |config| config.verbose = false; config.block_connection = false }
+  end
 
+  describe ".configure" do
     it "yields config" do
       Typhoeus.configure do |config|
         expect(config).to be_a(Typhoeus::Config)
@@ -12,6 +13,7 @@ describe Typhoeus do
     end
 
     it "sets values config" do
+      Typhoeus::Config.verbose = true
       expect(Typhoeus::Config.verbose).to be_true
     end
   end
@@ -43,6 +45,18 @@ describe Typhoeus do
         Typhoeus.stub(url)
         expect(Typhoeus::Expectation.all).to have(1).item
       end
+    end
+  end
+
+  describe ".with_connection" do
+    it "executes block with block connection is false" do
+      Typhoeus.with_connection { expect(Typhoeus::Config.block_connection).to be(false) }
+    end
+
+    it "sets block connection back to previous value" do
+      Typhoeus::Config.block_connection = true
+      Typhoeus.with_connection {}
+      expect(Typhoeus::Config.block_connection).to be(true)
     end
   end
 

@@ -65,8 +65,8 @@ module Typhoeus
 
     # Checks if two hashes are equal or not, discarding first-level hash order
     #
-    # @param [ Hash ] hash
-    # @param [ Hash ] other hash to check for equality
+    # @param [ Hash ] left
+    # @param [ Hash ] right hash to check for equality
     #
     # @return [ Boolean ] Returns true if hashes have same values for same keys and same length,
     #     even if the keys are given in a different order.

@@ -5,13 +5,52 @@ describe Typhoeus::Expectation do
   let(:url) { "www.example.com" }
   let(:expectation) { described_class.new(url, options) }
 
+  after(:each) { Typhoeus::Expectation.clear }
+
   describe ".new" do
+    it "sets url" do
+      expect(expectation.instance_variable_get(:@url)).to eq(url)
+    end
+
+    it "sets options" do
+      expect(expectation.instance_variable_get(:@options)).to eq(options)
+    end
+
+    it "initializes response_counter" do
+      expect(expectation.instance_variable_get(:@response_counter)).to eq(0)
+    end
+  end
+
+  describe ".all" do
+    context "when @expectations nil" do
+      it "returns empty array" do
+        expect(Typhoeus::Expectation.all).to eq([])
+      end
+    end
+
+    context "when @expectations not nil" do
+      let(:expectations) { [1] }
+
+      it "returns @expectations" do
+        Typhoeus::Expectation.instance_variable_set(:@expectations, expectations)
+        expect(Typhoeus::Expectation.all).to be(expectations)
+      end
+    end
+  end
+
+  describe ".clear" do
+    let(:expectations) { mock(:clear) }
+
+    it "clears all" do
+      expectations.should_receive(:clear)
+      Typhoeus::Expectation.instance_variable_set(:@expectations, expectations)
+      Typhoeus::Expectation.clear
+      Typhoeus::Expectation.instance_variable_set(:@expectations, nil)
+    end
   end
 
   describe ".find_by" do
     let(:request) { Typhoeus::Request.new("") }
-
-    before { Typhoeus::Expectation.clear }
 
     it "returns a dummy when expectations not empty" do
       Typhoeus::Expectation.all << expectation
@@ -21,9 +60,19 @@ describe Typhoeus::Expectation do
   end
 
   describe "#and_return" do
-    it "adds value to responses" do
-      expectation.and_return(1)
-      expect(expectation.responses).to eq([1])
+    context "when value" do
+      it "adds to responses" do
+        expectation.and_return(1)
+        expect(expectation.responses).to eq([1])
+      end
+    end
+
+    context "when array" do
+      it "adds to responses" do
+        pending
+        expectation.and_return([1, 2])
+        expect(expectation.responses).to eq([1, 2])
+      end
     end
   end
 
@@ -36,7 +85,7 @@ describe Typhoeus::Expectation do
   describe "#response" do
     before { expectation.instance_variable_set(:@responses, responses) }
 
-    context "when one response in responses" do
+    context "when one response" do
       let(:responses) { [Typhoeus::Response.new] }
 
       it "returns response" do
@@ -44,7 +93,7 @@ describe Typhoeus::Expectation do
       end
     end
 
-    context "when multiple responses in responses" do
+    context "when multiple responses" do
       let(:responses) { [Typhoeus::Response.new, Typhoeus::Response.new, Typhoeus::Response.new] }
 
       it "returns one by one" do
