@@ -33,6 +33,17 @@ end
 * No more Response#headers_hash, instead response#header returning the last
   header and response#redirections returning the responses with headers
   generated through redirections
+* Instead of defining the same callbacks on every request, you can define global callbacks:
+
+```ruby
+Typhoeus.on_complete { p "yay" }
+```
+
+* The stubbing interface changed slightly. You now have the same syntax as for requests:
+
+```ruby
+Typhoeus.stub(url, options).and_return(response)
+```
 
 Enhancements:
 
