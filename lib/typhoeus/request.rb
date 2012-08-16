@@ -1,25 +1,25 @@
-require 'typhoeus/requests/actions'
-require 'typhoeus/requests/block_connection'
-require 'typhoeus/requests/callbacks'
-require 'typhoeus/requests/marshal'
-require 'typhoeus/requests/memoizable'
-require 'typhoeus/requests/operations'
-require 'typhoeus/requests/responseable'
-require 'typhoeus/requests/stubbable'
+require 'typhoeus/request/actions'
+require 'typhoeus/request/block_connection'
+require 'typhoeus/request/callbacks'
+require 'typhoeus/request/marshal'
+require 'typhoeus/request/memoizable'
+require 'typhoeus/request/operations'
+require 'typhoeus/request/responseable'
+require 'typhoeus/request/stubbable'
 
 module Typhoeus
 
   # This class represents a request.
   class Request
-    extend  Requests::Actions
-    include Requests::Callbacks::Types
-    include Requests::Callbacks
-    include Requests::Marshal
-    include Requests::Operations
-    include Requests::Responseable
-    include Requests::Memoizable
-    include Requests::BlockConnection
-    include Requests::Stubbable
+    extend  Request::Actions
+    include Request::Callbacks::Types
+    include Request::Callbacks
+    include Request::Marshal
+    include Request::Operations
+    include Request::Responseable
+    include Request::Memoizable
+    include Request::BlockConnection
+    include Request::Stubbable
 
     attr_accessor :options, :url, :hydra, :original_options
 

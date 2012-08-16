@@ -24,9 +24,9 @@ require 'typhoeus/version'
 #   hydra.run
 module Typhoeus
   extend self
-  extend Hydras::EasyPool
-  extend Requests::Actions
-  extend Requests::Callbacks::Types
+  extend Hydra::EasyPool
+  extend Request::Actions
+  extend Request::Callbacks::Types
 
   # The default typhoeus user agent.
   USER_AGENT = "Typhoeus - https://github.com/typhoeus/typhoeus"

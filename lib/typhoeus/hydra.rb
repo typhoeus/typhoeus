@@ -1,10 +1,10 @@
-require 'typhoeus/hydras/block_connection'
-require 'typhoeus/hydras/easy_factory'
-require 'typhoeus/hydras/easy_pool'
-require 'typhoeus/hydras/memoizable'
-require 'typhoeus/hydras/queueable'
-require 'typhoeus/hydras/runnable'
-require 'typhoeus/hydras/stubbable'
+require 'typhoeus/hydra/block_connection'
+require 'typhoeus/hydra/easy_factory'
+require 'typhoeus/hydra/easy_pool'
+require 'typhoeus/hydra/memoizable'
+require 'typhoeus/hydra/queueable'
+require 'typhoeus/hydra/runnable'
+require 'typhoeus/hydra/stubbable'
 
 module Typhoeus
 
@@ -14,12 +14,12 @@ module Typhoeus
   # The benefits are that you don't have to worry running
   # the requests by yourself.
   class Hydra
-    include Hydras::EasyPool
-    include Hydras::Queueable
-    include Hydras::Runnable
-    include Hydras::Memoizable
-    include Hydras::BlockConnection
-    include Hydras::Stubbable
+    include Hydra::EasyPool
+    include Hydra::Queueable
+    include Hydra::Runnable
+    include Hydra::Memoizable
+    include Hydra::BlockConnection
+    include Hydra::Stubbable
 
     attr_reader :max_concurrency, :multi
 

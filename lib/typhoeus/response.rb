@@ -1,15 +1,15 @@
-require 'typhoeus/responses/header'
-require 'typhoeus/responses/informations'
-require 'typhoeus/responses/legacy'
-require 'typhoeus/responses/status'
+require 'typhoeus/response/header'
+require 'typhoeus/response/informations'
+require 'typhoeus/response/legacy'
+require 'typhoeus/response/status'
 
 module Typhoeus
 
   # This class respresents the response.
   class Response
-    include Responses::Informations
-    include Responses::Legacy
-    include Responses::Status
+    include Response::Informations
+    include Response::Legacy
+    include Response::Status
 
     attr_accessor :request, :options, :mock
 
