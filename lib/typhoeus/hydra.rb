@@ -13,6 +13,18 @@ module Typhoeus
   # http://curl.haxx.se/libcurl/c/libcurl-multi.html
   # The benefits are that you don't have to worry running
   # the requests by yourself.
+  #
+  # Hydra will also handle how many requests you can
+  # make in parallel. Things will get flakey if you
+  # try to make too many requests at the same time.
+  # The built in limit is 200. When more requests than
+  # that are queued up, hydra will save them for later
+  # and start the requests as others are finished. You
+  # can raise or lower the concurrency limit through
+  # the Hydra constructor.
+  #
+  # @example Set max_concurrency.
+  #   Typhoeus::Hydra.new(:max_concurrency => 20)
   class Hydra
     include Hydra::EasyPool
     include Hydra::Queueable
