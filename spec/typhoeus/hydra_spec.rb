@@ -8,4 +8,8 @@ describe Typhoeus::Hydra do
   describe "#fire_and_forget" do
     it
   end
+
+  describe "#cache getter and setter" do
+    it
+  end
 end
