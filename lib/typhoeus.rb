@@ -62,6 +62,7 @@ module Typhoeus
   end
 
   # Execute given block as if block connection is turned off.
+  # The old block connection state is restored afterwards.
   #
   # @param [ Block ] block The block to execute.
   def with_connection
