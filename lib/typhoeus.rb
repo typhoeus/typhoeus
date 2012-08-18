@@ -64,6 +64,9 @@ module Typhoeus
   # Execute given block as if block connection is turned off.
   # The old block connection state is restored afterwards.
   #
+  # @example With connection.
+  #   Typhoeus.with_connection { Typhoeus.get("www.example.com") }
+  #
   # @param [ Block ] block The block to execute.
   def with_connection
     old = Config.block_connection
