@@ -23,6 +23,12 @@ module Typhoeus
   # can raise or lower the concurrency limit through
   # the Hydra constructor.
   #
+  # Regarding the asynchronous behavior of the hydra,
+  # it is important to know that this is completely hidden
+  # from the developer and you are free to apply
+  # whatever technique you want to your code. That should not
+  # conflict with libcurls internal concurrency mechanism.
+  #
   # @example Set max_concurrency.
   #   Typhoeus::Hydra.new(:max_concurrency => 20)
   class Hydra
