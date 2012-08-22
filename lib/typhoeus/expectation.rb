@@ -70,7 +70,7 @@ module Typhoeus
     # @example Check if request matches.
     #   expectation.matches? request
     #
-    # @param [ Request ] The request to check.
+    # @param [ Request ] request The request to check.
     #
     # @return [ Boolean ] True when matches, else false.
     def matches?(request)
