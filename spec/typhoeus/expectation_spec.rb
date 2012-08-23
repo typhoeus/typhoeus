@@ -59,6 +59,17 @@ describe Typhoeus::Expectation do
     end
   end
 
+  describe "#stubbed_from" do
+    it "sets value" do
+      expectation.stubbed_from(:webmock)
+      expect(expectation.from).to eq(:webmock)
+    end
+
+    it "returns self" do
+      expect(expectation.stubbed_from(:webmock)).to be(expectation)
+    end
+  end
+
   describe "#and_return" do
     context "when value" do
       it "adds to responses" do

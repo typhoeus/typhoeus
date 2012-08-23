@@ -7,7 +7,7 @@ module Typhoeus
   # wether they match. If thats the case, the attached
   # responses were returned one by one.
   class Expectation
-    attr_reader :url, :options
+    attr_reader :url, :options, :from
 
     class << self
 
@@ -53,6 +53,21 @@ module Typhoeus
       @url = url
       @options = options
       @response_counter = 0
+      @from = nil
+    end
+
+    # Set from value to mark an expecation. Useful for
+    # other libraries, eg. webmock.
+    #
+    # @example Mark expecation.
+    #   expecation.from(:webmock)
+    #
+    # @param [ String ] value Value to set.
+    #
+    # @return [ Expectation ] Returns self.
+    def stubbed_from(value)
+      @from = value
+      self
     end
 
     # Specify what should be returned,
@@ -99,6 +114,7 @@ module Typhoeus
     def response
       response = responses.fetch(@response_counter, responses.last)
       @response_counter += 1
+      response.mock = @from || true
       response
     end
 

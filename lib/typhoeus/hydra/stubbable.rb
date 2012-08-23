@@ -15,7 +15,6 @@ module Typhoeus
       def queue(request)
         if expectation = Expectation.find_by(request)
           request.response = expectation.response
-          request.response.mock = true
           request.execute_callbacks
           request.response
         else
