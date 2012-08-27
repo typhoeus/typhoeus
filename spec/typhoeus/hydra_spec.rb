@@ -5,6 +5,12 @@ describe Typhoeus::Hydra do
   let(:options) { {} }
   let(:hydra) { Typhoeus::Hydra.new(options) }
 
+  describe "#hydra" do
+    it "returns a hydra" do
+      expect(Typhoeus::Hydra.hydra).to be_a(Typhoeus::Hydra)
+    end
+  end
+
   describe "#fire_and_forget" do
     it
   end

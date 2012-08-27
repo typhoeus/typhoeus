@@ -41,6 +41,12 @@ module Typhoeus
 
     attr_reader :max_concurrency, :multi
 
+    class << self
+      def hydra
+        @hydra ||= new
+      end
+    end
+
     # Create a new hydra.
     #
     # @example Create a hydra.
