@@ -19,6 +19,11 @@ describe Typhoeus::Request::Stubbable do
         expect(request.response).to be(response)
       end
 
+      it "assigns request to response" do
+        request.run
+        expect(response.request).to be(request)
+      end
+
       it "executes callbacks" do
         request.should_receive(:execute_callbacks)
         request.run

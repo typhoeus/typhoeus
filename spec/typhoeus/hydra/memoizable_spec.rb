@@ -32,7 +32,9 @@ describe Typhoeus::Hydra::Memoizable do
         end
 
         it "sets response via instance_variable_set to avoid short circuit" do
-          request.should_receive(:instance_variable_set).with(:@response, response)
+          request.should_receive(:instance_variable_set) { |name, response|
+            expect(response).to be_a(Typhoeus::Response)
+          }
           hydra.queue(request)
         end
 

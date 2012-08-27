@@ -20,6 +20,11 @@ describe Typhoeus::Hydra::Stubbable do
         expect(request.response).to be(response)
       end
 
+      it "assigns request to response" do
+        hydra.queue(request)
+        expect(request.response.request).to be(request)
+      end
+
       it "executes callbacks" do
         request.should_receive(:execute_callbacks)
         hydra.queue(request)

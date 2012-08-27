@@ -15,6 +15,7 @@ module Typhoeus
       def queue(request)
         if expectation = Expectation.find_by(request)
           request.response = expectation.response
+          request.response.request = request
           request.execute_callbacks
           request.response
         else
