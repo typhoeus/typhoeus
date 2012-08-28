@@ -66,7 +66,7 @@ module Typhoeus
       #
       # @return [ Boolean ] Return true if timed out, false else.
       def timed_out?
-        return_code == 28
+        [:operation_timedout, :couldnt_connect].include?(return_code)
       end
 
       # :nodoc:

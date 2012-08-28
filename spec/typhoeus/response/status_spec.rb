@@ -5,15 +5,23 @@ describe Typhoeus::Response::Status do
   let(:options) { {} }
 
   describe "timed_out?" do
-    context "when return code is 28" do
-      let(:options) { {:return_code => 28} }
+    context "when return code is operation_timedout" do
+      let(:options) { {:return_code => :operation_timedout} }
 
       it "return true" do
         expect(response).to be_timed_out
       end
     end
 
-    context "when return code is not 28" do
+    context "when return code is couldnt_connect" do
+      let(:options) { {:return_code => :couldnt_connect} }
+
+      it "return true" do
+        expect(response).to be_timed_out
+      end
+    end
+
+    context "when return code is not operation_timedout or couldnt_connect" do
       let(:options) { {:return_code => 14} }
 
       it "returns false" do
