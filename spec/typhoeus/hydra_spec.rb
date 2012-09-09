@@ -5,6 +5,15 @@ describe Typhoeus::Hydra do
   let(:options) { {} }
   let(:hydra) { Typhoeus::Hydra.new(options) }
 
+  describe "#new" do
+    let(:options) { {:pipeling => true} }
+
+    it "passes options to multi" do
+      Ethon::Multi.should_receive(:new).with(options)
+      hydra
+    end
+  end
+
   describe "#hydra" do
     it "returns a hydra" do
       expect(Typhoeus::Hydra.hydra).to be_a(Typhoeus::Hydra)

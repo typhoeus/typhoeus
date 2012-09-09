@@ -6,7 +6,7 @@ module Typhoeus
     module Informations
 
       # All available informations.
-      AVAILABLE_INFORMATIONS = Ethon::Easies::Informations::AVAILABLE_INFORMATIONS.keys+
+      AVAILABLE_INFORMATIONS = Ethon::Easy::Informations::AVAILABLE_INFORMATIONS.keys+
         [:return_code, :response_body, :response_header]
 
       AVAILABLE_INFORMATIONS.each do |name|
