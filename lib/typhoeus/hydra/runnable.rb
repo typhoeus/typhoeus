@@ -11,6 +11,7 @@ module Typhoeus
       #
       # @return [ Symbol ] Return value from multi.perform.
       def run
+        multi.prepare
         multi.perform
       end
     end
