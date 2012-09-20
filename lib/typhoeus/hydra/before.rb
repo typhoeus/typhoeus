@@ -2,8 +2,9 @@ module Typhoeus
   class Hydra
 
     # This module provides a way to hook into before
-    # a request gets queued. This is very powerful and
-    # should be done correctly.
+    # a request gets queued in hydra. This is very powerful
+    # and you should be careful because when you accidently
+    # return a falsy value the request won't be executed.
     module Before
 
       # Overrride queue in order to execute callbacks in
