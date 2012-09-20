@@ -48,6 +48,15 @@ describe Typhoeus do
     end
   end
 
+  describe ".before" do
+    after { Typhoeus.before.clear }
+
+    it "adds callback" do
+      Typhoeus.before { true }
+      expect(Typhoeus.before).to have(1).item
+    end
+  end
+
   describe ".with_connection" do
     it "executes block with block connection is false" do
       Typhoeus.with_connection { expect(Typhoeus::Config.block_connection).to be(false) }

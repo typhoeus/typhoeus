@@ -1,3 +1,4 @@
+require 'typhoeus/hydra/before'
 require 'typhoeus/hydra/block_connection'
 require 'typhoeus/hydra/easy_factory'
 require 'typhoeus/hydra/easy_pool'
@@ -38,6 +39,7 @@ module Typhoeus
     include Hydra::Memoizable
     include Hydra::BlockConnection
     include Hydra::Stubbable
+    include Hydra::Before
 
     attr_reader :max_concurrency, :multi
 

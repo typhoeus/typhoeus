@@ -61,6 +61,18 @@ module Typhoeus
     end
   end
 
+  # Add before callbacks.
+  #
+  # @example Add before callback.
+  #   Typhoeus.before { |request| p request.url }
+  #
+  # @param [ Block ] block The callback.
+  def before(&block)
+    @before ||= []
+    @before << block if block_given?
+    @before
+  end
+
   # Execute given block as if block connection is turned off.
   # The old block connection state is restored afterwards.
   #
