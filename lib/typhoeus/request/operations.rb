@@ -41,11 +41,28 @@ module Typhoeus
         )
         easy.prepare
         easy.perform
-        @response = Response.new(easy.to_hash)
-        @response.request = self
+        finish(Response.new(easy.to_hash))
         Typhoeus.release_easy(easy)
+        response
+      end
+
+      # Sets a response, the request on the response
+      # and executes the callbacks.
+      #
+      # @param [Typhoeus::Response] response The response.
+      # @param [Boolean] bypass_memoization Wether to bypass
+      #   memoization or not. Decides how the response is set.
+      #
+      # @return [Typhoeus::Response] The response.
+      def finish(response, bypass_memoization = nil)
+        if bypass_memoization
+          @response = response
+        else
+          self.response = response
+        end
+        self.response.request = self
         execute_callbacks
-        @response
+        response
       end
     end
   end

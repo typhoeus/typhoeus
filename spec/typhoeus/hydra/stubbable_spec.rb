@@ -15,22 +15,12 @@ describe Typhoeus::Hydra::Stubbable do
     end
 
     context "when expectation found" do
-      it "assigns response" do
-        hydra.queue(request)
-        expect(request.response).to be(response)
-      end
-
-      it "assigns request to response" do
-        hydra.queue(request)
-        expect(request.response.request).to be(request)
-      end
-
-      it "executes callbacks" do
-        request.should_receive(:execute_callbacks)
+      it "finishes response" do
+        request.should_receive(:finish)
         hydra.queue(request)
       end
 
-      it "sets mock on response" do
+      it "is a mock" do
         hydra.queue(request)
         expect(request.response.mock).to be(true)
       end

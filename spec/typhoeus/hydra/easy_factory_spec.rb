@@ -14,10 +14,10 @@ describe Typhoeus::Hydra::EasyFactory do
       easy_factory.set_callback
     end
 
-    it "sets response on request" do
+    it "finishes request" do
       easy_factory.set_callback
+      request.should_receive(:finish)
       easy_factory.easy.complete
-      expect(request.response).to be
     end
 
     it "resets easy" do
@@ -37,14 +37,6 @@ describe Typhoeus::Hydra::EasyFactory do
       easy_factory.set_callback
       easy_factory.easy.complete
       expect(easy_factory.hydra.queued_requests).to include(request)
-    end
-
-    it "runs requests complete callback" do
-      callback = mock(:call)
-      callback.should_receive(:call)
-      request.instance_variable_set(:@on_complete, [callback])
-      easy_factory.set_callback
-      easy_factory.easy.complete
     end
   end
 end

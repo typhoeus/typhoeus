@@ -14,23 +14,9 @@ describe Typhoeus::Request::Stubbable do
     end
 
     context "when expectation found" do
-      it "assigns response" do
+      it "finishes request" do
+        request.should_receive(:finish)
         request.run
-        expect(request.response).to be(response)
-      end
-
-      it "assigns request to response" do
-        request.run
-        expect(response.request).to be(request)
-      end
-
-      it "executes callbacks" do
-        request.should_receive(:execute_callbacks)
-        request.run
-      end
-
-      it "returns response" do
-        expect(request.run).to eq(response)
       end
 
       it "sets mock on response" do

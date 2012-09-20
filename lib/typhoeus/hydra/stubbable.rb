@@ -14,10 +14,7 @@ module Typhoeus
       #   hydra.queue(request)
       def queue(request)
         if expectation = Expectation.find_by(request)
-          request.response = expectation.response
-          request.response.request = request
-          request.execute_callbacks
-          request.response
+          request.finish(expectation.response)
         else
           super
         end

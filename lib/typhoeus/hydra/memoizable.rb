@@ -33,9 +33,7 @@ module Typhoeus
       def queue(request)
         if request.memoizable? && memory.has_key?(request)
           response = memory[request]
-          response.request = request
-          request.instance_variable_set(:@response, response)
-          request.execute_callbacks
+          request.finish(response, true)
         else
           super
         end

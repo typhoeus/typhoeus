@@ -48,4 +48,27 @@ describe Typhoeus::Request::Operations do
       expect(request.run).to be_a(Typhoeus::Response)
     end
   end
+
+  describe "#finish" do
+    let(:response) { Typhoeus::Response.new }
+
+    it "assigns response" do
+      request.finish(response)
+      expect(request.response).to be(response)
+    end
+
+    it "assigns request to response" do
+      request.finish(response)
+      expect(request.response.request).to be(request)
+    end
+
+    it "executes callbacks" do
+      request.should_receive(:execute_callbacks)
+      request.finish(response)
+    end
+
+    it "returns response" do
+      expect(request.finish(response)).to be(response)
+    end
+  end
 end

@@ -16,10 +16,7 @@ module Typhoeus
       # @return [ Response ] The response.
       def run
         if expectation = Expectation.find_by(self)
-          @response = expectation.response
-          @response.request = self
-          execute_callbacks
-          @response
+          finish(expectation.response)
         else
           super
         end

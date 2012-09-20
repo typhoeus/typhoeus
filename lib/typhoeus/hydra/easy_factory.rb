@@ -56,10 +56,9 @@ module Typhoeus
       # @return [ Ethon::Easy ] The easy.
       def set_callback
         easy.on_complete do |easy|
-          request.response = Response.new(easy.to_hash)
+          request.finish(Response.new(easy.to_hash))
           hydra.release_easy(easy)
           hydra.queue(hydra.queued_requests.shift) unless hydra.queued_requests.empty?
-          request.execute_callbacks
         end
       end
     end

@@ -26,20 +26,8 @@ describe Typhoeus::Hydra::Memoizable do
         let(:response) { Typhoeus::Response.new }
         before { hydra.memory[request] = response }
 
-        it "sets response" do
-          hydra.queue(request)
-          expect(request.response).to be
-        end
-
-        it "sets response via instance_variable_set to avoid short circuit" do
-          request.should_receive(:instance_variable_set) { |name, response|
-            expect(response).to be_a(Typhoeus::Response)
-          }
-          hydra.queue(request)
-        end
-
-        it "calls complete" do
-          request.should_receive(:execute_callbacks)
+        it "finishes request" do
+          request.should_receive(:finish).with(response, true)
           hydra.queue(request)
         end
       end
