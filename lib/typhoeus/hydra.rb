@@ -44,6 +44,15 @@ module Typhoeus
     attr_reader :max_concurrency, :multi
 
     class << self
+
+      # Returns a memoized hydra instance.
+      # This is only for convenience because so much
+      # external code relies on it.
+      #
+      # @example Get a hydra.
+      #   Typhoeus::Hydra.hydra
+      #
+      # @return [Typhoeus::Hydra] A new hydra.
       def hydra
         @hydra ||= new
       end

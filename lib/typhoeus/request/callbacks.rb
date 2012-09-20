@@ -22,7 +22,7 @@ module Typhoeus
     #   #=> []
     module Callbacks
 
-      module Types
+      module Types # :nodoc:
         # Set on_complete callback.
         #
         # @example Set on_complete.
