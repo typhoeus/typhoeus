@@ -17,7 +17,9 @@ module Typhoeus
       def queue(request)
         Typhoeus.before.each do |callback|
           value = callback.call(request)
-          return value unless value
+          if value.nil? || value == false || value.is_a?(Response)
+            return value
+          end
         end
         super
       end

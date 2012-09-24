@@ -30,6 +30,14 @@ describe Typhoeus::Hydra::Before do
             hydra.queue(request)
           end
         end
+
+        context "when response" do
+          it "doesn't call super" do
+            Typhoeus.before { Typhoeus::Response.new }
+            Typhoeus::Expectation.should_receive(:find_by).never
+            hydra.queue(request)
+          end
+        end
       end
 
       context "when multi" do

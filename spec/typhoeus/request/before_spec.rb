@@ -29,6 +29,14 @@ describe Typhoeus::Request::Before do
             request.run
           end
         end
+
+        context "when a response" do
+          it "doesn't call super" do
+            Typhoeus.before { Typhoeus::Response.new }
+            Typhoeus::Expectation.should_receive(:find_by).never
+            request.run
+          end
+        end
       end
 
       context "when multi" do

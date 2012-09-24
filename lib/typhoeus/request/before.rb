@@ -17,7 +17,9 @@ module Typhoeus
       def run
         Typhoeus.before.each do |callback|
           value = callback.call(self)
-          return value unless value
+          if value.nil? || value == false || value.is_a?(Response)
+            return value
+          end
         end
         super
       end
