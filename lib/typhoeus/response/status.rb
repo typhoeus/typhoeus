@@ -61,7 +61,7 @@ module Typhoeus
 
       # Return wether the response is timed out.
       #
-      # @example Return if the response timed out..
+      # @example Return if the response timed out.
       #  response.timed_out?
       #
       # @return [ Boolean ] Return true if timed out, false else.
