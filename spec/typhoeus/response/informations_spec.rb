@@ -11,34 +11,34 @@ describe Typhoeus::Response::Informations do
     end
   end
 
-  describe "#header" do
-    context "when no header" do
+  describe "#headers" do
+    context "when no headers" do
       it "returns nil" do
-        expect(response.header).to be_nil
+        expect(response.headers).to be_nil
       end
     end
 
-    context "when header" do
+    context "when headers" do
       let(:options) { {:response_header => "Expire: -1\nServer: gws"} }
 
-      it "returns nonempty header" do
-        expect(response.header).to_not be_empty
+      it "returns nonempty headers" do
+        expect(response.headers).to_not be_empty
       end
 
       it "has Expire" do
-        expect(response.header['Expire']).to eq('-1')
+        expect(response.headers['Expire']).to eq('-1')
       end
 
       it "has Server" do
-        expect(response.header['Server']).to eq('gws')
+        expect(response.headers['Server']).to eq('gws')
       end
     end
 
-    context "when multiple header" do
+    context "when multiple headers" do
       let(:options) { {:response_header => "Server: A\r\n\r\nServer: B"} }
 
       it "returns the last" do
-        expect(response.header['Server']).to eq("B")
+        expect(response.headers['Server']).to eq("B")
       end
     end
   end
@@ -50,7 +50,7 @@ describe Typhoeus::Response::Informations do
       end
     end
 
-    context "when header" do
+    context "when headers" do
       let(:options) { {:response_header => "Expire: -1\nServer: gws"} }
 
       it "returns empty array" do
@@ -58,10 +58,10 @@ describe Typhoeus::Response::Informations do
       end
     end
 
-    context "when multiple header" do
+    context "when multiple headers" do
       let(:options) { {:response_header => "Server: A\r\n\r\nServer: B"} }
 
-      it "returns response from all but last header" do
+      it "returns response from all but last headers" do
         expect(response.redirections).to have(1).item
       end
     end

@@ -23,7 +23,7 @@ module Typhoeus
     # @return [ Response ] The new response.
     def initialize(options = {})
       @options = options
-      @header = options[:header]
+      @headers = options[:headers]
     end
   end
 end

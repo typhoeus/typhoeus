@@ -17,13 +17,13 @@ module Typhoeus
 
       # Returns the response header.
       #
-      # @example Return header.
-      #   response.header
+      # @example Return headers.
+      #   response.headers
       #
       # @return [ Header ] The response header.
-      def header
-        return nil if response_header.nil? && @header.nil?
-        @header ||= Response::Header.new(response_header.split("\r\n\r\n").last)
+      def headers
+        return nil if response_header.nil? && @headers.nil?
+        @headers ||= Response::Header.new(response_header.split("\r\n\r\n").last)
       end
 
       # Return all redirections in between as multiple
