@@ -19,7 +19,7 @@ describe Typhoeus::Response::Informations do
     end
 
     context "when headers" do
-      let(:options) { {:response_header => "Expire: -1\nServer: gws"} }
+      let(:options) { {:response_headers => "Expire: -1\nServer: gws"} }
 
       it "returns nonempty headers" do
         expect(response.headers).to_not be_empty
@@ -35,23 +35,31 @@ describe Typhoeus::Response::Informations do
     end
 
     context "when multiple headers" do
-      let(:options) { {:response_header => "Server: A\r\n\r\nServer: B"} }
+      let(:options) { {:response_headers => "Server: A\r\n\r\nServer: B"} }
 
       it "returns the last" do
         expect(response.headers['Server']).to eq("B")
       end
     end
+
+    context "when requesting" do
+      let(:response) { Typhoeus.get("localhost:3001") }
+
+      it "returns headers" do
+        expect(response.headers).to_not be_empty
+      end
+    end
   end
 
   describe "#redirections" do
-    context "when no response_header" do
+    context "when no response_headers" do
       it "returns empty array" do
         expect(response.redirections).to be_empty
       end
     end
 
     context "when headers" do
-      let(:options) { {:response_header => "Expire: -1\nServer: gws"} }
+      let(:options) { {:response_headers => "Expire: -1\nServer: gws"} }
 
       it "returns empty array" do
         expect(response.redirections).to be_empty
@@ -59,7 +67,7 @@ describe Typhoeus::Response::Informations do
     end
 
     context "when multiple headers" do
-      let(:options) { {:response_header => "Server: A\r\n\r\nServer: B"} }
+      let(:options) { {:response_headers => "Server: A\r\n\r\nServer: B"} }
 
       it "returns response from all but last headers" do
         expect(response.redirections).to have(1).item

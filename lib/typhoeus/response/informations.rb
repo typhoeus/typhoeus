@@ -7,7 +7,7 @@ module Typhoeus
 
       # All available informations.
       AVAILABLE_INFORMATIONS = Ethon::Easy::Informations::AVAILABLE_INFORMATIONS.keys+
-        [:return_code, :response_body, :response_header]
+        [:return_code, :response_body, :response_headers]
 
       AVAILABLE_INFORMATIONS.each do |name|
         define_method(name) do
@@ -22,8 +22,8 @@ module Typhoeus
       #
       # @return [ Header ] The response header.
       def headers
-        return nil if response_header.nil? && @headers.nil?
-        @headers ||= Response::Header.new(response_header.split("\r\n\r\n").last)
+        return nil if response_headers.nil? && @headers.nil?
+        @headers ||= Response::Header.new(response_headers.split("\r\n\r\n").last)
       end
 
       # Return all redirections in between as multiple
@@ -34,8 +34,8 @@ module Typhoeus
       #
       # @return [ Array ] The redirections
       def redirections
-        return [] unless response_header
-        response_header.split("\r\n\r\n")[0..-2].map{ |h| Response.new(:response_header => h) }
+        return [] unless response_headers
+        response_headers.split("\r\n\r\n")[0..-2].map{ |h| Response.new(:response_headers => h) }
       end
     end
   end
