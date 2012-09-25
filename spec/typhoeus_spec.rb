@@ -67,6 +67,10 @@ describe Typhoeus do
       Typhoeus.with_connection {}
       expect(Typhoeus::Config.block_connection).to be(true)
     end
+
+    it "returns result of block" do
+      expect(Typhoeus.with_connection { "123" }).to eq("123")
+    end
   end
 
   [:get, :post, :put, :delete, :head, :patch, :options].each do |name|

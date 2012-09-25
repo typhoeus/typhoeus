@@ -81,9 +81,11 @@ module Typhoeus
   #
   # @param [ Block ] block The block to execute.
   def with_connection
+    result = nil
     old = Config.block_connection
     Config.block_connection = false
-    yield if block_given?
+    result = yield if block_given?
     Config.block_connection = old
+    result
   end
 end
