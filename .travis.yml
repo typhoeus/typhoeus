@@ -9,5 +9,8 @@ rvm:
   - jruby-head
   - jruby-18mode
   - jruby-19mode
+matrix:
+  allow_failures:
+    - rvm: jruby-head
 before_install:
   - gem uninstall ffi -a
