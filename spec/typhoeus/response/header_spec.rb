@@ -29,7 +29,7 @@ describe Typhoeus::Response::Header do
       end
 
       it "sets raw" do
-        expect(header.raw).to eq(raw)
+        expect(header.send(:raw)).to eq(raw)
       end
 
       it "sets Set-Cookie" do

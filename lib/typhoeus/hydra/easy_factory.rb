@@ -47,6 +47,8 @@ module Typhoeus
         easy
       end
 
+      private
+
       # Sets on_complete callback on easy in order to be able to
       # track progress.
       #

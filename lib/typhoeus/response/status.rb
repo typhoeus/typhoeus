@@ -69,6 +69,8 @@ module Typhoeus
         [:operation_timedout, :couldnt_connect].include?(return_code)
       end
 
+      private
+
       # :nodoc:
       def first_header_line
         @first_header_line ||= response_headers.to_s.split("\n").first

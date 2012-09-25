@@ -27,6 +27,8 @@ module Typhoeus
       #   request.memoizable?
       #
       # @return [ Boolean ] Return true if memoizable, false else.
+      #
+      # @api private
       def memoizable?
         Typhoeus::Config.memoize &&
           (options[:method].nil? || options[:method] == :get)

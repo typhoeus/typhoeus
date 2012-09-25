@@ -63,7 +63,7 @@ module Typhoeus
       [ self.class, self.url, self.options ].hash
     end
 
-    protected
+    private
 
     # Checks if two hashes are equal or not, discarding first-level hash order
     #

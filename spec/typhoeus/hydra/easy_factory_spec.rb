@@ -11,30 +11,30 @@ describe Typhoeus::Hydra::EasyFactory do
 
     it "sets easy.on_complete callback" do
       easy_factory.easy.should_receive(:on_complete)
-      easy_factory.set_callback
+      easy_factory.send(:set_callback)
     end
 
     it "finishes request" do
-      easy_factory.set_callback
+      easy_factory.send(:set_callback)
       request.should_receive(:finish)
       easy_factory.easy.complete
     end
 
     it "resets easy" do
-      easy_factory.set_callback
+      easy_factory.send(:set_callback)
       easy_factory.easy.should_receive(:reset)
       easy_factory.easy.complete
     end
 
     it "pushes easy back into the pool" do
-      easy_factory.set_callback
+      easy_factory.send(:set_callback)
       easy_factory.easy.complete
       expect(easy_factory.hydra.easy_pool).to include(easy_factory.easy)
     end
 
     it "queues next request" do
       easy_factory.hydra.instance_variable_set(:@queued_requests, [request])
-      easy_factory.set_callback
+      easy_factory.send(:set_callback)
       easy_factory.easy.complete
       expect(easy_factory.hydra.queued_requests).to include(request)
     end

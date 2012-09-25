@@ -66,6 +66,8 @@ module Typhoeus
       #
       # @example Execute callbacks.
       #   request.execute_callbacks
+      #
+      # @api private
       def execute_callbacks
         callbacks = Typhoeus.on_complete + on_complete
 

@@ -15,16 +15,6 @@ module Typhoeus
         parse
       end
 
-      # Returns the raw header or empty string.
-      #
-      # @example Return raw header.
-      #   header.raw
-      #
-      # @return [ String ] The raw header.
-      def raw
-        @raw ||= ''
-      end
-
       # Parses the raw header.
       #
       # @example Parse header.
@@ -44,6 +34,18 @@ module Typhoeus
             end
           end
         end
+      end
+
+      private
+
+      # Returns the raw header or empty string.
+      #
+      # @example Return raw header.
+      #   header.raw
+      #
+      # @return [ String ] The raw header.
+      def raw
+        @raw ||= ''
       end
     end
   end
