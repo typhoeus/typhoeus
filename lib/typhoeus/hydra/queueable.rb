@@ -12,7 +12,7 @@ module Typhoeus
       # @example Return queued requests.
       #  hydra.queued_requests
       #
-      # @return [ Array ] The queued requests.
+      # @return [ Array<Typhoeus::Request> ] The queued requests.
       def queued_requests
         @queued_requests ||= []
       end

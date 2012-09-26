@@ -13,7 +13,7 @@ module Typhoeus
       # @example Return easy pool.
       #   hydra.easy_pool
       #
-      # @return [ Array ] The easy pool.
+      # @return [ Array<Ethon::Easy> ] The easy pool.
       def easy_pool
         @easy_pool ||= []
       end

@@ -67,7 +67,7 @@ module Typhoeus
   #
   # @param [ Block ] block The callback.
   #
-  # @return [ Array ] All before blocks.
+  # @return [ Array<Block> ] All before blocks.
   def before(&block)
     @before ||= []
     @before << block if block_given?

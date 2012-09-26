@@ -32,7 +32,7 @@ module Typhoeus
       # @example Return expectations.
       #   Typhoeus::Expectation.all
       #
-      # @return [ Array ] The expectations.
+      # @return [ Array<Typhoeus::Expectation> ] The expectations.
       def all
         @expectations ||= []
       end
@@ -126,7 +126,7 @@ module Typhoeus
     # @example Return responses.
     #   expectation.responses
     #
-    # @return [ Array ] The responses.
+    # @return [ Array<Typhoeus::Response> ] The responses.
     #
     # @api private
     def responses

@@ -20,7 +20,7 @@ module Typhoeus
       # @example Return headers.
       #   response.headers
       #
-      # @return [ Header ] The response header.
+      # @return [ Typhoeus::Header ] The response header.
       def headers
         return nil if response_headers.nil? && @headers.nil?
         @headers ||= Response::Header.new(response_headers.split("\r\n\r\n").last)
@@ -32,7 +32,7 @@ module Typhoeus
       # @example Return redirections.
       #   response.redirections
       #
-      # @return [ Array ] The redirections
+      # @return [ Array<Typhoeus::Response> ] The redirections
       def redirections
         return [] unless response_headers
         response_headers.split("\r\n\r\n")[0..-2].map{ |h| Response.new(:response_headers => h) }

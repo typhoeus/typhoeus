@@ -30,7 +30,7 @@ module Typhoeus
         #
         # @param [ Block ] block The block to execute.
         #
-        # @return [ Array ] All on_complete blocks.
+        # @return [ Array<Block> ] All on_complete blocks.
         def on_complete(&block)
           @on_complete ||= []
           @on_complete << block if block_given?
@@ -44,7 +44,7 @@ module Typhoeus
         #
         # @param [ Block ] block The block to execute.
         #
-        # @return [ Array ] All on_success blocks.
+        # @return [ Array<Block> ] All on_success blocks.
         def on_success(&block)
           @on_success ||= []
           @on_success << block if block_given?
@@ -58,7 +58,7 @@ module Typhoeus
         #
         # @param [ Block ] block The block to execute.
         #
-        # @return [ Array ] All on_failure blocks.
+        # @return [ Array<Block> ] All on_failure blocks.
         def on_failure(&block)
           @on_failure ||= []
           @on_failure << block if block_given?
