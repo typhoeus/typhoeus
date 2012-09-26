@@ -7,6 +7,8 @@ module Typhoeus
     #   Typhoeus.configure do |config|
     #     config.memoize = true
     #   end
+    #
+    # @api private
     module Memoizable
 
       # Override response setter and memoizes response
@@ -27,8 +29,6 @@ module Typhoeus
       #   request.memoizable?
       #
       # @return [ Boolean ] Return true if memoizable, false else.
-      #
-      # @api private
       def memoizable?
         Typhoeus::Config.memoize &&
           (options[:method].nil? || options[:method] == :get)

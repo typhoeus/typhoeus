@@ -12,16 +12,13 @@ require 'typhoeus/version'
 # Typhoeus is a http client library based on Ethon which
 # wraps libcurl.
 #
-# If you want to make a single request, go with:
-#   Typhoeus.get("www.example.com")
+# @example (see Typhoeus::Request)
+# @example (see Typhoeus::Hydra)
 #
-# When you looking for firing a bunch of requests automatically
-# choose the hydra:
+# @see Typhoeus::Request
+# @see Typhoeus::Hydra
 #
-#   hydra = Typhoeus::Hydra.new
-#   requests = (0..9).map{ Typhoeus::Request.new("www.example.com") }
-#   requests.each{ |request| hydra.queue(request) }
-#   hydra.run
+# @since 0.5.0
 module Typhoeus
   extend self
   extend Hydra::EasyPool
@@ -33,25 +30,27 @@ module Typhoeus
 
   # Set the Typhoeus configuration options by passing a block.
   #
-  # @example Set the configuration options.
-  #   Typhoeus.configure do |config|
-  #     config.verbose = true
-  #   end
+  # @example (see Typhoeus::Config)
   #
-  # @return [ Config ] The configuration object.
+  # @yield [ Typhoeus::Config ]
+  #
+  # @return [ Typhoeus::Config ] The configuration.
+  #
+  # @see Typhoeus::Config
   def configure
     yield Config
   end
 
   # Stub out specific request.
   #
-  # @example Stub.
-  #   Typhoeus.stub("www.example.com").and_return(Typhoeus::Response.new)
+  # @example (see Typhoeus::Expectation)
   #
   # @param [ String ] url The url to stub out.
   # @param [ Hash ] options The options to stub out.
   #
-  # @return [ Expection ] The expection.
+  # @return [ Typhoeus::Expectation ] The expecatation.
+  #
+  # @see Typhoeus::Expectation
   def stub(url, options = {})
     expectation = Expectation.all.find{ |e| e.url == url && e.options == options }
     return expectation if expectation
@@ -67,6 +66,8 @@ module Typhoeus
   #   Typhoeus.before { |request| p request.url }
   #
   # @param [ Block ] block The callback.
+  #
+  # @return [ Array ] All before blocks.
   def before(&block)
     @before ||= []
     @before << block if block_given?
@@ -76,12 +77,22 @@ module Typhoeus
   # Execute given block as if block connection is turned off.
   # The old block connection state is restored afterwards.
   #
-  # @example With connection.
-  #   Typhoeus.with_connection { Typhoeus.get("www.example.com") }
+  # @example Make a real request, no matter if its blocked.
+  #   Typhoeus::Config.block_connection = true
+  #   Typhoeus.get("www.example.com").code
+  #   #=> raise Typhoeus::Errors::NoStub
+  #
+  #   Typhoeus.with_connection do
+  #     Typhoeus.get("www.example.com").code
+  #     #=> :ok
+  #   end
   #
   # @param [ Block ] block The block to execute.
+  #
+  # @return [ Object ] Returns the return value of block.
+  #
+  # @see Typhoeus::Config#block_connection
   def with_connection
-    result = nil
     old = Config.block_connection
     Config.block_connection = false
     result = yield if block_given?

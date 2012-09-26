@@ -5,8 +5,19 @@ module Typhoeus
     # Before an easy is ready to be added to a multi, it needs
     # to be prepared and the on_complete callback to be set.
     # This is done by this class.
+    #
+    # @api private
     class EasyFactory
-      attr_reader :request, :hydra
+
+      # Returns the request provided.
+      #
+      # @return [ Typhoeus::Request ]
+      attr_reader :request
+
+      # Returns the hydra provided.
+      #
+      # @return [ Typhoeus::Hydra ]
+      attr_reader :hydra
 
       # Create an easy factory.
       #

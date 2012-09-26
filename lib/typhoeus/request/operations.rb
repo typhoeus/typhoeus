@@ -21,6 +21,8 @@ module Typhoeus
         # @param [ Hash ] options The options hash.
         #
         # @return [ Response ] The response.
+        #
+        # @deprecated
         def run(url, options = {})
           new(url, options).run
         end
@@ -29,7 +31,7 @@ module Typhoeus
       # Run a request.
       #
       # @example Run a request.
-      #  request.run
+      #  Typhoeus::Request.new("www.example.com").run
       #
       # @return [ Response ] The response.
       def run

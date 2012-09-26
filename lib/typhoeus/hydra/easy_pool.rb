@@ -4,6 +4,8 @@ module Typhoeus
     # The easy pool stores already initialized
     # easy handles for future use. This is useful
     # because creating them is quite expensive.
+    #
+    # @api private
     module EasyPool
 
       # Return the easy pool.

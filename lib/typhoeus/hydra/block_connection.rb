@@ -11,6 +11,8 @@ module Typhoeus
     #
     # When trying to do real requests a NoStub error
     # is raised.
+    #
+    # @api private
     module BlockConnection
 
       # Overrides queue in order to check before if block connection

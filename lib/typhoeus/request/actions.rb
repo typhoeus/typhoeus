@@ -11,15 +11,13 @@ module Typhoeus
       # @example Make get request.
       #   Typhoeus.get("www.example.com")
       #
-      # @param [ String ] url The url to request.
-      # @param [ options ] options The options.
+      # @param (see Typhoeus::Request#initialize)
       #
-      # @option options :params [ Hash ] Params hash which
-      #   is attached to the url.
-      # @option options :body [ Hash ] Body hash which
-      #   becomes a POST request body.
+      # @option (see Typhoeus::Request#initialize)
       #
-      # @return [ Response ] The response.
+      # @return (see Typhoeus::Request#initialize)
+      #
+      # @note (see Typhoeus::Request#initialize)
       def get(url, options = {})
         Request.run(url, options.merge(:method => :get))
       end
@@ -29,11 +27,13 @@ module Typhoeus
       # @example Make post request.
       #   Typhoeus.post("www.example.com")
       #
-      # @param (see #get)
+      # @param (see Typhoeus::Request#initialize)
       #
-      # @option (see #get)
+      # @option (see Typhoeus::Request#initialize)
       #
-      # @return (see #get)
+      # @return (see Typhoeus::Request#initialize)
+      #
+      # @note (see Typhoeus::Request#initialize)
       def post(url, options = {})
         Request.run(url, options.merge(:method => :post))
       end
@@ -43,14 +43,16 @@ module Typhoeus
       # @example Make put request.
       #   Typhoeus.put("www.example.com")
       #
-      # @param (see #get)
+      # @param (see Typhoeus::Request#initialize)
       #
       # @option options :params [ Hash ] Params hash which
       #   is attached to the url.
       # @option options :body [ Hash ] Body hash which
       #   becomes a PUT request body.
       #
-      # @return (see #get)
+      # @return (see Typhoeus::Request#initialize)
+      #
+      # @note (see Typhoeus::Request#initialize)
       def put(url, options = {})
         Request.run(url, options.merge(:method => :put))
       end
@@ -60,11 +62,13 @@ module Typhoeus
       # @example Make delete request.
       #   Typhoeus.delete("www.example.com")
       #
-      # @param (see #get)
+      # @param (see Typhoeus::Request#initialize)
       #
-      # @option (see #get)
+      # @option (see Typhoeus::Request#initialize)
       #
-      # @return (see #get)
+      # @return (see Typhoeus::Request#initialize)
+      #
+      # @note (see Typhoeus::Request#initialize)
       def delete(url, options = {})
         Request.run(url, options.merge(:method => :delete))
       end
@@ -74,11 +78,13 @@ module Typhoeus
       # @example Make head request.
       #   Typhoeus.head("www.example.com")
       #
-      # @param (see #get)
+      # @param (see Typhoeus::Request#initialize)
       #
-      # @option (see #get)
+      # @option (see Typhoeus::Request#initialize)
       #
-      # @return (see #get)
+      # @return (see Typhoeus::Request#initialize)
+      #
+      # @note (see Typhoeus::Request#initialize)
       def head(url, options = {})
         Request.run(url, options.merge(:method => :head))
       end
@@ -88,11 +94,13 @@ module Typhoeus
       # @example Make patch request.
       #   Typhoeus.patch("www.example.com")
       #
-      # @param (see #get)
+      # @param (see Typhoeus::Request#initialize)
       #
-      # @option (see #get)
+      # @option (see Typhoeus::Request#initialize)
       #
-      # @return (see #get)
+      # @return (see Typhoeus::Request#initialize)
+      #
+      # @note (see Typhoeus::Request#initialize)
       def patch(url, options = {})
         Request.run(url, options.merge(:method => :patch))
       end
@@ -102,11 +110,13 @@ module Typhoeus
       # @example Make options request.
       #   Typhoeus.options("www.example.com")
       #
-      # @param (see #get)
+      # @param (see Typhoeus::Request#initialize)
       #
-      # @option (see #get)
+      # @option (see Typhoeus::Request#initialize)
       #
-      # @return (see #get)
+      # @return (see Typhoeus::Request#initialize)
+      #
+      # @note (see Typhoeus::Request#initialize)
       def options(url, options = {})
         Request.run(url, options.merge(:method => :options))
       end

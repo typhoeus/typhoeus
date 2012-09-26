@@ -4,6 +4,8 @@ module Typhoeus
     # This module handles stubbing on the request side.
     # It plays well with the block_connection configuration,
     # which raises when you make a request which is not stubbed.
+    #
+    # @api private
     module Stubbable
 
       # Override run in order to check for matching expecations.

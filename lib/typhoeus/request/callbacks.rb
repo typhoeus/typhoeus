@@ -29,6 +29,8 @@ module Typhoeus
         #   request.on_complete { p "yay" }
         #
         # @param [ Block ] block The block to execute.
+        #
+        # @return [ Array ] All on_complete blocks.
         def on_complete(&block)
           @on_complete ||= []
           @on_complete << block if block_given?
@@ -41,6 +43,8 @@ module Typhoeus
         #   request.on_success { p "yay" }
         #
         # @param [ Block ] block The block to execute.
+        #
+        # @return [ Array ] All on_success blocks.
         def on_success(&block)
           @on_success ||= []
           @on_success << block if block_given?
@@ -53,6 +57,8 @@ module Typhoeus
         #   request.on_failure { p "yay" }
         #
         # @param [ Block ] block The block to execute.
+        #
+        # @return [ Array ] All on_failure blocks.
         def on_failure(&block)
           @on_failure ||= []
           @on_failure << block if block_given?
@@ -66,6 +72,8 @@ module Typhoeus
       #
       # @example Execute callbacks.
       #   request.execute_callbacks
+      #
+      # @return [ void ]
       #
       # @api private
       def execute_callbacks

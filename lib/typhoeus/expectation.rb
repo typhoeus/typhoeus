@@ -6,8 +6,24 @@ module Typhoeus
   # to the request url and options in order to evaluate
   # wether they match. If thats the case, the attached
   # responses were returned one by one.
+  #
+  # @example Stub a request and get specified response.
+  #   expected = Typhoeus::Response.new
+  #   Typhoeus.stub("www.example.com").and_return(expected)
+  #
+  #   actual = Typhoeus.get("www.example.com")
+  #   expected == actual
+  #   #=> true
   class Expectation
-    attr_reader :url, :options, :from
+
+    # @api private
+    attr_reader :url
+
+    # @api private
+    attr_reader :options
+
+    # @api private
+    attr_reader :from
 
     class << self
 
@@ -21,10 +37,12 @@ module Typhoeus
         @expectations ||= []
       end
 
-      # Clears expectations.
+      # Clears expectations. This is handy while
+      # testing and you want to make sure, that
+      # you don't get canned responses.
       #
       # @example Clear expectations.
-      #   Typhoeus:;Expectation.clear
+      #   Typhoeus::Expectation.clear
       def clear
         all.clear
       end
@@ -36,6 +54,8 @@ module Typhoeus
       #   Typhoeus::Expectation.find_by(request)
       #
       # @return [ Expectation ] The matching expectation.
+      #
+      # @api private
       def find_by(request)
         all.find do |expectation|
           expectation.matches?(request)
@@ -49,6 +69,8 @@ module Typhoeus
     #   Typhoeus::Expectation.new(url)
     #
     # @return [ Expectation ] The created expactation.
+    #
+    # @api private
     def initialize(url, options = {})
       @url = url
       @options = options
@@ -65,6 +87,8 @@ module Typhoeus
     # @param [ String ] value Value to set.
     #
     # @return [ Expectation ] Returns self.
+    #
+    # @api private
     def stubbed_from(value)
       @from = value
       self
@@ -75,6 +99,8 @@ module Typhoeus
     #
     # @example Add response.
     #   expectation.and_return(response)
+    #
+    # @return [ void ]
     def and_return(response)
       responses << response
     end
@@ -88,6 +114,8 @@ module Typhoeus
     # @param [ Request ] request The request to check.
     #
     # @return [ Boolean ] True when matches, else false.
+    #
+    # @api private
     def matches?(request)
       url_match?(request.url) &&
         (options ? options.all?{ |k,v| request.original_options[k] == v } : true)
@@ -99,6 +127,8 @@ module Typhoeus
     #   expectation.responses
     #
     # @return [ Array ] The responses.
+    #
+    # @api private
     def responses
       @responses ||= []
     end
@@ -111,6 +141,8 @@ module Typhoeus
     #   expectation.response
     #
     # @return [ Response ] The response.
+    #
+    # @api private
     def response
       response = responses.fetch(@response_counter, responses.last)
       @response_counter += 1

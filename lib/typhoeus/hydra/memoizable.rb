@@ -7,6 +7,8 @@ module Typhoeus
     #   Typhoeus.configure do |config|
     #     config.memoize = true
     #   end
+    #
+    # @api private
     module Memoizable
 
       # Return the memory.

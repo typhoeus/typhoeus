@@ -3,6 +3,8 @@ module Typhoeus
 
     # This module handles the request queueing on
     # hydra.
+    #
+    # @api private
     module Queueable
 
       # Return the queued requests.

@@ -11,7 +11,22 @@ module Typhoeus
     include Response::Legacy
     include Response::Status
 
-    attr_accessor :request, :options, :mock
+    # Remembers the corresponding request.
+    # You don't usally need that.
+    #
+    # @return [ Typhoeus::Request ]
+    #
+    # @api private
+    attr_accessor :request
+
+    # The options provided, contains all the
+    # informations about the request.
+    #
+    # @return [ Hash ]
+    attr_accessor :options
+
+    # @api private
+    attr_accessor :mock
 
     # Create a new response.
     #

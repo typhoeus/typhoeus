@@ -2,6 +2,8 @@ module Typhoeus
   class Hydra
 
     # This module contains logic to run a hydra.
+    #
+    # @api private
     module Runnable
 
       # Start the hydra run.

@@ -30,8 +30,11 @@ module Typhoeus
   # whatever technique you want to your code. That should not
   # conflict with libcurls internal concurrency mechanism.
   #
-  # @example Set max_concurrency.
-  #   Typhoeus::Hydra.new(:max_concurrency => 20)
+  # @example Use the hydra to do multiple requests.
+  #   hydra = Typhoeus::Hydra.new
+  #   requests = (0..9).map{ Typhoeus::Request.new("www.example.com") }
+  #   requests.each{ |request| hydra.queue(request) }
+  #   hydra.run
   class Hydra
     include Hydra::EasyPool
     include Hydra::Queueable
@@ -41,33 +44,47 @@ module Typhoeus
     include Hydra::Stubbable
     include Hydra::Before
 
-    attr_reader :max_concurrency, :multi
+    # @example Set max_concurrency.
+    #   Typhoeus::Hydra.new(:max_concurrency => 20)
+    attr_reader :max_concurrency
+
+    # @api private
+    attr_reader :multi
 
     class << self
 
       # Returns a memoized hydra instance.
-      # This is only for convenience because so much
-      # external code relies on it.
       #
       # @example Get a hydra.
       #   Typhoeus::Hydra.hydra
       #
       # @return [Typhoeus::Hydra] A new hydra.
+      #
+      # @deprecated This is only for convenience because so
+      #   much external code relies on it.
       def hydra
         @hydra ||= new
       end
     end
 
-    # Create a new hydra.
+    # Create a new hydra. All
+    # {http://rubydoc.info/github/typhoeus/ethon/Ethon/Multi#initialize-instance_method Ethon::Multi#initialize}
+    # options are also available.
     #
     # @example Create a hydra.
     #   Typhoeus::Hydra.new
+    #
+    # @example Create a hydra with max_concurrency.
+    #   Typhoeus::Hydra.new(:max_concurrency => 20)
     #
     # @param [ Hash ] options The options hash.
     #
     # @option options :max_concurrency [ Integer ] Number
     #  of max concurrent connections to create. Default is
     #  200.
+    #
+    # @see http://rubydoc.info/github/typhoeus/ethon/Ethon/Multi#initialize-instance_method
+    #   Ethon::Multi#initialize
     def initialize(options = {})
       @options = options
       @max_concurrency = @options.fetch(:max_concurrency, 200)

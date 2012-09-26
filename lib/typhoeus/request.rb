@@ -11,6 +11,32 @@ require 'typhoeus/request/stubbable'
 module Typhoeus
 
   # This class represents a request.
+  #
+  # @example Request all the way down.
+  #   request = Typhoeus::Request.new("www.example.com")
+  #   response = request.run
+  #
+  # @example Make a request with the shortcut.
+  #   response = Typhoeus.get("www.example.com")
+  #
+  # @example Request with url parameters.
+  #   response = Typhoeus.get(
+  #     "www.example.com",
+  #     :params => {:a => 1}
+  #   )
+  #
+  # @example Request with a body.
+  #   response = Typhoeus.get(
+  #     "www.example.com",
+  #     :body => {:b => 2}
+  #   )
+  #
+  # @example Request with parameters and body.
+  #   response = Typhoeus.get(
+  #     "www.example.com",
+  #     :params => {:a => 1},
+  #     :body => {:b => 2}
+  #   )
   class Request
     extend  Request::Actions
     include Request::Callbacks::Types
@@ -23,7 +49,27 @@ module Typhoeus
     include Request::Stubbable
     include Request::Before
 
-    attr_accessor :options, :url, :hydra, :original_options
+    # Returns the provided url.
+    #
+    # @return [ String ]
+    attr_accessor :url
+
+    # Returns options, which includes default parameters.
+    #
+    # @return [ Hash ]
+    attr_accessor :options
+
+    # Returns the hydra the request ran into if any.
+    #
+    # @return [ Typhoeus::Hydra ]
+    # @api private
+    attr_accessor :hydra
+
+    # Returns the original options provided.
+    #
+    # @return [ Hash ]
+    # @api private
+    attr_accessor :original_options
 
     # Create a new request.
     #
@@ -31,9 +77,17 @@ module Typhoeus
     #   Request.new("www.example.com")
     #
     # @param [ String ] url The url to request.
-    # @param [ Hash ] options The options.
+    # @param [ options ] options The options.
     #
-    # #return [ Request ] The new request.
+    # @option options [ Hash ] :params Translated
+    #   into url parameters.
+    # @option options [ Hash ] :body Translated
+    #   into HTTP POST request body.
+    #
+    # @return [ Typhoeus::Request ] The request.
+    #
+    # @note Params is ALWAYS translated into url parameters
+    #   and body is ALWAYS a HTTP body.
     def initialize(url, options = {})
       @url = url
       @original_options = options
@@ -50,6 +104,8 @@ module Typhoeus
     # @param [ Object ] other The object to check.
     #
     # @return [ Boolean ] Returns true if equals, else false.
+    #
+    # @api private
     def eql?(other)
       self.class == other.class &&
         self.url == other.url &&
@@ -59,6 +115,8 @@ module Typhoeus
     # Overrides Object#hash.
     #
     # @return [ Integer ] The integer representing the request.
+    #
+    # @api private
     def hash
       [ self.class, self.url, self.options ].hash
     end

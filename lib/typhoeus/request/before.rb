@@ -5,6 +5,8 @@ module Typhoeus
     # a request runs. This is very powerful
     # and you should be careful because when you accidently
     # return a falsy value the request won't be executed.
+    #
+    # @api private
     module Before
 
       # Overrride run in order to execute callbacks in
