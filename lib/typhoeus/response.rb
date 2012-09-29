@@ -10,11 +10,14 @@ module Typhoeus
     include Response::Status
 
     # Remembers the corresponding request.
-    # You don't usally need that.
+    #
+    # @example Get request.
+    #   request = Typhoeus::Request.get("www.example.com")
+    #   response = request.run
+    #   response == request.response
+    #   #=> true
     #
     # @return [ Typhoeus::Request ]
-    #
-    # @api private
     attr_accessor :request
 
     # The options provided, contains all the

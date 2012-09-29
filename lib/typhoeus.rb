@@ -67,6 +67,8 @@ module Typhoeus
   #
   # @param [ Block ] block The callback.
   #
+  # @yield [ Typhoeus::Request ]
+  #
   # @return [ Array<Block> ] All before blocks.
   def before(&block)
     @before ||= []

@@ -1,5 +1,5 @@
 module Typhoeus
-  class Hydra # :nodoc:
+  class Hydra
 
     # This module handles the request queueing on
     # hydra.

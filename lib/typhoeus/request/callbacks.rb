@@ -7,16 +7,16 @@ module Typhoeus
     # You can set multiple callbacks, which are then executed
     # in the same order.
     #
-    #   request.on_complete { p 1 }
-    #   request.on_complete { p 2 }
+    #   request.on_complete { |response| p 1 }
+    #   request.on_complete { |response| p 2 }
     #   request.execute_callbacks
     #   #=> 1
     #   #=> 2
     #
     # You can clear the callbacks:
     #
-    #   request.on_complete { p 1 }
-    #   request.on_complete { p 2 }
+    #   request.on_complete { |response| p 1 }
+    #   request.on_complete { |response| p 2 }
     #   request.on_complete.clear
     #   request.execute_callbacks
     #   #=> []
@@ -26,9 +26,11 @@ module Typhoeus
         # Set on_complete callback.
         #
         # @example Set on_complete.
-        #   request.on_complete { p "yay" }
+        #   request.on_complete { |response| p "yay" }
         #
         # @param [ Block ] block The block to execute.
+        #
+        # @yield [ Typhoeus::Response ]
         #
         # @return [ Array<Block> ] All on_complete blocks.
         def on_complete(&block)
@@ -40,9 +42,11 @@ module Typhoeus
         # Set on_success callback.
         #
         # @example Set on_success.
-        #   request.on_success { p "yay" }
+        #   request.on_success { |response| p "yay" }
         #
         # @param [ Block ] block The block to execute.
+        #
+        # @yield [ Typhoeus::Response ]
         #
         # @return [ Array<Block> ] All on_success blocks.
         def on_success(&block)
@@ -54,9 +58,11 @@ module Typhoeus
         # Set on_failure callback.
         #
         # @example Set on_failure.
-        #   request.on_failure { p "yay" }
+        #   request.on_failure { |response| p "yay" }
         #
         # @param [ Block ] block The block to execute.
+        #
+        # @yield [ Typhoeus::Response ]
         #
         # @return [ Array<Block> ] All on_failure blocks.
         def on_failure(&block)

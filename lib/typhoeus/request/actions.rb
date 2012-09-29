@@ -1,5 +1,5 @@
 module Typhoeus
-  class Request # :nodoc:
+  class Request
 
     # Module containing logic about shortcuts to
     # http methods. Like

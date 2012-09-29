@@ -12,31 +12,12 @@ module Typhoeus
 
   # This class represents a request.
   #
-  # @example Request all the way down.
-  #   request = Typhoeus::Request.new("www.example.com")
-  #   response = request.run
+  # @example (see #initialize)
   #
   # @example Make a request with the shortcut.
   #   response = Typhoeus.get("www.example.com")
   #
-  # @example Request with url parameters.
-  #   response = Typhoeus.get(
-  #     "www.example.com",
-  #     :params => {:a => 1}
-  #   )
-  #
-  # @example Request with a body.
-  #   response = Typhoeus.get(
-  #     "www.example.com",
-  #     :body => {:b => 2}
-  #   )
-  #
-  # @example Request with parameters and body.
-  #   response = Typhoeus.get(
-  #     "www.example.com",
-  #     :params => {:a => 1},
-  #     :body => {:b => 2}
-  #   )
+  # @see (see #initialize)
   class Request
     extend  Request::Actions
     include Request::Callbacks::Types
@@ -73,8 +54,33 @@ module Typhoeus
 
     # Create a new request.
     #
-    # @example Create a request.
-    #   Request.new("www.example.com")
+    # @example Simplest request.
+    #   response = Typhoeus::Request.new("www.example.com").run
+    #
+    # @example Request with url parameters.
+    #   response = Typhoeus::Request.new(
+    #     "www.example.com",
+    #     :params => {:a => 1}
+    #   ).run
+    #
+    # @example Request with a body.
+    #   response = Typhoeus::Request.new(
+    #     "www.example.com",
+    #     :body => {:b => 2}
+    #   ).run
+    #
+    # @example Request with parameters and body.
+    #   response = Typhoeus::Request.new(
+    #     "www.example.com",
+    #     :params => {:a => 1},
+    #     :body => {:b => 2}
+    #   ).run
+    #
+    # @example Create a request and allow follow redirections.
+    #   response = Typhoeus::Request.new(
+    #     "www.example.com",
+    #     :followlocation => true
+    #   ).run
     #
     # @param [ String ] url The url to request.
     # @param [ options ] options The options.
@@ -86,8 +92,11 @@ module Typhoeus
     #
     # @return [ Typhoeus::Request ] The request.
     #
-    # @note Params is ALWAYS translated into url parameters
-    #   and body is ALWAYS a HTTP body.
+    # @note See {Ethon::Easy#initialize} for more options.
+    #
+    # @see Typhoeus::Hydra
+    # @see Typhoeus::Response
+    # @see Typhoeus::Request::Actions
     def initialize(url, options = {})
       @url = url
       @original_options = options
@@ -123,13 +132,15 @@ module Typhoeus
 
     private
 
-    # Checks if two hashes are equal or not, discarding first-level hash order
+    # Checks if two hashes are equal or not, discarding
+    # first-level hash order.
     #
     # @param [ Hash ] left
     # @param [ Hash ] right hash to check for equality
     #
-    # @return [ Boolean ] Returns true if hashes have same values for same keys and same length,
-    #     even if the keys are given in a different order.
+    # @return [ Boolean ] Returns true if hashes have
+    #   same values for same keys and same length,
+    #   even if the keys are given in a different order.
     def fuzzy_hash_eql?(left, right)
       return true if (left == right)
 
