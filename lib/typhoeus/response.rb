@@ -1,6 +1,5 @@
 require 'typhoeus/response/header'
 require 'typhoeus/response/informations'
-require 'typhoeus/response/legacy'
 require 'typhoeus/response/status'
 
 module Typhoeus
@@ -8,7 +7,6 @@ module Typhoeus
   # This class respresents the response.
   class Response
     include Response::Informations
-    include Response::Legacy
     include Response::Status
 
     # Remembers the corresponding request.

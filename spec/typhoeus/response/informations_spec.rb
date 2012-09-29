@@ -3,11 +3,136 @@ require 'spec_helper'
 describe Typhoeus::Response::Informations do
   let(:options) { {} }
   let(:response) { Typhoeus::Response.new(options) }
-  Typhoeus::Response::Informations::AVAILABLE_INFORMATIONS.each do |name|
-    describe name do
-      it "responds to" do
-        expect(response).to respond_to(name)
+
+  describe "#return_code" do
+    let(:options) { { :return_code => :ok } }
+
+    it "returns return_code from options" do
+      expect(response.return_code).to be(:ok)
+    end
+  end
+
+  describe "#response_body" do
+    context "when response_body" do
+      let(:options) { { :response_body => "body" } }
+
+      it "returns response_body from options" do
+        expect(response.response_body).to eq("body")
       end
+    end
+
+    context "when body" do
+      let(:options) { { :body => "body" } }
+
+      it "returns body from options" do
+        expect(response.body).to eq("body")
+      end
+    end
+  end
+
+  describe "#response_headers" do
+    let(:options) { { :response_headers => "headers" } }
+
+    it "returns response_headers from options" do
+      expect(response.response_headers).to eq("headers")
+    end
+  end
+
+  describe "#response_code" do
+    context "when response_code" do
+      let(:options) { { :response_code => "code" } }
+
+      it "returns response_code from options" do
+        expect(response.response_code).to eq("code")
+      end
+    end
+
+    context "when code" do
+      let(:options) { { :code => "code" } }
+
+      it "returns code from options" do
+        expect(response.code).to eq("code")
+      end
+    end
+  end
+
+  describe "#httpauth_avail" do
+    let(:options) { { :httpauth_avail => "code" } }
+
+    it "returns httpauth_avail from options" do
+      expect(response.httpauth_avail).to eq("code")
+    end
+  end
+
+  describe "#total_time" do
+    let(:options) { { :total_time =>  1 } }
+
+    it "returns total_time from options" do
+      expect(response.total_time).to eq(1)
+    end
+  end
+
+  describe "#starttransfer_time" do
+    let(:options) { { :starttransfer_time =>  1 } }
+
+    it "returns starttransfer_time from options" do
+      expect(response.starttransfer_time).to eq(1)
+    end
+  end
+
+  describe "#appconnect_time" do
+    let(:options) { { :appconnect_time =>  1 } }
+
+    it "returns appconnect_time from options" do
+      expect(response.appconnect_time).to eq(1)
+    end
+  end
+
+  describe "#pretransfer_time" do
+    let(:options) { { :pretransfer_time =>  1 } }
+
+    it "returns pretransfer_time from options" do
+      expect(response.pretransfer_time).to eq(1)
+    end
+  end
+
+  describe "#connect_time" do
+    let(:options) { { :connect_time =>  1 } }
+
+    it "returns connect_time from options" do
+      expect(response.connect_time).to eq(1)
+    end
+  end
+
+  describe "#namelookup_time" do
+    let(:options) { { :namelookup_time =>  1 } }
+
+    it "returns namelookup_time from options" do
+      expect(response.namelookup_time).to eq(1)
+    end
+  end
+
+  describe "#effective_url" do
+    let(:options) { { :effective_url => "http://www.example.com" } }
+
+    it "returns effective_url from options" do
+      expect(response.effective_url).to eq("http://www.example.com")
+    end
+  end
+
+  describe "#primary_ip" do
+    let(:options) { { :primary_ip => "127.0.0.1" } }
+
+    it "returns primary_ip from options" do
+      expect(response.primary_ip).to eq("127.0.0.1")
+    end
+  end
+
+  describe "#redirect_count" do
+    let(:options) { { :redirect_count => 2 } }
+
+    it "returns redirect_count from options" do
+      expect(response.redirect_count).to eq(2)
     end
   end
 

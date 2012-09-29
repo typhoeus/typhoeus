@@ -5,14 +5,175 @@ module Typhoeus
     # on a response.
     module Informations
 
-      # All available informations.
-      AVAILABLE_INFORMATIONS = Ethon::Easy::Informations::AVAILABLE_INFORMATIONS.keys+
-        [:return_code, :response_body, :response_headers]
+      # Return libcurls return value.
+      #
+      # @example Get return_code.
+      #   response.return_code
+      #
+      # @return [ Symbol ] The return_code.
+      def return_code
+        options[:return_code]
+      end
 
-      AVAILABLE_INFORMATIONS.each do |name|
-        define_method(name) do
-          options[name.to_sym]
-        end
+      # Return the http response body.
+      #
+      # @example Get response_body.
+      #   response.response_body
+      #
+      # @return [ String ] The response_body.
+      def response_body
+        options[:response_body] || options[:body]
+      end
+      alias :body :response_body
+
+      # Return the http response headers.
+      #
+      # @example Get response_headers.
+      #   response.response_headers
+      #
+      # @return [ String ] The response_headers.
+      def response_headers
+        options[:response_headers]
+      end
+
+      # Return the last received HTTP, FTP or SMTP response code.
+      # The value will be zero if no server response code has
+      # been received. Note that a proxy's CONNECT response should
+      # be read with http_connect_code and not this.
+      #
+      # @example Get response_code.
+      #   response.response_code
+      #
+      # @return [ Integer ] The response_code.
+      def response_code
+        options[:response_code] || options[:code]
+      end
+      alias :code :response_code
+
+      # Return the available http auth methods.
+      # Bitmask indicating the authentication method(s)
+      # available.
+      #
+      # @example Get httpauth_avail.
+      #   response.httpauth_avail
+      #
+      # @return [ Integer ] The bitmask.
+      def httpauth_avail
+        options[:httpauth_avail]
+      end
+
+
+      # Return the total time in seconds for the previous
+      # transfer, including name resolving, TCP connect etc.
+      #
+      # @example Get total_time.
+      #   response.total_time
+      #
+      # @return [ Float ] The total_time.
+      def total_time
+        options[:total_time] || options[:time]
+      end
+      alias :time :total_time
+
+      # Return the time, in seconds, it took from the start
+      # until the first byte is received by libcurl. This
+      # includes pretransfer time and also the time the
+      # server needs to calculate the result.
+      #
+      # @example Get starttransfer_time.
+      #   response.starttransfer_time
+      #
+      # @return [ Float ] The starttransfer_time.
+      def starttransfer_time
+        options[:starttransfer_time] || options[:start_transfer_time]
+      end
+      alias :start_transfer_time :starttransfer_time
+
+      # Return the time, in seconds, it took from the start
+      # until the SSL/SSH connect/handshake to the remote
+      # host was completed. This time is most often very near
+      # to the pre transfer time, except for cases such as HTTP
+      # pippelining where the pretransfer time can be delayed
+      # due to waits in line for the pipeline and more.
+      #
+      # @example Get appconnect_time.
+      #   response.appconnect_time
+      #
+      # @return [ Float ] The appconnect_time.
+      def appconnect_time
+        options[:appconnect_time] || options[:app_connect_time]
+      end
+      alias :app_connect_time :appconnect_time
+
+      # Return the time, in seconds, it took from the start
+      # until the file transfer is just about to begin. This
+      # includes all pre-transfer commands and negotiations
+      # that are specific to the particular protocol(s) involved.
+      # It does not involve the sending of the protocol-
+      # specific request that triggers a transfer.
+      #
+      # @example Get pretransfer_time.
+      #  response.pretransfer_time
+      #
+      # @return [ Float ] The pretransfer_time.
+      def pretransfer_time
+        options[:pretransfer_time]
+      end
+
+      # Return the time, in seconds, it took from the start
+      # until the connect to the remote host (or proxy) was completed.
+      #
+      # @example Get connect_time.
+      #   response.connect_time
+      #
+      # @return [ Float ] The connect_time.
+      def connect_time
+        options[:connect_time]
+      end
+
+      # Return the time, in seconds, it took from the
+      # start until the name resolving was completed.
+      #
+      # @example Get namelookup_time.
+      #   response.namelookup_time
+      #
+      # @return [ Float ] The namelookup_time.
+      def namelookup_time
+        options[:namelookup_time] || options[:name_lookup_time]
+      end
+      alias :name_lookup_time :namelookup_time
+
+      # Return the last used effective url.
+      #
+      # @example Get effective_url.
+      #   response.effective_url
+      #
+      # @return [ String ] The effective_url.
+      def effective_url
+        options[:effective_url]
+      end
+
+      # Return the string holding the IP address of the most recent
+      # connection done with this curl handle. This string
+      # may be IPv6 if that's enabled.
+      #
+      # @example Get primary_ip.
+      #   response.primary_ip
+      #
+      # @return [ String ] The primary_ip.
+      def primary_ip
+        options[:primary_ip]
+      end
+
+      # Return the total number of redirections that were
+      # actually followed
+      #
+      # @example Get redirect_count.
+      #   response.redirect_count
+      #
+      # @return [ Integer ] The redirect_count.
+      def redirect_count
+        options[:redirect_count]
       end
 
       # Returns the response header.
@@ -25,6 +186,7 @@ module Typhoeus
         return nil if response_headers.nil? && @headers.nil?
         @headers ||= Response::Header.new(response_headers.split("\r\n\r\n").last)
       end
+      alias :headers_hash :headers
 
       # Return all redirections in between as multiple
       # responses with header.
