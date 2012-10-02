@@ -27,7 +27,7 @@ module Typhoeus
     attr_accessor :options
 
     # @api private
-    attr_accessor :mock
+    attr_writer :mock
 
     # Create a new response.
     #
@@ -40,6 +40,11 @@ module Typhoeus
     def initialize(options = {})
       @options = options
       @headers = options[:headers]
+    end
+
+    # @api private
+    def mock
+      defined?(@mock) ? @mock : options[:mock]
     end
   end
 end

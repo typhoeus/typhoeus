@@ -13,4 +13,31 @@ describe Typhoeus::Response do
       end
     end
   end
+
+  describe "#mock" do
+    context "when @mock" do
+      before { response.mock = true }
+
+      it "returns @mock" do
+        expect(response.mock).to be_true
+      end
+    end
+
+    context "when options[:mock]" do
+      let(:options) { {:mock => true} }
+
+      it "returns options[:mock]" do
+        expect(response.mock).to be_true
+      end
+    end
+
+    context "when @mock and options[:mock]" do
+      let(:options) { {:mock => 1} }
+      before { response.mock = 2 }
+
+      it "returns @mock" do
+        expect(response.mock).to be(2)
+      end
+    end
+  end
 end
