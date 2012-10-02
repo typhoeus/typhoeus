@@ -59,5 +59,17 @@ describe Typhoeus::Request::BlockConnection do
         end
       end
     end
+
+    context "when global and local block_connection" do
+      before do
+        Typhoeus::Config.block_connection = true
+        request.block_connection = false
+      end
+      after { Typhoeus::Config.block_connection = false }
+
+      it "takes local" do
+        expect(request.blocked?).to be_false
+      end
+    end
   end
 end
