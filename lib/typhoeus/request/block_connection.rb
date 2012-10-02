@@ -25,10 +25,26 @@ module Typhoeus
       # @raise [Typhoeus::Errors::NoStub] If connection is blocked
       #   and no stub defined.
       def run
-        if Typhoeus::Config.block_connection
+        if blocked?
           raise Typhoeus::Errors::NoStub.new(self)
         else
           super
+        end
+      end
+
+      # Returns wether a request is blocked or not. Takes
+      # request.block_connection and Typhoeus::Config.block_connection
+      # into consideration.
+      #
+      # @example Blocked?
+      #   request.blocked?
+      #
+      # @return [ Boolean ] True if blocked, false else.
+      def blocked?
+        if block_connection.nil?
+         Typhoeus::Config.block_connection
+        else
+         block_connection
         end
       end
     end

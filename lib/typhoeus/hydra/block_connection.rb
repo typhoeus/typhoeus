@@ -24,7 +24,7 @@ module Typhoeus
       #
       # @param [ Request ] request The request to enqueue.
       def queue(request)
-        if Typhoeus::Config.block_connection
+        if request.blocked?
           raise Typhoeus::Errors::NoStub.new(request)
         else
           super

@@ -43,14 +43,21 @@ module Typhoeus
     # Returns the hydra the request ran into if any.
     #
     # @return [ Typhoeus::Hydra ]
+    #
     # @api private
     attr_accessor :hydra
 
     # Returns the original options provided.
     #
     # @return [ Hash ]
+    #
     # @api private
     attr_accessor :original_options
+
+    # @return [ Boolean ]
+    #
+    # @api private
+    attr_accessor :block_connection
 
     # Create a new request.
     #

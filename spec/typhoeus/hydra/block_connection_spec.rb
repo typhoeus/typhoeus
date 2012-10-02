@@ -11,7 +11,7 @@ describe Typhoeus::Hydra::BlockConnection do
       after { Typhoeus::Config.block_connection = false }
 
       it "raises" do
-        expect{hydra.queue(request)}.to raise_error(Typhoeus::Errors::NoStub)
+        expect{ hydra.queue(request) }.to raise_error(Typhoeus::Errors::NoStub)
       end
     end
   end
