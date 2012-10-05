@@ -3,6 +3,8 @@ module Typhoeus
 
     # This class represents the response header.
     # It can be accessed like a hash.
+    #
+    # @api private
     class Header < Hash
       # Create a new header.
       #
