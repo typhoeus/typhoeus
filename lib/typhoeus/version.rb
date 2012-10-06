@@ -1,5 +1,5 @@
 module Typhoeus
 
   # The current Typhoeus version.
-  VERSION = '0.5.0.alpha'
+  VERSION = '0.5.0.rc'
 end
