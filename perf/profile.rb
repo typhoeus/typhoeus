@@ -1,10 +1,8 @@
-require File.dirname(__FILE__) + '/../lib/typhoeus.rb'
-require 'rubygems'
+require 'typhoeus'
 require 'ruby-prof'
 
 calls = 50
 url = "http://127.0.0.1:3000/"
-Typhoeus.init_easy_object_pool
 
 RubyProf.start
 calls.times do |i|
