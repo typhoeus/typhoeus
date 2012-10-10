@@ -25,7 +25,7 @@ Typhoeus.configure do |config|
   config.memoize = true
 end
 ```
-* No more Response#headers_hash, instead response#header returning the last
+* No more `Response#headers_hash`, instead `Response#headers` returning the last
   header and response#redirections returning the responses with headers
   generated through redirections
 * Instead of defining the same callbacks on every request, you can define global callbacks:
