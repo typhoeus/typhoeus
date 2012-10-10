@@ -20,7 +20,7 @@ hydra.run
 
 ## Project Tracking
 
-* [Documentation](http://rubydoc.info/github/typhoeus/typhoeus) (github master)
+* [Documentation](http://rubydoc.info/github/typhoeus/typhoeus/frames/Typhoeus) (github master)
 * [Website](http://typhoeus.github.com/) (v0.4.2)
 * [Mailinglist](http://groups.google.com/group/typhoeus)
 
