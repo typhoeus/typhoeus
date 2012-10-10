@@ -20,6 +20,10 @@ module Typhoeus
     #   request.on_complete.clear
     #   request.execute_callbacks
     #   #=> []
+    #
+    # @note If you're using the Hydra to execute multiple
+    #   requests, then callbacks are delaying the
+    #   request execution.
     module Callbacks
 
       module Types # :nodoc:

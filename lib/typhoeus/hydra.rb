@@ -35,6 +35,9 @@ module Typhoeus
   #   requests = (0..9).map{ Typhoeus::Request.new("www.example.com") }
   #   requests.each{ |request| hydra.queue(request) }
   #   hydra.run
+  #
+  # @note Callbacks are going to delay the request
+  #   execution.
   class Hydra
     include Hydra::EasyPool
     include Hydra::Queueable

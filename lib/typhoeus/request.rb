@@ -99,7 +99,8 @@ module Typhoeus
     #
     # @return [ Typhoeus::Request ] The request.
     #
-    # @note See {Ethon::Easy#initialize} for more options.
+    # @note See {http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy#initialize-instance_method Ethon::Easy#initialize} for more options.
+    #
     #
     # @see Typhoeus::Hydra
     # @see Typhoeus::Response
