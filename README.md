@@ -7,14 +7,14 @@ Like a modern code version of the mythical beast with 100 serpent heads, Typhoeu
 Single request:
 
 ```ruby
-Typhoeus.get("www.example.com")
+Typhoeus.get("www.example.com", followlocation: true)
 ```
 
 Parallel requests:
 
 ```ruby
 hydra = Typhoeus::Hydra.new
-10.times.map{ hydra.queue(Typhoeus::Request.new("www.example.com")) }
+10.times.map{ hydra.queue(Typhoeus::Request.new("www.example.com", followlocation: true)) }
 hydra.run
 ```
 
