@@ -10,7 +10,8 @@ require 'typhoeus/response'
 require 'typhoeus/version'
 
 # Typhoeus is a http client library based on Ethon which
-# wraps libcurl.
+# wraps libcurl. Sitting on top of libcurl make Typhoeus
+# very reliable and fast.
 #
 # @example (see Typhoeus::Request)
 # @example (see Typhoeus::Hydra)
