@@ -9,10 +9,8 @@ Major Changes:
 * Ethon integration
   * Params are url params and a body is always a body for every request type
   * Request parameter and body are properly encoded (only POST multiform body is not)
-  * No more header sanitizing
-      Before: `:headers => { 'user_agent' => 'Custom' }` was modified to
+  * No more header sanitizing. Before: `:headers => { 'user_agent' => 'Custom' }` was modified to
         `:headers => { 'User-Agent' => 'Custom' }`
-
   * The options you can set might have a slightly other names, as Ethon sticks to
     libcurl names. See
     [Easy.new](http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy#initialize-instance_method)
@@ -36,7 +34,6 @@ end
 ```ruby
 Typhoeus.on_complete { p "yay" }
 ```
-
 * The stubbing interface changed slightly. You now have the same syntax as for requests:
 ```ruby
 Typhoeus.stub(url, options).and_return(response)
