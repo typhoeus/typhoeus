@@ -19,7 +19,7 @@ module Typhoeus
       #
       # @note (see Typhoeus::Request#initialize)
       def get(url, options = {})
-        Request.run(url, options.merge(:method => :get))
+        Request.new(url, options.merge(:method => :get)).run
       end
 
       # Make a post request.
@@ -35,7 +35,7 @@ module Typhoeus
       #
       # @note (see Typhoeus::Request#initialize)
       def post(url, options = {})
-        Request.run(url, options.merge(:method => :post))
+        Request.new(url, options.merge(:method => :post)).run
       end
 
       # Make a put request.
@@ -54,7 +54,7 @@ module Typhoeus
       #
       # @note (see Typhoeus::Request#initialize)
       def put(url, options = {})
-        Request.run(url, options.merge(:method => :put))
+        Request.new(url, options.merge(:method => :put)).run
       end
 
       # Make a delete request.
@@ -70,7 +70,7 @@ module Typhoeus
       #
       # @note (see Typhoeus::Request#initialize)
       def delete(url, options = {})
-        Request.run(url, options.merge(:method => :delete))
+        Request.new(url, options.merge(:method => :delete)).run
       end
 
       # Make a head request.
@@ -86,7 +86,7 @@ module Typhoeus
       #
       # @note (see Typhoeus::Request#initialize)
       def head(url, options = {})
-        Request.run(url, options.merge(:method => :head))
+        Request.new(url, options.merge(:method => :head)).run
       end
 
       # Make a patch request.
@@ -102,7 +102,7 @@ module Typhoeus
       #
       # @note (see Typhoeus::Request#initialize)
       def patch(url, options = {})
-        Request.run(url, options.merge(:method => :patch))
+        Request.new(url, options.merge(:method => :patch)).run
       end
 
       # Make a options request.
@@ -118,7 +118,7 @@ module Typhoeus
       #
       # @note (see Typhoeus::Request#initialize)
       def options(url, options = {})
-        Request.run(url, options.merge(:method => :options))
+        Request.new(url, options.merge(:method => :options)).run
       end
     end
   end
