@@ -8,15 +8,13 @@ Major Changes:
 
 * Ethon integration
   * Params are url params and a body is always a body for every request type
-  * Request parameter and body are properly encoded (only POST multiform body is not)
-  * No more header sanitizing. Before: `:headers => { 'user_agent' => 'Custom' }` was modified to
-        `:headers => { 'User-Agent' => 'Custom' }`
   * The options you can set might have a slightly other names, as Ethon sticks to
     libcurl names. See
     [Easy.new](http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy#initialize-instance_method)
     for a description.
-  * The following classes were deleted because they do not seemed to be uesed at all. If that
-    turns out to be wrong, they will be restored: `Typhoeus::Filter`, `Typhoeus::Remote`, `Typhoeus::RemoteMethod`, `Typhoeus::RemoteProxyObject`
+  * Request parameter and body are properly encoded (only POST multiform body is not)
+  * No more header sanitizing. Before: `:headers => { 'user_agent' => 'Custom' }` was modified to
+        `:headers => { 'User-Agent' => 'Custom' }`
   * `Typhoeus::Easy` and `Typhoeus::Multi` are now `Ethon::Easy` and `Ethon::Multi`
 
 * Request shortcuts: `Typhoeus.get("www.google.de")`
@@ -38,8 +36,12 @@ Typhoeus.on_complete { p "yay" }
 ```ruby
 Typhoeus.stub(url, options).and_return(response)
 ```
-
-* There is no build in cache interface any more, ping me if you used it!
+* The following things were removed because they do not seemed to be used at all. Ping me if you disagree!
+  * `Typhoeus::Filter`
+  * `Typhoeus::Remote`
+  * `Typhoeus::RemoteMethod`
+  * `Typhoeus::RemoteProxyObject`
+  * build in cache interface
 
 Enhancements:
 
