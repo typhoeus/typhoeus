@@ -45,6 +45,8 @@ Typhoeus.on_complete { p "yay" }
 Typhoeus.stub(url, options).and_return(response)
 ```
 
+* There is no build in cache interface any more, ping me if you used it!
+
 Enhancements:
 
 * Documentation
