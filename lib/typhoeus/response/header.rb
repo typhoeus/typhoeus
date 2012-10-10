@@ -23,22 +23,25 @@ module Typhoeus
       #   header.parse
       def parse
         raw.lines.each do |header|
-          unless header =~ /^HTTP\/1.[01]/
-            parts = header.split(':', 2)
-            unless parts.empty?
-              parts.map(&:strip!)
-              if self.has_key?(parts[0])
-                self[parts[0]] = [self[parts[0]]] unless self[parts[0]].kind_of? Array
-                self[parts[0]] << parts[1]
-              else
-                self[parts[0]] = parts[1]
-              end
-            end
-          end
+          next if header.empty? || header =~ /^HTTP\/1.[01]/
+          process_line(header)
         end
       end
 
       private
+
+      # Processes line and saves the result.
+      #
+      # @return [ void ]
+      def process_line(header)
+        key, value = header.split(':', 2).map(&:strip)
+        if self.has_key?(key)
+          self[key] = [self[key]] unless self[key].is_a? Array
+          self[key] << value
+        else
+          self[key] = value
+        end
+      end
 
       # Returns the raw header or empty string.
       #
