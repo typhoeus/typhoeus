@@ -10,7 +10,6 @@ Major Changes:
   * Params are url params and a body is always a body for every request type
   * Request parameter and body are properly encoded (only POST multiform body is not)
   * No more header sanitizing
-
       Before: `:headers => { 'user_agent' => 'Custom' }` was modified to
         `:headers => { 'User-Agent' => 'Custom' }`
 
