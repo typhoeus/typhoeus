@@ -45,7 +45,7 @@ module Typhoeus
     include Hydra::Before
 
     # @example Set max_concurrency.
-    #   Typhoeus::Hydra.new(:max_concurrency => 20)
+    #   Typhoeus::Hydra.new(max_concurrency: 20)
     attr_reader :max_concurrency
 
     # @api private
@@ -75,7 +75,7 @@ module Typhoeus
     #   Typhoeus::Hydra.new
     #
     # @example Create a hydra with max_concurrency.
-    #   Typhoeus::Hydra.new(:max_concurrency => 20)
+    #   Typhoeus::Hydra.new(max_concurrency: 20)
     #
     # @param [ Hash ] options The options hash.
     #

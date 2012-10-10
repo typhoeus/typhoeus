@@ -67,26 +67,26 @@ module Typhoeus
     # @example Request with url parameters.
     #   response = Typhoeus::Request.new(
     #     "www.example.com",
-    #     :params => {:a => 1}
+    #     params: {a: 1}
     #   ).run
     #
     # @example Request with a body.
     #   response = Typhoeus::Request.new(
     #     "www.example.com",
-    #     :body => {:b => 2}
+    #     body: {b: 2}
     #   ).run
     #
     # @example Request with parameters and body.
     #   response = Typhoeus::Request.new(
     #     "www.example.com",
-    #     :params => {:a => 1},
-    #     :body => {:b => 2}
+    #     params: {a: 1},
+    #     body: {b: 2}
     #   ).run
     #
     # @example Create a request and allow follow redirections.
     #   response = Typhoeus::Request.new(
     #     "www.example.com",
-    #     :followlocation => true
+    #     followlocation: true
     #   ).run
     #
     # @param [ String ] url The url to request.
