@@ -101,7 +101,6 @@ module Typhoeus
     #
     # @note See {http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy#initialize-instance_method Ethon::Easy#initialize} for more options.
     #
-    #
     # @see Typhoeus::Hydra
     # @see Typhoeus::Response
     # @see Typhoeus::Request::Actions
