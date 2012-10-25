@@ -125,4 +125,22 @@ describe Typhoeus::Response::Status do
       end
     end
   end
+
+  describe "#first_header_line" do
+    context "when multiple header" do
+      let(:options) { {:response_headers => "1\n\n2\nbla"} }
+
+      it "returns first line of last block" do
+        expect(response.method(:first_header_line).call).to eq("2")
+      end
+    end
+
+    context "when single header" do
+      let(:options) { {:response_headers => "1"} }
+
+      it "returns first line" do
+        expect(response.method(:first_header_line).call).to eq("1")
+      end
+    end
+  end
 end

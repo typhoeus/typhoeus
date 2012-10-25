@@ -73,7 +73,13 @@ module Typhoeus
 
       # :nodoc:
       def first_header_line
-        @first_header_line ||= response_headers.to_s.split("\n").first
+        @first_header_line ||= begin
+          if response_headers.to_s.include?("\n\n")
+            response_headers.to_s.split("\n\n").last.split("\n").first
+          else
+            response_headers.to_s.split("\n").first
+          end
+        end
       end
     end
   end
