@@ -49,15 +49,20 @@ describe Faraday::Adapter::Typhoeus do
 
     context "parallel_manager" do
       context "when given" do
-        let(:env) { { :parallel_manager => stub(:queue => true) } }
+        let(:env) { { :parallel_manager => stub(:queue => true), :ssl => {}, :request => {} } }
 
         it "uses" do
-          pending
+          adapter.method(:perform_request).call(env)
         end
       end
 
       context "when not given" do
-        it { pending }
+        let(:env) { { :method => :get, :ssl => {}, :request => {} } }
+
+        it "falls back to single" do
+          Typhoeus::Request.should_receive(:new).and_return(stub(:options => {}, :on_complete => [], :run => true))
+          adapter.method(:perform_request).call(env)
+        end
       end
     end
   end

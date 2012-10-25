@@ -21,8 +21,7 @@ module Faraday
 
       def perform_request(env)
         if parallel?(env)
-          hydra = env[:parallel_manager] || self.class.setup_parallel_manager
-          hydra.queue request(env)
+          env[:parallel_manager].queue request(env)
         else
           request(env).run
         end
