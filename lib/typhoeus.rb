@@ -13,11 +13,20 @@ require 'typhoeus/version'
 # wraps libcurl. Sitting on top of libcurl make Typhoeus
 # very reliable and fast.
 #
+# There are some gems using Typhoeus like
+# {https://github.com/myronmarston/vcr VCR},
+# {https://github.com/bblimke/webmock Webmock} or
+# {https://github.com/technoweenie/faraday Faraday}. VCR
+# and Webmock are providing their own adapter
+# whereas Faraday relies on {Faraday::Adapter::Typhoeus}
+# since Typhoeus version 0.5.
+#
 # @example (see Typhoeus::Request)
 # @example (see Typhoeus::Hydra)
 #
 # @see Typhoeus::Request
 # @see Typhoeus::Hydra
+# @see Faraday::Adapter::Typhoeus
 #
 # @since 0.5.0
 module Typhoeus

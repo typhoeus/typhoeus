@@ -1,16 +1,44 @@
 require 'faraday'
 
-module Faraday
-  class Adapter
+module Faraday # :nodoc:
+  class Adapter # :nodoc:
+
+    # Adapter to use Faraday with Typhoeus.
+    #
+    # @example Use Typhoeus.
+    #   require 'faraday'
+    #   require 'typhoeus'
+    #   require 'typhoeus/adapters/faraday'
+    #
+    #   conn = Faraday.new(url: "www.example.com") do |faraday|
+    #     faraday.adapter :typhoeus
+    #   end
+    #
+    #   response = conn.get("/")
     class Typhoeus < Faraday::Adapter
       self.supports_parallel = true
 
+      # Setup Hydra with provided options.
+      #
+      # @example Setup Hydra.
+      #   Faraday::Adapter::Typhoeus.setup_parallel_manager
+      #   #=> #<Typhoeus::Hydra ... >
+      #
+      # @param (see Typhoeus::Hydra#initialize)
+      # @option (see Typhoeus::Hydra#initialize)
+      #
+      # @return [ Typhoeus::Hydra ] The hydra.
       def self.setup_parallel_manager(options = {})
         ::Typhoeus::Hydra.new(options)
       end
 
       dependency 'typhoeus'
 
+      # Hook into Faraday and perform the request with Typhoeus.
+      #
+      # @param [ Hash ] env The environment.
+      #
+      # @return [ void ]
       def call(env)
         super
         perform_request env
