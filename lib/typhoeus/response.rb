@@ -14,7 +14,7 @@ module Typhoeus
     # @example Get request.
     #   request = Typhoeus::Request.get("www.example.com")
     #   response = request.run
-    #   response == request.response
+    #   request == response.request
     #   #=> true
     #
     # @return [ Typhoeus::Request ]
@@ -42,6 +42,9 @@ module Typhoeus
       @headers = options[:headers]
     end
 
+    # Returns wether this request is mocked
+    # or not.
+    #
     # @api private
     def mock
       defined?(@mock) ? @mock : options[:mock]
