@@ -21,10 +21,10 @@ hydra.run
 ## Installation
 
 ```
-gem install typhoeus --pre
+gem install typhoeus
 ```
 ```
-gem "typhoeus", git: "git://github.com/typhoeus/typhoeus.git"
+gem "typhoeus"
 ```
 
 ## Project Tracking
