@@ -18,6 +18,15 @@ hydra = Typhoeus::Hydra.new
 hydra.run
 ```
 
+## Installation
+
+```
+gem install typhoeus --pre
+```
+```
+gem "typhoeus", git: "git://github.com/typhoeus/typhoeus.git"
+```
+
 ## Project Tracking
 
 * [Documentation](http://rubydoc.info/github/typhoeus/typhoeus/frames/Typhoeus) (github master)
