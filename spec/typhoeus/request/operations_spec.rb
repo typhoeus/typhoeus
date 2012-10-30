@@ -2,7 +2,8 @@ require 'spec_helper'
 
 describe Typhoeus::Request::Operations do
   let(:url) { "localhost:3001" }
-  let(:request) { Typhoeus::Request.new(url) }
+  let(:options) { {} }
+  let(:request) { Typhoeus::Request.new(url, options) }
 
   describe "#run" do
     let(:easy) { Ethon::Easy.new }
@@ -46,6 +47,38 @@ describe Typhoeus::Request::Operations do
 
     it "returns a response" do
       expect(request.run).to be_a(Typhoeus::Response)
+    end
+
+    context "when invalid option" do
+      let(:options) { { :fubar => true } }
+
+      it "raises Ethon::Errors::InvalidOption" do
+        expect{ request.run }.to raise_error(Ethon::Errors::InvalidOption)
+      end
+    end
+
+    context "when option renamed" do
+      let(:options) { { :follow_location => true } }
+
+      it "raises Ethon::Errors::InvalidOption" do
+        expect{ request.run }.to raise_error(Ethon::Errors::InvalidOption)
+      end
+
+      it "has hint for new option" do
+        expect{ request.run }.to raise_error(/Please try followlocation instead of follow_location\./)
+      end
+    end
+
+    context "when option removed" do
+      let(:options) { { :cache_timout => 1 } }
+
+      it "raises Ethon::Errors::InvalidOption" do
+        expect{ request.run }.to raise_error(Ethon::Errors::InvalidOption)
+      end
+
+      it "has hint for removed option" do
+        expect{ request.run }.to raise_error(/The option cache_timout was removed\./)
+      end
     end
   end
 
