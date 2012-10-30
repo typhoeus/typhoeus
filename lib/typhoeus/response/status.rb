@@ -20,7 +20,7 @@ module Typhoeus
         # Except when responding to a HEAD request, the server SHOULD include an entity containing
         # an explanation of the error situation [...]
         # This means 'HTTP/1.1 404' is as valid as 'HTTP/1.1 404 Not Found' and we have to handle it.
-
+        #
         # Regexp doc: http://rubular.com/r/eAr1oVYsVa
         if first_header_line != nil and first_header_line[/\d{3} (.*)$/, 1] != nil
           @status_message = first_header_line[/\d{3} (.*)$/, 1].chomp
@@ -74,10 +74,10 @@ module Typhoeus
       # :nodoc:
       def first_header_line
         @first_header_line ||= begin
-          if response_headers.to_s.include?("\n\n")
-            response_headers.to_s.split("\n\n").last.split("\n").first
+          if response_headers.to_s.include?("\r\n\r\n")
+            response_headers.to_s.split("\r\n\r\n").last.split("\r\n").first
           else
-            response_headers.to_s.split("\n").first
+            response_headers.to_s.split("\r\n").first
           end
         end
       end

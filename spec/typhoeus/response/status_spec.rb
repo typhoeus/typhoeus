@@ -128,7 +128,7 @@ describe Typhoeus::Response::Status do
 
   describe "#first_header_line" do
     context "when multiple header" do
-      let(:options) { {:response_headers => "1\n\n2\nbla"} }
+      let(:options) { {:response_headers => "1\r\n\r\n2\r\nbla"} }
 
       it "returns first line of last block" do
         expect(response.method(:first_header_line).call).to eq("2")
