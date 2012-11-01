@@ -1,8 +1,17 @@
 # Changelog
 
+## Master
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.0...master)
+
+Enhancements:
+
+* Downcase header keys for easier access
+  ( [\#227](https://github.com/typhoeus/typhoeus/issues/227) )
+
 ## 0.5.0
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.4.2...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.4.2...v0.5.0)
 
 Major Changes:
 

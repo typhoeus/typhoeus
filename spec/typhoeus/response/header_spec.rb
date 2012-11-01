@@ -33,7 +33,11 @@ describe Typhoeus::Response::Header do
       end
 
       it "sets Set-Cookie" do
-        expect(header['Set-Cookie']).to have(3).items
+        expect(header['set-cookie']).to have(3).items
+      end
+
+      it "sets downcased keys" do
+        expect(header.keys.all?{|k| k =~ /[a-z-]/}).to be_true
       end
 
       [
@@ -42,7 +46,7 @@ describe Typhoeus::Response::Header do
         'NID=61=LblqYgh5Ou; expires=Sat, 29-Dec-2012 10:09:23 GMT; path=/; domain=.google.de; HttpOnly'
       ].each_with_index do |cookie, i|
         it "sets Cookie##{i}" do
-          expect(header['Set-Cookie']).to include(cookie)
+          expect(header['set-cookie']).to include(cookie)
         end
       end
 
@@ -55,7 +59,7 @@ describe Typhoeus::Response::Header do
         'X-Frame-Options' => 'SAMEORIGIN', 'Transfer-Encoding' => 'chunked'
       }.each do |name, value|
         it "sets #{name}" do
-          expect(header[name]).to eq(value)
+          expect(header[name.downcase]).to eq(value)
         end
       end
     end

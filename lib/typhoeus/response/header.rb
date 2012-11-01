@@ -35,6 +35,7 @@ module Typhoeus
       # @return [ void ]
       def process_line(header)
         key, value = header.split(':', 2).map(&:strip)
+        key = key.downcase
         if self.has_key?(key)
           self[key] = [self[key]] unless self[key].is_a? Array
           self[key] << value
