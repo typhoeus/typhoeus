@@ -151,11 +151,11 @@ describe Typhoeus::Response::Informations do
       end
 
       it "has Expire" do
-        expect(response.headers['Expire']).to eq('-1')
+        expect(response.headers['expire']).to eq('-1')
       end
 
       it "has Server" do
-        expect(response.headers['Server']).to eq('gws')
+        expect(response.headers['server']).to eq('gws')
       end
     end
 
@@ -163,7 +163,7 @@ describe Typhoeus::Response::Informations do
       let(:options) { {:response_headers => "Server: A\r\n\r\nServer: B"} }
 
       it "returns the last" do
-        expect(response.headers['Server']).to eq("B")
+        expect(response.headers['server']).to eq("B")
       end
     end
 
