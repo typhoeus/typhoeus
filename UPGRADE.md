@@ -1,8 +1,10 @@
 # Upgrade guide
 
-## To 0.5
+## 0.5
 
-1. Fix the option names, because some were renamed. The errors should point you in the right direction:
+### Options
+
+Fix the option names, because some were renamed. The errors should point you in the right direction:
 
 ```ruby
 Typhoeus.get("www.example.com", follow_location: true)
@@ -14,7 +16,9 @@ Typhoeus.get("www.example.com", followlocation: true).code
 #=> 200
 ```
 
-2. `Response#headers` returns a hash now and replaces `Reponse#headers_hash, use `Response#response_headers` for the raw string:
+### Headers
+
+`Response#headers` returns a hash now and replaces `Reponse#headers_hash, use `Response#response_headers` for the raw string:
 
 ```ruby
 Typhoeus.get("www.example.com", followlocation: true).headers
@@ -31,9 +35,13 @@ Typhoeus.get("www.example.com", followlocation: true).response_headers
 #=> "HTTP/1.0 302 Found\r\nLocation: http://www.iana.org/domains/example/ [...]"
 ```
 
-3. Make sure every request sends proper params and body (especially POST/PUT). `:params` becomes url parameter and `:body` request body. Before params for POST was smashed into the body.
+### Params vs body
 
-4. Create a global configuration in case you want to turn on verbose, memoize or block_connection:
+Make sure every request sends proper params and body (especially POST/PUT). `:params` becomes url parameter and `:body` request body. Before params for POST was smashed into the body.
+
+### Configuration
+
+Create a global configuration in case you want to turn on verbose, memoize or block_connection:
 
 ```ruby
 Typhoeus.configure do |config|
@@ -42,4 +50,6 @@ Typhoeus.configure do |config|
 end
 ```
 
-5. When in doubt read the [docs](http://rubydoc.info/github/typhoeus/typhoeus/frames/Typhoeus) or the [code](https://www.github.com/typhoeus).
+### Docs
+
+When in doubt read the [docs](http://rubydoc.info/github/typhoeus/typhoeus/frames/Typhoeus) or the [code](https://www.github.com/typhoeus).
