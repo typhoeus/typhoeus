@@ -2,8 +2,8 @@ module Typhoeus
   class Hydra
 
     # This is a Factory for easies to be used in the hydra.
-    # Before an easy is ready to be added to a multi, it needs
-    # to be prepared and the on_complete callback to be set.
+    # Before an easy is ready to be added to a multi the
+    # on_complete callback to be set.
     # This is done by this class.
     #
     # @api private
@@ -41,19 +41,18 @@ module Typhoeus
         @easy ||= hydra.get_easy
       end
 
-      # Fabricated and prepared easy.
+      # Fabricated easy.
       #
       # @example Prepared easy.
       #   easy_factory.get
       #
-      # @return [ Ethon::Easy ] The prepared easy.
+      # @return [ Ethon::Easy ] The easy.
       def get
         easy.http_request(
           request.url,
           request.options.fetch(:method, :get),
           request.options.reject{|k,_| k==:method}
         )
-        easy.prepare
         set_callback
         easy
       end

@@ -23,7 +23,6 @@ module Typhoeus
           help = provide_help(e.message.match(/:\s(\w+)/)[1])
           raise $!, "#{$!}#{help}", $!.backtrace
         end
-        easy.prepare
         easy.perform
         finish(Response.new(easy.to_hash))
         Typhoeus.release_easy(easy)

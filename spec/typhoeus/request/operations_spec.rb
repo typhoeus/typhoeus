@@ -18,11 +18,6 @@ describe Typhoeus::Request::Operations do
       request.run
     end
 
-    it "prepares" do
-      easy.should_receive(:prepare)
-      request.run
-    end
-
     it "performs" do
       easy.should_receive(:perform)
       request.run
