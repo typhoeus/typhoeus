@@ -2,12 +2,17 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.0...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.1...master)
+
+## 0.5.1
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.0...v0.5.1)
 
 Enhancements:
 
 * Downcase header keys for easier access
   ( [\#227](https://github.com/typhoeus/typhoeus/issues/227) )
+* Using an updated Ethon version.
 
 ## 0.5.0
 
