@@ -92,10 +92,46 @@ describe Typhoeus::Response::Status do
 
   describe "#success?" do
     context "when response code 200-299" do
-      let(:options) { {:return_code => :ok, :response_code => 201} }
+      let(:options) { {:return_code => return_code, :response_code => 201} }
 
-      it "returns true" do
-        expect(response.success?).to be_true
+      context "when mock" do
+        before { response.mock = true }
+
+        context "when return_code :ok" do
+          let(:return_code) { :ok }
+
+          it "returns true" do
+            expect(response.success?).to be_true
+          end
+        end
+
+        context "when return_code nil" do
+          let(:return_code) { nil }
+
+          it "returns true" do
+            expect(response.success?).to be_true
+          end
+        end
+      end
+
+      context "when no mock" do
+        before { response.mock = nil }
+
+        context "when return_code :ok" do
+          let(:return_code) { :ok }
+
+          it "returns true" do
+            expect(response.success?).to be_true
+          end
+        end
+
+        context "when return_code nil" do
+          let(:return_code) { nil }
+
+          it "returns false" do
+            expect(response.success?).to be_false
+          end
+        end
       end
     end
 
@@ -112,8 +148,44 @@ describe Typhoeus::Response::Status do
     context "when response code 304" do
       let(:options) { {:return_code => :ok, :response_code => 304} }
 
-      it "returns false" do
-        expect(response.modified?).to be_false
+      context "when mock" do
+        before { response.mock = true }
+
+        context "when return_code :ok" do
+          let(:return_code) { :ok }
+
+          it "returns false" do
+            expect(response.modified?).to be_false
+          end
+        end
+
+        context "when return_code nil" do
+          let(:return_code) { nil }
+
+          it "returns false" do
+            expect(response.modified?).to be_false
+          end
+        end
+      end
+
+      context "when no mock" do
+        before { response.mock = nil }
+
+        context "when return_code :ok" do
+          let(:return_code) { :ok }
+
+          it "returns false" do
+            expect(response.modified?).to be_false
+          end
+        end
+
+        context "when return_code nil" do
+          let(:return_code) { nil }
+
+          it "returns true" do
+            expect(response.modified?).to be_false
+          end
+        end
       end
     end
 

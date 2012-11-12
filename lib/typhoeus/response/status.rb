@@ -46,7 +46,7 @@ module Typhoeus
       #
       # @return [ Boolean ] Return true if successful, false else.
       def success?
-        return_code == :ok && response_code >= 200 && response_code < 300
+        (mock || return_code == :ok) && response_code && response_code >= 200 && response_code < 300
       end
 
       # Return wether the response is modified.
@@ -56,7 +56,7 @@ module Typhoeus
       #
       # @return [ Boolean ] Return true if modified, false else.
       def modified?
-        return_code == :ok && response_code != 304
+        (mock || return_code == :ok) && response_code && response_code != 304
       end
 
       # Return wether the response is timed out.
