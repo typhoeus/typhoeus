@@ -4,6 +4,10 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.1...master)
 
+Enhancements:
+
+* Do not check the return_code in Response#success? when response is mocked.
+
 ## 0.5.1
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.0...v0.5.1)
