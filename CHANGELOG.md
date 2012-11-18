@@ -7,6 +7,11 @@
 Enhancements:
 
 * Do not check the return_code in Response#success? when response is mocked.
+* Check for memoization, stubbing, before hooks are delayed to Hydra#run. It
+  was on Hydra#queue before and led to strange behavior because if the request
+  was stubbed, it was wrapped up in queue already. There was no way to add
+  callbacks after queue thatswhy. This is now different, since everything happens
+  in run, just as you expect.
 
 ## 0.5.1
 
