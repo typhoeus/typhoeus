@@ -23,6 +23,11 @@ describe Typhoeus::Hydra::Runnable do
       let(:first) { Typhoeus::Request.new("localhost:3001/first") }
       let(:requests) { [first] }
 
+      it "adds request from queue to multi" do
+        hydra.should_receive(:add).with(first)
+        hydra.run
+      end
+
       it "runs multi#perform" do
         hydra.multi.should_receive(:perform)
         hydra.run
@@ -39,6 +44,13 @@ describe Typhoeus::Hydra::Runnable do
       let(:second) { Typhoeus::Request.new("localhost:3001/second") }
       let(:third) { Typhoeus::Request.new("localhost:3001/third") }
       let(:requests) { [first, second, third] }
+
+      it "adds requests from queue to multi" do
+        hydra.should_receive(:add).with(first)
+        hydra.should_receive(:add).with(second)
+        hydra.should_receive(:add).with(third)
+        hydra.run
+      end
 
       it "runs multi#perform" do
         hydra.multi.should_receive(:perform)

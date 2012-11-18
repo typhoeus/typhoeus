@@ -6,20 +6,20 @@ describe Typhoeus::Hydra::Before do
 
   after { Typhoeus.before.clear }
 
-  describe "#queue" do
+  describe "#add" do
     context "when before" do
       context "when one" do
         it "executes" do
           Typhoeus.before { |r| String.new(r.url) }
           String.should_receive(:new).and_return("")
-          hydra.queue(request)
+          hydra.add(request)
         end
 
         context "when true" do
           it "calls super" do
             Typhoeus.before { true }
             Typhoeus::Expectation.should_receive(:find_by)
-            hydra.queue(request)
+            hydra.add(request)
           end
         end
 
@@ -27,7 +27,7 @@ describe Typhoeus::Hydra::Before do
           it "doesn't call super" do
             Typhoeus.before { false }
             Typhoeus::Expectation.should_receive(:find_by).never
-            hydra.queue(request)
+            hydra.add(request)
           end
         end
 
@@ -35,7 +35,7 @@ describe Typhoeus::Hydra::Before do
           it "doesn't call super" do
             Typhoeus.before { Typhoeus::Response.new }
             Typhoeus::Expectation.should_receive(:find_by).never
-            hydra.queue(request)
+            hydra.add(request)
           end
         end
       end
@@ -46,12 +46,12 @@ describe Typhoeus::Hydra::Before do
 
           it "calls super" do
             Typhoeus::Expectation.should_receive(:find_by)
-            hydra.queue(request)
+            hydra.add(request)
           end
 
           it "executes all" do
             String.should_receive(:new).exactly(3).times.and_return("")
-            hydra.queue(request)
+            hydra.add(request)
           end
         end
 
@@ -64,12 +64,12 @@ describe Typhoeus::Hydra::Before do
 
           it "doesn't call super" do
             Typhoeus::Expectation.should_receive(:find_by).never
-            hydra.queue(request)
+            hydra.add(request)
           end
 
           it "executes only two" do
             String.should_receive(:new).exactly(2).times.and_return("")
-            hydra.queue(request)
+            hydra.add(request)
           end
         end
       end
@@ -78,7 +78,7 @@ describe Typhoeus::Hydra::Before do
     context "when no before" do
       it "calls super" do
         Typhoeus::Expectation.should_receive(:find_by)
-        hydra.queue(request)
+        hydra.add(request)
       end
     end
   end

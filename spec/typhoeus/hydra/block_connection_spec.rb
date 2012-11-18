@@ -5,13 +5,13 @@ describe Typhoeus::Hydra::BlockConnection do
   let(:hydra) { Typhoeus::Hydra.new() }
   let(:request) { Typhoeus::Request.new(url, {:method => :get}) }
 
-  describe "queue" do
+  describe "add" do
     context "when block_connection activated" do
       before { Typhoeus::Config.block_connection = true }
       after { Typhoeus::Config.block_connection = false }
 
       it "raises" do
-        expect{ hydra.queue(request) }.to raise_error(Typhoeus::Errors::NoStub)
+        expect{ hydra.add(request) }.to raise_error(Typhoeus::Errors::NoStub)
       end
     end
   end

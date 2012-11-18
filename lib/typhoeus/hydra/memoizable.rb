@@ -21,18 +21,18 @@ module Typhoeus
         @memory ||= {}
       end
 
-      # Overrides queue in order to check before if request
+      # Overrides add in order to check before if request
       # is memoizable and already in memory. If thats the case,
       # super is not called, instead the response is set and
       # the on_complete callback called.
       #
-      # @example Queue the request.
-      #   hydra.queue(request)
+      # @example Add the request.
+      #   hydra.add(request)
       #
-      # @param [ Request ] request The request to enqueue.
+      # @param [ Request ] request The request to add.
       #
-      # @return [ Request ] The queued request.
-      def queue(request)
+      # @return [ Request ] The added request.
+      def add(request)
         if request.memoizable? && memory.has_key?(request)
           response = memory[request]
           request.finish(response, true)

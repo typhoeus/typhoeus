@@ -8,13 +8,13 @@ module Typhoeus
     # @api private
     module Stubbable
 
-      # Override queue in order to check for matching expecations.
+      # Override add in order to check for matching expecations.
       # When an expecation is found, super is not called. Instead a
       # canned response is assigned to the request.
       #
-      # @example Queue the request.
-      #   hydra.queue(request)
-      def queue(request)
+      # @example Add the request.
+      #   hydra.add(request)
+      def add(request)
         if expectation = Expectation.find_by(request)
           request.finish(expectation.response)
         else

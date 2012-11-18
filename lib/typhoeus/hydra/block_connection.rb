@@ -15,15 +15,15 @@ module Typhoeus
     # @api private
     module BlockConnection
 
-      # Overrides queue in order to check before if block connection
+      # Overrides add in order to check before if block connection
       # is turned on. If thats the case a NoStub error is
       # raised.
       #
-      # @example Queue the request.
-      #   hydra.queue(request)
+      # @example Add the request.
+      #   hydra.add(request)
       #
       # @param [ Request ] request The request to enqueue.
-      def queue(request)
+      def add(request)
         if request.blocked?
           raise Typhoeus::Errors::NoStub.new(request)
         else

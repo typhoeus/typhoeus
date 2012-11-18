@@ -9,19 +9,19 @@ describe Typhoeus::Hydra::Stubbable do
   before { Typhoeus.stub(url).and_return(response) }
   after { Typhoeus::Expectation.clear }
 
-  describe "#queue" do
+  describe "#add" do
     it "checks expactations" do
-      hydra.queue(request)
+      hydra.add(request)
     end
 
     context "when expectation found" do
       it "finishes response" do
         request.should_receive(:finish)
-        hydra.queue(request)
+        hydra.add(request)
       end
 
       it "is a mock" do
-        hydra.queue(request)
+        hydra.add(request)
         expect(request.response.mock).to be(true)
       end
     end

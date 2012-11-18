@@ -37,11 +37,7 @@ module Typhoeus
       #  hydra.queue(request)
       def queue(request)
         request.hydra = self
-        if multi.easy_handles.size < max_concurrency
-          multi.add(Hydra::EasyFactory.new(request, self).get)
-        else
-          queued_requests << request
-        end
+        queued_requests << request
       end
     end
   end

@@ -9,14 +9,14 @@ module Typhoeus
     # @api private
     module Before
 
-      # Overrride queue in order to execute callbacks in
+      # Overrride add in order to execute callbacks in
       # Typhoeus.before. Will break and return when a
       # callback returns nil or false. Calls super
       # otherwise.
       #
-      # @example Queue the request.
-      #   hydra.queue(request)
-      def queue(request)
+      # @example Add the request.
+      #   hydra.add(request)
+      def add(request)
         Typhoeus.before.each do |callback|
           value = callback.call(request)
           if value.nil? || value == false || value.is_a?(Response)

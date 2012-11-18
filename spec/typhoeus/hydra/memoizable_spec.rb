@@ -5,20 +5,20 @@ describe Typhoeus::Hydra::Memoizable do
   let(:hydra) { Typhoeus::Hydra.new() }
   let(:request) { Typhoeus::Request.new(url, {:method => :get}) }
 
-  describe "queue" do
+  describe "add" do
     context "when memoization activated" do
       before { Typhoeus::Config.memoize = true }
       after { Typhoeus::Config.memoize = false }
 
       context "when request new" do
         it "sets no response" do
-          hydra.queue(request)
+          hydra.add(request)
           expect(request.response).to be_nil
         end
 
         it "doesn't call complete" do
           request.should_receive(:complete).never
-          hydra.queue(request)
+          hydra.add(request)
         end
       end
 
@@ -28,7 +28,7 @@ describe Typhoeus::Hydra::Memoizable do
 
         it "finishes request" do
           request.should_receive(:finish).with(response, true)
-          hydra.queue(request)
+          hydra.add(request)
         end
       end
     end

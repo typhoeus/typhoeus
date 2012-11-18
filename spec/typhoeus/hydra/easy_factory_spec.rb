@@ -32,11 +32,11 @@ describe Typhoeus::Hydra::EasyFactory do
       expect(easy_factory.hydra.easy_pool).to include(easy_factory.easy)
     end
 
-    it "queues next request" do
+    it "adds next request" do
       easy_factory.hydra.instance_variable_set(:@queued_requests, [request])
+      easy_factory.hydra.should_receive(:add).with(request)
       easy_factory.send(:set_callback)
       easy_factory.easy.complete
-      expect(easy_factory.hydra.queued_requests).to include(request)
     end
   end
 end

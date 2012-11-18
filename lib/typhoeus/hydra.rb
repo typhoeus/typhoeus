@@ -1,3 +1,4 @@
+require 'typhoeus/hydra/addable'
 require 'typhoeus/hydra/before'
 require 'typhoeus/hydra/block_connection'
 require 'typhoeus/hydra/easy_factory'
@@ -40,12 +41,13 @@ module Typhoeus
   #   execution.
   class Hydra
     include Hydra::EasyPool
-    include Hydra::Queueable
+    include Hydra::Addable
     include Hydra::Runnable
     include Hydra::Memoizable
     include Hydra::BlockConnection
     include Hydra::Stubbable
     include Hydra::Before
+    include Hydra::Queueable
 
     # @example Set max_concurrency.
     #   Typhoeus::Hydra.new(max_concurrency: 20)

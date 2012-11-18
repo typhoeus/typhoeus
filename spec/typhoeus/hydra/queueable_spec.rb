@@ -17,27 +17,9 @@ describe Typhoeus::Hydra::Queueable do
       expect(request.hydra).to eq(hydra)
     end
 
-    context "when max concurrency limit not reached" do
-      let(:options) { { :max_concurrency => 10 } }
-
-      it "adds to multi" do
-        hydra.multi.should_receive(:add)
-        hydra.queue(request)
-      end
-    end
-
-    context "when max concurrency limit reached" do
-      let(:options) { { :max_concurrency => 0 } }
-
-      it "doesn't add to multi" do
-        hydra.multi.should_receive(:add).never
-        hydra.queue(request)
-      end
-
-      it "adds to queued requests" do
-        hydra.queue(request)
-        expect(hydra.queued_requests).to include(request)
-      end
+    it "adds to queued requests" do
+      hydra.queue(request)
+      expect(hydra.queued_requests).to include(request)
     end
   end
 
