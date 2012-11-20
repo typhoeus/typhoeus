@@ -117,8 +117,7 @@ module Typhoeus
     #
     # @api private
     def matches?(request)
-      url_match?(request.url) &&
-        (options ? options.all?{ |k,v| request.original_options[k] == v } : true)
+      url_match?(request.url) && options_match?(request)
     end
 
     # Return canned responses.
@@ -151,6 +150,12 @@ module Typhoeus
     end
 
     private
+
+    # Check wether the options matches the request options.
+    # I checks options and original options.
+    def options_match?(request)
+      (options ? options.all?{ |k,v| request.original_options[k] == v || request.options[k] == v } : true)
+    end
 
     # Check wether the url matches the request url.
     # The url can be a string, regex or nil. String and

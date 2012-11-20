@@ -115,124 +115,123 @@ describe Typhoeus::Expectation do
     end
   end
 
-  describe "#matches" do
+  describe "#matches?" do
+    let(:request) { stub(url: nil) }
+
+    it "calls url_match?" do
+      expectation.should_receive(:url_match?)
+      expectation.matches?(request)
+    end
+
+    it "calls options_match?" do
+      expectation.should_receive(:url_match?).and_return(true)
+      expectation.should_receive(:options_match?)
+      expectation.matches?(request)
+    end
+  end
+
+  describe "#url_match?" do
     let(:request_url) { "www.example.com" }
-    let(:request_options) { {} }
-    let(:request) { Typhoeus::Request.new(request_url, request_options) }
+    let(:request) { Typhoeus::Request.new(request_url) }
+    let(:url_match) { expectation.method(:url_match?).call(request.url) }
 
-    context "when url" do
-      context "when string" do
-        context "when match" do
-          it "returns true" do
-            expect(expectation.matches?(request)).to be_true
-          end
-
-          context "when options" do
-            context "when match" do
-              let(:options) { { :a => 1 } }
-              let(:request_options) { options }
-
-              it "returns true" do
-                expect(expectation.matches?(request)).to be_true
-              end
-            end
-
-            context "when options are a subset from request_options" do
-              let(:options) { { :a => 1 } }
-              let(:request_options) { { :a => 1, :b => 2 } }
-
-              it "returns true" do
-                expect(expectation.matches?(request)).to be_true
-              end
-            end
-
-            context "when options are nested" do
-              let(:options) { { :a => { :b => 1 } } }
-              let(:request_options) { options }
-
-              it "returns true" do
-                expect(expectation.matches?(request)).to be_true
-              end
-            end
-
-            context "when options contains an array" do
-              let(:options) { { :a => [1, 2] } }
-              let(:request_options) { options }
-
-              it "returns true" do
-                expect(expectation.matches?(request)).to be_true
-              end
-            end
-
-            context "when no match" do
-              let(:options) { { :a => 1 } }
-
-              it "returns false" do
-                expect(expectation.matches?(request)).to be_false
-              end
-            end
-          end
-        end
-
-        context "when regexp" do
-          context "when match" do
-            let(:url) { /example/ }
-
-            it "returns true" do
-              expect(expectation.matches?(request)).to be_true
-            end
-          end
-
-          context "when no match" do
-            let(:url) { /nomatch/ }
-
-            it "returns false" do
-              expect(expectation.matches?(request)).to be_false
-            end
-          end
+    context "when string" do
+      context "when match" do
+        it "returns true" do
+          expect(url_match).to be_true
         end
       end
 
       context "when no match" do
-        let(:request_url) { "www.different.com" }
+        let(:url) { "no_match" }
 
         it "returns false" do
-          expect(expectation.matches?(request)).to be_false
-        end
-
-        context "when options" do
-          context "when match" do
-            let(:options) { { :a => 1 } }
-            let(:request_options) { options }
-
-            it "returns false" do
-              expect(expectation.matches?(request)).to be_false
-            end
-          end
+          expect(url_match).to be_false
         end
       end
     end
 
-    context "when no url" do
+    context "when regexp" do
+      context "when match" do
+        let(:url) { /example/ }
+
+        it "returns true" do
+          expect(url_match).to be_true
+        end
+      end
+
+      context "when no match" do
+        let(:url) { /nomatch/ }
+
+        it "returns false" do
+          expect(url_match).to be_false
+        end
+      end
+    end
+
+    context "when nil" do
       let(:url) { nil }
 
-      context "when options" do
-        context "when match" do
-          let(:options) { { :a => 1 } }
-          let(:request_options) { options }
+      it "returns true" do
+        expect(url_match).to be_true
+      end
+    end
 
-          it "returns true" do
-            expect(expectation.matches?(request)).to be_true
-          end
-        end
+    context "when not string, regexp, nil" do
+      let(:url) { 1 }
 
-        context "when no match" do
-          let(:options) { { :a => 1 } }
+      it "returns false" do
+        expect(url_match).to be_false
+      end
+    end
+  end
 
-          it "returns false" do
-            expect(expectation.matches?(request)).to be_false
-          end
-        end
+  describe "options_match?" do
+    let(:request_options) { {} }
+    let(:request) { Typhoeus::Request.new(nil, request_options) }
+    let(:options_match) { expectation.method(:options_match?).call(request) }
+
+    context "when match" do
+      let(:options) { { :a => 1 } }
+      let(:request_options) { options }
+
+      it "returns true" do
+        expect(options_match).to be_true
+      end
+    end
+
+    context "when options are a subset from request_options" do
+      let(:options) { { :a => 1 } }
+      let(:request_options) { { :a => 1, :b => 2 } }
+
+      it "returns true" do
+        expect(options_match).to be_true
+      end
+    end
+
+    context "when options are nested" do
+      let(:options) { { :a => { :b => 1 } } }
+      let(:request_options) { options }
+
+      it "returns true" do
+        expect(options_match).to be_true
+      end
+    end
+
+    context "when options contains an array" do
+      let(:options) { { :a => [1, 2] } }
+      let(:request_options) { options }
+
+      it "returns true" do
+        expect(options_match).to be_true
+      end
+    end
+
+    context "when no match" do
+      let(:options) { { :a => 1 } }
+
+      it "returns false" do
+        expect(options_match).to be_false
       end
     end
   end
