@@ -36,8 +36,8 @@ describe Typhoeus::Response::Header do
         expect(header['set-cookie']).to have(3).items
       end
 
-      it "sets downcased keys" do
-        expect(header.keys.all?{|k| k =~ /[a-z-]/}).to be_true
+      it "provides case insensitive access" do
+        expect(header['Set-CooKie']).to have(3).items
       end
 
       [

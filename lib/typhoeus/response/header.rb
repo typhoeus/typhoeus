@@ -28,6 +28,12 @@ module Typhoeus
         end
       end
 
+      def [](key)
+        self.each do |k, v|
+          return v if k.downcase == key.downcase
+        end
+      end
+
       private
 
       # Processes line and saves the result.
@@ -35,10 +41,9 @@ module Typhoeus
       # @return [ void ]
       def process_line(header)
         key, value = header.split(':', 2).map(&:strip)
-        key = key.downcase
         if self.has_key?(key)
           self[key] = [self[key]] unless self[key].is_a? Array
-          self[key] << value
+          self[key].push(value)
         else
           self[key] = value
         end
