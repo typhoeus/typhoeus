@@ -127,7 +127,7 @@ describe Typhoeus::Hydra::Runnable do
       let(:requests) { [first] }
 
       before { Typhoeus.on_complete { |r| String.new(r.code) } }
-      after { Typhoeus.on_complete.clear }
+      after { Typhoeus.on_complete.clear; Typhoeus.before.clear }
 
       context "when real request" do
         context "when max_concurrency default" do
