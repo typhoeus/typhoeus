@@ -2,7 +2,20 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.2...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.3...master)
+
+## 0.5.3
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.2...v0.5.3)
+
+Enhancements:
+
+* When checking options in Expecation#matches? also consider Request#options.
+
+Bugfixes:
+
+* Do not break backwards compatibility with case insensitive headers access.
+* Make sure hydra behaves correct in case of before hooks.
 
 ## 0.5.2
 
