@@ -116,5 +116,40 @@ describe Typhoeus::Hydra::Runnable do
         expect(third.response).to be
       end
     end
+
+    context "when request queued in callback" do
+      let(:first) do
+        Typhoeus::Request.new("localhost:3001/first").tap do |r|
+          r.on_complete{ hydra.queue(second) }
+        end
+      end
+      let(:second) { Typhoeus::Request.new("localhost:3001/second") }
+      let(:requests) { [first] }
+
+      before { Typhoeus.on_complete { |r| String.new(r.code) } }
+      after { Typhoeus.on_complete.clear }
+
+      context "when real request" do
+        context "when max_concurrency default" do
+          let(:options) { {} }
+
+          it "calls on_complete callback once for every response" do
+            String.should_receive(:new).exactly(2).times
+            hydra.run
+          end
+        end
+      end
+
+      context "when no real request" do
+        context "when before hook returns and finishes response" do
+          before { Typhoeus.before{ |request|  request.finish(Typhoeus::Response.new) } }
+
+          it "simulates real multi run and adds and finishes both requests" do
+            String.should_receive(:new).exactly(2).times
+            hydra.run
+          end
+        end
+      end
+    end
   end
 end
