@@ -3,4 +3,4 @@ Gemfile.lock
 doc/
 .yardoc
 coverage
-dep.rb
+check.sh
