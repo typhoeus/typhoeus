@@ -6,6 +6,7 @@ module Typhoeus
     #
     # @api private
     class Header < Hash
+
       # Create a new header.
       #
       # @example Create new header.
@@ -14,7 +15,11 @@ module Typhoeus
       # @param [ String ] raw The raw header.
       def initialize(raw)
         @raw = raw
+        @sanitized = {}
         parse
+        self.default_proc = Proc.new do |h, k|
+          @sanitized[k.downcase]
+        end
       end
 
       # Parses the raw header.
@@ -22,15 +27,16 @@ module Typhoeus
       # @example Parse header.
       #   header.parse
       def parse
-        raw.lines.each do |header|
-          next if header.empty? || header =~ /^HTTP\/1.[01]/
-          process_line(header)
-        end
-      end
-
-      def [](key)
-        self.each do |k, v|
-          return v if k.downcase == key.downcase
+        case raw
+        when Hash
+          raw.each do |k, v|
+            process_pair(k, v)
+          end
+        when String
+          raw.lines.each do |header|
+            next if header.empty? || header =~ /^HTTP\/1.[01]/
+            process_line(header)
+          end
         end
       end
 
@@ -41,11 +47,26 @@ module Typhoeus
       # @return [ void ]
       def process_line(header)
         key, value = header.split(':', 2).map(&:strip)
-        if self.has_key?(key)
-          self[key] = [self[key]] unless self[key].is_a? Array
-          self[key].push(value)
+        process_pair(key, value)
+      end
+
+      # Sets key value pair for self and @sanitized.
+      #
+      # @return [ void ]
+      def process_pair(key, value)
+        set_value(key, value, self)
+        set_value(key.downcase, value, @sanitized)
+      end
+
+      # Sets value for key in specified hash
+      #
+      # @return [ void ]
+      def set_value(key, value, hash)
+        if hash.has_key?(key)
+          hash[key] = [hash[key]] unless hash[key].is_a? Array
+          hash[key].push(value)
         else
-          self[key] = value
+          hash[key] = value
         end
       end
 

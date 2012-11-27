@@ -4,6 +4,32 @@ describe Typhoeus::Response::Header do
   let(:raw) { nil }
   let(:header) { Typhoeus::Response::Header.new(raw) }
 
+  describe ".new" do
+    context "when string" do
+      let(:raw) { 'Date: Fri, 29 Jun 2012 10:09:23 GMT' }
+
+      it "sets Date" do
+        expect(header['Date']).to eq('Fri, 29 Jun 2012 10:09:23 GMT')
+      end
+
+      it "provides case insensitive access" do
+        expect(header['DaTe']).to eq('Fri, 29 Jun 2012 10:09:23 GMT')
+      end
+    end
+
+    context "when hash" do
+      let(:raw) { { 'Date' => 'Fri, 29 Jun 2012 10:09:23 GMT' } }
+
+      it "sets Date" do
+        expect(header['Date']).to eq(raw['Date'])
+      end
+
+      it "provides case insensitive access" do
+        expect(header['DaTe']).to eq(raw['Date'])
+      end
+    end
+  end
+
   describe "#parse" do
     context "when no header" do
       it "returns nil" do
