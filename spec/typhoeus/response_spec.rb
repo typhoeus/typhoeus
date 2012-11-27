@@ -24,6 +24,10 @@ describe Typhoeus::Response do
         it "sets @headers to a Typhoeus::Response::Header" do
           expect(response.instance_variable_get(:@headers)).to be_a(Typhoeus::Response::Header)
         end
+
+        it "has key" do
+          expect(response.headers['A']).to eq('B')
+        end
       end
     end
   end
