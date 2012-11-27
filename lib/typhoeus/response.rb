@@ -39,7 +39,7 @@ module Typhoeus
     # @return [ Response ] The new response.
     def initialize(options = {})
       @options = options
-      @headers = options[:headers]
+      @headers = Header.new(options[:headers])
     end
 
     # Returns wether this request is mocked

@@ -6,10 +6,24 @@ describe Typhoeus::Response do
 
   describe ".new" do
     context "when options" do
-      let(:options) { {:return_code => 2} }
+      context "when return_code" do
+        let(:options) { {:return_code => 2} }
 
-      it "stores" do
-        expect(response.options).to eq(options)
+        it "stores" do
+          expect(response.options[:return_code]).to be(2)
+        end
+      end
+
+      context "when headers" do
+        let(:options) { {:headers => {'A' => 'B'}} }
+
+        it "stores unmodified" do
+          expect(response.options[:headers]).to be(options[:headers])
+        end
+
+        it "sets @headers to a Typhoeus::Response::Header" do
+          expect(response.instance_variable_get(:@headers)).to be_a(Typhoeus::Response::Header)
+        end
       end
     end
   end
