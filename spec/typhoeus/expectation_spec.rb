@@ -116,7 +116,7 @@ describe Typhoeus::Expectation do
   end
 
   describe "#matches?" do
-    let(:request) { stub(url: nil) }
+    let(:request) { stub(:url => nil) }
 
     it "calls url_match?" do
       expectation.should_receive(:url_match?)
