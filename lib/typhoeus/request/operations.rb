@@ -52,26 +52,27 @@ module Typhoeus
 
       def provide_help(option)
         renamed = {
+          :auth_method => :httpauth,
           :connect_timeout => :connecttimeout,
+          :disable_ssl_host_verification => :ssl_verifyhost,
+          :disable_ssl_peer_verification => :ssl_verifypeer,
+          :encoding => :accept_encoding,
           :follow_location => :followlocation,
           :max_redirects => :maxredirs,
-          :proxy_username => :proxyuserpwd,
+          :password => :userpwd,
+          :proxy_auth_method => :proxyauth,
           :proxy_password => :proxyuserpwd,
-          :disable_ssl_peer_verification => :ssl_verifypeer,
-          :disable_ssl_host_verification => :ssl_verifyhost,
+          :proxy_type => :proxytype,
+          :proxy_username => :proxyuserpwd,
+          :ssl_cacert => :cainfo,
+          :ssl_capath => :capath,
           :ssl_cert => :sslcert,
           :ssl_cert_type => :sslcerttype,
           :ssl_key => :sslkey,
-          :ssl_key_type => :sslkeytype,
           :ssl_key_password => :keypasswd,
-          :ssl_cacert => :cainfo,
-          :ssl_capath => :capath,
+          :ssl_key_type => :sslkeytype,
           :ssl_version => :sslversion,
-          :username => :userpwd,
-          :password => :userpwd,
-          :auth_method => :httpauth,
-          :proxy_auth_method => :proxyauth,
-          :proxy_type => :proxytype
+          :username => :userpwd
         }
         removed = [:cache_key_basis, :cache_timout, :user_agent]
         if new_option = renamed[option.to_sym]
