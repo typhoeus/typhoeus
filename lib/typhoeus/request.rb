@@ -30,10 +30,17 @@ module Typhoeus
     include Request::Stubbable
     include Request::Before
 
+    # Set the url.
+    #
+    # @return [ String ]
+    attr_writer :url
+
     # Returns the provided url.
     #
     # @return [ String ]
-    attr_accessor :url
+    def url
+      @url.respond_to?(:call) ? @url.call : @url
+    end
 
     # Returns options, which includes default parameters.
     #
@@ -88,6 +95,13 @@ module Typhoeus
     #     "www.example.com",
     #     followlocation: true
     #   ).run
+    #
+    # @example Evaluate a lazy url at request time.
+    #   request = Typhoeus::Request.new(
+    #     lambda { "http://example.com/?requested_at=#{Time.now.to_i}" }
+    #   )
+    #   # ...
+    #   response = request.run
     #
     # @param [ String ] url The url to request.
     # @param [ options ] options The options.

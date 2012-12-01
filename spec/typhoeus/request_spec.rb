@@ -7,7 +7,7 @@ describe Typhoeus::Request do
 
   describe ".new" do
     it "stores url" do
-      expect(request.url).to eq(url)
+      expect(request.instance_variable_get(:@url)).to eq(url)
     end
 
     it "stores options" do
@@ -102,6 +102,24 @@ describe Typhoeus::Request do
 
       it "has different hashes" do
         expect(request.hash).to_not eq(other.hash)
+      end
+    end
+  end
+
+  describe "#url" do
+    context "when a lambda" do
+      let(:url) { lambda { "localhost:3001" } }
+
+      it "evaluates and returns the value" do
+        expect(request.url).to eq(url.call)
+      end
+    end
+
+    context "when a value" do
+      let(:url) { "localhost:3001" }
+
+      it "returns the value" do
+        expect(request.url).to eq(url)
       end
     end
   end
