@@ -46,7 +46,7 @@ module Typhoeus
       #
       # @return [ Integer ] The response_code.
       def response_code
-        options[:response_code] || options[:code]
+        (options[:response_code] || options[:code]).to_i
       end
       alias :code :response_code
 

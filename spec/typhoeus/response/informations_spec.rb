@@ -40,18 +40,18 @@ describe Typhoeus::Response::Informations do
 
   describe "#response_code" do
     context "when response_code" do
-      let(:options) { { :response_code => "code" } }
+      let(:options) { { :response_code => "200" } }
 
       it "returns response_code from options" do
-        expect(response.response_code).to eq("code")
+        expect(response.response_code).to eq(200)
       end
     end
 
     context "when code" do
-      let(:options) { { :code => "code" } }
+      let(:options) { { :code => "200" } }
 
       it "returns code from options" do
-        expect(response.code).to eq("code")
+        expect(response.code).to eq(200)
       end
     end
   end
