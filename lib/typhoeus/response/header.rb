@@ -27,7 +27,7 @@ module Typhoeus
       # @example Parse header.
       #   header.parse
       def parse
-        case raw
+        case @raw
         when Hash
           raw.each do |k, v|
             process_pair(k, v)
@@ -77,7 +77,7 @@ module Typhoeus
       #
       # @return [ String ] The raw header.
       def raw
-        @raw ||= ''
+        @raw || ''
       end
     end
   end
