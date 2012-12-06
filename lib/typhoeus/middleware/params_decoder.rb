@@ -1,5 +1,13 @@
 require 'lib/typhoeus/server_helpers/array_decoder'
 
+##
+#
+# @example
+#     in config.ru
+#
+#     require 'typhoeus/middleware/params_decoder'
+#     use Typhoeus::Middleware::ParamsDecoder
+#
 module Typhoeus
   module Middleware
     class ParamsDecoder
