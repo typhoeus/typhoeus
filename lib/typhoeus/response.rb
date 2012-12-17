@@ -26,6 +26,11 @@ module Typhoeus
     # @return [ Hash ]
     attr_accessor :options
 
+    # The handled response.
+    #
+    # @return [ String ]
+    attr_accessor :handled_response
+
     # @api private
     attr_writer :mock
 

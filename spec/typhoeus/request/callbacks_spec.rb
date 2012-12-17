@@ -42,12 +42,19 @@ describe Typhoeus::Request::Callbacks do
       context "when #{callback}" do
         context "when local callback" do
           before do
-            request.response = Typhoeus::Response.new
+            request.response = Typhoeus::Response.new(mock: true, response_code: 200)
             request.method(callback).call {|r| expect(r).to be_a(Typhoeus::Response) }
           end
 
           it "executes blocks and passes response" do
             request.execute_callbacks
+          end
+
+          it "sets handled_response" do
+            request.method(callback).call.clear
+            request.method(callback).call { 1 }
+            request.execute_callbacks
+            expect(request.response.handled_response).to be(1)
           end
         end
 

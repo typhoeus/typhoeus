@@ -95,7 +95,9 @@ module Typhoeus
           callbacks += Typhoeus.on_failure + on_failure
         end
 
-        callbacks.map{ |callback| callback.call(self.response) }
+        callbacks.map do |callback|
+          self.response.handled_response = callback.call(self.response)
+        end
       end
     end
   end
