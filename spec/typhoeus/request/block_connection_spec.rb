@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe Typhoeus::Request::BlockConnection do
-  let(:url) { "localhost:3001" }
-  let(:request) { Typhoeus::Request.new(url, {:method => :get}) }
+  let(:base_url) { "localhost:3001" }
+  let(:request) { Typhoeus::Request.new(base_url, {:method => :get}) }
 
   describe "run" do
     context "when blocked" do

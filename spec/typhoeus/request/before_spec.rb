@@ -9,7 +9,7 @@ describe Typhoeus::Request::Before do
     context "when before" do
       context "when one" do
         it "executes" do
-          Typhoeus.before { |r| String.new(r.url) }
+          Typhoeus.before { |r| String.new(r.base_url) }
           String.should_receive(:new).and_return("")
           request.run
         end
@@ -41,7 +41,7 @@ describe Typhoeus::Request::Before do
 
       context "when multi" do
         context "when all true" do
-          before { 3.times { Typhoeus.before { |r| String.new(r.url) } } }
+          before { 3.times { Typhoeus.before { |r| String.new(r.base_url) } } }
 
           it "calls super" do
             Typhoeus::Expectation.should_receive(:find_by)
@@ -56,9 +56,9 @@ describe Typhoeus::Request::Before do
 
         context "when middle false" do
           before do
-            Typhoeus.before { |r| String.new(r.url) }
-            Typhoeus.before { |r| String.new(r.url); nil }
-            Typhoeus.before { |r| String.new(r.url) }
+            Typhoeus.before { |r| String.new(r.base_url) }
+            Typhoeus.before { |r| String.new(r.base_url); nil }
+            Typhoeus.before { |r| String.new(r.base_url) }
           end
 
           it "doesn't call super" do

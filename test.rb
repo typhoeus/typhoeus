@@ -27,8 +27,8 @@ Typhoeus.configure do |config|
   config.verbose = false
 end
 
-def get_my_request url, forbid_reuse_val, &block
-  request = Typhoeus::Request.new(url, forbid_reuse: forbid_reuse_val)
+def get_my_request base_url, forbid_reuse_val, &block
+  request = Typhoeus::Request.new(base_url, forbid_reuse: forbid_reuse_val)
   request.on_complete { |response| yield response } if block
   request
 end
@@ -78,8 +78,8 @@ j = 1
   multi_requests_two.run
 
   single_requests_per_iteration.times do |k|
-    url = "http://www.google.com/#q=stiff#{j+k}"
-    request = get_my_request url, forbid_reuse_val  do |response|
+    base_url = "http://www.google.com/#q=stiff#{j+k}"
+    request = get_my_request base_url, forbid_reuse_val  do |response|
       puts "----------------------#{response.body.length} #{response.request.url}"
     end
     puts "running single_requests #{j} #{k}"

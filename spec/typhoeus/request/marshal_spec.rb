@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 describe Typhoeus::Request::Marshal do
-  let(:url) { "localhost:3001" }
-  let(:request) { Typhoeus::Request.new(url) }
+  let(:base_url) { "localhost:3001" }
+  let(:request) { Typhoeus::Request.new(base_url) }
 
   describe "#marshal_dump" do
-    let(:url) { "http://www.google.com" }
+    let(:base_url) { "http://www.google.com" }
 
     ['on_complete'].each do |name|
       context "when #{name} handler" do
@@ -22,8 +22,8 @@ describe Typhoeus::Request::Marshal do
         context "when loading" do
           let(:loaded) { Marshal.load(Marshal.dump(request)) }
 
-          it "includes url" do
-            expect(loaded.url).to eq(request.url)
+          it "includes base_url" do
+            expect(loaded.base_url).to eq(request.base_url)
           end
 
           it "doesn't include #{name}" do

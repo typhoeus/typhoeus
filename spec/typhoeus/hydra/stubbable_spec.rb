@@ -1,12 +1,12 @@
 require 'spec_helper'
 
 describe Typhoeus::Hydra::Stubbable do
-  let(:url) { "localhost:3001" }
-  let(:request) { Typhoeus::Request.new(url) }
+  let(:base_url) { "localhost:3001" }
+  let(:request) { Typhoeus::Request.new(base_url) }
   let(:response) { Typhoeus::Response.new }
   let(:hydra) { Typhoeus::Hydra.new }
 
-  before { Typhoeus.stub(url).and_return(response) }
+  before { Typhoeus.stub(base_url).and_return(response) }
   after { Typhoeus::Expectation.clear }
 
   describe "#add" do

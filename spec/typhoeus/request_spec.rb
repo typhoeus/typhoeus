@@ -1,13 +1,19 @@
 require 'spec_helper'
 
 describe Typhoeus::Request do
-  let(:url) { "localhost:3001" }
+  let(:base_url) { "localhost:3001" }
   let(:options) { {:verbose => true, :headers => { 'User-Agent' => "Fubar" }} }
-  let(:request) { Typhoeus::Request.new(url, options) }
+  let(:request) { Typhoeus::Request.new(base_url, options) }
 
+  describe ".url" do
+    it "should be equal to base_url" do
+      expect(request.base_url).to eq(request.url)
+    end
+  end
+    
   describe ".new" do
-    it "stores url" do
-      expect(request.url).to eq(url)
+    it "stores base_url" do
+      expect(request.base_url).to eq(base_url)
     end
 
     it "stores options" do
@@ -50,16 +56,16 @@ describe Typhoeus::Request do
     end
 
     context "when same class" do
-      let(:other) { Typhoeus::Request.new("url", options) }
+      let(:other) { Typhoeus::Request.new("base_url", options) }
 
-      context "when other url" do
+      context "when other base_url" do
         it "returns false" do
           expect(request).to_not eql other
         end
       end
 
-      context "when same url and other options" do
-        let(:other) { Typhoeus::Request.new(url, {}) }
+      context "when same base_url and other options" do
+        let(:other) { Typhoeus::Request.new(base_url, {}) }
 
         it "returns false" do
           expect(request).to_not eql other
@@ -67,9 +73,9 @@ describe Typhoeus::Request do
       end
 
 
-      context "when same url and options" do
+      context "when same base_url and options" do
         context "when same order" do
-          let(:other) { Typhoeus::Request.new(url, options) }
+          let(:other) { Typhoeus::Request.new(base_url, options) }
 
           it "returns true" do
             expect(request).to eql other
@@ -78,7 +84,7 @@ describe Typhoeus::Request do
 
         context "when different order" do
           let(:other_options) { {:headers => { 'User-Agent' => "Fubar",  }, :verbose => true } }
-          let(:other) { Typhoeus::Request.new(url, other_options)}
+          let(:other) { Typhoeus::Request.new(base_url, other_options)}
 
           it "returns true" do
             expect(request).to eql other
@@ -90,7 +96,7 @@ describe Typhoeus::Request do
 
   describe "#hash" do
     context "when request.eql?(other)" do
-      let(:other) { Typhoeus::Request.new(url, options) }
+      let(:other) { Typhoeus::Request.new(base_url, options) }
 
       it "has same hashes" do
         expect(request.hash).to eq(other.hash)
@@ -98,7 +104,7 @@ describe Typhoeus::Request do
     end
 
     context "when not request.eql?(other)" do
-      let(:other) { Typhoeus::Request.new("url", {}) }
+      let(:other) { Typhoeus::Request.new("base_url", {}) }
 
       it "has different hashes" do
         expect(request.hash).to_not eq(other.hash)
