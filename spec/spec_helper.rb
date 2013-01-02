@@ -6,7 +6,7 @@ Bundler.setup
 require "typhoeus"
 require "rspec"
 
-if RUBY_VERSION =~ /1.9/
+if RUBY_VERSION =~ /^(1.9|2.0)/
   require_relative 'support/boot.rb'
 else
   require 'spec/support/boot.rb'
