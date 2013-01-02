@@ -15,7 +15,7 @@ module Typhoeus
         easy = Typhoeus.get_easy
         begin
           easy.http_request(
-            url,
+            base_url,
             options.fetch(:method, :get),
             options.reject{|k,_| k==:method}
           )

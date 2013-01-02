@@ -30,10 +30,10 @@ module Typhoeus
     include Request::Stubbable
     include Request::Before
 
-    # Returns the provided url.
+    # Returns the provided base url.
     #
     # @return [ String ]
-    attr_accessor :url
+    attr_accessor :base_url
 
     # Returns options, which includes default parameters.
     #
@@ -89,7 +89,7 @@ module Typhoeus
     #     followlocation: true
     #   ).run
     #
-    # @param [ String ] url The url to request.
+    # @param [ String ] base_url The url to request.
     # @param [ options ] options The options.
     #
     # @option options [ Hash ] :params Translated
@@ -104,12 +104,16 @@ module Typhoeus
     # @see Typhoeus::Hydra
     # @see Typhoeus::Response
     # @see Typhoeus::Request::Actions
-    def initialize(url, options = {})
-      @url = url
+    def initialize(base_url, options = {})
+      @base_url = base_url
       @original_options = options
       @options = options.dup
 
       set_defaults
+    end
+    
+    def url
+      base_url
     end
 
     # Returns wether other is equal to self.
@@ -124,7 +128,7 @@ module Typhoeus
     # @api private
     def eql?(other)
       self.class == other.class &&
-        self.url == other.url &&
+        self.base_url == other.base_url &&
         fuzzy_hash_eql?(self.options, other.options)
     end
 
@@ -134,7 +138,7 @@ module Typhoeus
     #
     # @api private
     def hash
-      [ self.class, self.url, self.options ].hash
+      [ self.class, self.base_url, self.options ].hash
     end
 
     private

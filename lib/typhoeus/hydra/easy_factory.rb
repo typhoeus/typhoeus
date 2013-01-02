@@ -49,7 +49,7 @@ module Typhoeus
       # @return [ Ethon::Easy ] The easy.
       def get
         easy.http_request(
-          request.url,
+          request.base_url,
           request.options.fetch(:method, :get),
           request.options.reject{|k,_| k==:method}
         )

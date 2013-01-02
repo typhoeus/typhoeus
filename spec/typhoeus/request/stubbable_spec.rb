@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 describe Typhoeus::Request::Stubbable do
-  let(:url) { "localhost:3001" }
-  let(:request) { Typhoeus::Request.new(url) }
+  let(:base_url) { "localhost:3001" }
+  let(:request) { Typhoeus::Request.new(base_url) }
   let(:response) { Typhoeus::Response.new }
 
-  before { Typhoeus.stub(url).and_return(response) }
+  before { Typhoeus.stub(base_url).and_return(response) }
   after { Typhoeus::Expectation.clear }
 
   describe "#queue" do

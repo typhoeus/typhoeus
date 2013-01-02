@@ -1,9 +1,9 @@
 require 'spec_helper'
 
 describe Typhoeus::Request::Operations do
-  let(:url) { "localhost:3001" }
+  let(:base_url) { "localhost:3001" }
   let(:options) { {} }
-  let(:request) { Typhoeus::Request.new(url, options) }
+  let(:request) { Typhoeus::Request.new(base_url, options) }
 
   describe "#run" do
     let(:easy) { Ethon::Easy.new }

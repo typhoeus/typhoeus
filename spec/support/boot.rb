@@ -45,9 +45,9 @@ class Boot
     def servers_running?
       up = 0
       PORTS.each do |port|
-        url = "http://localhost:#{port}/"
+        base_url = "http://localhost:#{port}/"
         begin
-          response = Net::HTTP.get_response(URI.parse(url))
+          response = Net::HTTP.get_response(URI.parse(base_url))
           if response.is_a?(Net::HTTPSuccess)
             up += 1
           end
