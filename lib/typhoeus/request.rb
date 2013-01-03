@@ -7,6 +7,7 @@ require 'typhoeus/request/memoizable'
 require 'typhoeus/request/operations'
 require 'typhoeus/request/responseable'
 require 'typhoeus/request/stubbable'
+require 'typhoeus/request/util'
 
 module Typhoeus
 
@@ -29,6 +30,7 @@ module Typhoeus
     include Request::BlockConnection
     include Request::Stubbable
     include Request::Before
+    include Request::Util
 
     # Returns the provided base url.
     #
@@ -110,10 +112,6 @@ module Typhoeus
       @options = options.dup
 
       set_defaults
-    end
-    
-    def url
-      base_url
     end
 
     # Returns wether other is equal to self.
