@@ -5,7 +5,8 @@ describe Typhoeus::Expectation do
   let(:base_url) { "www.example.com" }
   let(:expectation) { described_class.new(base_url, options) }
 
-  after(:each) { Typhoeus::Expectation.clear }
+  before { Typhoeus::Expectation.clear }
+  after(:suite) { Typhoeus::Expectation.clear }
 
   describe ".new" do
     it "sets base_url" do
