@@ -16,7 +16,7 @@ module Rack
       # @example Use the helper directly. Not recommended as b/c the interface might change.
       #   require 'rack/typhoeus/middleware/params_decoder/helper'
       #   include Rack::Typhoeus::Middleware::ParamsDecoder::Helper
-      #   deep_decode!(params)
+      #   decode!(params)
       #
       # @author Dwayne Macgowan
       # @since 0.5.4
