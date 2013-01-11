@@ -3,6 +3,8 @@ require 'spec_helper'
 describe Typhoeus::Hydra::EasyPool do
   let(:easy) { Ethon::Easy.new }
 
+  before { Typhoeus.easy_pool.clear }
+
   describe "#easy_pool" do
     it "returns array" do
       expect(Typhoeus.easy_pool).to be_a(Array)
