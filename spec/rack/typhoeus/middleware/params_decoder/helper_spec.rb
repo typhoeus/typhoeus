@@ -14,7 +14,7 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder::Helper" do
     let(:params) { { :array => {'0' => :a, '1' => :b } } }
 
     it "decodes" do
-      expect(decoded).to eq({:array => [:a, :b]})
+      expect(decoded[:array]).to match_array([:a, :b])
     end
 
     it "doesn't modify" do
@@ -31,7 +31,7 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder::Helper" do
           let(:params) { { :array => {'0' => :a, '1' => :b } } }
 
           it "decodes" do
-            expect(decoded).to eq({:array => [:a, :b]})
+            expect(decoded[:array]).to match_array([:a, :b])
           end
 
           it "modifies" do
@@ -51,7 +51,7 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder::Helper" do
           end
 
           it "decodes" do
-            expect(decoded).to eq({:array => [0, ['sub0', 'sub1', ['subsub0']]]})
+            expect(decoded[:array]).to match_array([0, ['sub0', 'sub1', ['subsub0']]])
           end
 
           it "modifies" do
@@ -105,7 +105,7 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder::Helper" do
       let(:params) { {'0' => :a, '1' => :b} }
 
       it "returns values" do
-        expect(converted).to eq([:a, :b])
+        expect(converted).to match_array([:a, :b])
       end
     end
 
