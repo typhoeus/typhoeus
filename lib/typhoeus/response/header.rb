@@ -17,7 +17,7 @@ module Typhoeus
         @raw = raw
         @sanitized = {}
         parse
-        set_default_proc_on(self, lambda { |h, k| @sanitized[k.downcase] })
+        set_default_proc_on(self, lambda { |h, k| @sanitized[k.to_s.downcase] })
       end
 
       # Parses the raw header.
@@ -77,7 +77,7 @@ module Typhoeus
       def raw
         @raw || ''
       end
-      
+
       # Sets the default proc for the specified hash independent of the Ruby version.
       #
       # @return [ void ]

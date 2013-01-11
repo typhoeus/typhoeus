@@ -15,6 +15,10 @@ describe Typhoeus::Response::Header do
       it "provides case insensitive access" do
         expect(header['DaTe']).to eq('Fri, 29 Jun 2012 10:09:23 GMT')
       end
+
+      it "provides symbol access" do
+        expect(header[:date]).to eq('Fri, 29 Jun 2012 10:09:23 GMT')
+      end
     end
 
     context "when hash" do
