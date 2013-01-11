@@ -9,53 +9,112 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder::Helper" do
     end.new
   end
 
-  describe "#deep_decode!" do
+  describe "#decode" do
+    let(:decoded) { klass.decode(params) }
+    let(:params) { { :array => {'0' => :a, '1' => :b } } }
 
-    example "converts {'0' => '0val', '1' => '1val'} to ['0val','1val']" do
-      params = {:array => {'0' => '0val', '1' => '1val'}}
-      klass.deep_decode!(params)
-      params[:array].should == ['0val','1val']
+    it "decodes" do
+      expect(decoded).to eq({:array => [:a, :b]})
     end
 
-    it "modifies given hash" do
-      params = {:array => {'0' => 'value'}}
-      klass.deep_decode!(params)
-      params[:array].should == ['value']
-    end
-
-
-    it "keeps non typhoeus-arrays hashes unmodified" do
-      params = {:non_array => {'k1' => 12, 'k2' => 13}, :typho_array => { '0' => 'asdf'} }
-      klass.deep_decode!(params)
-      params[:non_array].should == {'k1' => 12, 'k2' => 13}
-      params[:typho_array].should == ['asdf']
-    end
-
-    it "keeps values unmodified" do
-      params = {:array => {'0' => 0, '1' => '1', '2' => 'asdfa', '3' => klass}}
-      klass.deep_decode!(params)
-      params[:array].should == [0,'1','asdfa', klass]
-    end
-
-    it "decodes nested arrays" do
-      params = {:array => {'0' => 0, '1' => {'0' => 'sub0', '1' => 'sub1', '2' => {'0' => 'subsub0'}}}}
-      klass.deep_decode!(params)
-      params[:array].should == [0,['sub0','sub1',['subsub0']]]
+    it "doesn't modify" do
+      expect(decoded).to_not be(params)
     end
   end
 
-  describe "#deep_decode" do
-    it "works like deep_decode! converting arrays" do
-      params = {:array => {'0' => '0val', '1' => '1val'}}
-      new_params = klass.deep_decode(params)
-      new_params[:array].should == ['0val','1val']
+  describe "#decode!" do
+    let(:decoded) { klass.decode!(params) }
+
+    context "when hash" do
+      context "when encoded" do
+        context "when simple" do
+          let(:params) { { :array => {'0' => :a, '1' => :b } } }
+
+          it "decodes" do
+            expect(decoded).to eq({:array => [:a, :b]})
+          end
+
+          it "modifies" do
+            expect(decoded).to eq(params)
+          end
+        end
+
+        context "when nested" do
+          let(:params) do
+            { :array => {
+              '0' => 0, '1' => {
+                '0' => 'sub0', '1' => 'sub1', '2' => {
+                  '0' => 'subsub0'
+                }
+              }
+            } }
+          end
+
+          it "decodes" do
+            expect(decoded).to eq({:array => [0, ['sub0', 'sub1', ['subsub0']]]})
+          end
+
+          it "modifies" do
+            expect(decoded).to eq(params)
+          end
+        end
+      end
+
+      context "when not encoded" do
+        let(:params) { {:a => :a} }
+
+        it "doesn't modify" do
+          expect(decoded).to be(params)
+        end
+      end
     end
 
-    it "leaves given hash unmodified and returns modified version" do
-      params = {:array => {'0' => '0val', '1' => '1val'}}
-      new_params = klass.deep_decode(params)
-      params.should == {:array => {'0' => '0val', '1' => '1val'}}
-      new_params[:array].should == ['0val','1val']
+    context "when no hash" do
+      let(:params) { "a" }
+
+      it "returns self" do
+        expect(decoded).to be(params)
+      end
+    end
+  end
+
+  describe "#encoded?" do
+    let(:encoded) { klass.send(:encoded?, params) }
+
+    context "when keys are ascending numbers starting with zero" do
+      let(:params) { Hash[12.times.map {|i| [i, (i+65).chr]}] }
+
+      it "returns true" do
+        expect(encoded).to be_true
+      end
+    end
+
+    context "when keys are not ascending numbers starting with zero" do
+      let(:params) { {:a => 1} }
+
+      it "returns false" do
+        expect(encoded).to be_false
+      end
+    end
+  end
+
+  describe "#convert" do
+    let(:converted) { klass.send(:convert, params) }
+
+    context "when encoded" do
+      let(:params) { {'0' => :a, '1' => :b} }
+
+      it "returns values" do
+        expect(converted).to eq([:a, :b])
+      end
+    end
+
+    context "when not encoded" do
+      let(:params) { {:a => :a} }
+
+      it "returns unmodified" do
+        expect(converted).to be(params)
+      end
     end
   end
 end

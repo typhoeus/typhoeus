@@ -29,7 +29,7 @@ module Rack
 
         def call(env)
           req = Rack::Request.new(env)
-          deep_decode(req.params).each_pair { |k, v| update_params req, k, v }
+          decode(req.params).each_pair { |k, v| update_params req, k, v }
           @app.call(env)
         end
 
