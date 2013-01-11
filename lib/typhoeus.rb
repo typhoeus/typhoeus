@@ -9,8 +9,19 @@ require 'typhoeus/request'
 require 'typhoeus/response'
 require 'typhoeus/version'
 
+# If we are using any Rack based application then we need the Typhoeus rack
+# # middleware to ensure our app is running properly.
+if defined?(Rack)
+  require "rack/typhoeus"
+end
+
+# If we are using Rails then we will include the Typhoeus railtie.
+# if defined?(Rails)
+#   require "typhoeus/railtie"
+# end
+
 # Typhoeus is a http client library based on Ethon which
-# wraps libcurl. Sitting on top of libcurl make Typhoeus
+# wraps libcurl. Sitting on top of libcurl makes Typhoeus
 # very reliable and fast.
 #
 # There are some gems using Typhoeus like
