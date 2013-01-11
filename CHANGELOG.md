@@ -18,8 +18,8 @@ Enhancements:
 * Rename parameter `url` to `base_url`. See discussion here: [\#250](https://github.com/typhoeus/typhoeus/issues/250).
   ([bkimble](https://github.com/bkimble), [\#256](https://github.com/typhoeus/typhoeus/pull/256))
 * Provide O(1) header access.
-  * Work around nuby 1.8.7 limitations.
-    ( [Chris Johnson](https://github.com/findchris), [\#227](https://github.com/typhoeus/typhoeus/pull/227) )
+  * Work around ruby 1.8.7 limitations.
+    ([Chris Johnson](https://github.com/findchris), [\#227](https://github.com/typhoeus/typhoeus/pull/227) )
   * Provide symbol access.
 
 ## 0.5.3
