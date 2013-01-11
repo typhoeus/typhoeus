@@ -19,7 +19,7 @@ Enhancements:
   ([bkimble](https://github.com/bkimble), [\#256](https://github.com/typhoeus/typhoeus/pull/256))
 * Provide O(1) header access.
   * Work around nuby 1.8.7 limitations.
-    ( [](https://github.com/sshingler), [\#176](https://github.com/typhoeus/typhoeus/pull/176) )
+    ( [Chris Johnson](https://github.com/findchris), [\#227](https://github.com/typhoeus/typhoeus/pull/227) )
   * Provide symbol access.
 
 ## 0.5.3
