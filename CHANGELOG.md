@@ -2,7 +2,16 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.3...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.4...master)
+
+## 0.5.4
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.3...v0.5.4)
+
+Enhancements:
+
+* Make sure response_code is an integer.
+* Provide O(1) header access
 
 ## 0.5.3
 
