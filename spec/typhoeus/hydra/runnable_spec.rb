@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Typhoeus::Hydra::Runnable do
-  let(:url) { "localhost:3001" }
+  let(:base_url) { "localhost:3001" }
   let(:options) { {} }
   let(:hydra) { Typhoeus::Hydra.new(options) }
 

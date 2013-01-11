@@ -17,7 +17,7 @@ module Typhoeus
   class Expectation
 
     # @api private
-    attr_reader :url
+    attr_reader :base_url
 
     # @api private
     attr_reader :options
@@ -66,13 +66,13 @@ module Typhoeus
     # Creates an expactation.
     #
     # @example Create expactation.
-    #   Typhoeus::Expectation.new(url)
+    #   Typhoeus::Expectation.new(base_url)
     #
     # @return [ Expectation ] The created expactation.
     #
     # @api private
-    def initialize(url, options = {})
-      @url = url
+    def initialize(base_url, options = {})
+      @base_url = base_url
       @options = options
       @response_counter = 0
       @from = nil
@@ -117,7 +117,7 @@ module Typhoeus
     #
     # @api private
     def matches?(request)
-      url_match?(request.url) && options_match?(request)
+      url_match?(request.base_url) && options_match?(request)
     end
 
     # Return canned responses.
@@ -157,18 +157,18 @@ module Typhoeus
       (options ? options.all?{ |k,v| request.original_options[k] == v || request.options[k] == v } : true)
     end
 
-    # Check wether the url matches the request url.
-    # The url can be a string, regex or nil. String and
+    # Check wether the base_url matches the request url.
+    # The base_url can be a string, regex or nil. String and
     # regexp were checked, nil is always true. Else false.
     #
     # Nil serves as a placeholder in case you want to match
     # all urls.
     def url_match?(request_url)
-      case url
+      case base_url
       when String
-        url == request_url
+        base_url == request_url
       when Regexp
-        !!request_url.match(url)
+        !!request_url.match(base_url)
       when nil
         true
       else

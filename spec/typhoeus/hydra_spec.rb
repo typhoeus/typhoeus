@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Typhoeus::Hydra do
-  let(:url) { "localhost:3001" }
+  let(:base_url) { "localhost:3001" }
   let(:options) { {} }
   let(:hydra) { Typhoeus::Hydra.new(options) }
 

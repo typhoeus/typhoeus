@@ -2,14 +2,14 @@ require 'spec_helper'
 
 describe Typhoeus::Expectation do
   let(:options) { {} }
-  let(:url) { "www.example.com" }
-  let(:expectation) { described_class.new(url, options) }
+  let(:base_url) { "www.example.com" }
+  let(:expectation) { described_class.new(base_url, options) }
 
   after(:each) { Typhoeus::Expectation.clear }
 
   describe ".new" do
-    it "sets url" do
-      expect(expectation.instance_variable_get(:@url)).to eq(url)
+    it "sets base_url" do
+      expect(expectation.instance_variable_get(:@base_url)).to eq(base_url)
     end
 
     it "sets options" do
@@ -116,7 +116,7 @@ describe Typhoeus::Expectation do
   end
 
   describe "#matches?" do
-    let(:request) { stub(:url => nil) }
+    let(:request) { stub(:base_url => nil) }
 
     it "calls url_match?" do
       expectation.should_receive(:url_match?)
@@ -133,7 +133,7 @@ describe Typhoeus::Expectation do
   describe "#url_match?" do
     let(:request_url) { "www.example.com" }
     let(:request) { Typhoeus::Request.new(request_url) }
-    let(:url_match) { expectation.method(:url_match?).call(request.url) }
+    let(:url_match) { expectation.method(:url_match?).call(request.base_url) }
 
     context "when string" do
       context "when match" do
@@ -143,7 +143,7 @@ describe Typhoeus::Expectation do
       end
 
       context "when no match" do
-        let(:url) { "no_match" }
+        let(:base_url) { "no_match" }
 
         it "returns false" do
           expect(url_match).to be_false
@@ -153,7 +153,7 @@ describe Typhoeus::Expectation do
 
     context "when regexp" do
       context "when match" do
-        let(:url) { /example/ }
+        let(:base_url) { /example/ }
 
         it "returns true" do
           expect(url_match).to be_true
@@ -161,7 +161,7 @@ describe Typhoeus::Expectation do
       end
 
       context "when no match" do
-        let(:url) { /nomatch/ }
+        let(:base_url) { /nomatch/ }
 
         it "returns false" do
           expect(url_match).to be_false
@@ -170,7 +170,7 @@ describe Typhoeus::Expectation do
     end
 
     context "when nil" do
-      let(:url) { nil }
+      let(:base_url) { nil }
 
       it "returns true" do
         expect(url_match).to be_true
@@ -178,7 +178,7 @@ describe Typhoeus::Expectation do
     end
 
     context "when not string, regexp, nil" do
-      let(:url) { 1 }
+      let(:base_url) { 1 }
 
       it "returns false" do
         expect(url_match).to be_false

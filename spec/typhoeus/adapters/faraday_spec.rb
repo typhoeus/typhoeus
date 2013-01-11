@@ -2,11 +2,11 @@ require 'spec_helper'
 require 'typhoeus/adapters/faraday'
 
 describe Faraday::Adapter::Typhoeus do
-  let(:url) { "http://localhost:3001" }
+  let(:base_url) { "http://localhost:3001" }
   let(:adapter) { described_class.new }
-  let(:request) { Typhoeus::Request.new(url) }
+  let(:request) { Typhoeus::Request.new(base_url) }
   let(:conn) do
-    Faraday.new(:url => url) do |faraday|
+    Faraday.new(:url => base_url) do |faraday|
       faraday.adapter  :typhoeus
     end
   end
@@ -79,7 +79,7 @@ describe Faraday::Adapter::Typhoeus do
     end
 
     it "sets url" do
-      expect(request.url).to eq("url")
+      expect(request.base_url).to eq("url")
     end
 
     it "sets http method" do

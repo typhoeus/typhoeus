@@ -66,17 +66,17 @@ module Typhoeus
   #
   # @example (see Typhoeus::Expectation)
   #
-  # @param [ String ] url The url to stub out.
+  # @param [ String ] base_url The url to stub out.
   # @param [ Hash ] options The options to stub out.
   #
   # @return [ Typhoeus::Expectation ] The expecatation.
   #
   # @see Typhoeus::Expectation
-  def stub(url, options = {})
-    expectation = Expectation.all.find{ |e| e.url == url && e.options == options }
+  def stub(base_url, options = {})
+    expectation = Expectation.all.find{ |e| e.base_url == base_url && e.options == options }
     return expectation if expectation
 
-    Expectation.new(url, options).tap do |new_expectation|
+    Expectation.new(base_url, options).tap do |new_expectation|
       Expectation.all << new_expectation
     end
   end
@@ -84,7 +84,7 @@ module Typhoeus
   # Add before callbacks.
   #
   # @example Add before callback.
-  #   Typhoeus.before { |request| p request.url }
+  #   Typhoeus.before { |request| p request.base_url }
   #
   # @param [ Block ] block The callback.
   #

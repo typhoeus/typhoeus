@@ -18,8 +18,8 @@ module Typhoeus
       # @return (see Typhoeus::Request#initialize)
       #
       # @note (see Typhoeus::Request#initialize)
-      def get(url, options = {})
-        Request.new(url, options.merge(:method => :get)).run
+      def get(base_url, options = {})
+        Request.new(base_url, options.merge(:method => :get)).run
       end
 
       # Make a post request.
@@ -34,8 +34,8 @@ module Typhoeus
       # @return (see Typhoeus::Request#initialize)
       #
       # @note (see Typhoeus::Request#initialize)
-      def post(url, options = {})
-        Request.new(url, options.merge(:method => :post)).run
+      def post(base_url, options = {})
+        Request.new(base_url, options.merge(:method => :post)).run
       end
 
       # Make a put request.
@@ -46,15 +46,15 @@ module Typhoeus
       # @param (see Typhoeus::Request#initialize)
       #
       # @option options :params [ Hash ] Params hash which
-      #   is attached to the url.
+      #   is attached to the base_url.
       # @option options :body [ Hash ] Body hash which
       #   becomes a PUT request body.
       #
       # @return (see Typhoeus::Request#initialize)
       #
       # @note (see Typhoeus::Request#initialize)
-      def put(url, options = {})
-        Request.new(url, options.merge(:method => :put)).run
+      def put(base_url, options = {})
+        Request.new(base_url, options.merge(:method => :put)).run
       end
 
       # Make a delete request.
@@ -69,8 +69,8 @@ module Typhoeus
       # @return (see Typhoeus::Request#initialize)
       #
       # @note (see Typhoeus::Request#initialize)
-      def delete(url, options = {})
-        Request.new(url, options.merge(:method => :delete)).run
+      def delete(base_url, options = {})
+        Request.new(base_url, options.merge(:method => :delete)).run
       end
 
       # Make a head request.
@@ -85,8 +85,8 @@ module Typhoeus
       # @return (see Typhoeus::Request#initialize)
       #
       # @note (see Typhoeus::Request#initialize)
-      def head(url, options = {})
-        Request.new(url, options.merge(:method => :head)).run
+      def head(base_url, options = {})
+        Request.new(base_url, options.merge(:method => :head)).run
       end
 
       # Make a patch request.
@@ -101,8 +101,8 @@ module Typhoeus
       # @return (see Typhoeus::Request#initialize)
       #
       # @note (see Typhoeus::Request#initialize)
-      def patch(url, options = {})
-        Request.new(url, options.merge(:method => :patch)).run
+      def patch(base_url, options = {})
+        Request.new(base_url, options.merge(:method => :patch)).run
       end
 
       # Make a options request.
@@ -117,8 +117,8 @@ module Typhoeus
       # @return (see Typhoeus::Request#initialize)
       #
       # @note (see Typhoeus::Request#initialize)
-      def options(url, options = {})
-        Request.new(url, options.merge(:method => :options)).run
+      def options(base_url, options = {})
+        Request.new(base_url, options.merge(:method => :options)).run
       end
     end
   end
