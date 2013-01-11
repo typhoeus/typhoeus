@@ -3,6 +3,23 @@ require 'rack/typhoeus/middleware/params_decoder/helper'
 module Rack
   module Typhoeus
     module Middleware
+
+      # This Rack middleware takes care of the proper deserialization of
+      # the nested params encoded by Typhoeus.
+      #
+      # @example Require the railtie when using Rails.
+      #   require 'typhoeus/railtie'
+      #
+      # @example Include the middleware for Rack based applications.
+      #   use Rack::Typhoeus::Middleware::ParamsDecoder
+      #
+      # @example Use the helper directly. Not recommended as b/c the interface might change.
+      #   require 'rack/typhoeus/middleware/params_decoder/helper'
+      #   include Rack::Typhoeus::Middleware::ParamsDecoder::Helper
+      #   deep_decode!(params)
+      #
+      # @author Dwayne Macgowan
+      # @since 0.5.4
       class ParamsDecoder
         include ParamsDecoder::Helper
 
