@@ -4,8 +4,10 @@ describe Typhoeus::Request::Callbacks do
   let(:request) { Typhoeus::Request.new("fubar") }
 
   after do
-    request.on_complete.clear
-    Typhoeus.on_complete.clear
+    [:on_success, :on_complete, :on_failure].each do |callback|
+      request.method(callback).call.clear
+      Typhoeus.method(callback).call.clear
+    end
   end
 
   [:on_complete, :on_success, :on_failure].each do |callback|
@@ -42,7 +44,12 @@ describe Typhoeus::Request::Callbacks do
       context "when #{callback}" do
         context "when local callback" do
           before do
-            request.response = Typhoeus::Response.new(:mock => true, :response_code => 200)
+            code = if callback == :on_failure
+              500
+            else
+              200
+            end
+            request.response = Typhoeus::Response.new(:mock => true, :response_code => code)
             request.method(callback).call {|r| expect(r).to be_a(Typhoeus::Response) }
           end
 
@@ -51,7 +58,6 @@ describe Typhoeus::Request::Callbacks do
           end
 
           it "sets handled_response" do
-            request.method(callback).call.clear
             request.method(callback).call { 1 }
             request.execute_callbacks
             expect(request.response.handled_response).to be(1)
