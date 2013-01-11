@@ -46,7 +46,9 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder::Helper" do
 
           it "decodes" do
             expect(decoded[:array]).to include(0)
-            expect(decoded[:array]).to include(['sub0', 'sub1'])
+            expect(decoded[:array].find{|e| e.is_a?(Array)}).to(
+              match_array(['sub0', 'sub1'])
+            )
           end
 
           it "modifies" do
