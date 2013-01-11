@@ -41,17 +41,12 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder::Helper" do
 
         context "when nested" do
           let(:params) do
-            { :array => {
-              '0' => 0, '1' => {
-                '0' => 'sub0', '1' => 'sub1', '2' => {
-                  '0' => 'subsub0'
-                }
-              }
-            } }
+            { :array => { '0' => 0, '1' => { '0' => 'sub0', '1' => 'sub1' } } }
           end
 
           it "decodes" do
-            expect(decoded[:array]).to match_array([0, ['sub0', 'sub1', ['subsub0']]])
+            expect(decoded[:array]).to include(0)
+            expect(decoded[:array]).to include(['sub0', 'sub1'])
           end
 
           it "modifies" do
