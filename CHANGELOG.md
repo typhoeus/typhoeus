@@ -11,7 +11,16 @@
 Enhancements:
 
 * Make sure response_code is an integer.
-* Provide O(1) header access
+* When setting an header through vcr or webmock it becomes a `Typhoeus::Response::Header`.
+* Provide a Rack middleware to decode nested Typhoeus arrays properly.
+  ([Dwayne Macgowan](https://github.com/dwaynemac), [\#224](https://github.com/typhoeus/typhoeus/issues/224))
+* Handled response is available again.
+* Rename parameter `url` to `base_url`. See discussion here: [\#250](https://github.com/typhoeus/typhoeus/issues/250).
+  ([bkimble](https://github.com/bkimble), [\#256](https://github.com/typhoeus/typhoeus/pull/256))
+* Provide O(1) header access.
+  * Work around nuby 1.8.7 limitations.
+    ( [](https://github.com/sshingler), [\#176](https://github.com/typhoeus/typhoeus/pull/176) )
+  * Provide symbol access.
 
 ## 0.5.3
 
