@@ -11,6 +11,8 @@ module Rack
           #       before_filter :decode_typhoeus_arrays
           #    end
           #
+          # @author Dwayne Macgowan
+          #
           def decode_typhoeus_arrays
             decode!(params)
           end
