@@ -2,7 +2,6 @@ require 'typhoeus/hydra/addable'
 require 'typhoeus/hydra/before'
 require 'typhoeus/hydra/block_connection'
 require 'typhoeus/hydra/easy_factory'
-require 'typhoeus/hydra/easy_pool'
 require 'typhoeus/hydra/memoizable'
 require 'typhoeus/hydra/queueable'
 require 'typhoeus/hydra/runnable'
@@ -40,7 +39,6 @@ module Typhoeus
   # @note Callbacks are going to delay the request
   #   execution.
   class Hydra
-    include Hydra::EasyPool
     include Hydra::Addable
     include Hydra::Runnable
     include Hydra::Memoizable

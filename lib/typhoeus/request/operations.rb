@@ -12,7 +12,7 @@ module Typhoeus
       #
       # @return [ Response ] The response.
       def run
-        easy = Typhoeus.get_easy
+        easy = Typhoeus::Pool.get
         begin
           easy.http_request(
             base_url,
@@ -25,7 +25,7 @@ module Typhoeus
         end
         easy.perform
         finish(Response.new(easy.to_hash))
-        Typhoeus.release_easy(easy)
+        Typhoeus::Pool.release(easy)
         response
       end
 

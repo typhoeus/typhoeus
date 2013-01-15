@@ -6,11 +6,11 @@ describe Typhoeus::Request do
   let(:request) { Typhoeus::Request.new(base_url, options) }
 
   describe ".url" do
-    it "should be equal to base_url" do
-      expect(request.base_url).to eq(request.url)
+    it "returns base_url" do
+      expect(request.url).to eq(request.base_url)
     end
   end
-    
+
   describe ".new" do
     it "stores base_url" do
       expect(request.base_url).to eq(base_url)

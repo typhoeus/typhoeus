@@ -5,6 +5,7 @@ require 'typhoeus/config'
 require 'typhoeus/errors'
 require 'typhoeus/expectation'
 require 'typhoeus/hydra'
+require 'typhoeus/pool'
 require 'typhoeus/request'
 require 'typhoeus/response'
 require 'typhoeus/version'
@@ -42,7 +43,6 @@ end
 # @since 0.5.0
 module Typhoeus
   extend self
-  extend Hydra::EasyPool
   extend Request::Actions
   extend Request::Callbacks::Types
 

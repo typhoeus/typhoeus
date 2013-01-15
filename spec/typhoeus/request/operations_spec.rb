@@ -7,7 +7,7 @@ describe Typhoeus::Request::Operations do
 
   describe "#run" do
     let(:easy) { Ethon::Easy.new }
-    before { Typhoeus.should_receive(:get_easy).and_return(easy) }
+    before { Typhoeus::Pool.should_receive(:get).and_return(easy) }
 
     it "grabs an easy" do
       request.run
@@ -29,7 +29,7 @@ describe Typhoeus::Request::Operations do
     end
 
     it "releases easy" do
-      Typhoeus.should_receive(:release_easy)
+      Typhoeus::Pool.should_receive(:release)
       request.run
     end
 

@@ -29,7 +29,7 @@ describe Typhoeus::Hydra::EasyFactory do
     it "pushes easy back into the pool" do
       easy_factory.send(:set_callback)
       easy_factory.easy.complete
-      expect(easy_factory.hydra.easy_pool).to include(easy_factory.easy)
+      expect(Typhoeus::Pool.easies).to include(easy_factory.easy)
     end
 
     it "adds next request" do

@@ -38,7 +38,7 @@ module Typhoeus
       #
       # @return [ Ethon::Easy ] The easy.
       def easy
-        @easy ||= hydra.get_easy
+        @easy ||= Typhoeus::Pool.get
       end
 
       # Fabricated easy.
@@ -69,7 +69,7 @@ module Typhoeus
       def set_callback
         easy.on_complete do |easy|
           request.finish(Response.new(easy.to_hash))
-          hydra.release_easy(easy)
+          Typhoeus::Pool.release(easy)
           hydra.add(hydra.queued_requests.shift) unless hydra.queued_requests.empty?
         end
       end
