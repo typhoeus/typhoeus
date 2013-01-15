@@ -2,6 +2,7 @@ require 'digest/sha2'
 require 'ethon'
 
 require 'typhoeus/config'
+require 'typhoeus/easy_factory'
 require 'typhoeus/errors'
 require 'typhoeus/expectation'
 require 'typhoeus/hydra'

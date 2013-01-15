@@ -3,8 +3,6 @@ require 'spec_helper'
 describe Typhoeus::Pool do
   let(:easy) { Ethon::Easy.new }
 
-  before { Typhoeus::Pool.clear }
-
   describe "#easies" do
     it "returns array" do
       expect(Typhoeus::Pool.easies).to be_a(Array)
@@ -26,7 +24,6 @@ describe Typhoeus::Pool do
   describe "#get" do
     context "when easy in pool" do
       before { Typhoeus::Pool.easies << easy }
-      after { Typhoeus::Pool.easies.clear }
 
       it "takes" do
         expect(Typhoeus::Pool.get).to eq(easy)

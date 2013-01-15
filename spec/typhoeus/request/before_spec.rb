@@ -3,8 +3,6 @@ require 'spec_helper'
 describe Typhoeus::Request::Before do
   let(:request) { Typhoeus::Request.new("") }
 
-  after { Typhoeus.before.clear }
-
   describe "#queue" do
     context "when before" do
       context "when one" do

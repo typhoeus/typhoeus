@@ -20,4 +20,13 @@ RSpec.configure do |config|
   config.before(:suite) do
     LocalhostServer.new(TESTSERVER.new, 3001)
   end
+
+  config.after do
+    Typhoeus::Pool.clear
+    Typhoeus::Expectation.clear
+    Typhoeus.before.clear
+    Typhoeus.on_complete.clear
+    Typhoeus.on_success.clear
+    Typhoeus.on_failure.clear
+  end
 end

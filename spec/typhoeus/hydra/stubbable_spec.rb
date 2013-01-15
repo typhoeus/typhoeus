@@ -7,7 +7,6 @@ describe Typhoeus::Hydra::Stubbable do
   let(:hydra) { Typhoeus::Hydra.new }
 
   before { Typhoeus.stub(base_url).and_return(response) }
-  after { Typhoeus::Expectation.clear }
 
   describe "#add" do
     it "checks expactations" do

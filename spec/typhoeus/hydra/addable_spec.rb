@@ -6,7 +6,7 @@ describe Typhoeus::Hydra::Addable do
 
   it "asks easy factory for an easy" do
     multi = stub
-    Typhoeus::Hydra::EasyFactory.should_receive(:new).with(request, hydra).and_return(stub(:get => 1))
+    Typhoeus::EasyFactory.should_receive(:new).with(request, hydra).and_return(stub(:get => 1))
     hydra.should_receive(:multi).and_return(multi)
     multi.should_receive(:add).with(1)
     hydra.add(request)
@@ -14,7 +14,7 @@ describe Typhoeus::Hydra::Addable do
 
   it "adds easy to multi" do
     multi = stub
-    Typhoeus::Hydra::EasyFactory.should_receive(:new).with(request, hydra).and_return(stub(:get => 1))
+    Typhoeus::EasyFactory.should_receive(:new).with(request, hydra).and_return(stub(:get => 1))
     hydra.should_receive(:multi).and_return(multi)
     multi.should_receive(:add).with(1)
     hydra.add(request)

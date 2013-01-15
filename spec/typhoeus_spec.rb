@@ -20,7 +20,6 @@ describe Typhoeus do
 
   describe ".stub" do
     let(:base_url) { "www.example.com" }
-    before { Typhoeus::Expectation.clear }
 
     context "when no similar expectation exists" do
       it "returns expectation" do
@@ -49,8 +48,6 @@ describe Typhoeus do
   end
 
   describe ".before" do
-    after { Typhoeus.before.clear }
-
     it "adds callback" do
       Typhoeus.before { true }
       expect(Typhoeus.before).to have(1).item

@@ -6,7 +6,6 @@ describe Typhoeus::Request::Stubbable do
   let(:response) { Typhoeus::Response.new }
 
   before { Typhoeus.stub(base_url).and_return(response) }
-  after { Typhoeus::Expectation.clear }
 
   describe "#queue" do
     it "checks expactations" do

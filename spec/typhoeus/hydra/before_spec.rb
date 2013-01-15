@@ -4,8 +4,6 @@ describe Typhoeus::Hydra::Before do
   let(:request) { Typhoeus::Request.new("") }
   let(:hydra) { Typhoeus::Hydra.new }
 
-  after { Typhoeus.before.clear }
-
   describe "#add" do
     context "when before" do
       context "when one" do

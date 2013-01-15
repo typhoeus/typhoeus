@@ -1,7 +1,6 @@
 require 'typhoeus/hydra/addable'
 require 'typhoeus/hydra/before'
 require 'typhoeus/hydra/block_connection'
-require 'typhoeus/hydra/easy_factory'
 require 'typhoeus/hydra/memoizable'
 require 'typhoeus/hydra/queueable'
 require 'typhoeus/hydra/runnable'

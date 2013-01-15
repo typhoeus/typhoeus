@@ -16,7 +16,7 @@ module Typhoeus
       #
       # @return [ void ]
       def add(request)
-        multi.add(Hydra::EasyFactory.new(request, self).get)
+        multi.add(EasyFactory.new(request, self).get)
       end
     end
   end

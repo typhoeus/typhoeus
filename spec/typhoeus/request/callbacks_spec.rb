@@ -3,13 +3,6 @@ require 'spec_helper'
 describe Typhoeus::Request::Callbacks do
   let(:request) { Typhoeus::Request.new("fubar") }
 
-  after do
-    [:on_success, :on_complete, :on_failure].each do |callback|
-      request.method(callback).call.clear
-      Typhoeus.method(callback).call.clear
-    end
-  end
-
   [:on_complete, :on_success, :on_failure].each do |callback|
     describe "##{callback}" do
       it "responds" do
