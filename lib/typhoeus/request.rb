@@ -111,7 +111,15 @@ module Typhoeus
 
       set_defaults
     end
-    
+
+    # Return the url.
+    # In contrast to base_url which returns the value you specified, url returns
+    # the full url including the parameters.
+    #
+    # @example Get the url.
+    #   request.url
+    #
+    # @since 0.5.5
     def url
       base_url
     end
