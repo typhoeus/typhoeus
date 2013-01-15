@@ -121,7 +121,7 @@ module Typhoeus
     #
     # @since 0.5.5
     def url
-      base_url
+      EasyFactory.new(self).get.url
     end
 
     # Returns wether other is equal to self.

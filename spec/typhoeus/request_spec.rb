@@ -6,8 +6,18 @@ describe Typhoeus::Request do
   let(:request) { Typhoeus::Request.new(base_url, options) }
 
   describe ".url" do
+    context "when no parameters" do
     it "returns base_url" do
       expect(request.url).to eq(request.base_url)
+    end
+    end
+
+    context "when parameters" do
+      let(:options) { {:params => {:a => 1}} }
+
+      it "returns full url" do
+        expect(request.url).to eq("#{request.base_url}?a=1")
+      end
     end
   end
 
