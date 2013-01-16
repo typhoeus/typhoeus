@@ -4,3 +4,4 @@ doc/
 .yardoc
 coverage
 check.sh
+tags
