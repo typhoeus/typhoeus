@@ -47,13 +47,23 @@ describe Typhoeus::Expectation do
     end
   end
 
-  describe ".find_by" do
+  describe ".response_for" do
     let(:request) { Typhoeus::Request.new("") }
+    let(:stubbed_response) { Typhoeus::Response.new }
 
-    it "returns a dummy when expectations not empty" do
+    it "finds a matching expectation and returns its next response" do
       Typhoeus::Expectation.all << expectation
       expectation.should_receive(:matches?).with(request).and_return(true)
-      expect(Typhoeus::Expectation.find_by(request)).to eq(expectation)
+      expectation.should_receive(:response).with(request).and_return(stubbed_response)
+
+      response = Typhoeus::Expectation.response_for(request)
+
+      expect(response).to be(stubbed_response)
+    end
+
+    it "returns nil if no matching expectation is found" do
+      response = Typhoeus::Expectation.response_for(request)
+      expect(response).to be(nil)
     end
   end
 
@@ -83,6 +93,14 @@ describe Typhoeus::Expectation do
         expect(expectation.responses).to eq([1, 2])
       end
     end
+
+    context "when block" do
+      it "adds to responses" do
+        block = Proc.new {}
+        expectation.and_return &block
+        expect(expectation.responses).to eq([block])
+      end
+    end
   end
 
   describe "#responses" do
@@ -92,13 +110,32 @@ describe Typhoeus::Expectation do
   end
 
   describe "#response" do
+    let(:request) { Typhoeus::Request.new("") }
+
     before { expectation.instance_variable_set(:@responses, responses) }
 
     context "when one response" do
-      let(:responses) { [Typhoeus::Response.new] }
+      context "is pre-constructed" do
+        let(:responses) { [Typhoeus::Response.new] }
 
-      it "returns response" do
-        expect(expectation.response).to be(responses[0])
+        it "returns response" do
+          expect(expectation.response(request)).to be(responses[0])
+        end
+      end
+
+      context "is lazily-constructed" do
+        def construct_response(request)
+          @request_from_response_construction = request
+          lazily_constructed_response
+        end
+
+        let(:lazily_constructed_response) { Typhoeus::Response.new }
+        let(:responses) { [ Proc.new { |request| construct_response(request) } ] }
+
+        it "returns response" do
+          expect(expectation.response(request)).to be(lazily_constructed_response)
+          expect(@request_from_response_construction).to be(request)
+        end
       end
     end
 
@@ -107,7 +144,7 @@ describe Typhoeus::Expectation do
 
       it "returns one by one" do
         3.times do |i|
-          expect(expectation.response).to eq(responses[i])
+          expect(expectation.response(request)).to be(responses[i])
         end
       end
     end
