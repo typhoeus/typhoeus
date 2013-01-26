@@ -98,11 +98,11 @@ module Faraday # :nodoc:
 
         ssl_verifyhost = (ssl && ssl.fetch(:verify, true)) ? 2 : 0
         req.options[:ssl_verifyhost] = ssl_verifyhost
-        req.options[:sslversion] = ssl[:version]          if ssl[:version]
-        req.options[:sslcert]    = ssl[:client_cert_file] if ssl[:client_cert_file]
-        req.options[:sslkey]     = ssl[:client_key_file]  if ssl[:client_key_file]
-        req.options[:cainfo]     = ssl[:ca_file]          if ssl[:ca_file]
-        req.options[:capath]     = ssl[:ca_path]          if ssl[:ca_path]
+        req.options[:sslversion] = ssl[:version]     if ssl[:version]
+        req.options[:sslcert]    = ssl[:client_cert] if ssl[:client_cert]
+        req.options[:sslkey]     = ssl[:client_key]  if ssl[:client_key]
+        req.options[:cainfo]     = ssl[:ca_file]     if ssl[:ca_file]
+        req.options[:capath]     = ssl[:ca_path]     if ssl[:ca_path]
       end
 
       def configure_proxy(req, env)
