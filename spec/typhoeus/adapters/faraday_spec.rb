@@ -168,16 +168,16 @@ describe Faraday::Adapter::Typhoeus do
       end
     end
 
-    context "when client_cert_file" do
-      let(:env) { { :ssl => { :client_cert_file => "a" } } }
+    context "when client_cert" do
+      let(:env) { { :ssl => { :client_cert => "a" } } }
 
       it "sets sslcert" do
         expect(request.options[:sslcert]).to eq("a")
       end
     end
 
-    context "when client_key_file"  do
-      let(:env) { { :ssl => { :client_key_file => "a" } } }
+    context "when client_key"  do
+      let(:env) { { :ssl => { :client_key => "a" } } }
 
       it "sets sslkey" do
         expect(request.options[:sslkey]).to eq("a")
