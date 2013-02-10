@@ -2,7 +2,21 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.4...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.5...master)
+
+## 0.6
+
+Enhancements:
+
+* `Request#url` now also contains the url parameters.
+* Use updated ethon version which provides access to protocols and redir_protocols in response to [libcurl SASL buffer overflow vulnerability](http://curl.haxx.se/docs/adv_20130206.html)
+
+Bugfixes:
+
+* Corrected ssl options for the faraday adapter.
+* Benchmark is working again.
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.4...v0.5.5)
 
 ## 0.5.4
 
