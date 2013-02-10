@@ -26,6 +26,11 @@ describe Typhoeus::Request::Before do
             Typhoeus::Expectation.should_receive(:find_by).never
             request.run
           end
+
+          it "returns response" do
+            Typhoeus.before { |r| r.response = 1; false }
+            expect(request.run).to be(1)
+          end
         end
 
         context "when a response" do
@@ -33,6 +38,11 @@ describe Typhoeus::Request::Before do
             Typhoeus.before { Typhoeus::Response.new }
             Typhoeus::Expectation.should_receive(:find_by).never
             request.run
+          end
+
+          it "returns response" do
+            Typhoeus.before { |r| r.response = Typhoeus::Response.new }
+            expect(request.run).to be_a(Typhoeus::Response)
           end
         end
       end
