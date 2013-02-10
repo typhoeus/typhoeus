@@ -1,4 +1,4 @@
-# Typhoeus [![Build Status](https://secure.travis-ci.org/typhoeus/typhoeus.png)](http://travis-ci.org/typhoeus/typhoeus)
+# Typhoeus [![Build Status](https://secure.travis-ci.org/typhoeus/typhoeus.png)](http://travis-ci.org/typhoeus/typhoeus) [<img src="https://codeclimate.com/github/typhoeus/typhoeus.png" height="13" width="89" />](https://codeclimate.com/github/typhoeus/typhoeus)
 
 Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.
 
@@ -39,9 +39,9 @@ gem "typhoeus"
 
 Copyright © 2009-2010 [Paul Dix](http://www.pauldix.net/)
 
-Copyright © 2011 [David Balatero](https://github.com/dbalatero/)
+Copyright © 2011-2012 [David Balatero](https://github.com/dbalatero/)
 
-Copyright © 2012 [Hans Hasselberg](http://www.hans.io)
+Copyright © 2012-2013 [Hans Hasselberg](http://github.com/i0rek/)
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),

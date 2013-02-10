@@ -63,12 +63,12 @@ module Typhoeus
       end
     end
 
-    # Creates an expactation.
+    # Creates an expectation.
     #
-    # @example Create expactation.
+    # @example Create expectation.
     #   Typhoeus::Expectation.new(base_url)
     #
-    # @return [ Expectation ] The created expactation.
+    # @return [ Expectation ] The created expectation.
     #
     # @api private
     def initialize(base_url, options = {})
@@ -78,11 +78,11 @@ module Typhoeus
       @from = nil
     end
 
-    # Set from value to mark an expecation. Useful for
+    # Set from value to mark an expectaion. Useful for
     # other libraries, eg. webmock.
     #
-    # @example Mark expecation.
-    #   expecation.from(:webmock)
+    # @example Mark expectation.
+    #   expectation.from(:webmock)
     #
     # @param [ String ] value Value to set.
     #
@@ -95,7 +95,7 @@ module Typhoeus
     end
 
     # Specify what should be returned,
-    # when this expactation is hit.
+    # when this expectation is hit.
     #
     # @example Add response.
     #   expectation.and_return(response)
