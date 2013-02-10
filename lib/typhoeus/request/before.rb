@@ -20,7 +20,7 @@ module Typhoeus
         Typhoeus.before.each do |callback|
           value = callback.call(self)
           if value.nil? || value == false || value.is_a?(Response)
-            return value
+            return response
           end
         end
         super
