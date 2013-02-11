@@ -2,9 +2,17 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.0...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.1...master)
 
-## 0.6
+## 0.6.1
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.0...v0.6.1)
+
+Enhancements:
+
+* Updated ethon version which allows to set multiple protocols.
+
+## 0.6.0
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.4...v0.6.0)
 
