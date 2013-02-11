@@ -2,9 +2,11 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.5...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.0...master)
 
 ## 0.6
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.4...v0.6.0)
 
 Enhancements:
 
@@ -15,8 +17,6 @@ Bugfixes:
 
 * Corrected ssl options for the faraday adapter.
 * Benchmark is working again.
-
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.5.4...v0.5.5)
 
 ## 0.5.4
 
