@@ -6,7 +6,7 @@ describe Typhoeus::Request::Memoizable do
   let(:response) { Typhoeus::Response.new }
   let(:hydra) { Typhoeus::Hydra.new }
 
-  describe "#set_response" do
+  describe "#response=" do
     context "when memoization activated" do
       before { Typhoeus::Config.memoize = true }
       after { Typhoeus::Config.memoize = false }
