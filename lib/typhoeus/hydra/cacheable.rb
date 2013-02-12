@@ -3,7 +3,7 @@ module Typhoeus
     module Cacheable
       def add(request)
         if request.cacheable? && response = Typhoeus::Config.cache.get(request)
-          request.finish(response, true)
+          request.finish(response)
         else
           super
         end

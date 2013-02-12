@@ -19,19 +19,51 @@ describe Typhoeus::Request::Cacheable do
     end.new
   }
   let(:options) { {} }
-  let(:request) { Typhoeus::Request.new("fu", options) }
+  let(:request) { Typhoeus::Request.new("http://localhost:3001") }
   let(:response) { Typhoeus::Response.new }
 
+  before { Typhoeus::Config.cache = cache }
+  after { Typhoeus::Config.cache = false }
+
   describe "#response=" do
-    context "when memoization activated" do
+    context "when cache activated" do
+      context "when nequest new" do
+        it "caches response" do
+          request.response = response
+          expect(cache.memory[request]).to be
+        end
+      end
+
+      context "when request in memory" do
+        before { cache.memory[request] = response }
+
+        it "finishes request" do
+          request.should_receive(:finish).with(response)
+          request.run
+        end
+      end
+    end
+  end
+
+  describe "#run" do
+    context "when cache activated" do
       before { Typhoeus::Config.cache = cache }
       after { Typhoeus::Config.cache = false }
 
-      let(:options) { {:method => :get} }
+      context "when request new" do
+        it "fetches response" do
+          expect(request.response).to_not be(response)
+        end
+      end
 
-      it "caches response" do
-        request.response = response
-        expect(cache.memory[request]).to be
+      context "when request in memory" do
+        let(:response) { Typhoeus::Response.new }
+        before { cache.memory[request] = response }
+
+        it "finishes request" do
+          request.should_receive(:finish).with(response)
+          request.run
+        end
       end
     end
   end

@@ -44,7 +44,7 @@ describe Typhoeus::Hydra::Cacheable do
         before { cache.memory[request] = response }
 
         it "finishes request" do
-          request.should_receive(:finish).with(response, true)
+          request.should_receive(:finish).with(response)
           hydra.add(request)
         end
       end

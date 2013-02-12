@@ -9,6 +9,14 @@ module Typhoeus
       def cacheable?
         Typhoeus::Config.cache
       end
+
+      def run
+        if cacheable? && response = Typhoeus::Config.cache.get(self)
+          finish(response)
+        else
+          super
+        end
+      end
     end
   end
 end
