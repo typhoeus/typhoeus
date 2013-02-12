@@ -43,5 +43,13 @@ module Typhoeus
     #
     # @see http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTVERBOSE
     attr_accessor :verbose
+
+    # Defines wether requests are cached.
+    #
+    # @return [ Object ]
+    #
+    # @see Typhoeus::Hydra::Cacheable
+    # @see Typhoeus::Request::Cacheable
+    attr_accessor :cache
   end
 end

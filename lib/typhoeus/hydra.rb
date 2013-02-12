@@ -1,5 +1,6 @@
 require 'typhoeus/hydra/addable'
 require 'typhoeus/hydra/before'
+require 'typhoeus/hydra/cacheable'
 require 'typhoeus/hydra/block_connection'
 require 'typhoeus/hydra/memoizable'
 require 'typhoeus/hydra/queueable'
@@ -41,6 +42,7 @@ module Typhoeus
     include Hydra::Addable
     include Hydra::Runnable
     include Hydra::Memoizable
+    include Hydra::Cacheable
     include Hydra::BlockConnection
     include Hydra::Stubbable
     include Hydra::Before

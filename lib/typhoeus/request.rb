@@ -1,6 +1,7 @@
 require 'typhoeus/request/actions'
 require 'typhoeus/request/before'
 require 'typhoeus/request/block_connection'
+require 'typhoeus/request/cacheable'
 require 'typhoeus/request/callbacks'
 require 'typhoeus/request/marshal'
 require 'typhoeus/request/memoizable'
@@ -26,6 +27,7 @@ module Typhoeus
     include Request::Operations
     include Request::Responseable
     include Request::Memoizable
+    include Request::Cacheable
     include Request::BlockConnection
     include Request::Stubbable
     include Request::Before
