@@ -20,6 +20,8 @@ Enhancements:
 
 * `Request#url` now also contains the url parameters.
 * Use updated ethon version which provides access to protocols and redir_protocols in response to [libcurl SASL buffer overflow vulnerability](http://curl.haxx.se/docs/adv_20130206.html)
+* The before hook now correctly returns the response.
+  ([Mattias Putman](https://github.com/challengee), [\#268](https://github.com/typhoeus/typhoeus/pull/268))
 
 Bugfixes:
 
