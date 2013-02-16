@@ -2,6 +2,7 @@
 Gemfile.lock
 doc/
 .yardoc
+.rvmrc
 coverage
 check.sh
 tags
