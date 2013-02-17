@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Typhoeus::Pool do
   let(:easy) { Ethon::Easy.new }
+  after { Typhoeus::Pool.clear }
 
   describe "#easies" do
     it "returns array" do
@@ -19,6 +20,17 @@ describe Typhoeus::Pool do
       Typhoeus::Pool.release(easy)
       expect(Typhoeus::Pool.easies).to include(easy)
     end
+
+    context "when threaded access" do
+      it "releases correct number of easies" do
+        (0..9).map do |n|
+          Thread.new do
+            Typhoeus::Pool.release(Ethon::Easy.new)
+          end
+        end.map(&:join)
+        expect(Typhoeus::Pool.easies).to have(10).easies
+      end
+    end
   end
 
   describe "#get" do
@@ -32,9 +44,36 @@ describe Typhoeus::Pool do
 
     context "when no easy in pool" do
       it "creates" do
-        Ethon::Easy.should_receive(:new)
-        Typhoeus::Pool.get
+        expect(Typhoeus::Pool.get).to be_a(Ethon::Easy)
       end
+
+      context "when threaded access" do
+        it "creates correct number of easies" do
+          array = []
+          (0..9).map do |n|
+            Thread.new do
+              array << Typhoeus::Pool.get
+            end
+          end.map(&:join)
+          expect(array.uniq).to have(10).easies
+        end
+      end
+    end
+  end
+
+  describe "#with" do
+    it "is re-entrant" do
+      array = []
+      Typhoeus::Pool.with_easy do |e1|
+        array << e1
+        Typhoeus::Pool.with_easy do |e2|
+          array << e2
+          Typhoeus::Pool.with_easy do |e3|
+            array << e3
+          end
+        end
+      end
+      expect(array.uniq).to have(3).easies
     end
   end
 end

@@ -1,3 +1,5 @@
+require 'thread'
+
 module Typhoeus
 
   # The easy pool stores already initialized
@@ -7,6 +9,8 @@ module Typhoeus
   # @api private
   module Pool
     extend self
+
+    @mutex = Mutex.new
 
     # Return the easy pool.
     #
@@ -24,8 +28,10 @@ module Typhoeus
     # @example Release easy.
     #   hydra.release_easy(easy)
     def release(easy)
-      easy.reset
-      easies << easy
+      @mutex.synchronize do
+        easy.reset
+        easies << easy
+      end
     end
 
     # Return an easy from pool.
@@ -35,7 +41,9 @@ module Typhoeus
     #
     # @return [ Ethon::Easy ] The easy.
     def get
-      easies.pop || Ethon::Easy.new
+      @mutex.synchronize do
+        easies.pop || Ethon::Easy.new
+      end
     end
 
     def clear
