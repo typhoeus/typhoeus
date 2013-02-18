@@ -58,4 +58,24 @@ describe Typhoeus::Response do
       end
     end
   end
+
+  describe "#handled_response" do
+    let(:handled_response) { Typhoeus::Response.new }
+
+    context "when @handled_response" do
+      before { response.handled_response = handled_response }
+
+      it "returns @handled_response" do
+        expect(response.handled_response).to be(handled_response)
+      end
+    end
+
+    context "when @handled_response is nil" do
+      before { response.handled_response = nil }
+
+      it "returns response" do
+        expect(response.handled_response).to be(response)
+      end
+    end
+  end
 end
