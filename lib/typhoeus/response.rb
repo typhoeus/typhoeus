@@ -54,5 +54,15 @@ module Typhoeus
     def mock
       defined?(@mock) ? @mock : options[:mock]
     end
+
+    # Returns the handled_response if it has 
+    # been defined otherwise returns the response
+    #
+    # @return [ Typhoeus::Response ] The result of callbacks 
+    # done on the response or the current response if no 
+    # callbacks were called
+    def handled_response
+      @handled_response || self
+    end
   end
 end
