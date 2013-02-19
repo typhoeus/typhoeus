@@ -18,10 +18,8 @@ module Typhoeus
     # @example Release easy.
     #   hydra.release_easy(easy)
     def release(easy)
-      @mutex.synchronize do
-        easy.reset
-        easies << easy
-      end
+      easy.reset
+      @mutex.synchronize { easies << easy }
     end
 
     # Return an easy from pool.
@@ -31,19 +29,18 @@ module Typhoeus
     #
     # @return [ Ethon::Easy ] The easy.
     def get
-      @mutex.synchronize do
-        easies.pop || Ethon::Easy.new
-      end
+      @mutex.synchronize { easies.pop } || Ethon::Easy.new
     end
 
     def clear
-      easies.clear
+      @mutex.synchronize { easies.clear }
     end
 
     def with_easy(&block)
       easy = get
       yield easy
-      release easy
+    ensure
+      release(easy) if easy
     end
 
     private
