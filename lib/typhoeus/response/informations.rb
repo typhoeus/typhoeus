@@ -21,6 +21,8 @@ module Typhoeus
       #   response.return_message
       #
       # @return [ String ] The return_message.
+      #
+      # @since 0.6.2
       def return_message
         Ethon::Curl.easy_strerror(return_code)
       end
