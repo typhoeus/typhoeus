@@ -6,7 +6,7 @@ describe Typhoeus::Pool do
 
   describe "#easies" do
     it "returns array" do
-      expect(Typhoeus::Pool.easies).to be_a(Array)
+      expect(Typhoeus::Pool.send(:easies)).to be_a(Array)
     end
   end
 
@@ -18,7 +18,7 @@ describe Typhoeus::Pool do
 
     it "puts easy back into pool" do
       Typhoeus::Pool.release(easy)
-      expect(Typhoeus::Pool.easies).to include(easy)
+      expect(Typhoeus::Pool.send(:easies)).to include(easy)
     end
 
     context "when threaded access" do
@@ -28,14 +28,14 @@ describe Typhoeus::Pool do
             Typhoeus::Pool.release(Ethon::Easy.new)
           end
         end.map(&:join)
-        expect(Typhoeus::Pool.easies).to have(10).easies
+        expect(Typhoeus::Pool.send(:easies)).to have(10).easies
       end
     end
   end
 
   describe "#get" do
     context "when easy in pool" do
-      before { Typhoeus::Pool.easies << easy }
+      before { Typhoeus::Pool.send(:easies) << easy }
 
       it "takes" do
         expect(Typhoeus::Pool.get).to eq(easy)

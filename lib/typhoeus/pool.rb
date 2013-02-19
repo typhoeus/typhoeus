@@ -12,16 +12,6 @@ module Typhoeus
 
     @mutex = Mutex.new
 
-    # Return the easy pool.
-    #
-    # @example Return easy pool.
-    #   hydra.easy_pool
-    #
-    # @return [ Array<Ethon::Easy> ] The easy pool.
-    def easies
-      @easies ||= []
-    end
-
     # Releases easy into pool. The easy handle is
     # resetted before it gets back in.
     #
@@ -54,6 +44,18 @@ module Typhoeus
       easy = get
       yield easy
       release easy
+    end
+
+    private
+
+    # Return the easy pool.
+    #
+    # @example Return easy pool.
+    #   hydra.easy_pool
+    #
+    # @return [ Array<Ethon::Easy> ] The easy pool.
+    def easies
+      @easies ||= []
     end
   end
 end
