@@ -12,6 +12,14 @@ describe Typhoeus::Response::Informations do
     end
   end
 
+  describe "#return_message" do
+    let(:options) { { :return_code => :couldnt_connect } }
+
+    it "returns a message" do
+      expect(response.return_message).to eq("Couldn't connect to server")
+    end
+  end
+
   describe "#response_body" do
     context "when response_body" do
       let(:options) { { :response_body => "body" } }

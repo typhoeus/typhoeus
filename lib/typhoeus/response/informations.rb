@@ -15,6 +15,16 @@ module Typhoeus
         options[:return_code]
       end
 
+      # Returns a string describing the return.
+      #
+      # @example Get return_message.
+      #   response.return_message
+      #
+      # @return [ String ] The return_message.
+      def return_message
+        Ethon::Curl.easy_strerror(return_code)
+      end
+
       # Return the http response body.
       #
       # @example Get response_body.
