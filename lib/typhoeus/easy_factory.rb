@@ -51,7 +51,7 @@ module Typhoeus
         easy.http_request(
           request.base_url,
           request.options.fetch(:method, :get),
-          request.options.reject{|k,_| k==:method}
+          request.options.reject{ |k,_| [:method, :cache_ttl].include?(k) }
         )
       rescue Ethon::Errors::InvalidOption => e
         help = provide_help(e.message.match(/:\s(\w+)/)[1])

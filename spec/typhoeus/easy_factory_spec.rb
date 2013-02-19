@@ -3,12 +3,21 @@ require 'spec_helper'
 describe Typhoeus::EasyFactory do
   let(:base_url) { "http://localhost:3001" }
   let(:hydra) { Typhoeus::Hydra.new(:max_concurrency => 0) }
-  let(:headers) { {} }
-  let(:request) { Typhoeus::Request.new(base_url, :headers => headers) }
+  let(:options) { {} }
+  let(:request) { Typhoeus::Request.new(base_url, options) }
+  let(:easy_factory) { described_class.new(request, hydra) }
+
+  describe "#get" do
+    context "when option[:cache_ttl]" do
+      let(:options) { {:cache_ttl => 1} }
+
+      it "creates Ethon::Easy" do
+        expect(easy_factory.get).to be_a(Ethon::Easy)
+      end
+    end
+  end
 
   describe "#set_callback" do
-    let(:easy_factory) { described_class.new(request, hydra) }
-
     it "sets easy.on_complete callback" do
       easy_factory.easy.should_receive(:on_complete)
       easy_factory.send(:set_callback)

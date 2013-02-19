@@ -17,6 +17,10 @@ module Typhoeus
           super
         end
       end
+
+      def cache_ttl
+        options[:cache_ttl]
+      end
     end
   end
 end

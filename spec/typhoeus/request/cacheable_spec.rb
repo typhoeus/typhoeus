@@ -19,7 +19,7 @@ describe Typhoeus::Request::Cacheable do
     end.new
   }
   let(:options) { {} }
-  let(:request) { Typhoeus::Request.new("http://localhost:3001") }
+  let(:request) { Typhoeus::Request.new("http://localhost:3001", options) }
   let(:response) { Typhoeus::Response.new }
 
   before { Typhoeus::Config.cache = cache }
@@ -64,6 +64,16 @@ describe Typhoeus::Request::Cacheable do
           request.should_receive(:finish).with(response)
           request.run
         end
+      end
+    end
+  end
+
+  describe "#cache_ttl" do
+    context "when option[:cache_ttl]" do
+      let(:options) { {:cache_ttl => 1} }
+
+      it "returns" do
+        expect(request.cache_ttl).to be(1)
       end
     end
   end
