@@ -29,7 +29,7 @@ module Typhoeus
     # The handled response.
     #
     # @return [ String ]
-    attr_accessor :handled_response
+    attr_writer :handled_response
 
     # @api private
     attr_writer :mock
@@ -55,11 +55,11 @@ module Typhoeus
       defined?(@mock) ? @mock : options[:mock]
     end
 
-    # Returns the handled_response if it has 
+    # Returns the handled_response if it has
     # been defined otherwise returns the response
     #
-    # @return [ Typhoeus::Response ] The result of callbacks 
-    # done on the response or the current response if no 
+    # @return [ Typhoeus::Response ] The result of callbacks
+    # done on the response or the current response if no
     # callbacks were called
     def handled_response
       @handled_response || self
