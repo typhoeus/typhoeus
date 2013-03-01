@@ -1,7 +1,4 @@
 script: "bundle exec rake"
-branches:
-  only:
-    - master
 rvm:
   - 1.8.7
   - 1.9.2
@@ -9,5 +6,5 @@ rvm:
   - jruby-head
   - jruby-18mode
   - jruby-19mode
-before_install:
-  - gem uninstall ffi -a
+  - rbx-18mode
+  - rbx-19mode
