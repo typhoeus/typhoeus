@@ -26,9 +26,7 @@ module Typhoeus
     # @return [ Hash ]
     attr_accessor :options
 
-    # The handled response.
-    #
-    # @return [ String ]
+    # Set the handled response.
     attr_writer :handled_response
 
     # @api private
@@ -58,9 +56,8 @@ module Typhoeus
     # Returns the handled_response if it has
     # been defined otherwise returns the response
     #
-    # @return [ Typhoeus::Response ] The result of callbacks
-    # done on the response or the current response if no
-    # callbacks were called
+    # @return [ Object ] The result of callbacks
+    #   done on the response or the original response.
     def handled_response
       @handled_response || self
     end
