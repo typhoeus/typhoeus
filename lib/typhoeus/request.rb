@@ -148,7 +148,7 @@ module Typhoeus
     #
     # @api private
     def hash
-      [ self.class, self.base_url, self.options ].hash
+      Digest::MD5.hexdigest("#{self.class.name}#{base_url}#{options}").to_i(16)
     end
 
     private
