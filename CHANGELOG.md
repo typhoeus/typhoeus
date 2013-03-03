@@ -2,7 +2,22 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.1...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.2...master)
+
+## 0.6.2
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.1...v0.6.2)
+
+Enhancements:
+
+* Reintroduce a global cache.
+* `Request#handled_response` falls back to the original response.
+  ([turnerking](https://github.com/turnerking), [\#272](https://github.com/typhoeus/typhoeus/pull/272))
+* When `Errors::NoStub` is raised the `url` is displayed.
+  ([dschneider](https://github.com/dschneider), [\#276](https://github.com/typhoeus/typhoeus/pull/276))
+* Make `Request#hash` consistent.
+* Add `.rvmrc` and `ctags` to `.gitignore`.
+  ([ryankindermann](https://github.com/ryankinderman), [\#274](https://github.com/typhoeus/typhoeus/pull/274))
 
 ## 0.6.1
 
