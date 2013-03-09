@@ -9,7 +9,7 @@ describe Typhoeus::Hydra::Stubbable do
   before { Typhoeus.stub(base_url).and_return(response) }
 
   describe "#add" do
-    it "checks expactations" do
+    it "checks expectations" do
       hydra.add(request)
     end
 

@@ -15,8 +15,8 @@ module Typhoeus
       # @example Add the request.
       #   hydra.add(request)
       def add(request)
-        if expectation = Expectation.find_by(request)
-          request.finish(expectation.response)
+        if response = Expectation.response_for(request)
+          request.finish(response)
         else
           super
         end

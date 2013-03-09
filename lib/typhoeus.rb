@@ -73,13 +73,15 @@ module Typhoeus
   # @return [ Typhoeus::Expectation ] The expecatation.
   #
   # @see Typhoeus::Expectation
-  def stub(base_url, options = {})
+  def stub(base_url, options = {}, &block)
     expectation = Expectation.all.find{ |e| e.base_url == base_url && e.options == options }
-    return expectation if expectation
-
-    Expectation.new(base_url, options).tap do |new_expectation|
-      Expectation.all << new_expectation
+    if expectation.nil?
+      expectation = Expectation.new(base_url, options)
+      Expectation.all << expectation
     end
+
+    expectation.and_return &block unless block.nil?
+    expectation
   end
 
   # Add before callbacks.

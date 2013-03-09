@@ -14,6 +14,30 @@ module Typhoeus
   #   actual = Typhoeus.get("www.example.com")
   #   expected == actual
   #   #=> true
+  #
+  # @example Stub a request and get a lazily-constructed response containing data from actual widgets that exist in the system when the stubbed request is made.
+  #   Typhoeus.stub("www.example.com/widgets") do
+  #     actual_widgets = Widget.all
+  #     Typhoeus::Response.new(
+  #       :body => actual_widgets.inject([]) do |ids, widget|
+  #         ids << widget.id
+  #       end.join(",")
+  #     )
+  #   end
+  #
+  # @example Stub a request and get a lazily-constructed response in the format requested.
+  #   Typhoeus.stub("www.example.com") do |request|
+  #     accept = (request.options[:headers]||{})['Accept'] || "application/json"
+  #     format = accept.split(",").first
+  #     body_obj = { 'things' => [ { 'id' => 'foo' } ] }
+  #
+  #     Typhoeus::Response.new(
+  #       :headers => {
+  #         'Content-Type' => format
+  #       },
+  #       :body => SERIALIZERS[format].serialize(body_obj)
+  #     )
+  #   end
   class Expectation
 
     # @api private
@@ -47,15 +71,26 @@ module Typhoeus
         all.clear
       end
 
-      # Returns expecation matching the provided
-      # request.
+      # Returns stubbed response matching the
+      # provided request
       #
-      # @example Find expectation.
-      #   Typhoeus::Expectation.find_by(request)
+      # @example Find response
+      #   Typhoeus::Expectation.response_for(request)
       #
-      # @return [ Expectation ] The matching expectation.
+      # @return [ Typhoeus::Response ] The stubbed response from a
+      #   matching expectation, or nil if no matching expectation
+      #   is found.
       #
       # @api private
+      def response_for(request)
+        expectation = find_by(request)
+        return nil if expectation.nil?
+
+        expectation.response(request)
+      end
+
+      private
+
       def find_by(request)
         all.find do |expectation|
           expectation.matches?(request)
@@ -101,8 +136,8 @@ module Typhoeus
     #   expectation.and_return(response)
     #
     # @return [ void ]
-    def and_return(response)
-      responses << response
+    def and_return(response=nil, &block)
+      responses << (response.nil? ? block : response)
     end
 
     # Checks wether this expectation matches
@@ -142,8 +177,11 @@ module Typhoeus
     # @return [ Response ] The response.
     #
     # @api private
-    def response
+    def response(request)
       response = responses.fetch(@response_counter, responses.last)
+      if response.respond_to?(:call)
+        response = response.call(request)
+      end
       @response_counter += 1
       response.mock = @from || true
       response
