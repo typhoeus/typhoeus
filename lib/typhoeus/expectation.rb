@@ -16,7 +16,7 @@ module Typhoeus
   #   #=> true
   #
   # @example Stub a request and get a lazily-constructed response containing data from actual widgets that exist in the system when the stubbed request is made.
-  #   Typhoeus.stub("www.example.com/widgets").and_return do
+  #   Typhoeus.stub("www.example.com/widgets") do
   #     actual_widgets = Widget.all
   #     Typhoeus::Response.new(
   #       :body => actual_widgets.inject([]) do |ids, widget|
@@ -26,7 +26,7 @@ module Typhoeus
   #   end
   #
   # @example Stub a request and get a lazily-constructed response in the format requested.
-  #   Typhoeus.stub("www.example.com").and_return do |request|
+  #   Typhoeus.stub("www.example.com") do |request|
   #     accept = (request.options[:headers]||{})['Accept'] || "application/json"
   #     format = accept.split(",").first
   #     body_obj = { 'things' => [ { 'id' => 'foo' } ] }
