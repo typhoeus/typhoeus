@@ -16,7 +16,7 @@ describe Typhoeus::Hydra::Before do
         context "when true" do
           it "calls super" do
             Typhoeus.before { true }
-            Typhoeus::Expectation.should_receive(:find_by)
+            Typhoeus::Expectation.should_receive(:response_for)
             hydra.add(request)
           end
         end
@@ -24,7 +24,7 @@ describe Typhoeus::Hydra::Before do
         context "when false" do
           it "doesn't call super" do
             Typhoeus.before { false }
-            Typhoeus::Expectation.should_receive(:find_by).never
+            Typhoeus::Expectation.should_receive(:response_for).never
             hydra.add(request)
           end
         end
@@ -32,7 +32,7 @@ describe Typhoeus::Hydra::Before do
         context "when response" do
           it "doesn't call super" do
             Typhoeus.before { Typhoeus::Response.new }
-            Typhoeus::Expectation.should_receive(:find_by).never
+            Typhoeus::Expectation.should_receive(:response_for).never
             hydra.add(request)
           end
         end
@@ -43,7 +43,7 @@ describe Typhoeus::Hydra::Before do
           before { 3.times { Typhoeus.before { |r| String.new(r.base_url) } } }
 
           it "calls super" do
-            Typhoeus::Expectation.should_receive(:find_by)
+            Typhoeus::Expectation.should_receive(:response_for)
             hydra.add(request)
           end
 
@@ -61,7 +61,7 @@ describe Typhoeus::Hydra::Before do
           end
 
           it "doesn't call super" do
-            Typhoeus::Expectation.should_receive(:find_by).never
+            Typhoeus::Expectation.should_receive(:response_for).never
             hydra.add(request)
           end
 
@@ -75,7 +75,7 @@ describe Typhoeus::Hydra::Before do
 
     context "when no before" do
       it "calls super" do
-        Typhoeus::Expectation.should_receive(:find_by)
+        Typhoeus::Expectation.should_receive(:response_for)
         hydra.add(request)
       end
     end

@@ -21,7 +21,22 @@ describe Typhoeus do
   describe ".stub" do
     let(:base_url) { "www.example.com" }
 
+    shared_examples "lazy response construction" do
+      it "calls the block to construct a response when a request matches the stub" do
+        expected_response = Typhoeus::Response.new
+        Typhoeus.stub(base_url) do |request|
+          expected_response
+        end
+
+        response = Typhoeus.get(base_url)
+
+        expect(response).to be(expected_response)
+      end
+    end
+
     context "when no similar expectation exists" do
+      include_examples "lazy response construction"
+
       it "returns expectation" do
         expect(Typhoeus.stub(base_url)).to be_a(Typhoeus::Expectation)
       end
@@ -33,6 +48,8 @@ describe Typhoeus do
     end
 
     context "when similar expectation exists" do
+      include_examples "lazy response construction"
+
       let(:expectation) { Typhoeus::Expectation.new(base_url) }
       before { Typhoeus::Expectation.all << expectation }
 
