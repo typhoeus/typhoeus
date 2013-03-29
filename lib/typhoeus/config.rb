@@ -7,16 +7,16 @@ module Typhoeus
   #     config.verbose = true
   #   end
   #
-  # @example Set the configuration direct.
+  # @example Set the configuration directly.
   #   Typhoeus::Config.verbose = true
   module Config
     extend self
 
-    # Defines wether the connection is blocked.
+    # Defines whether the connection is blocked.
     # Defaults to false. When set to true, only
     # stubbed requests are allowed. A
     # {Typhoeus::Errors::NoStub} error is raised,
-    # when trying to do a real request. Its possible
+    # when trying to do a real request. It's possible
     # to work around inside
     # {Typhoeus#with_connection}.
     #
@@ -28,7 +28,7 @@ module Typhoeus
     # @see Typhoeus::Errors::NoStub
     attr_accessor :block_connection
 
-    # Defines wether GET requests are memoized when using the {Typhoeus::Hydra}.
+    # Defines whether GET requests are memoized when using the {Typhoeus::Hydra}.
     #
     # @return [ Boolean ]
     #
@@ -36,7 +36,7 @@ module Typhoeus
     # @see Typhoeus::Hydra::Memoizable
     attr_accessor :memoize
 
-    # Defines wether curls debug output is shown.
+    # Defines whether curls debug output is shown.
     # Unfortunately it prints to stderr.
     #
     # @return [ Boolean ]
@@ -44,7 +44,7 @@ module Typhoeus
     # @see http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTVERBOSE
     attr_accessor :verbose
 
-    # Defines wether requests are cached.
+    # Defines whether requests are cached.
     #
     # @return [ Object ]
     #

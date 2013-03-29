@@ -11,27 +11,27 @@ require 'typhoeus/request'
 require 'typhoeus/response'
 require 'typhoeus/version'
 
-# If we are using any Rack based application then we need the Typhoeus rack
-# # middleware to ensure our app is running properly.
+# If we are using any Rack-based application, then we need the Typhoeus rack
+# middleware to ensure our app is running properly.
 if defined?(Rack)
   require "rack/typhoeus"
 end
 
-# If we are using Rails then we will include the Typhoeus railtie.
+# If we are using Rails, then we will include the Typhoeus railtie.
 # if defined?(Rails)
 #   require "typhoeus/railtie"
 # end
 
-# Typhoeus is a http client library based on Ethon which
+# Typhoeus is a HTTP client library based on Ethon which
 # wraps libcurl. Sitting on top of libcurl makes Typhoeus
 # very reliable and fast.
 #
 # There are some gems using Typhoeus like
 # {https://github.com/myronmarston/vcr VCR},
-# {https://github.com/bblimke/webmock Webmock} or
+# {https://github.com/bblimke/webmock WebMock} or
 # {https://github.com/technoweenie/faraday Faraday}. VCR
-# and Webmock are providing their own adapter
-# whereas Faraday relies on {Faraday::Adapter::Typhoeus}
+# and WebMock provide their own adapter whereas
+# Faraday relies on {Faraday::Adapter::Typhoeus}
 # since Typhoeus version 0.5.
 #
 # @example (see Typhoeus::Request)
@@ -47,7 +47,7 @@ module Typhoeus
   extend Request::Actions
   extend Request::Callbacks::Types
 
-  # The default typhoeus user agent.
+  # The default Typhoeus user agent.
   USER_AGENT = "Typhoeus - https://github.com/typhoeus/typhoeus"
 
   # Set the Typhoeus configuration options by passing a block.
@@ -63,7 +63,7 @@ module Typhoeus
     yield Config
   end
 
-  # Stub out specific request.
+  # Stub out a specific request.
   #
   # @example (see Typhoeus::Expectation)
   #
@@ -103,7 +103,7 @@ module Typhoeus
   # Execute given block as if block connection is turned off.
   # The old block connection state is restored afterwards.
   #
-  # @example Make a real request, no matter if its blocked.
+  # @example Make a real request, no matter if it's blocked.
   #   Typhoeus::Config.block_connection = true
   #   Typhoeus.get("www.example.com").code
   #   #=> raise Typhoeus::Errors::NoStub
@@ -115,7 +115,7 @@ module Typhoeus
   #
   # @param [ Block ] block The block to execute.
   #
-  # @return [ Object ] Returns the return value of block.
+  # @return [ Object ] Returns the return value of the block.
   #
   # @see Typhoeus::Config#block_connection
   def with_connection
