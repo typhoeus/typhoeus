@@ -12,8 +12,8 @@ module Typhoeus
 
     @mutex = Mutex.new
 
-    # Releases easy into pool. The easy handle is
-    # resetted before it gets back in.
+    # Releases easy into the pool. The easy handle is
+    # reset before it gets back in.
     #
     # @example Release easy.
     #   hydra.release_easy(easy)
@@ -22,7 +22,7 @@ module Typhoeus
       @mutex.synchronize { easies << easy }
     end
 
-    # Return an easy from pool.
+    # Return an easy from the pool.
     #
     # @example Return easy.
     #   hydra.get_easy

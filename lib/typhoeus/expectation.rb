@@ -2,10 +2,10 @@ module Typhoeus
 
   # This class represents an expectation. It is part
   # of the stubbing mechanism. An expectation contains
-  # an url and options, like a request. They were compared
+  # a url and options, like a request. They are compared
   # to the request url and options in order to evaluate
-  # wether they match. If thats the case, the attached
-  # responses were returned one by one.
+  # whether they match. If that's the case, the attached
+  # responses are returned one by one.
   #
   # @example Stub a request and get specified response.
   #   expected = Typhoeus::Response.new
@@ -62,7 +62,7 @@ module Typhoeus
       end
 
       # Clears expectations. This is handy while
-      # testing and you want to make sure, that
+      # testing, and you want to make sure that
       # you don't get canned responses.
       #
       # @example Clear expectations.
@@ -72,7 +72,7 @@ module Typhoeus
       end
 
       # Returns stubbed response matching the
-      # provided request
+      # provided request.
       #
       # @example Find response
       #   Typhoeus::Expectation.response_for(request)
@@ -114,7 +114,7 @@ module Typhoeus
     end
 
     # Set from value to mark an expectaion. Useful for
-    # other libraries, eg. webmock.
+    # other libraries, e.g. WebMock.
     #
     # @example Mark expectation.
     #   expectation.from(:webmock)
@@ -140,7 +140,7 @@ module Typhoeus
       responses << (response.nil? ? block : response)
     end
 
-    # Checks wether this expectation matches
+    # Checks whether this expectation matches
     # the provided request.
     #
     # @example Check if request matches.
@@ -168,7 +168,7 @@ module Typhoeus
     end
 
     # Return the response. When there are
-    # multiple responses, they were returned one
+    # multiple responses, they are returned one
     # by one.
     #
     # @example Return response.
@@ -189,15 +189,15 @@ module Typhoeus
 
     private
 
-    # Check wether the options matches the request options.
+    # Check whether the options matches the request options.
     # I checks options and original options.
     def options_match?(request)
       (options ? options.all?{ |k,v| request.original_options[k] == v || request.options[k] == v } : true)
     end
 
-    # Check wether the base_url matches the request url.
+    # Check whether the base_url matches the request url.
     # The base_url can be a string, regex or nil. String and
-    # regexp were checked, nil is always true. Else false.
+    # regexp are checked, nil is always true, else false.
     #
     # Nil serves as a placeholder in case you want to match
     # all urls.

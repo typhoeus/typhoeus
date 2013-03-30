@@ -4,7 +4,7 @@ require 'typhoeus/response/status'
 
 module Typhoeus
 
-  # This class respresents the response.
+  # This class represents the response.
   class Response
     include Response::Informations
     include Response::Status
@@ -20,7 +20,7 @@ module Typhoeus
     # @return [ Typhoeus::Request ]
     attr_accessor :request
 
-    # The options provided, contains all the
+    # The provided options, which contain all the
     # informations about the request.
     #
     # @return [ Hash ]
@@ -45,7 +45,7 @@ module Typhoeus
       @headers = Header.new(options[:headers]) if options[:headers]
     end
 
-    # Returns wether this request is mocked
+    # Returns whether this request is mocked
     # or not.
     #
     # @api private
@@ -54,7 +54,7 @@ module Typhoeus
     end
 
     # Returns the handled_response if it has
-    # been defined otherwise returns the response
+    # been defined; otherwise, returns the response
     #
     # @return [ Object ] The result of callbacks
     #   done on the response or the original response.

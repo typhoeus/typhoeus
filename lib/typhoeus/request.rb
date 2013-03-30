@@ -42,7 +42,7 @@ module Typhoeus
     # @return [ Hash ]
     attr_accessor :options
 
-    # Returns the hydra the request ran into if any.
+    # Returns the hydra in which the request ran, if any.
     #
     # @return [ Typhoeus::Hydra ]
     #
@@ -61,7 +61,7 @@ module Typhoeus
     # @api private
     attr_accessor :block_connection
 
-    # Create a new request.
+    # Creates a new request.
     #
     # @example Simplest request.
     #   response = Typhoeus::Request.new("www.example.com").run
@@ -126,14 +126,14 @@ module Typhoeus
       EasyFactory.new(self).get.url
     end
 
-    # Returns wether other is equal to self.
+    # Returns whether other is equal to self.
     #
     # @example Are request equal?
     #   request.eql?(other_request)
     #
     # @param [ Object ] other The object to check.
     #
-    # @return [ Boolean ] Returns true if equals, else false.
+    # @return [ Boolean ] Returns true if equal, else false.
     #
     # @api private
     def eql?(other)
