@@ -3,7 +3,7 @@ require 'typhoeus/errors/no_stub'
 
 module Typhoeus
 
-  # This namespace contains all errors raised by typhoeus.
+  # This namespace contains all errors raised by Typhoeus.
   module Errors
   end
 end
