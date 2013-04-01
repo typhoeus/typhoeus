@@ -4,7 +4,7 @@ Like a modern code version of the mythical beast with 100 serpent heads, Typhoeu
 
 ## Example
 
-Single request:
+A single request:
 
 ```ruby
 Typhoeus.get("www.example.com", followlocation: true)
@@ -29,9 +29,9 @@ gem "typhoeus"
 
 ## Project Tracking
 
-* [Documentation](http://rubydoc.info/github/typhoeus/typhoeus/frames/Typhoeus) (github master)
+* [Documentation](http://rubydoc.info/github/typhoeus/typhoeus/frames/Typhoeus) (GitHub master)
 * [Website](http://typhoeus.github.com/) (v0.4.2)
-* [Mailinglist](http://groups.google.com/group/typhoeus)
+* [Mailing list](http://groups.google.com/group/typhoeus)
 
 ## LICENSE
 
