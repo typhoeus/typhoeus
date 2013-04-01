@@ -97,7 +97,7 @@ describe Typhoeus::Expectation do
     context "when block" do
       it "adds to responses" do
         block = Proc.new {}
-        expectation.and_return &block
+        expectation.and_return(&block)
         expect(expectation.responses).to eq([block])
       end
     end

@@ -80,7 +80,7 @@ module Typhoeus
       Expectation.all << expectation
     end
 
-    expectation.and_return &block unless block.nil?
+    expectation.and_return(&block) unless block.nil?
     expectation
   end
 
