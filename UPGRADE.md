@@ -18,7 +18,7 @@ Typhoeus.get("www.example.com", followlocation: true).code
 
 ### Headers
 
-`Response#headers` returns a hash now and replaces `Reponse#headers_hash, use `Response#response_headers` for the raw string:
+`Response#headers` returns a hash now and replaces `Response#headers_hash`, use `Response#response_headers` for the raw string:
 
 ```ruby
 Typhoeus.get("www.example.com", followlocation: true).headers
@@ -52,4 +52,4 @@ end
 
 ### Docs
 
-When in doubt read the [docs](http://rubydoc.info/github/typhoeus/typhoeus/frames/Typhoeus) or the [code](https://www.github.com/typhoeus).
+When in doubt, read the [docs](http://rubydoc.info/github/typhoeus/typhoeus/frames/Typhoeus) or the [code](https://www.github.com/typhoeus).
