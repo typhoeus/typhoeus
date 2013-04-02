@@ -8,7 +8,7 @@ TESTSERVER = Sinatra.new do
   set :logging, false
   use Rack::Typhoeus::Middleware::ParamsDecoder
 
-  @@fail_count = 0
+  fail_count = 0
 
   post '/file' do
     {
@@ -24,10 +24,10 @@ TESTSERVER = Sinatra.new do
   end
 
   get '/fail/:number' do
-    if @@fail_count >= params[:number].to_i
+    if fail_count >= params[:number].to_i
       "ok"
     else
-      @@fail_count += 1
+      fail_count += 1
       error 500, "oh noes!"
     end
   end
