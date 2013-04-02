@@ -195,7 +195,7 @@ module Typhoeus
       #
       # @return [ Typhoeus::Header ] The response header.
       def headers
-        return nil if response_headers.nil? && @headers.nil?
+        return nil if response_headers.nil? && !defined?(@headers)
         @headers ||= Response::Header.new(response_headers.split("\r\n\r\n").last)
       end
       alias :headers_hash :headers
