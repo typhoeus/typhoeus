@@ -18,6 +18,20 @@ module Faraday # :nodoc:
     class Typhoeus < Faraday::Adapter
       self.supports_parallel = true
 
+      (class << self; self; end).instance_eval do
+        remove_method :setup_parallel_manager if method_defined? :setup_parallel_manager
+      end
+
+      remove_method :call              if method_defined? :call
+      remove_method :perform_request   if method_defined? :perform_request
+      remove_method :request           if method_defined? :request
+      remove_method :read_body         if method_defined? :read_body
+      remove_method :configure_ssl     if method_defined? :configure_ssl
+      remove_method :configure_proxy   if method_defined? :configure_proxy
+      remove_method :configure_timeout if method_defined? :configure_timeout
+      remove_method :configure_socket  if method_defined? :configure_socket
+      remove_method :parallel?         if method_defined? :parallel?
+
       # Setup Hydra with provided options.
       #
       # @example Setup Hydra.
