@@ -67,7 +67,7 @@ module Typhoeus
       # @deprecated This is only for convenience because so
       #   much external code relies on it.
       def hydra
-        @hydra ||= new
+        Thread.current[:typhoeus_hydra] ||= new
       end
     end
 
