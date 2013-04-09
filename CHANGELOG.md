@@ -2,7 +2,19 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.2...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.3...master)
+
+## 0.6.3
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.2...v0.6.3)
+
+Enhancements:
+
+* Cache hydra per thread.
+* Various documentation improvements.
+  ([craiglittle](https://github.com/craiglittle))
+* Add support for lazy construction of responses from stubbed requests.
+  ([ryankindermann](https://github.com/ryankinderman), [\#275](https://github.com/typhoeus/typhoeus/pull/275))
 
 ## 0.6.2
 
