@@ -89,8 +89,7 @@ module Typhoeus
         expectation.response(request)
       end
 
-      private
-
+      # @api private
       def find_by(request)
         all.find do |expectation|
           expectation.matches?(request)
