@@ -29,5 +29,6 @@ RSpec.configure do |config|
     Typhoeus.on_success.clear
     Typhoeus.on_failure.clear
     Typhoeus::Config.verbose = false
+    Typhoeus::Config.block_connection = false
   end
 end
