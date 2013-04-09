@@ -28,5 +28,6 @@ RSpec.configure do |config|
     Typhoeus.on_complete.clear
     Typhoeus.on_success.clear
     Typhoeus.on_failure.clear
+    Typhoeus::Config.verbose = false
   end
 end
