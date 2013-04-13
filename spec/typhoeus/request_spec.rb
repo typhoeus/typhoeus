@@ -19,6 +19,13 @@ describe Typhoeus::Request do
         expect(request.url).to eq("#{request.base_url}?a=1")
       end
     end
+
+    it "pushes an easy back into the pool" do
+      easy = mock.as_null_object
+      Typhoeus::Pool.stub(:get).and_return(easy)
+      Typhoeus::Pool.should_receive(:release).with(easy)
+      request.url
+    end
   end
 
   describe ".new" do

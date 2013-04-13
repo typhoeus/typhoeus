@@ -123,7 +123,10 @@ module Typhoeus
     #
     # @since 0.5.5
     def url
-      EasyFactory.new(self).get.url
+      easy = EasyFactory.new(self).get
+      url = easy.url
+      Typhoeus::Pool.release(easy)
+      url
     end
 
     # Returns whether other is equal to self.
