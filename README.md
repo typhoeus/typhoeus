@@ -235,7 +235,7 @@ Typhoeus.get("www.example.com") == response
 #=> true
 ```
 
-## Timeouts
+### Timeouts
 
 No exceptions are raised on HTTP timeouts. You can check whether a request timed out with the following methods:
 
