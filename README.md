@@ -30,8 +30,286 @@ gem "typhoeus"
 ## Project Tracking
 
 * [Documentation](http://rubydoc.info/github/typhoeus/typhoeus/frames/Typhoeus) (GitHub master)
-* [Website](http://typhoeus.github.com/) (v0.4.2)
 * [Mailing list](http://groups.google.com/group/typhoeus)
+
+## Usage
+
+### Introduction
+
+The primary interface for Typhoeus is comprised of three classes: Request, Response, and Hydra. Request represents an HTTP request object, response represents an HTTP response, and Hydra manages making parallel HTTP connections.
+
+```ruby
+request = Typhoeus::Request.new(
+  "www.example.com",
+  :method        => :post,
+  :body          => "this is a request body",
+  :params        => {:field1 => "a field"}
+  :headers       => {:Accept => "text/html"}
+)
+```
+
+We can see from this that the first argument is the url. The second is a set of options.
+The options are all optional. The default for :method is :get.
+You can run the query either on its own or through the hydra:
+
+``` ruby
+request.run
+#=> <Typhoeus::Response ... >
+```
+
+```ruby
+hydra = Typhoeus::Hydra.hydra
+hydra.queue(request)
+hydra.run
+```
+
+The response object will be set after the request is run.
+
+```ruby
+response = request.response
+response.code
+response.total_time
+response.headers_has
+response.body
+```ruby
+
+### Making Quick Requests
+
+Typhoeus has some convenience methods for performing single HTTP requests. The arguments are the same as those you pass into the request constructor.
+
+```ruby
+Typhoeus.get("www.example.com")
+Typhoeus.head("www.example.com")
+Typhoeus.put("www.example.com/posts/1", :body => "whoo, a body")
+Typhoeus.post("www.example.com/posts", :body => {:title => "test post", :content => "this is my test"})
+Typhoeus.delete("www.example.com/posts/1")
+```
+
+### Handling HTTP errors
+
+You can query the response object to figure out if you had a successful
+request or not. Here’s some example code that you might use to handle errors.
+
+```ruby
+request.on_complete do |response|
+  if response.success?
+    # hell yeah
+  elsif response.timed_out?
+    # aw hell no
+    log("got a time out")
+  elsif response.code == 0
+    # Could not get an http response, something's wrong.
+    log(response.curl_error_message)
+  else
+    # Received a non-successful http response.
+    log("HTTP request failed: " + response.code.to_s)
+  end
+end
+```
+
+This also works with serial (blocking) requests in the same fashion. Both
+serial and parallel requests return a Response object.
+
+### Handling file uploads
+
+A File object can be passed as a param for a POST request to handle uploading
+files to the server. Typhoeus will upload the file as the original file name
+and use Mime::Types to set the content type.
+
+```ruby
+Typhoeus.post(
+  "http://localhost:3000/posts",
+  :body => {
+    :title => "test post",
+    :content => "this is my test",
+    :file => File.open("thesis.txt","r")
+  }
+)
+```
+
+### Making Parallel Requests
+
+Generally, you should be running requests through hydra. Here is how that looks
+
+```ruby
+hydra = Typhoeus::Hydra.hydra
+
+first_request = Typhoeus::Request.new("www.example.com/posts/1.json")
+first_request.on_complete do |response|
+  third_request = Typhoeus::Request.new(www.example.com/posts/3.json)
+  hydra.queue third_request
+end
+second_request = Typhoeus::Request.new("www.example.com/posts/2.json")
+
+hydra.queue first_request
+hydra.queue second_request
+# this is a blocking call that returns once all requests are complete
+hydra.run
+```
+
+The execution of that code goes something like this. The first and second requests are built and queued. When hydra is run the first and second requests run in parallel. When the first request completes, the third request is then built and queued up. The moment it is queued Hydra starts executing it.  Meanwhile the second request would continue to run (or it could have completed before the first). Once the third request is done, `hydra.run` returns.
+
+### Specifying Max Concurrency
+
+Hydra will also handle how many requests you can make in parallel. Things will get flakey if you try to make too many requests at the same time. The built in limit is 200. When more requests than that are queued up, hydra will save them for later and start the requests as others are finished. You can raise or lower the concurrency limit through the Hydra constructor.
+
+```ruby
+Typhoeus::Hydra.new(:max_concurrency => 20)
+```
+
+### Memoization
+
+Hydra memoizes requests within a single run call. You have to enable memoization.
+This will result in a single request being issued. However, the on_complete handlers of both will be called.
+
+```ruby
+Typhoeus::Config.memoize = true
+
+hydra = Typhoeus::Hydra.new(max_concurrency: 1)
+2.times do
+  hydra.queue Typhoeus::Request.new("www.example.com")
+end
+hydra.run
+```
+
+This will result in a two requests.
+
+```ruby
+Typhoeus::Config.memoize = false
+
+hydra = Typhoeus::Hydra.new(max_concurrency: 1)
+2.times do
+  hydra.queue Typhoeus::Request.new("www.example.com")
+end
+hydra.run
+```
+
+### Caching
+
+Typhoeus includes built in support for caching. In the following example, if there is a cache hit, the cached object is passed to the on_complete handler of the request object.
+
+```ruby
+class Cache
+  attr_accessor :memory
+
+  def initialize
+    @memory = {}
+  end
+
+  def get(request)
+    memory[request]
+  end
+
+  def set(request, reseponse)
+    memory[request] = reseponse
+  end
+end
+
+Typhoeus::Config.cache = Cache.new
+
+Typhoeus.get("www.example.com") == Typhoeus.get("www.example.com")
+#=> true
+```
+
+### Direct Stubbing
+
+Hydra allows you to stub out specific urls and patterns to avoid hitting
+remote servers while testing.
+
+```ruby
+response = Response.new(code: 200, body: "{'name' : 'paul'}")
+Typhoeus.stub('www.example.com').and_return(response)
+
+Typhoeus.get("www.example.com") == response
+#=> true
+```
+
+The queued request will hit the stub. You can also specify a regex to match urls.
+
+```ruby
+response = Response.new(code: 200, body: "{'name' : 'paul'}")
+Typhoeus.stub(/example/).and_return(response)
+
+Typhoeus.get("www.example.com") == response
+#=> true
+```
+
+## Timeouts
+
+No exceptions are raised on HTTP timeouts. You can check whether a request timed out with the following methods:
+
+```ruby
+Typhoeus.get("www.example.com").timed_out?
+```
+
+### Following Redirections
+
+Use `:followlocation => true`, eg:
+
+```ruby
+Typhoeus.get("www.example.com", :followlocation => true)
+```
+
+### Basic Authentication
+
+```ruby
+Typhoeus::Request.get("www.example.com", userpwd: "user:password")
+```
+
+### SSL
+
+SSL comes built in to libcurl so it’s in Typhoeus as well. If you pass in a
+url with "https" it should just work assuming that you have your [cert
+bundle](http://curl.haxx.se/docs/caextract.html) in order and the server is
+verifiable. You must also have libcurl built with SSL support enabled. You can
+check that by doing this:
+
+```
+curl --version
+```
+
+Now, even if you have libcurl built with OpenSSL you may still have a messed
+up cert bundle or if you’re hitting a non-verifiable SSL server then you’ll
+have to disable peer verification to make SSL work. Like this:
+
+```ruby
+Typhoeus.get("https://www.example.com", ssl_verifypeer: false)
+```
+
+If you are getting "SSL: certificate subject name does not match target host
+name" from curl (ex:- you are trying to access to b.c.host.com when the
+certificate subject is \*.host.com). You can disable host verification. Like
+this:
+
+```ruby
+Typhoeus.get("https://www.example.com", ssl_verifyhost: 2)
+```
+
+### Verbose debug output
+
+Sometime it’s useful to see verbose output from curl. You may now enable it on a per request basis:
+
+```ruby
+Typhoeus.get("http://example.com", verbose: true)
+```
+
+or global:
+
+```ruby
+Typhoeus::Config.verbose = true
+```
+
+Just remember that libcurl prints it’s debug output to the console (to
+STDERR), so you’ll need to run your scripts from the console to see it.
+
+### Running the specs
+
+Running the specs should be as easy as:
+
+```
+bundle install
+bundle exec rake
+```
 
 ## LICENSE
 
