@@ -23,6 +23,7 @@ hydra.run
 ```
 gem install typhoeus
 ```
+
 ```
 gem "typhoeus"
 ```
@@ -41,10 +42,10 @@ The primary interface for Typhoeus is comprised of three classes: Request, Respo
 ```ruby
 request = Typhoeus::Request.new(
   "www.example.com",
-  :method        => :post,
-  :body          => "this is a request body",
-  :params        => {:field1 => "a field"}
-  :headers       => {:Accept => "text/html"}
+  method:        :post,
+  body:          "this is a request body",
+  params:        {field1: "a field"},
+  headers:       {Accept: "text/html"}
 )
 ```
 
@@ -71,7 +72,7 @@ response.code
 response.total_time
 response.headers_has
 response.body
-```ruby
+```
 
 ### Making Quick Requests
 
@@ -80,8 +81,8 @@ Typhoeus has some convenience methods for performing single HTTP requests. The a
 ```ruby
 Typhoeus.get("www.example.com")
 Typhoeus.head("www.example.com")
-Typhoeus.put("www.example.com/posts/1", :body => "whoo, a body")
-Typhoeus.post("www.example.com/posts", :body => {:title => "test post", :content => "this is my test"})
+Typhoeus.put("www.example.com/posts/1", body: "whoo, a body")
+Typhoeus.post("www.example.com/posts", body: { title: "test post", content: "this is my test"})
 Typhoeus.delete("www.example.com/posts/1")
 ```
 
@@ -119,10 +120,10 @@ and use Mime::Types to set the content type.
 ```ruby
 Typhoeus.post(
   "http://localhost:3000/posts",
-  :body => {
-    :title => "test post",
-    :content => "this is my test",
-    :file => File.open("thesis.txt","r")
+  body: {
+    title: "test post",
+    content: "this is my test",
+    file: File.open("thesis.txt","r")
   }
 )
 ```
@@ -154,7 +155,7 @@ The execution of that code goes something like this. The first and second reques
 Hydra will also handle how many requests you can make in parallel. Things will get flakey if you try to make too many requests at the same time. The built in limit is 200. When more requests than that are queued up, hydra will save them for later and start the requests as others are finished. You can raise or lower the concurrency limit through the Hydra constructor.
 
 ```ruby
-Typhoeus::Hydra.new(:max_concurrency => 20)
+Typhoeus::Hydra.new(max_concurrency: 20)
 ```
 
 ### Memoization
@@ -244,10 +245,10 @@ Typhoeus.get("www.example.com").timed_out?
 
 ### Following Redirections
 
-Use `:followlocation => true`, eg:
+Use `followlocation: true`, eg:
 
 ```ruby
-Typhoeus.get("www.example.com", :followlocation => true)
+Typhoeus.get("www.example.com", followlocation: true)
 ```
 
 ### Basic Authentication
