@@ -32,5 +32,31 @@ describe Typhoeus::Request::Marshal do
         end
       end
     end
+
+    context 'when run through hydra' do
+      let(:options) { {} }
+      let(:hydra) { Typhoeus::Hydra.new(options) }
+
+      before(:each) do
+        hydra.queue(request)
+        hydra.run
+      end
+
+      it "doesn't include @hydra" do
+        expect(request.send(:marshal_dump).map(&:first)).to_not include("@hydra")
+      end
+
+      context 'when loading' do
+        let(:loaded) { Marshal.load(Marshal.dump(request)) }
+
+        it "includes base_url" do
+          expect(loaded.base_url).to eq(request.base_url)
+        end
+
+        it "doesn't include #{name}" do
+          expect(loaded.instance_variables).to_not include("@hydra")
+        end
+      end
+    end
   end
 end
