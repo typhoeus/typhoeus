@@ -257,6 +257,19 @@ Typhoeus.get("www.example.com", followlocation: true)
 Typhoeus::Request.get("www.example.com", userpwd: "user:password")
 ```
 
+### Cookies
+
+```ruby
+Typhoeus::Request.get("www.example.com", cookiefile: "/path/to/file", cookiejar: "/path/to/file")
+```
+
+Here, `cookiefile` is a file to read cookies to send from, and `cookiejar` is a file to write received cookies to.
+So, if you just want cookies enabled, you need to pass in a same filename in both options.
+
+### Other CURL options
+
+Are available and documented [here](http://rubydoc.info/github/typhoeus/typhoeus/frames/Typhoeus)
+
 ### SSL
 
 SSL comes built in to libcurl so it’s in Typhoeus as well. If you pass in a
