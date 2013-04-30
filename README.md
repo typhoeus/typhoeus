@@ -268,7 +268,7 @@ So, if you just want cookies enabled, you need to pass in a same filename in bot
 
 ### Other CURL options
 
-Are available and documented [here](http://rubydoc.info/github/typhoeus/typhoeus/frames/Typhoeus)
+Are available and documented [here](http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy/Options)
 
 ### SSL
 
