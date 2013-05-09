@@ -115,6 +115,40 @@ describe Typhoeus::Hydra::Runnable do
         hydra.run
         expect(third.response).to be
       end
+
+      context 'when cached' do
+        let(:cache) {
+          Class.new do
+            attr_reader :memory
+
+            def initialize
+              @memory = {}
+            end
+
+            def get(request)
+              memory[request]
+            end
+
+            def set(request, response)
+              memory[request] = response
+            end
+          end.new
+        }
+
+        before do
+          Typhoeus::Config.cache = cache
+          cache.memory[first] = Typhoeus::Response.new
+        end
+        after { Typhoeus::Config.cache = false }
+
+        it 'sends all requests when the first is cached' do
+          hydra.run
+
+          expect(first.response).to be
+          expect(second.response).to be
+          expect(third.response).to be
+        end
+      end
     end
 
     context "when request queued in callback" do
