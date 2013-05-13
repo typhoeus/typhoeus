@@ -4,9 +4,7 @@ module Typhoeus
       def add(request)
         if request.cacheable? && response = Typhoeus::Config.cache.get(request)
           request.finish(response)
-          if !queued_requests.empty?
-            add(queued_requests.shift)
-          end
+          dequeue
         else
           super
         end

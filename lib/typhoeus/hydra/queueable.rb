@@ -10,7 +10,7 @@ module Typhoeus
       # Return the queued requests.
       #
       # @example Return queued requests.
-      #  hydra.queued_requests
+      #   hydra.queued_requests
       #
       # @return [ Array<Typhoeus::Request> ] The queued requests.
       def queued_requests
@@ -23,7 +23,7 @@ module Typhoeus
       # anything about already running requests.
       #
       # @example Abort hydra.
-      #  hydra.abort
+      #   hydra.abort
       def abort
         queued_requests.clear
       end
@@ -34,10 +34,22 @@ module Typhoeus
       # request.
       #
       # @example Queue request.
-      #  hydra.queue(request)
+      #   hydra.queue(request)
       def queue(request)
         request.hydra = self
         queued_requests << request
+      end
+
+      # Removes a request from queued_requests and
+      # adds it to the hydra in order to be
+      # performed next.
+      #
+      # @example Dequeue request.
+      #   hydra.dequeue
+      #
+      # @since 0.6.4
+      def dequeue
+        add(queued_requests.shift) unless queued_requests.empty?
       end
     end
   end

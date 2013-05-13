@@ -75,7 +75,7 @@ module Typhoeus
         request.finish(Response.new(easy.to_hash))
         Typhoeus::Pool.release(easy)
         if hydra && !hydra.queued_requests.empty?
-          hydra.add(hydra.queued_requests.shift)
+          hydra.dequeue
         end
       end
     end

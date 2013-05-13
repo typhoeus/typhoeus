@@ -43,9 +43,27 @@ describe Typhoeus::Hydra::Cacheable do
         let(:response) { Typhoeus::Response.new }
         before { cache.memory[request] = response }
 
-        it "finishes request" do
-          request.should_receive(:finish).with(response)
-          hydra.add(request)
+        context "when no queued requests" do
+          it "finishes request" do
+            request.should_receive(:finish).with(response)
+            hydra.add(request)
+          end
+        end
+
+        context "when queued requests" do
+          it "finishes request" do
+            request.should_receive(:finish).with(response)
+            hydra.add(request)
+          end
+
+          it "adds new request" do
+            queued_request = stub(:queued_request, :hydra= => true)
+            hydra.queue(queued_request)
+            request.should_receive(:finish).with(response)
+            hydra.should_receive(:add).with(request).and_call_original
+            hydra.should_receive(:add).with(queued_request)
+            hydra.add(request)
+          end
         end
       end
     end
