@@ -20,6 +20,7 @@ module Typhoeus
         Typhoeus.before.each do |callback|
           value = callback.call(request)
           if value.nil? || value == false || value.is_a?(Response)
+            dequeue
             return value
           end
         end

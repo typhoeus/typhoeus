@@ -21,19 +21,33 @@ describe Typhoeus::Hydra::Before do
           end
         end
 
-        context "when false" do
-          it "doesn't call super" do
-            Typhoeus.before { false }
-            Typhoeus::Expectation.should_receive(:response_for).never
-            hydra.add(request)
-          end
-        end
+        context "when falsy" do
+          context "when queue requests" do
+            let(:queued_request) { Typhoeus::Request.new("") }
 
-        context "when response" do
-          it "doesn't call super" do
-            Typhoeus.before { Typhoeus::Response.new }
-            Typhoeus::Expectation.should_receive(:response_for).never
-            hydra.add(request)
+            before { hydra.queue(queued_request) }
+
+            it "dequeues" do
+              Typhoeus.before { false }
+              hydra.add(request)
+              expect(hydra.queued_requests).to be_empty
+            end
+          end
+
+          context "when false" do
+            it "doesn't call super" do
+              Typhoeus.before { false }
+              Typhoeus::Expectation.should_receive(:response_for).never
+              hydra.add(request)
+            end
+          end
+
+          context "when response" do
+            it "doesn't call super" do
+              Typhoeus.before { Typhoeus::Response.new }
+              Typhoeus::Expectation.should_receive(:response_for).never
+              hydra.add(request)
+            end
           end
         end
       end
