@@ -11,7 +11,7 @@ module Typhoeus
 
       # Overrride add in order to execute callbacks in
       # Typhoeus.before. Will break and return when a
-      # callback returns nil or false. Calls super
+      # callback returns nil, false or a response. Calls super
       # otherwise.
       #
       # @example Add the request.
