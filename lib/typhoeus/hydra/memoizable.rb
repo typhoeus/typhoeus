@@ -36,6 +36,7 @@ module Typhoeus
         if request.memoizable? && memory.has_key?(request)
           response = memory[request]
           request.finish(response, true)
+          dequeue
         else
           super
         end
