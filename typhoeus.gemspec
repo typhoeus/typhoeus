@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency('ethon', ["~> 0.5.11"])
 
-  s.files        = Dir.glob("lib/**/*") + %w(CHANGELOG.md Gemfile LICENSE README.md Rakefile)
+  s.files        = `git ls-files`.split("\n")
+  s.test_files   = `git ls-files -- spec/*`.split("\n")
   s.require_path = 'lib'
 end
