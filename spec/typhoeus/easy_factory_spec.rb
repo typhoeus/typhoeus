@@ -15,6 +15,51 @@ describe Typhoeus::EasyFactory do
         expect(easy_factory.get).to be_a(Ethon::Easy)
       end
     end
+
+    context "when invalid option" do
+      let(:options) { {:invalid => 1} }
+
+      it "reraises" do
+        expect{ easy_factory.get }.to raise_error(Ethon::Errors::InvalidOption)
+      end
+    end
+
+    context "when removed option" do
+      let(:options) { {:cache_timeout => 1} }
+
+      it "reraises with help" do
+        expect{ easy_factory.get }.to raise_error(
+          Ethon::Errors::InvalidOption, /The option cache_timeout was removed/
+        )
+      end
+    end
+
+    context "when changed option" do
+      let(:options) { {:password => 1} }
+
+      it "reraises with help" do
+        expect{ easy_factory.get }.to raise_error(
+          Ethon::Errors::InvalidOption, /Please try userpwd instead of password/
+        )
+      end
+    end
+
+    context "when renamed option" do
+      let(:options) { {:connect_timeout => 1} }
+
+      it "warns" do
+        easy_factory.should_receive(:warn).with(
+          "Deprecated option connect_timeout. Please use connecttimeout instead."
+        )
+        easy_factory.get
+      end
+
+      it "passes correct option" do
+        easy_factory.should_receive(:warn)
+        easy_factory.easy.should_receive(:connecttimeout=).with(1)
+        easy_factory.get
+      end
+    end
   end
 
   describe "#set_callback" do

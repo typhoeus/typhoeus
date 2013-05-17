@@ -51,7 +51,7 @@ module Typhoeus
         easy.http_request(
           request.base_url,
           request.options.fetch(:method, :get),
-          request.options.reject{ |k,_| [:method, :cache_ttl].include?(k) }
+          sanitize(request.options)
         )
       rescue Ethon::Errors::InvalidOption => e
         help = provide_help(e.message.match(/:\s(\w+)/)[1])
@@ -62,6 +62,20 @@ module Typhoeus
     end
 
     private
+
+    def sanitize(options)
+      sanitized = {}
+      request.options.each do |k,v|
+        next if [:method, :cache_ttl].include?(k.to_sym)
+        if new_option = renamed_options[k.to_sym]
+          warn("Deprecated option #{k}. Please use #{new_option} instead.")
+          sanitized[new_option] = v
+        else
+          sanitized[k] = v
+        end
+      end
+      sanitized
+    end
 
     # Sets on_complete callback on easy in order to be able to
     # track progress.
@@ -80,20 +94,14 @@ module Typhoeus
       end
     end
 
-    def provide_help(option)
-      renamed = {
+    def renamed_options
+      {
         :auth_method => :httpauth,
         :connect_timeout => :connecttimeout,
-        :disable_ssl_host_verification => :ssl_verifyhost,
-        :disable_ssl_peer_verification => :ssl_verifypeer,
         :encoding => :accept_encoding,
         :follow_location => :followlocation,
         :max_redirects => :maxredirs,
-        :password => :userpwd,
-        :proxy_auth_method => :proxyauth,
-        :proxy_password => :proxyuserpwd,
         :proxy_type => :proxytype,
-        :proxy_username => :proxyuserpwd,
         :ssl_cacert => :cainfo,
         :ssl_capath => :capath,
         :ssl_cert => :sslcert,
@@ -102,12 +110,29 @@ module Typhoeus
         :ssl_key_password => :keypasswd,
         :ssl_key_type => :sslkeytype,
         :ssl_version => :sslversion,
+      }
+    end
+
+    def changed_options
+      {
+        :disable_ssl_host_verification => :ssl_verifyhost,
+        :disable_ssl_peer_verification => :ssl_verifypeer,
+        :password => :userpwd,
+        :proxy_auth_method => :proxyauth,
+        :proxy_password => :proxyuserpwd,
+        :proxy_username => :proxyuserpwd,
         :username => :userpwd
       }
-      removed = [:cache_key_basis, :cache_timout, :user_agent]
-      if new_option = renamed[option.to_sym]
+    end
+
+    def removed_options
+      [:cache_key_basis, :cache_timeout, :user_agent]
+    end
+
+    def provide_help(option)
+      if new_option = changed_options[option.to_sym]
         "\nPlease try #{new_option} instead of #{option}." if new_option
-      elsif removed.include?(option.to_sym)
+      elsif removed_options.include?(option.to_sym)
         "\nThe option #{option} was removed."
       end
     end
