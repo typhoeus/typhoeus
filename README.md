@@ -106,6 +106,7 @@ request.on_complete do |response|
     log("HTTP request failed: " + response.code.to_s)
   end
 end
+request.execute_callbacks
 ```
 
 This also works with serial (blocking) requests in the same fashion. Both
