@@ -90,8 +90,12 @@ Typhoeus.delete("www.example.com/posts/1")
 
 You can query the response object to figure out if you had a successful
 request or not. Here’s some example code that you might use to handle errors.
+The callbacks are executed right after the request is finished, make sure to define
+them before runnig the request.
 
 ```ruby
+request = Typhoeus::Request.new("www.example.com", followlocation: true)
+
 request.on_complete do |response|
   if response.success?
     # hell yeah
@@ -106,6 +110,8 @@ request.on_complete do |response|
     log("HTTP request failed: " + response.code.to_s)
   end
 end
+
+request.run
 ```
 
 This also works with serial (blocking) requests in the same fashion. Both
