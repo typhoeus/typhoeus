@@ -91,7 +91,7 @@ Typhoeus.delete("www.example.com/posts/1")
 You can query the response object to figure out if you had a successful
 request or not. Here’s some example code that you might use to handle errors.
 The callbacks are executed right after the request is finished, make sure to define
-them before runnig the request.
+them before running the request.
 
 ```ruby
 request = Typhoeus::Request.new("www.example.com", followlocation: true)
