@@ -224,7 +224,7 @@ Hydra allows you to stub out specific urls and patterns to avoid hitting
 remote servers while testing.
 
 ```ruby
-response = Response.new(code: 200, body: "{'name' : 'paul'}")
+response = Typhoeus::Response.new(code: 200, body: "{'name' : 'paul'}")
 Typhoeus.stub('www.example.com').and_return(response)
 
 Typhoeus.get("www.example.com") == response
@@ -234,7 +234,7 @@ Typhoeus.get("www.example.com") == response
 The queued request will hit the stub. You can also specify a regex to match urls.
 
 ```ruby
-response = Response.new(code: 200, body: "{'name' : 'paul'}")
+response = Typhoeus::Response.new(code: 200, body: "{'name' : 'paul'}")
 Typhoeus.stub(/example/).and_return(response)
 
 Typhoeus.get("www.example.com") == response
