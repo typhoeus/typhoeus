@@ -42,10 +42,10 @@ The primary interface for Typhoeus is comprised of three classes: Request, Respo
 ```ruby
 request = Typhoeus::Request.new(
   "www.example.com",
-  method:        :post,
-  body:          "this is a request body",
-  params:        {field1: "a field"},
-  headers:       {Accept: "text/html"}
+  method: :post,
+  body: "this is a request body",
+  params: { field1: "a field" },
+  headers: { Accept: "text/html" }
 )
 ```
 
