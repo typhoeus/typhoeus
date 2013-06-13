@@ -50,7 +50,7 @@ request = Typhoeus::Request.new(
 ```
 
 We can see from this that the first argument is the url. The second is a set of options.
-The options are all optional. The default for :method is :get.
+The options are all optional. The default for `:method` is `:get`.
 You can run the query either on its own or through the hydra:
 
 ``` ruby
