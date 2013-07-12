@@ -36,7 +36,7 @@ module Rack
         private
 
         # Persist params change in environment. Extracted from:
-        # https://github.com/rack/rack/blob/master/lib/rack/request.rb#L233
+        # https://github.com/rack/rack/blob/master/lib/rack/request.rb#L243
         def update_params(req, k, v)
           found = false
           if req.GET.has_key?(k)
