@@ -48,12 +48,12 @@ module Rack
           # @return [Boolean] True if its a encoded Array, else false.
           def encoded?(hash)
             return false if hash.empty?
-	    if hash.keys.size > 1
+	          if hash.keys.size > 1
               keys = hash.keys.map{|i| i.to_i if i.respond_to?(:to_i)}.sort
               keys == hash.keys.size.times.to_a
-	    else
+	          else
               hash.keys.first =~ /0/
-	    end
+	          end
           end
 
           # If the Hash is an array encoded by typhoeus an array is returned
