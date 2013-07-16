@@ -78,6 +78,21 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder::Helper" do
   describe "#encoded?" do
     let(:encoded) { klass.send(:encoded?, params) }
 
+    context "when there is only one key" do
+      context "and its 0" do
+        let(:params){ {'0' => 1} }
+        it 'returns true' do
+          expect(encoded).to be_true
+        end
+      end
+      context "and its not 0" do
+        let(:params){ {'some-key' => 1}}
+        it 'returns false' do
+          expect(encoded).to be_false
+        end
+      end
+    end
+
     context "when keys are ascending numbers starting with zero" do
       let(:params) { Hash[12.times.map {|i| [i, (i+65).chr]}] }
 
