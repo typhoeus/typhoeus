@@ -104,7 +104,7 @@ request.on_complete do |response|
     log("got a time out")
   elsif response.code == 0
     # Could not get an http response, something's wrong.
-    log(response.curl_error_message)
+    log(response.return_message)
   else
     # Received a non-successful http response.
     log("HTTP request failed: " + response.code.to_s)
