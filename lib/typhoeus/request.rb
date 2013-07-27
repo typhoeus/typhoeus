@@ -1,3 +1,4 @@
+require 'zlib'
 require 'typhoeus/request/actions'
 require 'typhoeus/request/before'
 require 'typhoeus/request/block_connection'
@@ -151,7 +152,7 @@ module Typhoeus
     #
     # @api private
     def hash
-      "#{self.class.name}#{base_url}#{options}".hash
+      Zlib.crc32 "#{self.class.name}#{base_url}#{options}"
     end
 
     private
