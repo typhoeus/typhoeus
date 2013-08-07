@@ -215,11 +215,11 @@ describe Faraday::Adapter::Typhoeus do
     context "when verify is true" do
       let(:env) { { :ssl => { :verify => true } } }
 
-      it "sets ssl_verifyhost to 0" do
+      it "sets ssl_verifyhost to 2" do
         expect(request.options[:ssl_verifyhost]).to eq(2)
       end
 
-      it "sets ssl_verifypeer to false" do
+      it "sets ssl_verifypeer to true" do
         expect(request.options[:ssl_verifypeer]).to be_true
       end
     end
