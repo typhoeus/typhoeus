@@ -199,6 +199,30 @@ describe Faraday::Adapter::Typhoeus do
         expect(request.options[:capath]).to eq("a")
       end
     end
+
+    context "when verify is false" do
+      let(:env) { { :ssl => { :verify => false } } }
+
+      it "sets ssl_verifyhost to 0" do
+        expect(request.options[:ssl_verifyhost]).to eq(0)
+      end
+
+      it "sets ssl_verifypeer to false" do
+        expect(request.options[:ssl_verifypeer]).to be_false
+      end
+    end
+
+    context "when verify is true" do
+      let(:env) { { :ssl => { :verify => true } } }
+
+      it "sets ssl_verifyhost to 2" do
+        expect(request.options[:ssl_verifyhost]).to eq(2)
+      end
+
+      it "sets ssl_verifypeer to true" do
+        expect(request.options[:ssl_verifypeer]).to be_true
+      end
+    end
   end
 
   describe "#parallel?" do

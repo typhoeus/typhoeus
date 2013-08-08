@@ -110,8 +110,11 @@ module Faraday # :nodoc:
       def configure_ssl(req, env)
         ssl = env[:ssl]
 
-        ssl_verifyhost = (ssl && ssl.fetch(:verify, true)) ? 2 : 0
+        verify_p = (ssl && ssl.fetch(:verify, true))
+
+        ssl_verifyhost = verify_p ? 2 : 0
         req.options[:ssl_verifyhost] = ssl_verifyhost
+        req.options[:ssl_verifypeer] = verify_p
         req.options[:sslversion] = ssl[:version]     if ssl[:version]
         req.options[:sslcert]    = ssl[:client_cert] if ssl[:client_cert]
         req.options[:sslkey]     = ssl[:client_key]  if ssl[:client_key]
