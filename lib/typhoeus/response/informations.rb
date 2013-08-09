@@ -188,6 +188,10 @@ module Typhoeus
         options[:redirect_count]
       end
 
+      def debug_info
+        options[:debug_info]
+      end
+
       # Returns the response header.
       #
       # @example Return headers.

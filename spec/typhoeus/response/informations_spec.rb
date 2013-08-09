@@ -12,6 +12,14 @@ describe Typhoeus::Response::Informations do
     end
   end
 
+  describe "#debug_info" do
+    let(:options) { { :debug_info => Ethon::Easy::DebugInfo.new } }
+
+    it "returns debug_info from options" do
+      expect(response.debug_info).to be_a(Ethon::Easy::DebugInfo)
+    end
+  end
+
   describe "#return_message" do
     let(:options) { { :return_code => :couldnt_connect } }
 

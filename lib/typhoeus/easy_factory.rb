@@ -86,7 +86,7 @@ module Typhoeus
     # @return [ Ethon::Easy ] The easy.
     def set_callback
       easy.on_complete do |easy|
-        request.finish(Response.new(easy.to_hash))
+        request.finish(Response.new(easy.mirror.options))
         Typhoeus::Pool.release(easy)
         if hydra && !hydra.queued_requests.empty?
           hydra.dequeue
@@ -117,11 +117,7 @@ module Typhoeus
       {
         :disable_ssl_host_verification => :ssl_verifyhost,
         :disable_ssl_peer_verification => :ssl_verifypeer,
-        :password => :userpwd,
         :proxy_auth_method => :proxyauth,
-        :proxy_password => :proxyuserpwd,
-        :proxy_username => :proxyuserpwd,
-        :username => :userpwd
       }
     end
 

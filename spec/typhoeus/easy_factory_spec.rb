@@ -35,11 +35,11 @@ describe Typhoeus::EasyFactory do
     end
 
     context "when changed option" do
-      let(:options) { {:password => 1} }
+      let(:options) { {:proxy_auth_method => 1} }
 
       it "reraises with help" do
         expect{ easy_factory.get }.to raise_error(
-          Ethon::Errors::InvalidOption, /Please try userpwd instead of password/
+          Ethon::Errors::InvalidOption, /Please try proxyauth instead of proxy_auth_method/
         )
       end
     end

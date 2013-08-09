@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   s.rubyforge_project         = '[none]'
 
-  s.add_dependency('ethon', ["~> 0.5.11"])
+  s.add_dependency('ethon', ["~> 0.6.0"])
 
   s.files        = `git ls-files`.split("\n")
   s.test_files   = `git ls-files -- spec/*`.split("\n")
