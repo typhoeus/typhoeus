@@ -37,7 +37,7 @@ describe Typhoeus::Expectation do
   end
 
   describe ".clear" do
-    let(:expectations) { mock(:clear) }
+    let(:expectations) { double(:clear) }
 
     it "clears all" do
       expectations.should_receive(:clear)
@@ -151,7 +151,7 @@ describe Typhoeus::Expectation do
   end
 
   describe "#matches?" do
-    let(:request) { stub(:base_url => nil) }
+    let(:request) { double(:base_url => nil) }
 
     it "calls url_match?" do
       expectation.should_receive(:url_match?)

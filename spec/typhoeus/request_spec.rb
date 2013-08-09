@@ -21,7 +21,7 @@ describe Typhoeus::Request do
     end
 
     it "pushes an easy back into the pool" do
-      easy = mock.as_null_object
+      easy = double.as_null_object
       Typhoeus::Pool.stub(:get).and_return(easy)
       Typhoeus::Pool.should_receive(:release).with(easy)
       request.url

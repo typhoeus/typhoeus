@@ -34,7 +34,7 @@ describe Typhoeus::Request::Operations do
     end
 
     it "calls on_complete" do
-      callback = mock(:call)
+      callback = double(:call)
       callback.should_receive(:call)
       request.instance_variable_set(:@on_complete, [callback])
       request.run

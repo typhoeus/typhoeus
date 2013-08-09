@@ -40,7 +40,7 @@ describe Faraday::Adapter::Typhoeus do
     let(:env) { {} }
 
     context "when body" do
-      let(:env) { { :body => stub(:read => "body") } }
+      let(:env) { { :body => double(:read => "body") } }
 
       it "reads body" do
         expect(adapter.method(:read_body).call(env)).to eq("body")
@@ -49,7 +49,7 @@ describe Faraday::Adapter::Typhoeus do
 
     context "parallel_manager" do
       context "when given" do
-        let(:env) { { :parallel_manager => stub(:queue => true), :ssl => {}, :request => {} } }
+        let(:env) { { :parallel_manager => double(:queue => true), :ssl => {}, :request => {} } }
 
         it "uses" do
           adapter.method(:perform_request).call(env)
@@ -60,7 +60,7 @@ describe Faraday::Adapter::Typhoeus do
         let(:env) { { :method => :get, :ssl => {}, :request => {} } }
 
         it "falls back to single" do
-          Typhoeus::Request.should_receive(:new).and_return(stub(:options => {}, :on_complete => [], :run => true))
+          Typhoeus::Request.should_receive(:new).and_return(double(:options => {}, :on_complete => [], :run => true))
           adapter.method(:perform_request).call(env)
         end
       end
@@ -135,7 +135,7 @@ describe Faraday::Adapter::Typhoeus do
     before { adapter.method(:configure_proxy).call(request, env) }
 
     context "when proxy" do
-      let(:env) { { :request => { :proxy => { :uri => stub(:host => "localhost", :port => "3001") } } } }
+      let(:env) { { :request => { :proxy => { :uri => double(:host => "localhost", :port => "3001") } } } }
 
       it "sets proxy" do
         expect(request.options[:proxy]).to eq("localhost:3001")
@@ -144,7 +144,7 @@ describe Faraday::Adapter::Typhoeus do
       context "when username and password" do
         let(:env) do
           { :request => { :proxy => {
-            :uri => stub(:host => :a, :port => :b),
+            :uri => double(:host => :a, :port => :b),
             :username => "a",
             :password => "b"
           } } }
