@@ -50,7 +50,11 @@ request = Typhoeus::Request.new(
 ```
 
 We can see from this that the first argument is the url. The second is a set of options.
-The options are all optional. The default for `:method` is `:get`.
+The options are all optional. The default for `:method` is `:get`. 
+
+When you want to send URL parameters, you can use `:params` hash to do so. Please note that in case of you should send a request via `x-www-form-urlencoded` parameters, you need to use `:body` hash instead. `params` are for URL parameters and `:body` is for the request body.
+
+
 You can run the query either on its own or through the hydra:
 
 ``` ruby
