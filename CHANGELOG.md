@@ -2,7 +2,13 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.3...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.4...master)
+
+## Master
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.3...v0.6.4)
+
+The changelog entries are coming soon!
 
 ## 0.6.3
 
