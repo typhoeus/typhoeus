@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.description  = %q{Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.}
 
   s.required_rubygems_version = ">= 1.3.6"
-  s.rubyforge_project         = '[none]'
+  s.license = 'MIT'
 
   s.add_dependency('ethon', ["~> 0.6.1"])
 
