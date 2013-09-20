@@ -26,6 +26,14 @@ describe Typhoeus::Response::Informations do
     it "returns a message" do
       expect(response.return_message).to eq("Couldn't connect to server")
     end
+
+    describe "with nil return_code" do
+      let(:options) { { :return_code => nil } }
+
+      it "returns nil" do
+        expect(response.return_message).to be_nil
+      end
+    end
   end
 
   describe "#response_body" do
