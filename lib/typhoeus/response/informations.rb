@@ -24,7 +24,7 @@ module Typhoeus
       #
       # @since 0.6.2
       def return_message
-        Ethon::Curl.easy_strerror(return_code)
+        Ethon::Curl.easy_strerror(return_code) if return_code
       end
 
       # Return the http response body.
