@@ -253,6 +253,12 @@ No exceptions are raised on HTTP timeouts. You can check whether a request timed
 Typhoeus.get("www.example.com").timed_out?
 ```
 
+There are two different timeouts available: [`timeout`](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTTIMEOUT) 
+and [`connecttimeout`](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUT). `timeout` is the
+maximum time in seconds that you allow the libcurl transfer operation to take and `connecttimeout` is the maximum 
+time in seconds that you allow the connection to the server to take. These two are always available, while `timeout_ms` ond 
+`connecttimeout_ms` are only an option when curl is build with `c-ares`, it will use `timout` otherwise.
+
 ### Following Redirections
 
 Use `followlocation: true`, eg:
