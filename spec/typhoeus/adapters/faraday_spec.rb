@@ -36,6 +36,30 @@ describe Faraday::Adapter::Typhoeus do
     end
   end
 
+  context "when a response is stubbed" do
+    before do
+      stub = Typhoeus::Response.new \
+        :code    => 200,
+        :headers => { "Foo" => "Bar" },
+        :body    => "Hello",
+        :mock    => true
+
+      Typhoeus.stub(base_url + '/').and_return(stub)
+    end
+
+    it 'stubs the status code' do
+      expect(response.status).to eq(200)
+    end
+
+    it 'stubs the response body' do
+      expect(response.body).to eq("Hello")
+    end
+
+    it 'stubs the headers' do
+      expect(response.headers).to eq("Foo" => "Bar")
+    end
+  end
+
   describe "#perform_request" do
     let(:env) { {} }
 
