@@ -63,9 +63,6 @@ module Typhoeus
       #   Typhoeus::Hydra.hydra
       #
       # @return [Typhoeus::Hydra] A new hydra.
-      #
-      # @deprecated This is only for convenience because so
-      #   much external code relies on it.
       def hydra
         Thread.current[:typhoeus_hydra] ||= new
       end
