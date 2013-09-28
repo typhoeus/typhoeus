@@ -52,6 +52,7 @@ module Typhoeus
     def mock
       defined?(@mock) ? @mock : options[:mock]
     end
+    alias :mock? :mock
 
     # Returns the handled_response if it has
     # been defined; otherwise, returns the response
