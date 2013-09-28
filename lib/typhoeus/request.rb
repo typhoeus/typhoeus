@@ -155,6 +155,17 @@ module Typhoeus
       Zlib.crc32 "#{self.class.name}#{base_url}#{options}"
     end
 
+    # Mimics libcurls POST body generation. This is not accurate, but good
+    # enough for VCR.
+    #
+    # @return [ String ] The encoded body.
+    #   otherwise.
+    #
+    # @api private
+    def encoded_body
+      Ethon::Easy::Form.new(nil, options[:body]).to_s
+    end
+
     private
 
     # Checks if two hashes are equal or not, discarding

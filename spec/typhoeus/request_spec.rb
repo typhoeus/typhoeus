@@ -7,9 +7,9 @@ describe Typhoeus::Request do
 
   describe ".url" do
     context "when no parameters" do
-    it "returns base_url" do
-      expect(request.url).to eq(request.base_url)
-    end
+      it "returns base_url" do
+        expect(request.url).to eq(request.base_url)
+      end
     end
 
     context "when parameters" do
@@ -49,7 +49,8 @@ describe Typhoeus::Request do
       let(:options) { {:headers => {} } }
 
       it "add user agent" do
-        expect(request.options[:headers]['User-Agent']).to eq(Typhoeus::USER_AGENT)
+        agent = request.options[:headers]['User-Agent']
+        expect(agent).to eq(Typhoeus::USER_AGENT)
       end
     end
 
@@ -100,7 +101,9 @@ describe Typhoeus::Request do
         end
 
         context "when different order" do
-          let(:other_options) { {:headers => { 'User-Agent' => "Fubar",  }, :verbose => true } }
+          let(:other_options) {
+            {:headers => { 'User-Agent' => "Fubar" }, :verbose => true }
+          }
           let(:other) { Typhoeus::Request.new(base_url, other_options)}
 
           it "returns true" do
@@ -126,6 +129,16 @@ describe Typhoeus::Request do
       it "has different hashes" do
         expect(request.hash).to_not eq(other.hash)
       end
+    end
+  end
+
+  describe "#encoded_body" do
+    let(:request) {
+      Typhoeus::Request.new("www.example.com",:body => {:a => 1})
+    }
+
+    it "returns encoded body" do
+      expect(request.encoded_body).to eq("a=1")
     end
   end
 end
