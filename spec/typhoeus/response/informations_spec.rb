@@ -55,10 +55,24 @@ describe Typhoeus::Response::Informations do
   end
 
   describe "#response_headers" do
-    let(:options) { { :response_headers => "headers" } }
+    let(:options) { { :response_headers => "Length: 1" } }
 
-    it "returns response_headers from options" do
-      expect(response.response_headers).to eq("headers")
+    context "when no mock" do
+      it "returns response_headers from options" do
+        expect(response.response_headers).to eq("Length: 1")
+      end
+    end
+
+    context "when mock" do
+      context "when no response_headers" do
+        context "when headers" do
+          let(:options) { { :mock => true, :headers => {"Length" => 1 } } }
+
+          it "constructs response_headers" do
+            expect(response.response_headers).to eq("Length: 1")
+          end
+        end
+      end
     end
   end
 
@@ -161,13 +175,13 @@ describe Typhoeus::Response::Informations do
   end
 
   describe "#headers" do
-    context "when no headers" do
+    context "when no response_headers" do
       it "returns nil" do
         expect(response.headers).to be_nil
       end
     end
 
-    context "when headers" do
+    context "when response_headers" do
       let(:options) { {:response_headers => "Expire: -1\nServer: gws"} }
 
       it "returns nonempty headers" do
@@ -188,6 +202,20 @@ describe Typhoeus::Response::Informations do
 
       it "returns the last" do
         expect(response.headers['server']).to eq("B")
+      end
+    end
+
+    context "when mock" do
+      context "when headers" do
+        let(:options) { {:mock => true, :headers => {"Length" => "1"}} }
+
+        it "returns Typhoeus::Response::Header" do
+          expect(response.headers).to be_a(Typhoeus::Response::Header)
+        end
+
+        it "returns headers" do
+          expect(response.headers).to include("Length" => "1")
+        end
       end
     end
 

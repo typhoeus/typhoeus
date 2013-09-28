@@ -45,7 +45,12 @@ module Typhoeus
       #
       # @return [ String ] The response_headers.
       def response_headers
-        options[:response_headers]
+        return options[:response_headers] if options[:response_headers]
+        if mock? && h = options[:headers]
+            h.map{ |k,v| [k, v.respond_to?(:join) ? v.join : v] }.
+              map{ |e| "#{e.first}: #{e.last}" }.
+              join("\n")
+        end
       end
 
       # Return the last received HTTP, FTP or SMTP response code.
@@ -199,8 +204,9 @@ module Typhoeus
       #
       # @return [ Typhoeus::Header ] The response header.
       def headers
+        return Header.new(options[:headers]) if mock? && options[:headers]
         return nil if response_headers.nil? && !defined?(@headers)
-        @headers ||= Response::Header.new(response_headers.split("\r\n\r\n").last)
+        @headers ||= Header.new(response_headers.split("\r\n\r\n").last)
       end
       alias :headers_hash :headers
 
