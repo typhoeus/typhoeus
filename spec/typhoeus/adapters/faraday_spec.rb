@@ -169,7 +169,7 @@ describe Faraday::Adapter::Typhoeus do
         let(:env) do
           { :request => { :proxy => {
             :uri => double(:host => :a, :port => :b),
-            :username => "a",
+            :user => "a",
             :password => "b"
           } } }
         end
