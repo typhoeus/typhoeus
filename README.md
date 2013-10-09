@@ -1,4 +1,4 @@
-# Typhoeus [![Build Status](https://secure.travis-ci.org/typhoeus/typhoeus.png)](http://travis-ci.org/typhoeus/typhoeus) [![Code Climate](https://codeclimate.com/github/typhoeus/typhoeus.png)](https://codeclimate.com/github/typhoeus/typhoeus)
+# Typhoeus [![Build Status](https://secure.travis-ci.org/typhoeus/typhoeus.png)](http://travis-ci.org/typhoeus/typhoeus) [![Code Climate](https://codeclimate.com/github/typhoeus/typhoeus.png)](https://codeclimate.com/github/typhoeus/typhoeus) [![Gem Version](https://badge.fury.io/rb/typhoeus.png)](http://badge.fury.io/rb/typhoeus)
 
 Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.
 
