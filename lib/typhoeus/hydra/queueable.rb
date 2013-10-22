@@ -40,6 +40,17 @@ module Typhoeus
         queued_requests << request
       end
 
+      # Pushes a request to the front of the queue,
+      # to be performed by the hydra. Also sets hydra
+      # on request
+      #
+      # @example Queue reques.
+      #   hydra.queue_front(request)
+      def queue_front(request)
+        request.hydra = self
+        queued_requests.unshift request
+      end
+
       # Removes a request from queued_requests and
       # adds it to the hydra in order to be
       # performed next.

@@ -21,6 +21,11 @@ describe Typhoeus::Hydra::Queueable do
       hydra.queue(request)
       expect(hydra.queued_requests).to include(request)
     end
+    
+    it "adds to front of queued requests" do 
+      hydra.queue_front(request)
+      expect(hydra.queued_requests.first).to be(request)
+    end
   end
 
   describe "#abort" do
