@@ -30,6 +30,40 @@ describe Typhoeus::Response::Status do
     end
   end
 
+  describe "#response_code" do
+    context "when response_code" do
+      let(:options) { { :response_code => "200" } }
+
+      it "returns response_code from options" do
+        expect(response.response_code).to eq(200)
+      end
+    end
+
+    context "when code" do
+      let(:options) { { :code => "200" } }
+
+      it "returns code from options" do
+        expect(response.code).to eq(200)
+      end
+    end
+
+    context "when the option isn't set but the header is" do
+      context "and has a status message" do
+        let(:options) { { :response_headers => "HTTP/1.1 200 OK" } }
+        it "returns response_code from headers" do
+          expect(response.response_code).to eq(200)
+        end
+      end
+
+      context "and does not have a status message" do
+        let(:options) { { :response_headers => "HTTP/1.1 200" } }
+        it "returns response_code from headers" do
+          expect(response.response_code).to eq(200)
+        end
+      end
+    end
+  end
+
   describe "#status_message" do
     context "when no header" do
       it "returns nil" do

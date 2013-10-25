@@ -5,6 +5,27 @@ module Typhoeus
     # status.
     module Status
 
+      # Return the last received HTTP, FTP or SMTP response code.
+      # The value will be zero if no server response code has
+      # been received. Note that a proxy's CONNECT response should
+      # be read with http_connect_code and not this.
+      #
+      # @example Get response_code.
+      #   response.response_code
+      #
+      # @return [ Integer ] The response_code.
+      def response_code
+        return @response_code if defined?(@response_code) && @response_code
+        return (options[:response_code] || options[:code]).to_i unless (options[:response_code] || options[:code]).nil?
+
+        if first_header_line != nil and first_header_line[/HTTP\/\S+ (\d{3})(?:$| )/, 1] != nil
+          @response_code = first_header_line[/HTTP\/\S+ (\d{3})(?:$| )/, 1].to_i
+        else
+          @response_code = 0
+        end
+      end
+      alias :code :response_code
+
       # Return the status message if present.
       #
       # @example Return status message.
