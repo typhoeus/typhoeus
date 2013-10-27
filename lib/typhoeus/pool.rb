@@ -1,5 +1,3 @@
-require 'thread'
-
 module Typhoeus
 
   # The easy pool stores already initialized
@@ -10,8 +8,6 @@ module Typhoeus
   module Pool
     extend self
 
-    @mutex = Mutex.new
-
     # Releases easy into the pool. The easy handle is
     # reset before it gets back in.
     #
@@ -19,7 +15,7 @@ module Typhoeus
     #   hydra.release_easy(easy)
     def release(easy)
       easy.reset
-      @mutex.synchronize { easies << easy }
+      easies << easy
     end
 
     # Return an easy from the pool.
@@ -29,11 +25,11 @@ module Typhoeus
     #
     # @return [ Ethon::Easy ] The easy.
     def get
-      @mutex.synchronize { easies.pop } || Ethon::Easy.new
+      easies.pop || Ethon::Easy.new
     end
 
     def clear
-      @mutex.synchronize { easies.clear }
+      easies.clear
     end
 
     def with_easy(&block)
@@ -52,7 +48,7 @@ module Typhoeus
     #
     # @return [ Array<Ethon::Easy> ] The easy pool.
     def easies
-      @easies ||= []
+      @easies ||= ThreadSafe::Array.new
     end
   end
 end

@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.license = 'MIT'
 
   s.add_dependency('ethon', ["~> 0.6.1"])
+  s.add_dependency('thread_safe', ["~> 0.1.3"])
 
   s.files        = `git ls-files`.split("\n")
   s.test_files   = `git ls-files -- spec/*`.split("\n")
