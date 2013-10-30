@@ -74,7 +74,7 @@ The response object will be set after the request is run.
 response = request.response
 response.code
 response.total_time
-response.headers_has
+response.headers_hash
 response.body
 ```
 
