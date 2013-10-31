@@ -1,6 +1,5 @@
 require 'digest/sha2'
 require 'ethon'
-require 'thread_safe'
 
 require 'typhoeus/config'
 require 'typhoeus/easy_factory'
