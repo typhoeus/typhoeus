@@ -49,7 +49,7 @@ module Typhoeus
         if mock? && h = options[:headers]
             h.map{ |k,v| [k, v.respond_to?(:join) ? v.join : v] }.
               map{ |e| "#{e.first}: #{e.last}" }.
-              join("\n")
+              join("\r\n")
         end
       end
 
