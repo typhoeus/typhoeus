@@ -40,7 +40,7 @@ describe Faraday::Adapter::Typhoeus do
     before do
       stub = Typhoeus::Response.new \
         :code    => 200,
-        :headers => { "Foo" => "Bar" },
+        :headers => { "Foo" => "2", "Bar" => "3" },
         :body    => "Hello",
         :mock    => true
 
@@ -56,7 +56,7 @@ describe Faraday::Adapter::Typhoeus do
     end
 
     it 'stubs the headers' do
-      expect(response.headers).to eq("Foo" => "Bar")
+      expect(response.headers).to eq("Foo" => "2", "Bar" => "3")
     end
   end
 

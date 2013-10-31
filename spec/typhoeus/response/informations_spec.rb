@@ -66,10 +66,10 @@ describe Typhoeus::Response::Informations do
     context "when mock" do
       context "when no response_headers" do
         context "when headers" do
-          let(:options) { { :mock => true, :headers => {"Length" => 1 } } }
+          let(:options) { { :mock => true, :headers => {"Length" => 1, "Content-Type" => "text/plain" } } }
 
           it "constructs response_headers" do
-            expect(response.response_headers).to eq("Length: 1")
+            expect(response.response_headers).to eq("Length: 1\r\nContent-Type: text/plain")
           end
         end
       end
