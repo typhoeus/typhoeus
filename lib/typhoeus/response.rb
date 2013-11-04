@@ -32,6 +32,10 @@ module Typhoeus
     # @api private
     attr_writer :mock
 
+    # Set the cache status, if we got response from cache
+    # it will have cached? == true
+    attr_writer :cached
+
     # Create a new response.
     #
     # @example Create a response.
@@ -61,6 +65,10 @@ module Typhoeus
     #   done on the response or the original response.
     def handled_response
       @handled_response || self
+    end
+
+    def cached?
+      !!@cached
     end
   end
 end

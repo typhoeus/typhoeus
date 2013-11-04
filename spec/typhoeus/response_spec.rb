@@ -78,4 +78,23 @@ describe Typhoeus::Response do
       end
     end
   end
+
+  describe "#cached" do
+    context "when @cached" do
+      before { response.cached = true }
+
+      it "returns cached status" do
+        expect(response.cached?).to be_true
+      end
+    end
+
+    context "when @cached is nil" do
+      before { response.cached = nil }
+
+      it "returns false" do
+        expect(response.cached?).to be_false
+      end
+    end
+
+  end
 end

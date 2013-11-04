@@ -43,10 +43,16 @@ describe Typhoeus::Hydra::Cacheable do
         let(:response) { Typhoeus::Response.new }
         before { cache.memory[request] = response }
 
+        it "returns response with cached status" do
+          hydra.add(request)
+          expect(response.cached?).to be_true
+        end
+
         context "when no queued requests" do
           it "finishes request" do
             request.should_receive(:finish).with(response)
             hydra.add(request)
+            expect(response.cached?).to be_true
           end
         end
 
@@ -55,7 +61,7 @@ describe Typhoeus::Hydra::Cacheable do
 
           before { cache.memory[queued_request] = response }
 
-          it "finishesh both requests" do
+          it "finishes both requests" do
             hydra.queue(queued_request)
             request.should_receive(:finish).with(response)
             queued_request.should_receive(:finish).with(response)
