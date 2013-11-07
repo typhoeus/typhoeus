@@ -211,8 +211,8 @@ class Cache
     memory[request]
   end
 
-  def set(request, reseponse)
-    memory[request] = reseponse
+  def set(request, response)
+    memory[request] = response
   end
 end
 
