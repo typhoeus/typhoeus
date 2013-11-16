@@ -1,6 +1,7 @@
 require 'typhoeus/response/header'
 require 'typhoeus/response/informations'
 require 'typhoeus/response/status'
+require 'typhoeus/response/cacheable'
 
 module Typhoeus
 
@@ -8,6 +9,7 @@ module Typhoeus
   class Response
     include Response::Informations
     include Response::Status
+    include Response::Cacheable
 
     # Remembers the corresponding request.
     #

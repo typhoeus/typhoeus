@@ -32,6 +32,11 @@ describe Typhoeus::Request::Cacheable do
           request.response = response
           expect(cache.memory[request]).to be
         end
+
+        it "doesn't set cached on response" do
+          request.response = response
+          expect(request.response.cached?).to be_false
+        end
       end
 
       context "when request in memory" do
@@ -40,6 +45,11 @@ describe Typhoeus::Request::Cacheable do
         it "finishes request" do
           request.should_receive(:finish).with(response)
           request.run
+        end
+
+        it "sets cached to true for response" do
+          request.run
+          expect(request.response.cached?).to be_true
         end
       end
     end
