@@ -193,6 +193,7 @@ module Typhoeus
         @options[:headers] = {'User-Agent' => Typhoeus::USER_AGENT}
       end
       @options[:verbose] = Typhoeus::Config.verbose if @options[:verbose].nil? && !Typhoeus::Config.verbose.nil?
+      @options[:maxredirs] ||= 50
     end
   end
 end

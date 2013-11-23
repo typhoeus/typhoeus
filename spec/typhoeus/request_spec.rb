@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Typhoeus::Request do
   let(:base_url) { "localhost:3001" }
-  let(:options) { {:verbose => true, :headers => { 'User-Agent' => "Fubar" }} }
+  let(:options) { {:verbose => true, :headers => { 'User-Agent' => "Fubar" }, :maxredirs => 50} }
   let(:request) { Typhoeus::Request.new(base_url, options) }
 
   describe ".url" do
@@ -37,6 +37,17 @@ describe Typhoeus::Request do
       expect(request.options).to eq(options)
     end
 
+    it "stores original options" do
+      expect(request.original_options).to eq(options)
+      expect(request.original_options).to_not be(request.options)
+    end
+
+    it "sets defaults" do
+      expect(request.options[:headers]['User-Agent']).to be
+    end
+  end
+
+  describe "set_defaults" do
     context "when header with user agent" do
       let(:options) { {:headers => {'User-Agent' => "Custom"} } }
 
@@ -60,6 +71,22 @@ describe Typhoeus::Request do
 
       it "respects" do
         expect(request.options[:verbose]).to be_true
+      end
+    end
+
+    context "when maxredirs" do
+      context "when not set" do
+        it "defaults to 50" do
+          expect(request.options[:maxredirs]).to be(50)
+        end
+      end
+
+      context "when set" do
+        let(:options) { {:maxredirs => 1} }
+
+        it "respects" do
+          expect(request.options[:maxredirs]).to be(1)
+        end
       end
     end
   end
