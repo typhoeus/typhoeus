@@ -43,7 +43,6 @@ end
 #
 # @since 0.5.0
 module Typhoeus
-  extend self
   extend Request::Actions
   extend Request::Callbacks::Types
 
@@ -59,7 +58,7 @@ module Typhoeus
   # @return [ Typhoeus::Config ] The configuration.
   #
   # @see Typhoeus::Config
-  def configure
+  def self.configure
     yield Config
   end
 
@@ -73,7 +72,7 @@ module Typhoeus
   # @return [ Typhoeus::Expectation ] The expecatation.
   #
   # @see Typhoeus::Expectation
-  def stub(base_url, options = {}, &block)
+  def self.stub(base_url, options = {}, &block)
     expectation = Expectation.all.find{ |e| e.base_url == base_url && e.options == options }
     if expectation.nil?
       expectation = Expectation.new(base_url, options)
@@ -94,7 +93,7 @@ module Typhoeus
   # @yield [ Typhoeus::Request ]
   #
   # @return [ Array<Block> ] All before blocks.
-  def before(&block)
+  def self.before(&block)
     @before ||= []
     @before << block if block_given?
     @before
@@ -118,7 +117,7 @@ module Typhoeus
   # @return [ Object ] Returns the return value of the block.
   #
   # @see Typhoeus::Config#block_connection
-  def with_connection
+  def self.with_connection
     old = Config.block_connection
     Config.block_connection = false
     result = yield if block_given?
