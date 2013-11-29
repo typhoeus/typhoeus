@@ -19,8 +19,4 @@ describe Typhoeus::Hydra do
       expect(Typhoeus::Hydra.hydra).to be_a(Typhoeus::Hydra)
     end
   end
-
-  describe "#fire_and_forget" do
-    it
-  end
 end
