@@ -4,20 +4,18 @@ module Typhoeus
 
   # The easy pool stores already initialized
   # easy handles for future use. This is useful
-  # because creating them is quite expensive.
+  # because creating them is expensive.
   #
   # @api private
   module Pool
-    extend self
-
     @mutex = Mutex.new
 
     # Releases easy into the pool. The easy handle is
     # reset before it gets back in.
     #
     # @example Release easy.
-    #   hydra.release_easy(easy)
-    def release(easy)
+    #   Typhoeus::Pool.release(easy)
+    def self.release(easy)
       easy.reset
       @mutex.synchronize { easies << easy }
     end
@@ -25,18 +23,25 @@ module Typhoeus
     # Return an easy from the pool.
     #
     # @example Return easy.
-    #   hydra.get_easy
+    #   Typhoeus::Pool.get
     #
     # @return [ Ethon::Easy ] The easy.
-    def get
+    def self.get
       @mutex.synchronize { easies.pop } || Ethon::Easy.new
     end
 
-    def clear
+    # Clear the pool
+    def self.clear
       @mutex.synchronize { easies.clear }
     end
 
-    def with_easy(&block)
+    # Use yielded easy, will be released automatically afterwards.
+    #
+    # @example Use easy.
+    #   Typhoeus::Pool.with_easy do |easy|
+    #     # use easy
+    #   end
+    def self.with_easy(&block)
       easy = get
       yield easy
     ensure
@@ -45,13 +50,7 @@ module Typhoeus
 
     private
 
-    # Return the easy pool.
-    #
-    # @example Return easy pool.
-    #   hydra.easy_pool
-    #
-    # @return [ Array<Ethon::Easy> ] The easy pool.
-    def easies
+    def self.easies
       @easies ||= []
     end
   end
