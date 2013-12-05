@@ -7,7 +7,7 @@ module Typhoeus
       # Return the important data needed to serialize this Request, except the
       # `on_complete`, `on_success`, `on_failure`, and `hydra`, since they cannot be marshalled.
       def marshal_dump
-        unmarshallable = %w(@on_complete @on_success @on_failure @hydra)
+        unmarshallable = %w(@on_complete @on_success @on_failure @on_body @hydra)
         (instance_variables - unmarshallable - unmarshallable.map(&:to_sym)).map do |name|
           [name, instance_variable_get(name)]
         end
