@@ -10,11 +10,11 @@ module Typhoeus
       # Setting an on_body callback will cause the response body to be empty.
       #
       # @example Set on_body.
-      #   request.on_body { |body_chunk| puts "Got #{body_chunk.bytesize} bytes" }
+      #   request.on_body { |response, body_chunk| puts "Got #{body_chunk.bytesize} bytes" }
       #
       # @param [ Block ] block The block to execute.
       #
-      # @yield [ String ]
+      # @yield [ Typhoeus::Response, String ]
       #
       # @return [ Array<Block> ] All on_body blocks.
       def on_body(&block)

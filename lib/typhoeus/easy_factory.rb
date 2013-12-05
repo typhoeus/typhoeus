@@ -86,9 +86,11 @@ module Typhoeus
     # @return [ Ethon::Easy ] The easy.
     def set_callback
       if request.streaming?
+        response = nil
         easy.on_body do |chunk|
+          response ||= Response.new(easy.mirror.options)
           request.on_body.each do |callback|
-            callback.call(chunk)
+            callback.call(response, chunk)
           end
         end
       end
