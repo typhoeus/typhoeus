@@ -22,6 +22,13 @@ module Typhoeus
         @on_body << block if block_given?
         @on_body
       end
+
+      # Is this request using streaming?
+      #
+      # @return [ Boolean ] True if any on_body blocks have been set.
+      def streaming?
+        @on_body && @on_body.any?
+      end
     end
   end
 end
