@@ -33,6 +33,14 @@ describe Typhoeus::Request::Operations do
       request.run
     end
 
+    it "calls on_body" do
+      on_body_called = false
+      request.on_body { |body| p body ; on_body_called = true }
+      request.run
+      expect(on_body_called).to be_true
+      expect(request.response.body).to be_nil
+    end
+
     it "calls on_complete" do
       callback = double(:call)
       callback.should_receive(:call)
