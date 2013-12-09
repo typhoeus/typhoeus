@@ -245,7 +245,7 @@ Typhoeus.get("www.example.com") == response
 #=> true
 ```
 
-When testing make sure to clear your expectations between tests as the stubs will persist between tests. An example in rspec is below.
+When testing make sure to clear your expectations or the stubs will persist between tests. The following can be included in your spec_helper.rb file to do this automatically.
 
 ```ruby
 RSpec.configure do |config|
