@@ -245,6 +245,16 @@ Typhoeus.get("www.example.com") == response
 #=> true
 ```
 
+When testing make sure to clear your expectations or the stubs will persist between tests. The following can be included in your spec_helper.rb file to do this automatically.
+
+```ruby
+RSpec.configure do |config|
+  config.before :each do
+    Typhoeus::Expectation.clear
+  end
+end
+```
+
 ### Timeouts
 
 No exceptions are raised on HTTP timeouts. You can check whether a request timed out with the following methods:
