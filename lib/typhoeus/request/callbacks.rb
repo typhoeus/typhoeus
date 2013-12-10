@@ -74,6 +74,36 @@ module Typhoeus
           @on_failure << block if block_given?
           @on_failure
         end
+
+        # Set on_headers callback.
+        #
+        # @example Set on_headers.
+        #   request.on_headers { |response| p "yay" }
+        #
+        # @param [ Block ] block The block to execute.
+        #
+        # @yield [ Typhoeus::Response ]
+        #
+        # @return [ Array<Block> ] All on_headers blocks.
+        def on_headers(&block)
+          @on_headers ||= []
+          @on_headers << block if block_given?
+          @on_headers
+        end
+      end
+
+      # Execute the headers callbacks and yields response.
+      #
+      # @example Execute callbacks.
+      #   request.execute_headers_callbacks
+      #
+      # @return [ Array<Object> ] The results of the on_headers callbacks.
+      #
+      # @api private
+      def execute_headers_callbacks(response)
+        (Typhoeus.on_headers + on_headers).map do |callback|
+          callback.call(response)
+        end
       end
 
       # Execute necessary callback and yields response. This

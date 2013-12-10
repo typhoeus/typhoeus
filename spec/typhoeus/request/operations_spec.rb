@@ -49,6 +49,13 @@ describe Typhoeus::Request::Operations do
       expect(headers).to eq(request.response.headers)
     end
 
+    it "calls on_headers and on_body" do
+      headers = nil
+      request.on_headers { |response| headers = response.headers }
+      request.on_body { |body, response| expect(headers).not_to be_nil ; expect(response.headers).to eq(headers) }
+      request.run
+    end
+
     it "calls on_complete" do
       callback = double(:call)
       callback.should_receive(:call)
