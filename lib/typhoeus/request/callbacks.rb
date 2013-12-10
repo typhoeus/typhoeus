@@ -76,7 +76,7 @@ module Typhoeus
         end
       end
 
-      # Execute nessecary callback and yields response. This
+      # Execute necessary callback and yields response. This
       # include in every case on_complete, on_success if
       # successful and on_failure if not.
       #
