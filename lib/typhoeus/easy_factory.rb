@@ -90,7 +90,7 @@ module Typhoeus
         easy.on_body do |chunk, easy|
           response ||= Response.new(easy.mirror.options)
           request.on_body.each do |callback|
-            callback.call(response, chunk)
+            callback.call(chunk, response)
           end
         end
       end
