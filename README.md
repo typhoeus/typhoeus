@@ -138,6 +138,27 @@ Typhoeus.post(
 )
 ```
 
+### Handling large downloads
+
+Typhoeus can stream responses. When a response is large, response streaming
+helps your program avoid running out of memory.
+
+```ruby
+request = Typhoeus::Request.new("www.example.com/huge.iso")
+request.on_headers do |response|
+  if ! response.success?
+    raise "Request failed"
+  end
+end
+size = 0
+request.on_body do |chunk|
+  puts "Received a #{chunk.bytesize} byte chunk"
+  size += chunk.bytesize
+end
+request.run
+puts "Received #{size} bytes"
+```
+
 ### Making Parallel Requests
 
 Generally, you should be running requests through hydra. Here is how that looks
