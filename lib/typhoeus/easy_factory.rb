@@ -87,7 +87,7 @@ module Typhoeus
     def set_callback
       if request.streaming?
         response = nil
-        easy.on_body do |chunk|
+        easy.on_body do |chunk, easy|
           response ||= Response.new(easy.mirror.options)
           request.on_body.each do |callback|
             callback.call(response, chunk)
