@@ -4,6 +4,11 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.6...master)
 
+Enhancements:
+
+* Add response streaming.
+  ([\#339](https://github.com/typhoeus/typhoeus/pull/339))
+
 ## 0.6.6
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.5...v0.6.6)
