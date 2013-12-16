@@ -53,6 +53,14 @@ describe Typhoeus::Request::Operations do
       headers = nil
       request.on_headers { |response| headers = response.headers }
       request.on_body { |body, response| expect(headers).not_to be_nil ; expect(response.headers).to eq(headers) }
+      request.on_complete { |response| expect(response).not_to be_nil ; expect(response.headers).to eq(headers) ; expect(response.body).to be_empty }
+      request.run
+    end
+
+    it "calls on_headers and on_complete" do
+      headers = nil
+      request.on_headers { |response| headers = response.headers }
+      request.on_complete { |response| expect(response).not_to be_nil ; expect(response.headers).to eq(headers) ; expect(response.body).not_to be_empty }
       request.run
     end
 

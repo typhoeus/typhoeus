@@ -88,7 +88,7 @@ module Typhoeus
       if request.streaming?
         response = nil
         easy.on_headers do |easy|
-          response = Response.new(easy.mirror.options)
+          response = Response.new(Ethon::Easy::Mirror.from_easy(easy).options)
           request.execute_headers_callbacks(response)
         end
         easy.on_body do |chunk, easy|
@@ -98,7 +98,7 @@ module Typhoeus
         end
       else
         easy.on_headers do |easy|
-          request.execute_headers_callbacks(Response.new(easy.mirror.options))
+          request.execute_headers_callbacks(Response.new(Ethon::Easy::Mirror.from_easy(easy).options))
         end
       end
       easy.on_complete do |easy|
