@@ -138,25 +138,29 @@ Typhoeus.post(
 )
 ```
 
-### Handling large downloads
+### Streaming the response body
 
-Typhoeus can stream responses. When a response is large, response streaming
-helps your program avoid running out of memory.
+Typhoeus can stream responses. When you're expecting a large response,
+set the `on_body` callback on a request. Typhoeus will yield to the callback
+with chunks of the response, as they're read. When you set an `on_body` callback,
+Typhoeus will not store the complete response.
 
 ```ruby
+downloaded_file = File.open 'huge.iso', 'wb'
 request = Typhoeus::Request.new("www.example.com/huge.iso")
 request.on_headers do |response|
   if ! response.success?
     raise "Request failed"
   end
 end
-size = 0
 request.on_body do |chunk|
-  puts "Received a #{chunk.bytesize} byte chunk"
-  size += chunk.bytesize
+  downloaded_file.write(chunk)
+end
+request.on_complete do |response|
+  downloaded_file.close
+  # Note that response.body is ""
 end
 request.run
-puts "Received #{size} bytes"
 ```
 
 ### Making Parallel Requests
