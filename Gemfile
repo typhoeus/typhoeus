@@ -19,3 +19,5 @@ group :development, :test do
     gem 'rb-fsevent', '~> 0.9.1'
   end
 end
+
+gem 'ethon', :git => 'https://github.com/spraints/ethon', :ref => 'streaming'

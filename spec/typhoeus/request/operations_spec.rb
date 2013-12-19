@@ -33,6 +33,37 @@ describe Typhoeus::Request::Operations do
       request.run
     end
 
+    it "calls on_body" do
+      on_body_called = false
+      request.on_body { |body, response| on_body_called = true }
+      request.run
+      expect(on_body_called).to be_true
+      expect(request.response.body).to satisfy { |v| v.nil? || v == '' }
+    end
+
+    it "makes response headers available to on_body" do
+      headers = nil
+      request.on_body { |body, response| headers = response.headers }
+      request.run
+      expect(headers).to be
+      expect(headers).to eq(request.response.headers)
+    end
+
+    it "calls on_headers and on_body" do
+      headers = nil
+      request.on_headers { |response| headers = response.headers }
+      request.on_body { |body, response| expect(headers).not_to be_nil ; expect(response.headers).to eq(headers) }
+      request.on_complete { |response| expect(response).not_to be_nil ; expect(response.headers).to eq(headers) ; expect(response.body).to be_empty }
+      request.run
+    end
+
+    it "calls on_headers and on_complete" do
+      headers = nil
+      request.on_headers { |response| headers = response.headers }
+      request.on_complete { |response| expect(response).not_to be_nil ; expect(response.headers).to eq(headers) ; expect(response.body).not_to be_empty }
+      request.run
+    end
+
     it "calls on_complete" do
       callback = double(:call)
       callback.should_receive(:call)

@@ -85,6 +85,22 @@ module Typhoeus
     #
     # @return [ Ethon::Easy ] The easy.
     def set_callback
+      if request.streaming?
+        response = nil
+        easy.on_headers do |easy|
+          response = Response.new(Ethon::Easy::Mirror.from_easy(easy).options)
+          request.execute_headers_callbacks(response)
+        end
+        easy.on_body do |chunk, easy|
+          request.on_body.each do |callback|
+            callback.call(chunk, response)
+          end
+        end
+      else
+        easy.on_headers do |easy|
+          request.execute_headers_callbacks(Response.new(Ethon::Easy::Mirror.from_easy(easy).options))
+        end
+      end
       easy.on_complete do |easy|
         request.finish(Response.new(easy.mirror.options))
         Typhoeus::Pool.release(easy)

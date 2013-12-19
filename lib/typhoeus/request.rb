@@ -8,6 +8,7 @@ require 'typhoeus/request/marshal'
 require 'typhoeus/request/memoizable'
 require 'typhoeus/request/operations'
 require 'typhoeus/request/responseable'
+require 'typhoeus/request/streamable'
 require 'typhoeus/request/stubbable'
 
 module Typhoeus
@@ -24,6 +25,7 @@ module Typhoeus
     extend  Request::Actions
     include Request::Callbacks::Types
     include Request::Callbacks
+    include Request::Streamable
     include Request::Marshal
     include Request::Operations
     include Request::Responseable

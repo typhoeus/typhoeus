@@ -138,6 +138,31 @@ Typhoeus.post(
 )
 ```
 
+### Streaming the response body
+
+Typhoeus can stream responses. When you're expecting a large response,
+set the `on_body` callback on a request. Typhoeus will yield to the callback
+with chunks of the response, as they're read. When you set an `on_body` callback,
+Typhoeus will not store the complete response.
+
+```ruby
+downloaded_file = File.open 'huge.iso', 'wb'
+request = Typhoeus::Request.new("www.example.com/huge.iso")
+request.on_headers do |response|
+  if ! response.success?
+    raise "Request failed"
+  end
+end
+request.on_body do |chunk|
+  downloaded_file.write(chunk)
+end
+request.on_complete do |response|
+  downloaded_file.close
+  # Note that response.body is ""
+end
+request.run
+```
+
 ### Making Parallel Requests
 
 Generally, you should be running requests through hydra. Here is how that looks
