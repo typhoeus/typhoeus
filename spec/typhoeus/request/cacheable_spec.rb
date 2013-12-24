@@ -4,6 +4,7 @@ describe Typhoeus::Request::Cacheable do
   let(:cache) { MemoryCache.new }
   let(:options) { {} }
   let(:request) { Typhoeus::Request.new("http://localhost:3001", options) }
+  let(:other) { Typhoeus::Request.new("http://localhost:3001", options) }
   let(:response) { Typhoeus::Response.new }
 
   before { Typhoeus::Config.cache = cache }
@@ -14,7 +15,7 @@ describe Typhoeus::Request::Cacheable do
       context "when request new" do
         it "caches response" do
           request.response = response
-          expect(cache.memory[request]).to be
+          other.run.should == response
         end
 
         it "doesn't set cached on response" do
@@ -23,8 +24,8 @@ describe Typhoeus::Request::Cacheable do
         end
       end
 
-      context "when request in memory" do
-        before { cache.memory[request] = response }
+      context "when request cached" do
+        before { other.response = response }
 
         it "finishes request" do
           request.should_receive(:finish).with(response)
@@ -41,18 +42,28 @@ describe Typhoeus::Request::Cacheable do
 
   describe "#run" do
     context "when cache activated" do
-      context "when request new" do
-        it "fetches response" do
-          expect(request.response).to_not be(response)
-        end
-      end
-
-      context "when request in memory" do
-        before { cache.memory[request] = response }
+      context "when request cached" do
+        let!(:response) { other.run }
 
         it "finishes request" do
           request.should_receive(:finish).with(response)
           request.run
+        end
+      end
+
+      context "when requests match" do
+        it "returns the cached response" do
+          request.run.should == other.run
+        end
+      end
+
+      context "when options differ" do
+        let(:other) do
+          Typhoeus::Request.new("http://localhost:3001", params: {foo: 'bar'})
+        end
+
+        it "doesn't use the cached response" do
+          request.run.should_not == other.run
         end
       end
     end

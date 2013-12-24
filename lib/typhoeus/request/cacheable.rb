@@ -2,7 +2,7 @@ module Typhoeus
   class Request
     module Cacheable
       def response=(response)
-        Typhoeus::Config.cache.set(self, response) if cacheable? && !response.cached?
+        Typhoeus::Config.cache.set(hash, response) if cacheable? && !response.cached?
         super
       end
 
@@ -11,7 +11,7 @@ module Typhoeus
       end
 
       def run
-        if cacheable? && response = Typhoeus::Config.cache.get(self)
+        if cacheable? && response = Typhoeus::Config.cache.get(hash)
           response.cached = true
           finish(response)
         else
