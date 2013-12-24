@@ -57,9 +57,6 @@ describe Typhoeus::Request::Cacheable do
 
   describe "#run" do
     context "when cache activated" do
-      before { Typhoeus::Config.cache = cache }
-      after { Typhoeus::Config.cache = false }
-
       context "when request new" do
         it "fetches response" do
           expect(request.response).to_not be(response)
@@ -67,7 +64,6 @@ describe Typhoeus::Request::Cacheable do
       end
 
       context "when request in memory" do
-        let(:response) { Typhoeus::Response.new }
         before { cache.memory[request] = response }
 
         it "finishes request" do
