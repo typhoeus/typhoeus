@@ -154,7 +154,7 @@ module Typhoeus
     #
     # @api private
     def hash
-      Zlib.crc32 "#{self.class.name}#{base_url}#{options}"
+      Zlib.crc32 "#{self.class.name}#{base_url}#{hashable_string_for(options)}"
     end
 
     # Mimics libcurls POST body generation. This is not accurate, but good
@@ -184,6 +184,17 @@ module Typhoeus
 
       (left.count == right.count) && left.inject(true) do |res, kvp|
         res && (kvp[1] == right[kvp[0]])
+      end
+    end
+
+    def hashable_string_for(obj)
+      case obj
+      when Hash
+        obj.
+          sort_by {|k,v| k}.
+          map {|k,v| "#{k}=#{hashable_string_for(v)}"}.
+          join(':')
+      else obj.to_s
       end
     end
 

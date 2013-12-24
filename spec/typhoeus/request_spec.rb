@@ -143,15 +143,29 @@ describe Typhoeus::Request do
 
   describe "#hash" do
     context "when request.eql?(other)" do
-      let(:other) { Typhoeus::Request.new(base_url, options) }
+      context "when different order" do
+        let(:other_options) {
+          {:headers => { 'User-Agent' => "Fubar" }, :verbose => true }
+        }
+        let(:other) { Typhoeus::Request.new(base_url, other_options)}
 
-      it "has same hashes" do
-        expect(request.hash).to eq(other.hash)
+        it "has same hashes" do
+          expect(request.hash).to eq(other.hash)
+        end
+      end
+
+      context "when same order" do
+        let(:other) { Typhoeus::Request.new(base_url, options) }
+
+        it "has same hashes" do
+          expect(request.hash).to eq(other.hash)
+        end
       end
     end
 
     context "when not request.eql?(other)" do
-      let(:other) { Typhoeus::Request.new("base_url", {}) }
+      let(:request) { Typhoeus::Request.new(base_url, params: {foo: 'bar'}) }
+      let(:other) { Typhoeus::Request.new(base_url, params: {foo: 'baz'}) }
 
       it "has different hashes" do
         expect(request.hash).to_not eq(other.hash)
