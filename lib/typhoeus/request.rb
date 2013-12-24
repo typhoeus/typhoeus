@@ -191,7 +191,7 @@ module Typhoeus
       case obj
       when Hash
         obj.
-          sort_by {|k,v| k}.
+          sort_by {|k,v| k.to_s}.
           map {|k,v| "#{k}=#{hashable_string_for(v)}"}.
           join(':')
       else obj.to_s
