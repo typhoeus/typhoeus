@@ -11,7 +11,7 @@ describe Typhoeus::Request::Cacheable do
 
   describe "#response=" do
     context "when cache activated" do
-      context "when nequest new" do
+      context "when request new" do
         it "caches response" do
           request.response = response
           expect(cache.memory[request]).to be
