@@ -1,23 +1,7 @@
 require 'spec_helper'
 
 describe Typhoeus::Request::Cacheable do
-  let(:cache) {
-    Class.new do
-      attr_reader :memory
-
-      def initialize
-        @memory = {}
-      end
-
-      def get(request)
-        memory[request]
-      end
-
-      def set(request, response)
-        memory[request] = response
-      end
-    end.new
-  }
+  let(:cache) { MemoryCache.new }
   let(:options) { {} }
   let(:request) { Typhoeus::Request.new("http://localhost:3001", options) }
   let(:response) { Typhoeus::Response.new }

@@ -4,23 +4,7 @@ describe Typhoeus::Hydra::Cacheable do
   let(:base_url) { "localhost:3001" }
   let(:hydra) { Typhoeus::Hydra.new() }
   let(:request) { Typhoeus::Request.new(base_url, {:method => :get}) }
-  let(:cache) {
-    Class.new do
-      attr_reader :memory
-
-      def initialize
-        @memory = {}
-      end
-
-      def get(request)
-        memory[request]
-      end
-
-      def set(request, response)
-        memory[request] = response
-      end
-    end.new
-  }
+  let(:cache) { MemoryCache.new }
 
   describe "add" do
     context "when cache activated" do
