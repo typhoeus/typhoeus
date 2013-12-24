@@ -164,8 +164,8 @@ describe Typhoeus::Request do
     end
 
     context "when not request.eql?(other)" do
-      let(:request) { Typhoeus::Request.new(base_url, params: {foo: 'bar'}) }
-      let(:other) { Typhoeus::Request.new(base_url, params: {foo: 'baz'}) }
+      let(:request) { Typhoeus::Request.new(base_url, :params => {:foo => 'bar'}) }
+      let(:other) { Typhoeus::Request.new(base_url, :params => {:foo => 'baz'}) }
 
       it "has different hashes" do
         expect(request.hash).to_not eq(other.hash)

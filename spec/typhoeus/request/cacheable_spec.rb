@@ -59,7 +59,7 @@ describe Typhoeus::Request::Cacheable do
 
       context "when options differ" do
         let(:other) do
-          Typhoeus::Request.new("http://localhost:3001", params: {foo: 'bar'})
+          Typhoeus::Request.new("http://localhost:3001", :params => {:foo => 'bar'})
         end
 
         it "doesn't use the cached response" do
