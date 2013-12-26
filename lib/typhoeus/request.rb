@@ -1,4 +1,3 @@
-require 'zlib'
 require 'typhoeus/request/actions'
 require 'typhoeus/request/before'
 require 'typhoeus/request/block_connection'
@@ -154,7 +153,7 @@ module Typhoeus
     #
     # @api private
     def hash
-      Zlib.crc32 "#{self.class.name}#{base_url}#{options.hash}"
+      "#{self.class.name}#{base_url}#{options.hash}".hash
     end
 
     # Mimics libcurls POST body generation. This is not accurate, but good
