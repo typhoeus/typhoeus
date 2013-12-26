@@ -4,23 +4,8 @@ describe Typhoeus::Hydra::Cacheable do
   let(:base_url) { "localhost:3001" }
   let(:hydra) { Typhoeus::Hydra.new() }
   let(:request) { Typhoeus::Request.new(base_url, {:method => :get}) }
-  let(:cache) {
-    Class.new do
-      attr_reader :memory
-
-      def initialize
-        @memory = {}
-      end
-
-      def get(request)
-        memory[request]
-      end
-
-      def set(request, response)
-        memory[request] = response
-      end
-    end.new
-  }
+  let(:other) { Typhoeus::Request.new(base_url, {:method => :get}) }
+  let(:cache) { MemoryCache.new }
 
   describe "add" do
     context "when cache activated" do
@@ -40,8 +25,7 @@ describe Typhoeus::Hydra::Cacheable do
       end
 
       context "when request in memory" do
-        let(:response) { Typhoeus::Response.new }
-        before { cache.memory[request] = response }
+        let!(:response) { other.run }
 
         it "returns response with cached status" do
           hydra.add(request)
@@ -58,8 +42,6 @@ describe Typhoeus::Hydra::Cacheable do
 
         context "when queued requests" do
           let(:queued_request) { Typhoeus::Request.new(base_url, {:method => :get}) }
-
-          before { cache.memory[queued_request] = response }
 
           it "finishes both requests" do
             hydra.queue(queued_request)

@@ -6,13 +6,7 @@ Bundler.setup
 require "typhoeus"
 require "rspec"
 
-if defined? require_relative
-  require_relative 'support/localhost_server.rb'
-  require_relative 'support/server.rb'
-else
-  require 'support/localhost_server.rb'
-  require 'support/server.rb'
-end
+Dir[File.join(File.dirname(__FILE__), "support/**/*.rb")].each { |f| require f }
 
 RSpec.configure do |config|
   config.order = :rand
