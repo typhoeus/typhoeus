@@ -226,25 +226,61 @@ Typhoeus includes built in support for caching. In the following example, if the
 
 ```ruby
 class Cache
-  attr_accessor :memory
-
   def initialize
     @memory = {}
   end
 
   def get(request)
-    memory[request]
+    @memory[request]
   end
 
   def set(request, response)
-    memory[request] = response
+    @memory[request] = response
   end
 end
 
 Typhoeus::Config.cache = Cache.new
 
-Typhoeus.get("www.example.com") == Typhoeus.get("www.example.com")
+Typhoeus.get("www.example.com").cached?
+#=> false
+Typhoeus.get("www.example.com").cached?
 #=> true
+```
+
+For use with [Dalli](https://github.com/mperham/dalli):
+
+```ruby
+class Cache
+  def initialize
+    @client = Dalli::Client.new
+  end
+
+  def get(request)
+    @client.get(request.cache_key)
+  end
+
+  def set(request, response)
+    @client.set(request.cache_key, response)
+  end
+end
+
+Typhoeus::Config.cache = Cache.new
+```
+
+For use with Rails:
+
+```ruby
+class Cache
+  def get(request)
+    Rails.cache.read(request)
+  end
+
+  def set(request, response)
+    Rails.cache.write(request, response)
+  end
+end
+
+Typhoeus::Config.cache = Cache.new
 ```
 
 ### Direct Stubbing
