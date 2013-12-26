@@ -161,6 +161,14 @@ describe Typhoeus::Request do
           expect(request.hash).to eq(other.hash)
         end
       end
+
+      context "when hashes with different orders are contained in arrays" do
+        let(:request) { Typhoeus::Request.new(base_url, :params => [{:b => 2, :a => 1}]) }
+        let(:other) { Typhoeus::Request.new(base_url, :params => [{:a => 1, :b => 2}]) }
+        it "has different hashes" do
+          expect(request.hash).to eq(other.hash)
+        end
+      end
     end
 
     context "when not request.eql?(other)" do
