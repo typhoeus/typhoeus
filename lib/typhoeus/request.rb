@@ -154,7 +154,15 @@ module Typhoeus
     #
     # @api private
     def hash
-      Zlib.crc32 "#{self.class.name}#{base_url}#{hashable_string_for(options)}"
+      Zlib.crc32 cache_key
+    end
+
+    # Returns a cache key for use with caching methods that required a string
+    # for a key. Will get used by ActiveSupport::Cache stores automatically.
+    #
+    # @return [ String ] The cache key.
+    def cache_key
+      "#{self.class.name}#{base_url}#{hashable_string_for(options)}"
     end
 
     # Mimics libcurls POST body generation. This is not accurate, but good
