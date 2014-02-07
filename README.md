@@ -208,7 +208,7 @@ end
 hydra.run
 ```
 
-This will result in a two requests.
+This will result in two requests.
 
 ```ruby
 Typhoeus::Config.memoize = false
@@ -350,8 +350,8 @@ Typhoeus::Request.get("www.example.com", userpwd: "user:password")
 Typhoeus::Request.get("www.example.com", cookiefile: "/path/to/file", cookiejar: "/path/to/file")
 ```
 
-Here, `cookiefile` is a file to read cookies to send from, and `cookiejar` is a file to write received cookies to.
-So, if you just want cookies enabled, you need to pass in a same filename in both options.
+Here, `cookiefile` is a file to read cookies from, and `cookiejar` is a file to write received cookies to.
+If you just want cookies enabled, you need to pass the same filename for both options.
 
 ### Other CURL options
 
@@ -388,13 +388,13 @@ Typhoeus.get("https://www.example.com", ssl_verifyhost: 2)
 
 ### Verbose debug output
 
-Sometime it’s useful to see verbose output from curl. You may now enable it on a per request basis:
+It’s sometimes useful to see verbose output from curl. You can enable it on a per-request basis:
 
 ```ruby
 Typhoeus.get("http://example.com", verbose: true)
 ```
 
-or global:
+or globally:
 
 ```ruby
 Typhoeus::Config.verbose = true
