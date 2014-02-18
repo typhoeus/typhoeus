@@ -172,7 +172,7 @@ hydra = Typhoeus::Hydra.hydra
 
 first_request = Typhoeus::Request.new("www.example.com/posts/1.json")
 first_request.on_complete do |response|
-  third_request = Typhoeus::Request.new(www.example.com/posts/3.json)
+  third_request = Typhoeus::Request.new("www.example.com/posts/3.json")
   hydra.queue third_request
 end
 second_request = Typhoeus::Request.new("www.example.com/posts/2.json")
