@@ -50,7 +50,7 @@ request = Typhoeus::Request.new(
 ```
 
 We can see from this that the first argument is the url. The second is a set of options.
-The options are all optional. The default for `:method` is `:get`. 
+The options are all optional. The default for `:method` is `:get`.
 
 When you want to send URL parameters, you can use `:params` hash to do so. Please note that in case of you should send a request via `x-www-form-urlencoded` parameters, you need to use `:body` hash instead. `params` are for URL parameters and `:body` is for the request body.
 
@@ -324,10 +324,10 @@ No exceptions are raised on HTTP timeouts. You can check whether a request timed
 Typhoeus.get("www.example.com").timed_out?
 ```
 
-There are two different timeouts available: [`timeout`](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTTIMEOUT) 
+There are two different timeouts available: [`timeout`](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTTIMEOUT)
 and [`connecttimeout`](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUT). `timeout` is the
-maximum time in seconds that you allow the libcurl transfer operation to take and `connecttimeout` is the maximum 
-time in seconds that you allow the connection to the server to take. These two are always available, while `timeout_ms` ond 
+maximum time in seconds that you allow the libcurl transfer operation to take and `connecttimeout` is the maximum
+time in seconds that you allow the connection to the server to take. These two are always available, while `timeout_ms` ond
 `connecttimeout_ms` accept milliseconds but only an option when curl is build with `c-ares`, it will use `timout` or `connecttimeout` otherwise.
 
 ### Following Redirections
@@ -420,7 +420,7 @@ Copyright © 2009-2010 [Paul Dix](http://www.pauldix.net/)
 
 Copyright © 2011-2012 [David Balatero](https://github.com/dbalatero/)
 
-Copyright © 2012-2013 [Hans Hasselberg](http://github.com/i0rek/)
+Copyright © 2012-2014 [Hans Hasselberg](http://github.com/i0rek/)
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
