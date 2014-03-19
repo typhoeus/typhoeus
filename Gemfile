@@ -8,7 +8,7 @@ group :development, :test do
 
   gem "sinatra", "~> 1.3"
   gem "json"
-  gem "faraday", "~> 0.8.4"
+  gem "faraday", ">= 0.9"
 
   if RUBY_PLATFORM == "java"
     gem "spoon"
