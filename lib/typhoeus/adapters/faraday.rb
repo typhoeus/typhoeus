@@ -120,7 +120,8 @@ module Faraday # :nodoc:
         req.options[:sslkey]     = ssl[:client_key]  if ssl[:client_key]
         req.options[:cainfo]     = ssl[:ca_file]     if ssl[:ca_file]
         req.options[:capath]     = ssl[:ca_path]     if ssl[:ca_path]
-        req.options[:keypasswd]  = ssl[:client_cert_passwd] if ssl[:client_cert_passwd]
+        client_cert_passwd_key   = [:client_cert_passwd, :client_certificate_password].detect { |name| ssl.key?(name) }
+        req.options[:keypasswd]  = ssl[client_cert_passwd_key] if client_cert_passwd_key
       end
 
       def configure_proxy(req, env)
