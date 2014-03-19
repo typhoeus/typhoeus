@@ -1,8 +1,34 @@
 # Changelog
 
-## Master
+## 0.6.8
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.6...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.7...v0.6.8)
+
+Bugfixes:
+
+* Fix Faraday 0.9 compatibility.
+  ([Gleb Mazovetskiy](https://github.com/glebm), [\#357](https://github.com/typhoeus/typhoeus/pull/357)
+* Fix Request#hash for different key orders.
+  ([Matthew Schulkind](https://github.com/mschulkind), [\#344](https://github.com/typhoeus/typhoeus/pull/344))
+
+Enhancements:
+
+* Use SVG for status badges in README.
+  7[Sean Linsley](https://github.com/seanlinsley), [\#353](https://github.com/typhoeus/typhoeus/pull/353))
+* Missing quotes in README example code.
+  ([Jason R. Clark](https://github.com/jasonrclark), [\#351](https://github.com/typhoeus/typhoeus/pull/351))
+* Specs for Faraday adapter.
+  ([michaelavila](https://github.com/michaelavila), [\#348](https://github.com/typhoeus/typhoeus/pull/348))
+* Clarify wording in README.
+  ([Sean Linsley](https://github.com/seanlinsley), [\#347](https://github.com/typhoeus/typhoeus/pull/347))
+* Make caching easier for non-memory caches.
+  ([Matthew Schulkind](https://github.com/mschulkind), [\#345](https://github.com/typhoeus/typhoeus/pull/345))
+* Spec refactoring.
+  ([Matthew Schulkind](https://github.com/mschulkind), [\#343](https://github.com/typhoeus/typhoeus/pull/343))
+
+## 0.6.7
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.6...v0.6.7)
 
 Enhancements:
 
