@@ -14,7 +14,7 @@ Bugfixes:
 Enhancements:
 
 * Use SVG for status badges in README.
-  7[Sean Linsley](https://github.com/seanlinsley), [\#353](https://github.com/typhoeus/typhoeus/pull/353))
+  ([Sean Linsley](https://github.com/seanlinsley), [\#353](https://github.com/typhoeus/typhoeus/pull/353))
 * Missing quotes in README example code.
   ([Jason R. Clark](https://github.com/jasonrclark), [\#351](https://github.com/typhoeus/typhoeus/pull/351))
 * Specs for Faraday adapter.
