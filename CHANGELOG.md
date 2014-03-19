@@ -13,6 +13,7 @@ Bugfixes:
 
 Enhancements:
 
+* Use an updated Ethon version. Note that from now on the `mime-types` is no longer a Ethon dependency. The gem will be still used if available to determine the mime type of a file which is uploaded. That means you have to have take care of the gem installation yourself.
 * Use SVG for status badges in README.
   ([Sean Linsley](https://github.com/seanlinsley), [\#353](https://github.com/typhoeus/typhoeus/pull/353))
 * Missing quotes in README example code.
