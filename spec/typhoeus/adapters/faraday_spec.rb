@@ -232,6 +232,14 @@ describe Faraday::Adapter::Typhoeus do
       end
     end
 
+    context "when client_certificate_password" do
+      let(:env) { { :ssl => { :client_certificate_password => "a" } } }
+
+      it "sets keypasswd to the value of client_cert_passwd" do
+        expect(request.options[:keypasswd]).to eq("a")
+      end
+    end
+
     context "when no client_cert_passwd" do
       let(:env) { { :ssl => { } } }
 
