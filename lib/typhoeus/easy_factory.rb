@@ -49,7 +49,7 @@ module Typhoeus
     def get
       begin
         easy.http_request(
-          request.base_url,
+          request.base_url.to_s,
           request.options.fetch(:method, :get),
           sanitize(request.options)
         )
