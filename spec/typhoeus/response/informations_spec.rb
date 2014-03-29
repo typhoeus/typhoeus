@@ -176,6 +176,14 @@ describe Typhoeus::Response::Informations do
     end
   end
 
+  describe "#request_size" do
+    let(:options) { { :request_size => 2 } }
+
+    it "returns request_size from options" do
+      expect(response.request_size).to eq(2)
+    end
+  end
+
   describe "#headers" do
     context "when no response_headers" do
       it "returns nil" do

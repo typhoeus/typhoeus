@@ -193,6 +193,10 @@ module Typhoeus
         options[:redirect_count]
       end
 
+      def request_size
+        options[:request_size]
+      end
+
       def debug_info
         options[:debug_info]
       end
