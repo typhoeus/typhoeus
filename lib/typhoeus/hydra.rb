@@ -50,7 +50,7 @@ module Typhoeus
 
     # @example Set max_concurrency.
     #   Typhoeus::Hydra.new(max_concurrency: 20)
-    attr_reader :max_concurrency
+    attr_accessor :max_concurrency
 
     # @api private
     attr_reader :multi
