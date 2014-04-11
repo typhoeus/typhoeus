@@ -344,6 +344,12 @@ Typhoeus.get("www.example.com", followlocation: true)
 Typhoeus::Request.get("www.example.com", userpwd: "user:password")
 ```
 
+### Compression
+
+```ruby
+Typhoeus.get("www.example.com", accept_encoding: "gzip")
+```
+
 ### Cookies
 
 ```ruby
