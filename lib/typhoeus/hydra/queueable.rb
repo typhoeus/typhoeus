@@ -62,6 +62,22 @@ module Typhoeus
       def dequeue
         add(queued_requests.shift) unless queued_requests.empty?
       end
+
+      # Removes requests from queued_requests and
+      # adds them to the hydra until max_concurrency
+      # is reached.
+      #
+      # @example Dequeue requests.
+      #   hydra.dequeue_many
+      #
+      # @since 0.6.8
+      def dequeue_many
+        number = multi.easy_handles.count
+        until number == max_concurrency || queued_requests.empty?
+          add(queued_requests.shift)
+          number += 1
+        end
+      end
     end
   end
 end
