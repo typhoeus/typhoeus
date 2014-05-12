@@ -105,7 +105,7 @@ module Typhoeus
         request.finish(Response.new(easy.mirror.options))
         Typhoeus::Pool.release(easy)
         if hydra && !hydra.queued_requests.empty?
-          hydra.dequeue
+          hydra.dequeue_many
         end
       end
     end
