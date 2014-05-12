@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Typhoeus::EasyFactory do
   let(:base_url) { "http://localhost:3001" }
-  let(:hydra) { Typhoeus::Hydra.new(:max_concurrency => 0) }
+  let(:hydra) { Typhoeus::Hydra.new(:max_concurrency => 1) }
   let(:options) { {} }
   let(:request) { Typhoeus::Request.new(base_url, options) }
   let(:easy_factory) { described_class.new(request, hydra) }
