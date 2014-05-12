@@ -6,32 +6,25 @@ describe Typhoeus::Hydra::Runnable do
   let(:hydra) { Typhoeus::Hydra.new(options) }
 
   describe "#run" do
+    let(:requests) { [] }
+
     before do
       requests.each { |r| hydra.queue r }
     end
 
-    context "when no request queued" do
-      let(:requests) { [] }
+    it "runs multi#dequeue_many" do
+      expect(hydra).to receive(:dequeue_many)
+      hydra.run
+    end
 
-      it "does nothing" do
-        expect(hydra.multi).to receive(:perform)
-        hydra.run
-      end
+    it "runs multi#perform" do
+      expect(hydra.multi).to receive(:perform)
+      hydra.run
     end
 
     context "when request queued" do
       let(:first) { Typhoeus::Request.new("localhost:3001/first") }
       let(:requests) { [first] }
-
-      it "adds request from queue to multi" do
-        expect(hydra).to receive(:add).with(first)
-        hydra.run
-      end
-
-      it "runs multi#perform" do
-        expect(hydra.multi).to receive(:perform)
-        hydra.run
-      end
 
       it "sends" do
         hydra.run
@@ -44,18 +37,6 @@ describe Typhoeus::Hydra::Runnable do
       let(:second) { Typhoeus::Request.new("localhost:3001/second") }
       let(:third) { Typhoeus::Request.new("localhost:3001/third") }
       let(:requests) { [first, second, third] }
-
-      it "adds requests from queue to multi" do
-        expect(hydra).to receive(:add).with(first)
-        expect(hydra).to receive(:add).with(second)
-        expect(hydra).to receive(:add).with(third)
-        hydra.run
-      end
-
-      it "runs multi#perform" do
-        expect(hydra.multi).to receive(:perform)
-        hydra.run
-      end
 
       it "sends first" do
         hydra.run
