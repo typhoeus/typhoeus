@@ -43,7 +43,7 @@ describe Typhoeus do
 
       it "adds expectation" do
         Typhoeus.stub(:get, "")
-        expect(Typhoeus::Expectation.all).to have(1).item
+        expect(Typhoeus::Expectation.all.size).to eq(1)
       end
     end
 
@@ -59,7 +59,7 @@ describe Typhoeus do
 
       it "doesn't add expectation" do
         Typhoeus.stub(base_url)
-        expect(Typhoeus::Expectation.all).to have(1).item
+        expect(Typhoeus::Expectation.all.size).to eq(1)
       end
     end
   end
@@ -67,7 +67,7 @@ describe Typhoeus do
   describe ".before" do
     it "adds callback" do
       Typhoeus.before { true }
-      expect(Typhoeus.before).to have(1).item
+      expect(Typhoeus.before.size).to eq(1)
     end
   end
 

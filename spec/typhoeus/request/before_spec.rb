@@ -8,14 +8,14 @@ describe Typhoeus::Request::Before do
       context "when one" do
         it "executes" do
           Typhoeus.before { |r| String.new(r.base_url) }
-          String.should_receive(:new).and_return("")
+          expect(String).to receive(:new).and_return("")
           request.run
         end
 
         context "when true" do
           it "calls super" do
             Typhoeus.before { true }
-            Typhoeus::Expectation.should_receive(:response_for)
+            expect(Typhoeus::Expectation).to receive(:response_for)
             request.run
           end
         end
@@ -23,7 +23,7 @@ describe Typhoeus::Request::Before do
         context "when false" do
           it "doesn't call super" do
             Typhoeus.before { false }
-            Typhoeus::Expectation.should_receive(:response_for).never
+            expect(Typhoeus::Expectation).to receive(:response_for).never
             request.run
           end
 
@@ -36,7 +36,7 @@ describe Typhoeus::Request::Before do
         context "when a response" do
           it "doesn't call super" do
             Typhoeus.before { Typhoeus::Response.new }
-            Typhoeus::Expectation.should_receive(:response_for).never
+            expect(Typhoeus::Expectation).to receive(:response_for).never
             request.run
           end
 
@@ -52,12 +52,12 @@ describe Typhoeus::Request::Before do
           before { 3.times { Typhoeus.before { |r| String.new(r.base_url) } } }
 
           it "calls super" do
-            Typhoeus::Expectation.should_receive(:response_for)
+            expect(Typhoeus::Expectation).to receive(:response_for)
             request.run
           end
 
           it "executes all" do
-            String.should_receive(:new).exactly(3).times.and_return("")
+            expect(String).to receive(:new).exactly(3).times.and_return("")
             request.run
           end
         end
@@ -70,12 +70,12 @@ describe Typhoeus::Request::Before do
           end
 
           it "doesn't call super" do
-            Typhoeus::Expectation.should_receive(:response_for).never
+            expect(Typhoeus::Expectation).to receive(:response_for).never
             request.run
           end
 
           it "executes only two" do
-            String.should_receive(:new).exactly(2).times.and_return("")
+            expect(String).to receive(:new).exactly(2).times.and_return("")
             request.run
           end
         end
@@ -84,7 +84,7 @@ describe Typhoeus::Request::Before do
 
     context "when no before" do
       it "calls super" do
-        Typhoeus::Expectation.should_receive(:response_for)
+        expect(Typhoeus::Expectation).to receive(:response_for)
         request.run
       end
     end

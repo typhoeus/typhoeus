@@ -18,7 +18,7 @@ describe Typhoeus::Request::Callbacks do
       context "when block given" do
         it "stores" do
           request.method(callback).call { p 1 }
-          expect(request.instance_variable_get("@#{callback}")).to have(1).items
+          expect(request.instance_variable_get("@#{callback}").size).to eq(1)
         end
       end
 
@@ -26,7 +26,7 @@ describe Typhoeus::Request::Callbacks do
         it "stores" do
           request.method(callback).call { p 1 }
           request.method(callback).call { p 2 }
-          expect(request.instance_variable_get("@#{callback}")).to have(2).items
+          expect(request.instance_variable_get("@#{callback}").size).to eq(2)
         end
       end
     end

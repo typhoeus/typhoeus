@@ -16,7 +16,7 @@ describe Typhoeus::Hydra::Memoizable do
         end
 
         it "doesn't call complete" do
-          request.should_receive(:complete).never
+          expect(request).to receive(:complete).never
           hydra.add(request)
         end
       end
@@ -26,7 +26,7 @@ describe Typhoeus::Hydra::Memoizable do
         before { hydra.memory[request] = response }
 
         it "finishes request" do
-          request.should_receive(:finish).with(response, true)
+          expect(request).to receive(:finish).with(response, true)
           hydra.add(request)
         end
 
@@ -35,8 +35,8 @@ describe Typhoeus::Hydra::Memoizable do
 
           it "dequeues" do
             hydra.queue(queued_request)
-            request.should_receive(:finish).with(response, true)
-            queued_request.should_receive(:finish).with(response, true)
+            expect(request).to receive(:finish).with(response, true)
+            expect(queued_request).to receive(:finish).with(response, true)
             hydra.add(request)
           end
         end
@@ -46,7 +46,7 @@ describe Typhoeus::Hydra::Memoizable do
 
   describe "#run" do
     it "clears memory before starting" do
-      hydra.memory.should_receive(:clear)
+      expect(hydra.memory).to receive(:clear)
       hydra.run
     end
   end

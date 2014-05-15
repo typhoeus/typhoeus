@@ -7,19 +7,19 @@ describe Typhoeus::Request::Operations do
 
   describe "#run" do
     let(:easy) { Ethon::Easy.new }
-    before { Typhoeus::Pool.should_receive(:get).and_return(easy) }
+    before { expect(Typhoeus::Pool).to receive(:get).and_return(easy) }
 
     it "grabs an easy" do
       request.run
     end
 
     it "generates settings" do
-      easy.should_receive(:http_request)
+      expect(easy).to receive(:http_request)
       request.run
     end
 
     it "performs" do
-      easy.should_receive(:perform)
+      expect(easy).to receive(:perform)
       request.run
     end
 
@@ -29,7 +29,7 @@ describe Typhoeus::Request::Operations do
     end
 
     it "releases easy" do
-      Typhoeus::Pool.should_receive(:release)
+      expect(Typhoeus::Pool).to receive(:release)
       request.run
     end
 
@@ -66,7 +66,7 @@ describe Typhoeus::Request::Operations do
 
     it "calls on_complete" do
       callback = double(:call)
-      callback.should_receive(:call)
+      expect(callback).to receive(:call)
       request.instance_variable_set(:@on_complete, [callback])
       request.run
     end
@@ -90,7 +90,7 @@ describe Typhoeus::Request::Operations do
     end
 
     it "executes callbacks" do
-      request.should_receive(:execute_callbacks)
+      expect(request).to receive(:execute_callbacks)
       request.finish(response)
     end
 

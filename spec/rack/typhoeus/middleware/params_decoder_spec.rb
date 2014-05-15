@@ -7,11 +7,11 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder" do
   end
 
   let(:app) do
-    stub
+    double
   end
 
   let(:env) do
-    stub
+    double
   end
 
   let(:klass) do

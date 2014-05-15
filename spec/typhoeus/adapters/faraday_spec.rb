@@ -84,7 +84,7 @@ describe Faraday::Adapter::Typhoeus do
         let(:env) { { :method => :get, :ssl => {}, :request => {} } }
 
         it "falls back to single" do
-          Typhoeus::Request.should_receive(:new).and_return(double(:options => {}, :on_complete => [], :run => true))
+          expect(Typhoeus::Request).to receive(:new).and_return(double(:options => {}, :on_complete => [], :run => true))
           adapter.method(:perform_request).call(env)
         end
       end
@@ -119,7 +119,7 @@ describe Faraday::Adapter::Typhoeus do
     end
 
     it "sets on_complete callback" do
-      expect(request.on_complete).to have(1).items
+      expect(request.on_complete.size).to eq(1)
     end
   end
 

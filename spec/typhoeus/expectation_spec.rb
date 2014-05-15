@@ -40,7 +40,7 @@ describe Typhoeus::Expectation do
     let(:expectations) { double(:clear) }
 
     it "clears all" do
-      expectations.should_receive(:clear)
+      expect(expectations).to receive(:clear)
       Typhoeus::Expectation.instance_variable_set(:@expectations, expectations)
       Typhoeus::Expectation.clear
       Typhoeus::Expectation.instance_variable_set(:@expectations, nil)
@@ -53,8 +53,8 @@ describe Typhoeus::Expectation do
 
     it "finds a matching expectation and returns its next response" do
       Typhoeus::Expectation.all << expectation
-      expectation.should_receive(:matches?).with(request).and_return(true)
-      expectation.should_receive(:response).with(request).and_return(stubbed_response)
+      expect(expectation).to receive(:matches?).with(request).and_return(true)
+      expect(expectation).to receive(:response).with(request).and_return(stubbed_response)
 
       response = Typhoeus::Expectation.response_for(request)
 
@@ -154,13 +154,13 @@ describe Typhoeus::Expectation do
     let(:request) { double(:base_url => nil) }
 
     it "calls url_match?" do
-      expectation.should_receive(:url_match?)
+      expect(expectation).to receive(:url_match?)
       expectation.matches?(request)
     end
 
     it "calls options_match?" do
-      expectation.should_receive(:url_match?).and_return(true)
-      expectation.should_receive(:options_match?)
+      expect(expectation).to receive(:url_match?).and_return(true)
+      expect(expectation).to receive(:options_match?)
       expectation.matches?(request)
     end
   end

@@ -15,7 +15,7 @@ describe Typhoeus::Hydra::Stubbable do
 
     context "when expectation found" do
       it "finishes response" do
-        request.should_receive(:finish)
+        expect(request).to receive(:finish)
         hydra.add(request)
       end
 

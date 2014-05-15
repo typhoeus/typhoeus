@@ -63,11 +63,11 @@ describe Typhoeus::Response::Header do
       end
 
       it "sets Set-Cookie" do
-        expect(header['set-cookie']).to have(3).items
+        expect(header['set-cookie'].size).to eq(3)
       end
 
       it "provides case insensitive access" do
-        expect(header['Set-CooKie']).to have(3).items
+        expect(header['Set-CooKie'].size).to eq(3)
       end
 
       [

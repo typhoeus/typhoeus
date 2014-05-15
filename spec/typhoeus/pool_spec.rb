@@ -12,7 +12,7 @@ describe Typhoeus::Pool do
 
   describe "#release" do
     it "resets easy" do
-      easy.should_receive(:reset)
+      expect(easy).to receive(:reset)
       Typhoeus::Pool.release(easy)
     end
 
@@ -28,7 +28,7 @@ describe Typhoeus::Pool do
             Typhoeus::Pool.release(Ethon::Easy.new)
           end
         end.map(&:join)
-        expect(Typhoeus::Pool.send(:easies)).to have(10).easies
+        expect(Typhoeus::Pool.send(:easies).size).to eq(10)
       end
     end
   end
@@ -55,7 +55,7 @@ describe Typhoeus::Pool do
               array << Typhoeus::Pool.get
             end
           end.map(&:join)
-          expect(array.uniq).to have(10).easies
+          expect(array.uniq.size).to eq(10)
         end
       end
     end
@@ -73,7 +73,7 @@ describe Typhoeus::Pool do
           end
         end
       end
-      expect(array.uniq).to have(3).easies
+      expect(array.uniq.size).to eq(3)
     end
   end
 end
