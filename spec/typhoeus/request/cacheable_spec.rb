@@ -27,7 +27,7 @@ describe Typhoeus::Request::Cacheable do
         before { cache.memory[request] = response }
 
         it "finishes request" do
-          request.should_receive(:finish).with(response)
+          expect(request).to receive(:finish).with(response)
           request.run
         end
 
@@ -51,7 +51,7 @@ describe Typhoeus::Request::Cacheable do
         before { cache.memory[request] = response }
 
         it "finishes request" do
-          request.should_receive(:finish).with(response)
+          expect(request).to receive(:finish).with(response)
           request.run
         end
       end

@@ -18,7 +18,7 @@ describe Typhoeus::Hydra::Cacheable do
         end
 
         it "doesn't call complete" do
-          request.should_receive(:complete).never
+          expect(request).to receive(:complete).never
           hydra.add(request)
         end
       end
@@ -34,7 +34,7 @@ describe Typhoeus::Hydra::Cacheable do
 
         context "when no queued requests" do
           it "finishes request" do
-            request.should_receive(:finish).with(response)
+            expect(request).to receive(:finish).with(response)
             hydra.add(request)
             expect(response.cached?).to be_true
           end
@@ -47,8 +47,8 @@ describe Typhoeus::Hydra::Cacheable do
 
           it "finishes both requests" do
             hydra.queue(queued_request)
-            request.should_receive(:finish).with(response)
-            queued_request.should_receive(:finish).with(response)
+            expect(request).to receive(:finish).with(response)
+            expect(queued_request).to receive(:finish).with(response)
             hydra.add(request)
           end
         end
