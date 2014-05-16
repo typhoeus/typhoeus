@@ -9,7 +9,7 @@ describe Typhoeus::Hydra do
     let(:options) { {:pipeling => true} }
 
     it "passes options to multi" do
-      Ethon::Multi.should_receive(:new).with(options)
+      expect(Ethon::Multi).to receive(:new).with(options)
       hydra
     end
   end

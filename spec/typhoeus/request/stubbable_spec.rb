@@ -14,7 +14,7 @@ describe Typhoeus::Request::Stubbable do
 
     context "when expectation found" do
       it "finishes request" do
-        request.should_receive(:finish)
+        expect(request).to receive(:finish)
         request.run
       end
 
