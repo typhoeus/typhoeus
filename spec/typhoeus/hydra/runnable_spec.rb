@@ -14,7 +14,7 @@ describe Typhoeus::Hydra::Runnable do
       let(:requests) { [] }
 
       it "does nothing" do
-        hydra.multi.should_receive(:perform)
+        expect(hydra.multi).to receive(:perform)
         hydra.run
       end
     end
@@ -24,12 +24,12 @@ describe Typhoeus::Hydra::Runnable do
       let(:requests) { [first] }
 
       it "adds request from queue to multi" do
-        hydra.should_receive(:add).with(first)
+        expect(hydra).to receive(:add).with(first)
         hydra.run
       end
 
       it "runs multi#perform" do
-        hydra.multi.should_receive(:perform)
+        expect(hydra.multi).to receive(:perform)
         hydra.run
       end
 
@@ -46,14 +46,14 @@ describe Typhoeus::Hydra::Runnable do
       let(:requests) { [first, second, third] }
 
       it "adds requests from queue to multi" do
-        hydra.should_receive(:add).with(first)
-        hydra.should_receive(:add).with(second)
-        hydra.should_receive(:add).with(third)
+        expect(hydra).to receive(:add).with(first)
+        expect(hydra).to receive(:add).with(second)
+        expect(hydra).to receive(:add).with(third)
         hydra.run
       end
 
       it "runs multi#perform" do
-        hydra.multi.should_receive(:perform)
+        expect(hydra.multi).to receive(:perform)
         hydra.run
       end
 
@@ -134,7 +134,7 @@ describe Typhoeus::Hydra::Runnable do
           let(:options) { {} }
 
           it "calls on_complete callback once for every response" do
-            String.should_receive(:new).exactly(2).times
+            expect(String).to receive(:new).exactly(2).times
             hydra.run
           end
         end
@@ -145,7 +145,7 @@ describe Typhoeus::Hydra::Runnable do
           before { Typhoeus.before{ |request|  request.finish(Typhoeus::Response.new) } }
 
           it "simulates real multi run and adds and finishes both requests" do
-            String.should_receive(:new).exactly(2).times
+            expect(String).to receive(:new).exactly(2).times
             hydra.run
           end
         end

@@ -22,8 +22,8 @@ describe Typhoeus::Request do
 
     it "pushes an easy back into the pool" do
       easy = double.as_null_object
-      Typhoeus::Pool.stub(:get).and_return(easy)
-      Typhoeus::Pool.should_receive(:release).with(easy)
+      allow(Typhoeus::Pool).to receive(:get).and_return(easy)
+      expect(Typhoeus::Pool).to receive(:release).with(easy)
       request.url
     end
   end

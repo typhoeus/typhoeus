@@ -257,7 +257,7 @@ describe Typhoeus::Response::Informations do
       let(:options) { {:response_headers => "Server: A\r\n\r\nServer: B"} }
 
       it "returns response from all but last headers" do
-        expect(response.redirections).to have(1).item
+        expect(response.redirections.size).to eq(1)
       end
     end
   end
