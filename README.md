@@ -389,7 +389,10 @@ certificate subject is \*.host.com). You can disable host verification. Like
 this:
 
 ```ruby
+# host checking enabled
 Typhoeus.get("https://www.example.com", ssl_verifyhost: 2)
+# host checking disabled
+Typhoeus.get("https://www.example.com", ssl_verifyhost: 0)
 ```
 
 ### Verbose debug output
