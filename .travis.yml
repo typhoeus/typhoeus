@@ -5,7 +5,6 @@ rvm:
   - 1.9.3
   - 2.0.0
   - ruby-head
-  - ree
   - jruby-head
   - jruby-18mode
   - jruby-19mode
@@ -18,3 +17,4 @@ matrix:
     - rvm: jruby-head
     - rvm: rbx-18mode
     - rvm: rbx-19mode
+    - rvm: ree
