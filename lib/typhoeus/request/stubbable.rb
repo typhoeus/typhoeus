@@ -8,8 +8,8 @@ module Typhoeus
     # @api private
     module Stubbable
 
-      # Override run in order to check for matching expecations.
-      # When an expecation is found, super is not called. Instead a
+      # Override run in order to check for matching expectations.
+      # When an expectation is found, super is not called. Instead a
       # canned response is assigned to the request.
       #
       # @example Run the request.
