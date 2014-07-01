@@ -29,14 +29,14 @@ describe Typhoeus::Hydra::Cacheable do
 
         it "returns response with cached status" do
           hydra.add(request)
-          expect(response.cached?).to be_true
+          expect(response.cached?).to be_truthy
         end
 
         context "when no queued requests" do
           it "finishes request" do
             expect(request).to receive(:finish).with(response)
             hydra.add(request)
-            expect(response.cached?).to be_true
+            expect(response.cached?).to be_truthy
           end
         end
 

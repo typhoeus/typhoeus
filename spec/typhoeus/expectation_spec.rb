@@ -88,7 +88,7 @@ describe Typhoeus::Expectation do
 
     context "when array" do
       it "adds to responses" do
-        pending
+        skip
         expectation.and_return([1, 2])
         expect(expectation.responses).to eq([1, 2])
       end
@@ -173,7 +173,7 @@ describe Typhoeus::Expectation do
     context "when string" do
       context "when match" do
         it "returns true" do
-          expect(url_match).to be_true
+          expect(url_match).to be_truthy
         end
       end
 
@@ -181,7 +181,7 @@ describe Typhoeus::Expectation do
         let(:base_url) { "no_match" }
 
         it "returns false" do
-          expect(url_match).to be_false
+          expect(url_match).to be_falsey
         end
       end
     end
@@ -191,7 +191,7 @@ describe Typhoeus::Expectation do
         let(:base_url) { /example/ }
 
         it "returns true" do
-          expect(url_match).to be_true
+          expect(url_match).to be_truthy
         end
       end
 
@@ -199,7 +199,7 @@ describe Typhoeus::Expectation do
         let(:base_url) { /nomatch/ }
 
         it "returns false" do
-          expect(url_match).to be_false
+          expect(url_match).to be_falsey
         end
       end
     end
@@ -208,7 +208,7 @@ describe Typhoeus::Expectation do
       let(:base_url) { nil }
 
       it "returns true" do
-        expect(url_match).to be_true
+        expect(url_match).to be_truthy
       end
     end
 
@@ -216,7 +216,7 @@ describe Typhoeus::Expectation do
       let(:base_url) { 1 }
 
       it "returns false" do
-        expect(url_match).to be_false
+        expect(url_match).to be_falsey
       end
     end
   end
@@ -231,7 +231,7 @@ describe Typhoeus::Expectation do
       let(:request_options) { options }
 
       it "returns true" do
-        expect(options_match).to be_true
+        expect(options_match).to be_truthy
       end
     end
 
@@ -240,7 +240,7 @@ describe Typhoeus::Expectation do
       let(:request_options) { { :a => 1, :b => 2 } }
 
       it "returns true" do
-        expect(options_match).to be_true
+        expect(options_match).to be_truthy
       end
     end
 
@@ -249,7 +249,7 @@ describe Typhoeus::Expectation do
       let(:request_options) { options }
 
       it "returns true" do
-        expect(options_match).to be_true
+        expect(options_match).to be_truthy
       end
     end
 
@@ -258,7 +258,7 @@ describe Typhoeus::Expectation do
       let(:request_options) { options }
 
       it "returns true" do
-        expect(options_match).to be_true
+        expect(options_match).to be_truthy
       end
     end
 
@@ -266,7 +266,7 @@ describe Typhoeus::Expectation do
       let(:options) { { :a => 1 } }
 
       it "returns false" do
-        expect(options_match).to be_false
+        expect(options_match).to be_falsey
       end
     end
   end

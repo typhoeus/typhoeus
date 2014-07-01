@@ -84,7 +84,7 @@ describe Typhoeus::Request::Callbacks do
 
     context "when local on_complete and gobal on_success" do
       it "runs all global callbacks first" do
-        pending
+        skip
       end
     end
   end

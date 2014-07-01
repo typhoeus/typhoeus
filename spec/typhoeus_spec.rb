@@ -14,7 +14,7 @@ describe Typhoeus do
 
     it "sets values config" do
       Typhoeus::Config.verbose = true
-      expect(Typhoeus::Config.verbose).to be_true
+      expect(Typhoeus::Config.verbose).to be_truthy
     end
   end
 

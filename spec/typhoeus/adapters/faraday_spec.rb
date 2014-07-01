@@ -256,7 +256,7 @@ describe Faraday::Adapter::Typhoeus do
       end
 
       it "sets ssl_verifypeer to false" do
-        expect(request.options[:ssl_verifypeer]).to be_false
+        expect(request.options[:ssl_verifypeer]).to be_falsey
       end
     end
 
@@ -268,7 +268,7 @@ describe Faraday::Adapter::Typhoeus do
       end
 
       it "sets ssl_verifypeer to true" do
-        expect(request.options[:ssl_verifypeer]).to be_true
+        expect(request.options[:ssl_verifypeer]).to be_truthy
       end
     end
   end
@@ -278,7 +278,7 @@ describe Faraday::Adapter::Typhoeus do
       let(:env) { { :parallel_manager => true } }
 
       it "returns true" do
-        expect(adapter.method(:parallel?).call(env)).to be_true
+        expect(adapter.method(:parallel?).call(env)).to be_truthy
       end
     end
 
@@ -286,7 +286,7 @@ describe Faraday::Adapter::Typhoeus do
       let(:env) { { :parallel_manager => nil } }
 
       it "returns false" do
-        expect(adapter.method(:parallel?).call(env)).to be_false
+        expect(adapter.method(:parallel?).call(env)).to be_falsey
       end
     end
   end

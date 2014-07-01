@@ -37,7 +37,7 @@ describe Typhoeus::Response do
       before { response.mock = true }
 
       it "returns @mock" do
-        expect(response.mock).to be_true
+        expect(response.mock).to be_truthy
       end
     end
 
@@ -45,7 +45,7 @@ describe Typhoeus::Response do
       let(:options) { {:mock => true} }
 
       it "returns options[:mock]" do
-        expect(response.mock).to be_true
+        expect(response.mock).to be_truthy
       end
     end
 
@@ -84,7 +84,7 @@ describe Typhoeus::Response do
       before { response.cached = true }
 
       it "returns cached status" do
-        expect(response.cached?).to be_true
+        expect(response.cached?).to be_truthy
       end
     end
 
@@ -92,7 +92,7 @@ describe Typhoeus::Response do
       before { response.cached = nil }
 
       it "returns false" do
-        expect(response.cached?).to be_false
+        expect(response.cached?).to be_falsey
       end
     end
 

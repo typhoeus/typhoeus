@@ -28,7 +28,7 @@ describe Typhoeus::Request::BlockConnection do
         before { request.block_connection = true }
 
         it "returns true" do
-          expect(request.blocked?).to be_true
+          expect(request.blocked?).to be_truthy
         end
       end
 
@@ -36,7 +36,7 @@ describe Typhoeus::Request::BlockConnection do
         before { request.block_connection = false }
 
         it "returns false" do
-          expect(request.blocked?).to be_false
+          expect(request.blocked?).to be_falsey
         end
       end
     end
@@ -47,7 +47,7 @@ describe Typhoeus::Request::BlockConnection do
         after { Typhoeus::Config.block_connection = false }
 
         it "returns true" do
-          expect(request.blocked?).to be_true
+          expect(request.blocked?).to be_truthy
         end
       end
 
@@ -55,7 +55,7 @@ describe Typhoeus::Request::BlockConnection do
         before { Typhoeus::Config.block_connection = false }
 
         it "returns false" do
-          expect(request.blocked?).to be_false
+          expect(request.blocked?).to be_falsey
         end
       end
     end
@@ -68,7 +68,7 @@ describe Typhoeus::Request::BlockConnection do
       after { Typhoeus::Config.block_connection = false }
 
       it "takes local" do
-        expect(request.blocked?).to be_false
+        expect(request.blocked?).to be_falsey
       end
     end
   end
