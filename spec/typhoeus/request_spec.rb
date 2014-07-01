@@ -70,7 +70,7 @@ describe Typhoeus::Request do
       after { Typhoeus.configure { |config| config.verbose = false} }
 
       it "respects" do
-        expect(request.options[:verbose]).to be_true
+        expect(request.options[:verbose]).to be_truthy
       end
     end
 

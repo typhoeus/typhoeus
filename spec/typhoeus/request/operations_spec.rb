@@ -37,7 +37,7 @@ describe Typhoeus::Request::Operations do
       on_body_called = false
       request.on_body { |body, response| on_body_called = true }
       request.run
-      expect(on_body_called).to be_true
+      expect(on_body_called).to be_truthy
       expect(request.response.body).to satisfy { |v| v.nil? || v == '' }
     end
 

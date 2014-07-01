@@ -19,7 +19,7 @@ describe Typhoeus::Request::Cacheable do
 
         it "doesn't set cached on response" do
           request.response = response
-          expect(request.response.cached?).to be_false
+          expect(request.response.cached?).to be_falsey
         end
       end
 
@@ -33,7 +33,7 @@ describe Typhoeus::Request::Cacheable do
 
         it "sets cached to true for response" do
           request.run
-          expect(request.response.cached?).to be_true
+          expect(request.response.cached?).to be_truthy
         end
       end
     end
