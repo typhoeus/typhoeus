@@ -350,6 +350,14 @@ Typhoeus::Request.get("www.example.com", userpwd: "user:password")
 Typhoeus.get("www.example.com", accept_encoding: "gzip")
 ```
 
+The above has a different behavior than setting the header directly in the header hash, eg:
+```ruby
+Typhoeus.get("www.example.com", headers: {"Accept-Encoding" => "gzip"})
+```
+
+Setting the header hash directly will not include the `--compressed` flag in the libcurl command and therefore libcurl will not decompress the response.  If you want the `--compressed` flag to be added automatically, set `:accept_encoding` Typhoeus option.
+
+
 ### Cookies
 
 ```ruby
