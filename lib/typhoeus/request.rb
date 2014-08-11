@@ -1,4 +1,5 @@
 require 'zlib'
+require 'digest/sha1'
 require 'typhoeus/request/actions'
 require 'typhoeus/request/before'
 require 'typhoeus/request/block_connection'
@@ -162,7 +163,7 @@ module Typhoeus
     #
     # @return [ String ] The cache key.
     def cache_key
-      "#{self.class.name}#{base_url}#{hashable_string_for(options)}"
+      Digest::SHA1.hexdigest "#{self.class.name}#{base_url}#{hashable_string_for(options)}"
     end
 
     # Mimics libcurls POST body generation. This is not accurate, but good
