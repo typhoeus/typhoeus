@@ -183,6 +183,22 @@ hydra.queue second_request
 hydra.run
 ```
 
+How to get an array of responses back after running a queue of requests:
+
+```ruby
+hydra = Typhoeus::Hydra.new
+requests = 10.times.map { 
+  request = Typhoeus::Request.new("www.example.com", followlocation: true)
+  hydra.queue(request) 
+  request
+}
+hydra.run
+
+responses = request.map { |request|
+  request.response.response_body
+}
+```
+
 The execution of that code goes something like this. The first and second requests are built and queued. When hydra is run the first and second requests run in parallel. When the first request completes, the third request is then built and queued up. The moment it is queued Hydra starts executing it.  Meanwhile the second request would continue to run (or it could have completed before the first). Once the third request is done, `hydra.run` returns.
 
 ### Specifying Max Concurrency
