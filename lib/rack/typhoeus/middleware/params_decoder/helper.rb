@@ -64,7 +64,7 @@ module Rack
           # @return [Arraya/Hash]
           def convert(hash)
             if encoded?(hash)
-              Hash[hash.sort].values
+              Hash[hash].values
             else
               hash
             end
