@@ -335,17 +335,35 @@ end
 
 ### Timeouts
 
-No exceptions are raised on HTTP timeouts. You can check whether a request timed out with the following methods:
+No exceptions are raised on HTTP timeouts. You can check whether a request timed out with the following method:
 
 ```ruby
-Typhoeus.get("www.example.com").timed_out?
+Typhoeus.get("www.example.com", timeout: 1).timed_out?
 ```
 
+Timed out responses also have their success? method return false.
+
 There are two different timeouts available: [`timeout`](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTTIMEOUT)
-and [`connecttimeout`](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUT). `timeout` is the
-maximum time in seconds that you allow the libcurl transfer operation to take and `connecttimeout` is the maximum
-time in seconds that you allow the connection to the server to take. These two are always available, while `timeout_ms` ond
-`connecttimeout_ms` accept milliseconds but only an option when curl is build with `c-ares`, it will use `timeout` or `connecttimeout` otherwise.
+and [`connecttimeout`](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUT).
+`timeout` is the time limit for the entire request in seconds.
+`connecttimeout` is the time limit for just the connection phase, again in seconds.
+**These options are integers you can't use the for timeouts of less than a second!**
+
+There are two additional more fine grained opptions `timeout_ms` and
+`connecttimeout_ms`. These options offer millisecond precision but are only available if curl was compiled with
+an async resolver. If specified they take presedence over the regular options if both are specified.
+Before using them you should check for their availability:
+
+```ruby
+if Ethon::Easy.new.supports_timeout_ms?
+  Typhoeus.get("www.example.com", timeout_ms: 100).timed_out?
+else
+  Typhoeus.get("www.example.com", timeout: 100).timed_out?
+```
+
+**Do not specify `timeout_ms` or `connecttimeout_ms` unless it is supported** or you run into
+undefined curl behavior. Typhoeus will currently show a warning when you do this, in the future it
+will throw an exception!
 
 ### Following Redirections
 
