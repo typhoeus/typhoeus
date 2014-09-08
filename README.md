@@ -200,7 +200,7 @@ responses = requests.map { |request|
   request.response.body
 }
 ```
-`hydra.run` is a blocking request. You can also use the `on_complete` callback for to handle response as it completes:
+`hydra.run` is a blocking request. You can also use the `on_complete` callback to handle each request as it completes:
 
 ```ruby
 hydra = Typhoeus::Hydra.new
