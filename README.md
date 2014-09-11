@@ -176,7 +176,7 @@ first_request.on_complete do |response|
   third_request = Typhoeus::Request.new(third_url)
   hydra.queue third_request
 end
-second_request = Typhoeus::Request.new("http://localhost:3000/users/1.json")
+second_request = Typhoeus::Request.new("http://example.com/users/1")
 
 hydra.queue first_request
 hydra.queue second_request
@@ -206,10 +206,10 @@ responses = requests.map { |request|
 hydra = Typhoeus::Hydra.new
 10.times.map { 
   request = Typhoeus::Request.new("www.example.com", followlocation: true)
+  hydra.queue(request)
   request.on_complete do |response|
     #do_something_with response
   end
-  hydra.queue(request) 
 }
 hydra.run
 ```
