@@ -204,13 +204,13 @@ responses = requests.map { |request|
 
 ```ruby
 hydra = Typhoeus::Hydra.new
-10.times.map { 
+10.times do 
   request = Typhoeus::Request.new("www.example.com", followlocation: true)
-  hydra.queue(request) 
   request.on_complete do |response|
     #do_something_with response
   end
-}
+  hydra.queue(request)
+end
 hydra.run
 ```
 
