@@ -172,7 +172,7 @@ hydra = Typhoeus::Hydra.hydra
 
 first_request = Typhoeus::Request.new("http://example.com/posts/1")
 first_request.on_complete do |response|
-  # third_url = code_to_parse response.body
+  third_url = response.body
   third_request = Typhoeus::Request.new(third_url)
   hydra.queue third_request
 end
