@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Typhoeus::Hydra::Before do
+describe Typhoeus::Hydra do
   let(:request) { Typhoeus::Request.new("") }
   let(:hydra) { Typhoeus::Hydra.new }
 
