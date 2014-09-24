@@ -39,13 +39,6 @@ module Typhoeus
   # @note Callbacks are going to delay the request
   #   execution.
   class Hydra
-    include Hydra::Addable
-    include Hydra::Runnable
-    include Hydra::Memoizable
-    include Hydra::Cacheable
-    include Hydra::BlockConnection
-    include Hydra::Stubbable
-    include Hydra::Before
     include Hydra::Queueable
 
     # @example Set max_concurrency.
@@ -66,6 +59,69 @@ module Typhoeus
       def hydra
         Thread.current[:typhoeus_hydra] ||= new
       end
+    end
+
+    # Return the memory.
+    #
+    # @example Return the memory.
+    #   hydra.memory
+    #
+    # @return [ Hash ] The memory.
+    def memory
+      @memory ||= {}
+    end
+
+    # Adds request to multi.
+    #
+    # @example Add request.
+    #   hydra.add(request)
+    #
+    # @param [ Typhoeus::Request ] request to add.
+    #
+    # @return [ void ]
+    def add(request)
+      if (Config.exclude_features.nil? || !Config.exclude_features.include?(:before))
+        Typhoeus.before.each do |callback|
+          value = callback.call(request)
+          if value.nil? || value == false || value.is_a?(Response)
+            dequeue
+            return value
+          end
+        end
+      end
+      if response = Expectation.response_for(request)
+        request.finish(response)
+      else
+        if request.blocked?
+          raise Typhoeus::Errors::NoStub.new(request)
+        else
+          if request.cacheable? && response = Typhoeus::Config.cache.get(request)
+            response.cached = true
+            request.finish(response)
+            dequeue
+          else
+            if request.memoizable? && memory.has_key?(request)
+              response = memory[request]
+              request.finish(response, true)
+              dequeue
+            else
+              multi.add(EasyFactory.new(request, self).get)
+            end
+          end
+        end
+      end
+    end
+
+    # Start the hydra run.
+    #
+    # @example Start hydra run.
+    #   hydra.run
+    #
+    # @return [ Symbol ] Return value from multi.perform.
+    def run
+      dequeue_many
+      multi.perform
+      memory.clear
     end
 
     # Create a new hydra. All

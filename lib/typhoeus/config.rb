@@ -51,5 +51,7 @@ module Typhoeus
     # @see Typhoeus::Hydra::Cacheable
     # @see Typhoeus::Request::Cacheable
     attr_accessor :cache
+
+    attr_accessor :exclude_features
   end
 end
