@@ -64,15 +64,39 @@ module Typhoeus
     private
 
     def sanitize(options)
-      sanitized = {}
+      # set nosignal to true by default
+      # this improves thread safety and timeout behavior
+      sanitized = {nosignal: true}
       request.options.each do |k,v|
-        next if [:method, :cache_ttl].include?(k.to_sym)
+        s = k.to_sym
+        next if [:method, :cache_ttl].include?(s)
         if new_option = renamed_options[k.to_sym]
           warn("Deprecated option #{k}. Please use #{new_option} instead.")
           sanitized[new_option] = v
+        # sanitize timeouts
+        elsif [:timeout_ms, :connecttimeout_ms].include?(s)
+          if !v.integer?
+            warn("Value '#{v}' for option '#{k}' must be integer.")
+          end
+          sanitized[k] = v.ceil
         else
           sanitized[k] = v
         end
+      end
+
+      # handle non whole number timeouts
+      if sanitized[:timeout] && sanitized[:timeout].round != sanitized[:timeout]
+        if !sanitized[:timeout_ms]
+          sanitized[:timeout_ms] = (sanitized[:timeout]*1000).ceil
+        end
+        sanitized[:timeout] = sanitized[:timeout].ceil
+      end
+
+      if sanitized[:connecttimeout] && sanitized[:connecttimeout].round != sanitized[:connecttimeout]
+        if !sanitized[:connecttimeout_ms]
+          sanitized[:connecttimeout_ms] = (sanitized[:connecttimeout]*1000).ceil
+        end
+        sanitized[:connecttimeout] = sanitized[:connecttimeout].ceil
       end
       sanitized
     end
