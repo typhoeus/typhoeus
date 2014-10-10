@@ -18,38 +18,38 @@ describe Typhoeus::EasyFactory do
     
     context "timeouts" do
       it "sets nosignal to true by default" do
-        expect(easy_factory.easy).to receive(:http_request).with(anything(), anything(), hash_including(nosignal: true))
+        expect(easy_factory.easy).to receive(:http_request).with(anything(), anything(), hash_including(:nosignal => true))
         easy_factory.get
       end
 
       context "when timeout is not a whole number and timeout_ms is not set" do
-        let(:options) { {timeout: 0.1} }
+        let(:options) { {:timeout => 0.1} }
         it "ceils timeout and sets timeout_ms" do
-          expect(easy_factory.easy).to receive(:http_request).with(anything(), anything(), hash_including(timeout_ms: 100, timeout: 1))
+          expect(easy_factory.easy).to receive(:http_request).with(anything(), anything(), hash_including(:timeout_ms => 100, :timeout => 1))
           easy_factory.get
         end
       end
 
       context "when timeout is not a whole number and timeout_ms is set" do
-        let(:options) { {timeout: 0.1, timeout_ms: 123} }
+        let(:options) { {:timeout => 0.1, :timeout_ms => 123} }
         it "ceils timeout and does not change timeout_ms" do
-          expect(easy_factory.easy).to receive(:http_request).with(anything(), anything(), hash_including(timeout_ms: 123, timeout: 1))
+          expect(easy_factory.easy).to receive(:http_request).with(anything(), anything(), hash_including(:timeout_ms => 123, :timeout => 1))
           easy_factory.get
         end
       end
 
       context "when connecttimeout is not a whole number and connecttimeout_ms is not set" do
-        let(:options) { {connecttimeout: 0.1} }
+        let(:options) { {:connecttimeout => 0.1} }
         it "ceils connecttimeout and sets connecttimeout_ms" do
-          expect(easy_factory.easy).to receive(:http_request).with(anything(), anything(), hash_including(connecttimeout_ms: 100, connecttimeout: 1))
+          expect(easy_factory.easy).to receive(:http_request).with(anything(), anything(), hash_including(:connecttimeout_ms => 100, :connecttimeout => 1))
           easy_factory.get
         end
       end
 
       context "when connecttimeout is not a whole number and connecttimeout_ms is set" do
-        let(:options) { {connecttimeout: 0.1, connecttimeout_ms: 123} }
+        let(:options) { {:connecttimeout => 0.1, :connecttimeout_ms => 123} }
         it "ceils connecttimeout and does not change connecttimeout_ms" do
-          expect(easy_factory.easy).to receive(:http_request).with(anything(), anything(), hash_including(connecttimeout_ms: 123, connecttimeout: 1))
+          expect(easy_factory.easy).to receive(:http_request).with(anything(), anything(), hash_including(:connecttimeout_ms => 123, :connecttimeout => 1))
           easy_factory.get
         end
       end
