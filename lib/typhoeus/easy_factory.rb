@@ -84,21 +84,21 @@ module Typhoeus
         end
       end
 
-      # handle non whole number timeouts
-      if sanitized[:timeout] && sanitized[:timeout].round != sanitized[:timeout]
-        if !sanitized[:timeout_ms]
-          sanitized[:timeout_ms] = (sanitized[:timeout]*1000).ceil
-        end
-        sanitized[:timeout] = sanitized[:timeout].ceil
-      end
+      sanitize_timeout!(sanitized, :timeout)
+      sanitize_timeout!(sanitized, :connecttimeout)
 
-      if sanitized[:connecttimeout] && sanitized[:connecttimeout].round != sanitized[:connecttimeout]
-        if !sanitized[:connecttimeout_ms]
-          sanitized[:connecttimeout_ms] = (sanitized[:connecttimeout]*1000).ceil
-        end
-        sanitized[:connecttimeout] = sanitized[:connecttimeout].ceil
-      end
       sanitized
+    end
+
+    def sanitize_timeout!(options, timeout)
+      timeout_ms = (timeout.to_s + '_ms').to_sym
+      if options[timeout] && options[timeout].round != options[timeout]
+        if !options[timeout_ms]
+          options[timeout_ms] = (options[timeout]*1000).ceil
+        end
+        options[timeout] = options[timeout].ceil
+      end
+      options
     end
 
     # Sets on_complete callback on easy in order to be able to
