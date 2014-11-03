@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.0.pre1
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.9...v0.7.0.pre1)
+
+Enhancements:
+
+* Improving timeout behavior and documentation. `no_signal` is now set per default!
+  ([Jonas Wagner](https://github.com/jwagner), [\#398](https://github.com/typhoeus/typhoeus/pull/398)
+
 ## 0.6.8
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.7...v0.6.8)
