@@ -2,9 +2,19 @@ require 'spec_helper'
 
 describe Typhoeus::Hydra do
   let(:base_url) { "localhost:3001" }
-  let(:hydra) { Typhoeus::Hydra.new() }
+  let(:hydra) { Typhoeus::Hydra.new(max_concurrency: 10) }
   let(:request) { Typhoeus::Request.new(base_url, {:method => :get}) }
   let(:cache) { MemoryCache.new }
+
+  describe "when thousands of reqeusts queued" do
+    before { Typhoeus::Config.cache = cache }
+    after { Typhoeus::Config.cache = false }
+
+    it "works" do
+      6000.times { hydra.queue(Typhoeus::Request.new("localhost:3001")) }
+      hydra.run
+    end
+  end
 
   describe "add" do
     context "when cache activated" do
