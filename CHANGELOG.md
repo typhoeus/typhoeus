@@ -7,7 +7,7 @@
 Enhancements:
 
 * Improving timeout behavior and documentation. `no_signal` is now set per default!
-  ([Jonas Wagner](https://github.com/jwagner), [\#398](https://github.com/typhoeus/typhoeus/pull/398)
+  ([Jonas Wagner](https://github.com/jwagner), [\#398](https://github.com/typhoeus/typhoeus/pull/398))
 
 ## 0.6.8
 
@@ -16,7 +16,7 @@ Enhancements:
 Bugfixes:
 
 * Fix Faraday 0.9 compatibility.
-  ([Gleb Mazovetskiy](https://github.com/glebm), [\#357](https://github.com/typhoeus/typhoeus/pull/357)
+  ([Gleb Mazovetskiy](https://github.com/glebm), [\#357](https://github.com/typhoeus/typhoeus/pull/357))
 * Fix Request#hash for different key orders.
   ([Matthew Schulkind](https://github.com/mschulkind), [\#344](https://github.com/typhoeus/typhoeus/pull/344))
 
