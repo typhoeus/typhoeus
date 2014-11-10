@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Typhoeus::Hydra::Cacheable do
+describe Typhoeus::Hydra do
   let(:base_url) { "localhost:3001" }
   let(:hydra) { Typhoeus::Hydra.new() }
   let(:request) { Typhoeus::Request.new(base_url, {:method => :get}) }
