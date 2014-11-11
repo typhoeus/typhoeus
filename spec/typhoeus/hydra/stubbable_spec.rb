@@ -14,6 +14,26 @@ describe Typhoeus::Hydra::Stubbable do
     end
 
     context "when expectation found" do
+      it "calls on_headers callbacks" do
+        canary = :not_called
+        request.on_headers do
+          canary = :called
+        end
+        hydra.add(request)
+        hydra.run
+        expect(canary).to eq(:called)
+      end
+
+      it "calls on_body callbacks" do
+        canary = :not_called
+        request.on_body do
+          canary = :called
+        end
+        hydra.add(request)
+        hydra.run
+        expect(canary).to eq(:called)
+      end
+
       it "finishes response" do
         expect(request).to receive(:finish)
         hydra.add(request)

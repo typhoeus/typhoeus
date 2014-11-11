@@ -18,6 +18,8 @@ module Typhoeus
       # @return [ Response ] The response.
       def run
         if response = Expectation.response_for(self)
+          execute_headers_callbacks(response)
+          self.on_body.each{ |callback| callback.call(response.body, response) }
           finish(response)
         else
           super
