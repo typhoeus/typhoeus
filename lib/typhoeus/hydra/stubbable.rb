@@ -16,6 +16,8 @@ module Typhoeus
       #   hydra.add(request)
       def add(request)
         if response = Expectation.response_for(request)
+          request.execute_headers_callbacks(response)
+          request.on_body.each{ |callback| callback.call(response.body, response) }
           request.finish(response)
         else
           super

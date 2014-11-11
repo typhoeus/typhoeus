@@ -13,6 +13,24 @@ describe Typhoeus::Request::Stubbable do
     end
 
     context "when expectation found" do
+      it "calls on_headers callbacks" do
+        canary = :not_called
+        request.on_headers do
+          canary = :called
+        end
+        request.run
+        expect(canary).to eq(:called)
+      end
+
+      it "calls on_body callbacks" do
+        canary = :not_called
+        request.on_body do
+          canary = :called
+        end
+        request.run
+        expect(canary).to eq(:called)
+      end
+
       it "finishes request" do
         expect(request).to receive(:finish)
         request.run
