@@ -110,7 +110,7 @@ module Typhoeus
       # until the SSL/SSH connect/handshake to the remote
       # host was completed. This time is most often very near
       # to the pre transfer time, except for cases such as HTTP
-      # pippelining where the pretransfer time can be delayed
+      # pipelining where the pretransfer time can be delayed
       # due to waits in line for the pipeline and more.
       #
       # @example Get appconnect_time.
