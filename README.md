@@ -149,7 +149,7 @@ Typhoeus will not store the complete response.
 downloaded_file = File.open 'huge.iso', 'wb'
 request = Typhoeus::Request.new("www.example.com/huge.iso")
 request.on_headers do |response|
-  if ! response.success?
+  if request.code != 200
     raise "Request failed"
   end
 end
@@ -189,9 +189,9 @@ How to get an array of response bodies back after executing a queue:
 
 ```ruby
 hydra = Typhoeus::Hydra.new
-requests = 10.times.map { 
+requests = 10.times.map {
   request = Typhoeus::Request.new("www.example.com", followlocation: true)
-  hydra.queue(request) 
+  hydra.queue(request)
   request
 }
 hydra.run
@@ -204,7 +204,7 @@ responses = requests.map { |request|
 
 ```ruby
 hydra = Typhoeus::Hydra.new
-10.times do 
+10.times do
   request = Typhoeus::Request.new("www.example.com", followlocation: true)
   request.on_complete do |response|
     #do_something_with response
