@@ -149,7 +149,7 @@ Typhoeus will not store the complete response.
 downloaded_file = File.open 'huge.iso', 'wb'
 request = Typhoeus::Request.new("www.example.com/huge.iso")
 request.on_headers do |response|
-  if request.code != 200
+  if response.code != 200
     raise "Request failed"
   end
 end
