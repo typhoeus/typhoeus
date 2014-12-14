@@ -86,8 +86,10 @@ Typhoeus has some convenience methods for performing single HTTP requests. The a
 Typhoeus.get("www.example.com")
 Typhoeus.head("www.example.com")
 Typhoeus.put("www.example.com/posts/1", body: "whoo, a body")
+Typhoeus.patch("www.example.com/posts/1", body: "a new body")
 Typhoeus.post("www.example.com/posts", body: { title: "test post", content: "this is my test"})
 Typhoeus.delete("www.example.com/posts/1")
+Typhoeus.options("www.example.com")
 ```
 
 ### Handling HTTP errors
