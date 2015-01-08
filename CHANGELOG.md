@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.0
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.0.pre1...v0.7.0)
+
+Bugfixes:
+
+* Call on_headers and on_body when using stubbed responses.
+
 ## 0.7.0.pre1
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.9...v0.7.0.pre1)
