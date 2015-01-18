@@ -2,7 +2,6 @@ module Typhoeus
   class Request
 
     # This module contains the logic for the response callbacks.
-    # The on_complete callback is the only one at the moment.
     #
     # You can set multiple callbacks, which are then executed
     # in the same order.
