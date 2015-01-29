@@ -9,6 +9,7 @@ module Typhoeus
   # @api private
   module Pool
     @mutex = Mutex.new
+    @pid = Process.pid
 
     # Releases easy into the pool. The easy handle is
     # reset before it gets back in.
@@ -27,7 +28,17 @@ module Typhoeus
     #
     # @return [ Ethon::Easy ] The easy.
     def self.get
-      @mutex.synchronize { easies.pop } || Ethon::Easy.new
+      @mutex.synchronize do
+        if @pid == Process.pid
+          easies.pop
+        else
+          # Process has forked. Clear all easies to avoid sockets being
+          # shared between processes.
+          @pid = Process.pid
+          easies.clear
+          nil
+        end
+      end || Ethon::Easy.new
     end
 
     # Clear the pool
