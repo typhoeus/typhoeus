@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.1
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.0...v0.7.1)
+
+Bugfixes:
+
+* Forking may cause libcurl sockets to be shared with child processes, causing HTTP requests to be interleaved
+  ([Rolf Timmermans](https://github.com/rolftimmermans), [\#436](https://github.com/typhoeus/typhoeus/pull/426))
+
 ## 0.7.0
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.0.pre1...v0.7.0)
