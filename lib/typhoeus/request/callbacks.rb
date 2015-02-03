@@ -18,7 +18,7 @@ module Typhoeus
     #   request.on_complete { |response| p 2 }
     #   request.on_complete.clear
     #   request.execute_callbacks
-    #   #=> []
+    #   #=> nil
     #
     # @note If you're using the Hydra to execute multiple
     #   requests, then callbacks are delaying the
@@ -124,7 +124,7 @@ module Typhoeus
           callbacks += Typhoeus.on_failure + on_failure
         end
 
-        callbacks.map do |callback|
+        callbacks.each do |callback|
           self.response.handled_response = callback.call(self.response)
         end
       end
