@@ -159,16 +159,16 @@ describe Faraday::Adapter::Typhoeus do
     before { adapter.method(:configure_proxy).call(request, env) }
 
     context "when proxy" do
-      let(:env) { { :request => { :proxy => { :uri => double(:host => "localhost", :port => "3001") } } } }
+      let(:env) { { :request => { :proxy => { :uri => double(:scheme => 'http', :host => "localhost", :port => "3001") } } } }
 
       it "sets proxy" do
-        expect(request.options[:proxy]).to eq("localhost:3001")
+        expect(request.options[:proxy]).to eq("http://localhost:3001")
       end
 
       context "when username and password" do
         let(:env) do
           { :request => { :proxy => {
-            :uri => double(:host => :a, :port => :b),
+            :uri => double(:scheme => 'http', :host => :a, :port => :b),
             :user => "a",
             :password => "b"
           } } }
