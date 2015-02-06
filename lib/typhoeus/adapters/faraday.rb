@@ -128,7 +128,7 @@ module Faraday # :nodoc:
         proxy = env[:request][:proxy]
         return unless proxy
 
-        req.options[:proxy] = "#{proxy[:uri].host}:#{proxy[:uri].port}"
+        req.options[:proxy] = "#{proxy[:uri].scheme}://#{proxy[:uri].host}:#{proxy[:uri].port}"
 
         if proxy[:user] && proxy[:password]
           req.options[:proxyuserpwd] = "#{proxy[:user]}:#{proxy[:password]}"
