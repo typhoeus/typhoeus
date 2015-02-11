@@ -92,7 +92,14 @@ Typhoeus.delete("www.example.com/posts/1")
 Typhoeus.options("www.example.com")
 ```
 #### Sending params with PUT
-You must specify the Content-Type as application/x-www-form-urlencoded if you'd like to send paramaters with PUT. When using POST x-www-form-urlencoded is the default, but not when using PUT.
+You must specify the Content-Type in the headers as application/x-www-form-urlencoded if you'd like to send paramaters with PUT. When using POST x-www-form-urlencoded is the default, but not when using PUT.
+e.g
+```ruby
+Typhoeus.put("www.example.com/posts/1",
+        headers: {'Content-Type'=> "application/x-www-form-urlencoded"},
+        body: {name:"Test", text: "Example text"}
+    )
+```
 
 ### Handling HTTP errors
 
