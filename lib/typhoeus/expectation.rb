@@ -205,7 +205,7 @@ module Typhoeus
       when String
         base_url == request_url
       when Regexp
-        !!request_url.match(base_url)
+        base_url === request_url
       when nil
         true
       else
