@@ -91,9 +91,8 @@ Typhoeus.post("www.example.com/posts", body: { title: "test post", content: "thi
 Typhoeus.delete("www.example.com/posts/1")
 Typhoeus.options("www.example.com")
 ```
-#### Sending params with PUT
-You must specify the Content-Type in the headers as application/x-www-form-urlencoded if you'd like to send paramaters with PUT. When using POST x-www-form-urlencoded is the default, but not when using PUT.
-e.g
+#### Sending params in the body with PUT
+When using POST the content-type is set automatically to 'application/x-www-form-urlencoded'. Thats not the case for any other method like PUT, PATCH, HEAD and so on,  irrespective of whether you are using body or not. To get the same result as POST, i.e. a hash in the body coming through as params in the receiver, you need to set the content-type as shown below:
 ```ruby
 Typhoeus.put("www.example.com/posts/1",
         headers: {'Content-Type'=> "application/x-www-form-urlencoded"},
