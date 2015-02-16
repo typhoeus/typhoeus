@@ -201,6 +201,14 @@ describe Typhoeus::Expectation do
         it "returns false" do
           expect(url_match).to be_falsey
         end
+
+        context "with nil request_url" do
+          let(:request_url) { nil }
+
+          it "returns false" do
+            expect(url_match).to be_falsey
+          end
+        end
       end
     end
 
