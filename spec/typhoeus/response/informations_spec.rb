@@ -152,6 +152,14 @@ describe Typhoeus::Response::Informations do
     end
   end
 
+  describe "#redirect_time" do
+    let(:options) { { :redirect_time =>  1 } }
+
+    it "returns redirect_time from options" do
+      expect(response.redirect_time).to eq(1)
+    end
+  end
+
   describe "#effective_url" do
     let(:options) { { :effective_url => "http://www.example.com" } }
 
