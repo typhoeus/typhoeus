@@ -5,8 +5,6 @@ describe Typhoeus::Request::Marshal do
   let(:request) { Typhoeus::Request.new(base_url) }
 
   describe "#marshal_dump" do
-    let(:base_url) { "http://www.google.com" }
-
     %w(on_complete on_success on_failure).each do |name|
       context "when #{name} handler" do
         before { request.instance_variable_set("@#{name}", Proc.new{}) }
