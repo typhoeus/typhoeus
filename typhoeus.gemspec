@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   s.license = 'MIT'
 
-  s.add_dependency('ethon', [">= 0.7.2"])
+  s.add_dependency('ethon', [">= 0.7.3"])
 
   s.files        = `git ls-files`.split("\n")
   s.test_files   = `git ls-files -- spec/*`.split("\n")
