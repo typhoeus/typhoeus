@@ -1,5 +1,12 @@
 # Changelog
 
+## Master
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.1...master)
+
+* Added getter for `redirect_time` value.
+  ([Adrien Jarthon](https://github.com/jarthod))
+
 ## 0.7.1
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.0...v0.7.1)

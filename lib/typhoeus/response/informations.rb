@@ -160,6 +160,19 @@ module Typhoeus
       end
       alias :name_lookup_time :namelookup_time
 
+      # Return the time, in seconds, it took for all redirection steps
+      # include name lookup, connect, pretransfer and transfer before the
+      # final transaction was started. time_redirect shows the complete
+      # execution time for multiple redirections.
+      #
+      # @example Get redirect_time.
+      #   response.redirect_time
+      #
+      # @return [ Float ] The redirect_time.
+      def redirect_time
+        options[:redirect_time]
+      end
+
       # Return the last used effective url.
       #
       # @example Get effective_url.
