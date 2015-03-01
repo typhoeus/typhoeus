@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Typhoeus::Hydra do
   let(:base_url) { "localhost:3001" }
-  let(:hydra) { Typhoeus::Hydra.new(max_concurrency: 10) }
+  let(:hydra) { Typhoeus::Hydra.new(:max_concurrency => 10) }
   let(:request) { Typhoeus::Request.new(base_url, {:method => :get}) }
   let(:cache) { MemoryCache.new }
 
