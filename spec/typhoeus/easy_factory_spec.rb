@@ -88,7 +88,7 @@ describe Typhoeus::EasyFactory do
 
     it "adds next request" do
       easy_factory.hydra.instance_variable_set(:@queued_requests, [request])
-      expect(easy_factory.hydra).to receive(:add).with(request)
+      expect(easy_factory.hydra).to receive(:add).with(request, false)
       easy_factory.send(:set_callback)
       easy_factory.easy.complete
     end

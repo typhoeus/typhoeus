@@ -74,7 +74,7 @@ module Typhoeus
       def dequeue_many
         @number ||= 0
         until @number >= max_concurrency || queued_requests.empty?
-          add(queued_requests.shift)
+          add(queued_requests.shift, false)
           @number += 1
         end
         @number = 0

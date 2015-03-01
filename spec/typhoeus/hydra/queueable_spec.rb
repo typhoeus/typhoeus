@@ -21,8 +21,8 @@ describe Typhoeus::Hydra::Queueable do
       hydra.queue(request)
       expect(hydra.queued_requests).to include(request)
     end
-    
-    it "adds to front of queued requests" do 
+
+    it "adds to front of queued requests" do
       hydra.queue_front(request)
       expect(hydra.queued_requests.first).to be(request)
     end
@@ -56,7 +56,7 @@ describe Typhoeus::Hydra::Queueable do
       let(:requests) { [first] }
 
       it "adds request from queue to multi" do
-        expect(hydra).to receive(:add).with(first)
+        expect(hydra).to receive(:add).with(first, false)
         hydra.dequeue_many
       end
     end
@@ -68,18 +68,18 @@ describe Typhoeus::Hydra::Queueable do
       let(:requests) { [first, second, third] }
 
       it "adds requests from queue to multi" do
-        expect(hydra).to receive(:add).with(first)
-        expect(hydra).to receive(:add).with(second)
-        expect(hydra).to receive(:add).with(third)
+        expect(hydra).to receive(:add).with(first, false)
+        expect(hydra).to receive(:add).with(second, false)
+        expect(hydra).to receive(:add).with(third, false)
         hydra.dequeue_many
       end
 
       context "when max_concurrency is two" do
         let(:options) { {:max_concurrency => 2} }
         it "adds requests from queue to multi" do
-          expect(hydra).to receive(:add).with(first)
-          expect(hydra).to receive(:add).with(second)
-          expect(hydra).to_not receive(:add).with(third)
+          expect(hydra).to receive(:add).with(first, false)
+          expect(hydra).to receive(:add).with(second, false)
+          expect(hydra).to_not receive(:add).with(third, false)
           hydra.dequeue_many
         end
       end

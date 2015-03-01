@@ -72,16 +72,17 @@ module Typhoeus
     # @param [ Typhoeus::Request ] request to add.
     #
     # @return [ void ]
-    def add(request)
+    def add(request, should_dequeue=true)
       if (Config.exclude_features.nil? || !Config.exclude_features.include?(:before))
         Typhoeus.before.each do |callback|
           value = callback.call(request)
           if value.nil? || value == false || value.is_a?(Response)
-            dequeue
+            dequeue if should_dequeue
             return value
           end
         end
       end
+
       if response = Expectation.response_for(request)
         return request.finish(response)
       end
@@ -93,13 +94,17 @@ module Typhoeus
       if request.cacheable? && response = Typhoeus::Config.cache.get(request)
         response.cached = true
         request.finish(response)
-        return dequeue
+        if should_dequeue
+          return dequeue
+        else
+          return nil
+        end
       end
 
       if request.memoizable? && memory.has_key?(request)
         response = memory[request]
         request.finish(response, true)
-        dequeue
+        dequeue if should_dequeue
       else
         multi.add(EasyFactory.new(request, self).get)
       end
