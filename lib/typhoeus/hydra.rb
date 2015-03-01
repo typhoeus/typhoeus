@@ -83,25 +83,25 @@ module Typhoeus
         end
       end
       if response = Expectation.response_for(request)
+        return request.finish(response)
+      end
+
+      if request.blocked?
+        raise Typhoeus::Errors::NoStub.new(request)
+      end
+
+      if request.cacheable? && response = Typhoeus::Config.cache.get(request)
+        response.cached = true
         request.finish(response)
+        return dequeue
+      end
+
+      if request.memoizable? && memory.has_key?(request)
+        response = memory[request]
+        request.finish(response, true)
+        dequeue
       else
-        if request.blocked?
-          raise Typhoeus::Errors::NoStub.new(request)
-        else
-          if request.cacheable? && response = Typhoeus::Config.cache.get(request)
-            response.cached = true
-            request.finish(response)
-            dequeue
-          else
-            if request.memoizable? && memory.has_key?(request)
-              response = memory[request]
-              request.finish(response, true)
-              dequeue
-            else
-              multi.add(EasyFactory.new(request, self).get)
-            end
-          end
-        end
+        multi.add(EasyFactory.new(request, self).get)
       end
     end
 
