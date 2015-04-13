@@ -56,7 +56,7 @@ When you want to send URL parameters, you can use `:params` hash to do so. Pleas
 
 #### Sending requests through the proxy
 
-HTTP proxies are used by default. To use them add proxy url to the list of options:
+Add a proxy url to the list of options:
 
 ```ruby
 options = {proxy: 'http://myproxy.org'}
