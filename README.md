@@ -54,6 +54,24 @@ The options are all optional. The default for `:method` is `:get`.
 
 When you want to send URL parameters, you can use `:params` hash to do so. Please note that in case of you should send a request via `x-www-form-urlencoded` parameters, you need to use `:body` hash instead. `params` are for URL parameters and `:body` is for the request body.
 
+#### Sending requests through the proxy
+
+Add a proxy url to the list of options:
+
+```ruby
+options = {proxy: 'http://myproxy.org'}
+req = Typhoeus::Request.new(url, options)
+```
+
+If your proxy requires authentication, add it with `proxyuserpwd` option key:
+
+```ruby
+options = {proxy: 'http://proxyurl.com', proxyuserpwd: 'user:password'}
+req = Typhoeus::Request.new(url, options)
+```
+
+Note that `proxyuserpwd` is a colon-separated username and password, in the vein of basic auth `userpwd` option.
+
 
 You can run the query either on its own or through the hydra:
 
