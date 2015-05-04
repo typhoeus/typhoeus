@@ -2,7 +2,7 @@
 
 Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.
 
-# Tyhoeus needs your help!
+# Typhoeus needs your help!
 
 I don't have enough time, but I think this is a nice project! If you or your company is using Typhoeus you should help keeping it alive! Pick any of:
 
