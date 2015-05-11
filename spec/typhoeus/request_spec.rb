@@ -190,4 +190,10 @@ describe Typhoeus::Request do
       expect(request.encoded_body).to eq("a=1")
     end
   end
+
+  describe "#to_s" do
+    it 'includes the url' do
+      expect(request.to_s).to include(base_url)
+    end
+  end
 end
