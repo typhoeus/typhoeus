@@ -88,7 +88,6 @@ describe Typhoeus::Expectation do
 
     context "when array" do
       it "adds to responses" do
-        skip
         expectation.and_return([1, 2])
         expect(expectation.responses).to eq([1, 2])
       end
