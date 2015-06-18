@@ -4,6 +4,9 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.1...master)
 
+* Allow arrays to be passed to Expectation#and_return
+  ([JP Moral](https://github.com/jpmoral))
+
 * Added getter for `redirect_time` value.
   ([Adrien Jarthon](https://github.com/jarthod))
 

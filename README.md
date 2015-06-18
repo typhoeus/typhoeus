@@ -373,6 +373,15 @@ Typhoeus.get("www.example.com") == response
 #=> true
 ```
 
+You may also specify an array for the stub to return sequentially.
+
+```ruby
+Typhoeus.stub('www.example.com').and_return([response1, response2])
+
+Typhoeus.get('www.example.com') == response1 #=> true
+Typhoeus.get('www.example.com') == response2 #=> true
+```
+
 When testing make sure to clear your expectations or the stubs will persist between tests. The following can be included in your spec_helper.rb file to do this automatically.
 
 ```ruby
