@@ -2,7 +2,11 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.1...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.2...master)
+
+## 0.7.2
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.1...v0.7.2)
 
 * Allow arrays to be passed to Expectation#and_return
   ([JP Moral](https://github.com/jpmoral))
