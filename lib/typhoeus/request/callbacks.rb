@@ -2,7 +2,6 @@ module Typhoeus
   class Request
 
     # This module contains the logic for the response callbacks.
-    # The on_complete callback is the only one at the moment.
     #
     # You can set multiple callbacks, which are then executed
     # in the same order.
@@ -19,7 +18,7 @@ module Typhoeus
     #   request.on_complete { |response| p 2 }
     #   request.on_complete.clear
     #   request.execute_callbacks
-    #   #=> []
+    #   #=> nil
     #
     # @note If you're using the Hydra to execute multiple
     #   requests, then callbacks are delaying the
@@ -125,7 +124,7 @@ module Typhoeus
           callbacks += Typhoeus.on_failure + on_failure
         end
 
-        callbacks.map do |callback|
+        callbacks.each do |callback|
           self.response.handled_response = callback.call(self.response)
         end
       end

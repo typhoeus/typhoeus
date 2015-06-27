@@ -1,5 +1,45 @@
 # Changelog
 
+## Master
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.2...master)
+
+## 0.7.2
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.1...v0.7.2)
+
+* Allow arrays to be passed to Expectation#and_return
+  ([JP Moral](https://github.com/jpmoral))
+
+* Added getter for `redirect_time` value.
+  ([Adrien Jarthon](https://github.com/jarthod))
+
+## 0.7.1
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.0...v0.7.1)
+
+Bugfixes:
+
+* Forking may cause libcurl sockets to be shared with child processes, causing HTTP requests to be interleaved
+  ([Rolf Timmermans](https://github.com/rolftimmermans), [\#436](https://github.com/typhoeus/typhoeus/pull/426))
+
+## 0.7.0
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.0.pre1...v0.7.0)
+
+Bugfixes:
+
+* Call on_headers and on_body when using stubbed responses.
+
+## 0.7.0.pre1
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.9...v0.7.0.pre1)
+
+Enhancements:
+
+* Improving timeout behavior and documentation. `no_signal` is now set per default!
+  ([Jonas Wagner](https://github.com/jwagner), [\#398](https://github.com/typhoeus/typhoeus/pull/398))
+
 ## 0.6.8
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.6.7...v0.6.8)
@@ -7,7 +47,7 @@
 Bugfixes:
 
 * Fix Faraday 0.9 compatibility.
-  ([Gleb Mazovetskiy](https://github.com/glebm), [\#357](https://github.com/typhoeus/typhoeus/pull/357)
+  ([Gleb Mazovetskiy](https://github.com/glebm), [\#357](https://github.com/typhoeus/typhoeus/pull/357))
 * Fix Request#hash for different key orders.
   ([Matthew Schulkind](https://github.com/mschulkind), [\#344](https://github.com/typhoeus/typhoeus/pull/344))
 
