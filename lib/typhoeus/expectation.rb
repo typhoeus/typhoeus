@@ -136,7 +136,8 @@ module Typhoeus
     #
     # @return [ void ]
     def and_return(response=nil, &block)
-      responses << (response.nil? ? block : response)
+      new_response = (response.nil? ? block : response)
+      responses.push *new_response
     end
 
     # Checks whether this expectation matches
@@ -205,7 +206,7 @@ module Typhoeus
       when String
         base_url == request_url
       when Regexp
-        !!request_url.match(base_url)
+        base_url === request_url
       when nil
         true
       else

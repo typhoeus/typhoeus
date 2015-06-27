@@ -59,6 +59,23 @@ describe Typhoeus::Pool do
         end
       end
     end
+
+    context "when forked" do
+      before do
+        allow(Process).to receive(:pid).and_return(1)
+        Typhoeus::Pool.send(:easies) << easy
+        allow(Process).to receive(:pid).and_return(2)
+      end
+
+      after do
+        allow(Process).to receive(:pid).and_call_original
+        Typhoeus::Pool.instance_variable_set(:@pid, Process.pid)
+      end
+
+      it "creates" do
+        expect(Typhoeus::Pool.get).to_not eq(easy)
+      end
+    end
   end
 
   describe "#with" do

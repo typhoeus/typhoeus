@@ -2,6 +2,16 @@
 
 Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.
 
+# Typhoeus needs your help!
+
+I don't have enough time, but I think this is a nice project! If you or your company is using Typhoeus you should help keeping it alive! Pick any of:
+
+* add docs
+* respond to issues
+* add features
+
+Or send me an email! I would be more than happy to help getting you up to speed!
+
 ## Example
 
 A single request:
@@ -54,6 +64,24 @@ The options are all optional. The default for `:method` is `:get`.
 
 When you want to send URL parameters, you can use `:params` hash to do so. Please note that in case of you should send a request via `x-www-form-urlencoded` parameters, you need to use `:body` hash instead. `params` are for URL parameters and `:body` is for the request body.
 
+#### Sending requests through the proxy
+
+Add a proxy url to the list of options:
+
+```ruby
+options = {proxy: 'http://myproxy.org'}
+req = Typhoeus::Request.new(url, options)
+```
+
+If your proxy requires authentication, add it with `proxyuserpwd` option key:
+
+```ruby
+options = {proxy: 'http://proxyurl.com', proxyuserpwd: 'user:password'}
+req = Typhoeus::Request.new(url, options)
+```
+
+Note that `proxyuserpwd` is a colon-separated username and password, in the vein of basic auth `userpwd` option.
+
 
 You can run the query either on its own or through the hydra:
 
@@ -86,8 +114,18 @@ Typhoeus has some convenience methods for performing single HTTP requests. The a
 Typhoeus.get("www.example.com")
 Typhoeus.head("www.example.com")
 Typhoeus.put("www.example.com/posts/1", body: "whoo, a body")
+Typhoeus.patch("www.example.com/posts/1", body: "a new body")
 Typhoeus.post("www.example.com/posts", body: { title: "test post", content: "this is my test"})
 Typhoeus.delete("www.example.com/posts/1")
+Typhoeus.options("www.example.com")
+```
+#### Sending params in the body with PUT
+When using POST the content-type is set automatically to 'application/x-www-form-urlencoded'. That's not the case for any other method like PUT, PATCH, HEAD and so on,  irrespective of whether you are using body or not. To get the same result as POST, i.e. a hash in the body coming through as params in the receiver, you need to set the content-type as shown below:
+```ruby
+Typhoeus.put("www.example.com/posts/1",
+        headers: {'Content-Type'=> "application/x-www-form-urlencoded"},
+        body: {title:"test post updated title", content: "this is my updated content"}
+    )
 ```
 
 ### Handling HTTP errors
@@ -149,7 +187,7 @@ Typhoeus will not store the complete response.
 downloaded_file = File.open 'huge.iso', 'wb'
 request = Typhoeus::Request.new("www.example.com/huge.iso")
 request.on_headers do |response|
-  if ! response.success?
+  if response.code != 200
     raise "Request failed"
   end
 end
@@ -189,9 +227,9 @@ How to get an array of response bodies back after executing a queue:
 
 ```ruby
 hydra = Typhoeus::Hydra.new
-requests = 10.times.map { 
+requests = 10.times.map {
   request = Typhoeus::Request.new("www.example.com", followlocation: true)
-  hydra.queue(request) 
+  hydra.queue(request)
   request
 }
 hydra.run
@@ -204,7 +242,7 @@ responses = requests.map { |request|
 
 ```ruby
 hydra = Typhoeus::Hydra.new
-10.times do 
+10.times do
   request = Typhoeus::Request.new("www.example.com", followlocation: true)
   request.on_complete do |response|
     #do_something_with response
@@ -335,6 +373,15 @@ Typhoeus.get("www.example.com") == response
 #=> true
 ```
 
+You may also specify an array for the stub to return sequentially.
+
+```ruby
+Typhoeus.stub('www.example.com').and_return([response1, response2])
+
+Typhoeus.get('www.example.com') == response1 #=> true
+Typhoeus.get('www.example.com') == response2 #=> true
+```
+
 When testing make sure to clear your expectations or the stubs will persist between tests. The following can be included in your spec_helper.rb file to do this automatically.
 
 ```ruby
@@ -347,17 +394,27 @@ end
 
 ### Timeouts
 
-No exceptions are raised on HTTP timeouts. You can check whether a request timed out with the following methods:
+No exceptions are raised on HTTP timeouts. You can check whether a request timed out with the following method:
 
 ```ruby
-Typhoeus.get("www.example.com").timed_out?
+Typhoeus.get("www.example.com", timeout: 1).timed_out?
 ```
 
+Timed out responses also have their success? method return false.
+
 There are two different timeouts available: [`timeout`](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTTIMEOUT)
-and [`connecttimeout`](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUT). `timeout` is the
-maximum time in seconds that you allow the libcurl transfer operation to take and `connecttimeout` is the maximum
-time in seconds that you allow the connection to the server to take. These two are always available, while `timeout_ms` ond
-`connecttimeout_ms` accept milliseconds but only an option when curl is build with `c-ares`, it will use `timeout` or `connecttimeout` otherwise.
+and [`connecttimeout`](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUT).
+`timeout` is the time limit for the entire request in seconds.
+`connecttimeout` is the time limit for just the connection phase, again in seconds.
+
+There are two additional more fine grained opptions `timeout_ms` and
+`connecttimeout_ms`. These options offer millisecond precision but are not always available (for instance on linux if `nosignal` is not set to true).
+
+When you pass a floating point `timeout` (or `connecttimeout`) Typhoeus will set `timeout_ms` for you if it has not been defined. The actual timeout values passed to curl will always be rounded up.
+
+DNS timeouts of less than one second are not supported unless curl is compiled with an asynchronous resolver.
+
+The default `timeout` is 0 (zero) which means curl never times out during transfer. The default `connecttimeout` is 300 seconds. A `connecttimeout` of 0 will also result in the default `connecttimeout` of 300 seconds.
 
 ### Following Redirections
 

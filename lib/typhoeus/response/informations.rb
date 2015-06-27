@@ -110,7 +110,7 @@ module Typhoeus
       # until the SSL/SSH connect/handshake to the remote
       # host was completed. This time is most often very near
       # to the pre transfer time, except for cases such as HTTP
-      # pippelining where the pretransfer time can be delayed
+      # pipelining where the pretransfer time can be delayed
       # due to waits in line for the pipeline and more.
       #
       # @example Get appconnect_time.
@@ -159,6 +159,19 @@ module Typhoeus
         options[:namelookup_time] || options[:name_lookup_time]
       end
       alias :name_lookup_time :namelookup_time
+
+      # Return the time, in seconds, it took for all redirection steps
+      # include name lookup, connect, pretransfer and transfer before the
+      # final transaction was started. time_redirect shows the complete
+      # execution time for multiple redirections.
+      #
+      # @example Get redirect_time.
+      #   response.redirect_time
+      #
+      # @return [ Float ] The redirect_time.
+      def redirect_time
+        options[:redirect_time]
+      end
 
       # Return the last used effective url.
       #
