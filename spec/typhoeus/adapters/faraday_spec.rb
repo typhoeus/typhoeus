@@ -271,6 +271,15 @@ describe Faraday::Adapter::Typhoeus do
         expect(request.options[:ssl_verifypeer]).to be_truthy
       end
     end
+
+    context "when options specified in @adapter_options" do
+      let(:env) { {} }
+      let(:adapter) { described_class.new(nil, ssl: { client_cert_passwd: 'my secret passphrase' }) }
+
+      it "sets keypasswd to the value of client_cert_passwd" do
+        expect(request.options[:keypasswd]).to eq("my secret passphrase")
+      end
+    end
   end
 
   describe "#parallel?" do

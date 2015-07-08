@@ -48,6 +48,22 @@ module Faraday # :nodoc:
 
       dependency 'typhoeus'
 
+      # Allow configuring some adapter specific parameters
+      #
+      # @example Configure SSL client key password
+      #   Faraday.new(faraday_options) do |faraday|
+      #     faraday.adapter :typhoeus, ssl: { client_cert_passwd: 'yolo' }
+      #   end
+      #
+      # @param [ App ] app The Faraday app.
+      # @param [ Hash ] adapter_options The adapter specific options.
+      #
+      # @return [ void ]
+      def initialize(app = nil, adapter_options = {})
+        @adapter_options = adapter_options
+        super(app)
+      end
+
       # Hook into Faraday and perform the request with Typhoeus.
       #
       # @param [ Hash ] env The environment.
@@ -108,7 +124,8 @@ module Faraday # :nodoc:
       end
 
       def configure_ssl(req, env)
-        ssl = env[:ssl]
+        ssl_adapter_options = @adapter_options[:ssl] || {}
+        ssl = env[:ssl].to_hash.merge(ssl_adapter_options)
 
         verify_p = (ssl && ssl.fetch(:verify, true))
 
