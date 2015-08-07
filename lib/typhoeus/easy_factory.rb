@@ -115,8 +115,8 @@ module Typhoeus
           response = Response.new(Ethon::Easy::Mirror.from_easy(easy).options)
           request.execute_headers_callbacks(response)
         end
-        easy.on_body do |chunk, easy|
-          request.on_body.each do |callback|
+        request.on_body.each do |callback|
+          easy.on_body do |chunk, easy|
             callback.call(chunk, response)
           end
         end
