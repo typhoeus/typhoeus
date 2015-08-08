@@ -2,7 +2,13 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.2...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.3...master)
+
+## 0.7.3
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.2...v0.7.3)
+
+* Add on_body callbacks individually to allow Ethon to recognize the return code
 
 ## 0.7.2
 
