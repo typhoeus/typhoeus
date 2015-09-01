@@ -514,6 +514,9 @@ Running the specs should be as easy as:
 bundle install
 bundle exec rake
 ```
+## Semantic Versioning
+
+This project conforms to [semver](http://semver.org/).
 
 ## LICENSE
 
