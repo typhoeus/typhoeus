@@ -209,10 +209,12 @@ module Typhoeus
 
     # Sets default header and verbose when turned on.
     def set_defaults
+      default_user_agent = Config.user_agent || Typhoeus::USER_AGENT
+
       if @options[:headers]
-        @options[:headers] = {'User-Agent' => Typhoeus::USER_AGENT}.merge(options[:headers])
+        @options[:headers] = {'User-Agent' => default_user_agent}.merge(options[:headers])
       else
-        @options[:headers] = {'User-Agent' => Typhoeus::USER_AGENT}
+        @options[:headers] = {'User-Agent' => default_user_agent}
       end
       @options[:verbose] = Typhoeus::Config.verbose if @options[:verbose].nil? && !Typhoeus::Config.verbose.nil?
       @options[:maxredirs] ||= 50

@@ -506,6 +506,15 @@ Typhoeus::Config.verbose = true
 Just remember that libcurl prints it’s debug output to the console (to
 STDERR), so you’ll need to run your scripts from the console to see it.
 
+### Default User Agent Header
+
+In many cases, all HTTP requests made by an application require the same User-Agent header set. Instead of supplying it on a per-request basis by supplying a custom header, it is possible to override it for all requests using:
+
+
+```ruby
+Typhoeus::Config.user_agent = "custom user agent"
+```
+
 ### Running the specs
 
 Running the specs should be as easy as:
@@ -548,4 +557,3 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/typhoeus/typhoeus/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
