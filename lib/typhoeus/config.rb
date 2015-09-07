@@ -51,5 +51,12 @@ module Typhoeus
     # @see Typhoeus::Hydra::Cacheable
     # @see Typhoeus::Request::Cacheable
     attr_accessor :cache
+
+    # Defines whether to use a default user agent.
+    #
+    # @return [ String ]
+    #
+    # @see Typhoeus::Request#set_defaults
+    attr_accessor :user_agent
   end
 end

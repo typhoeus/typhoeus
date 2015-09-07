@@ -65,6 +65,27 @@ describe Typhoeus::Request do
       end
     end
 
+    context "when Config.user_agent set" do
+      before { Typhoeus.configure { |config| config.user_agent = "Default" } }
+      after { Typhoeus.configure { |config| config.user_agent = nil } }
+
+      context "with headers" do
+        let(:options) { {:headers => { "User-Agent" => "Fubar" } } }
+
+        it "uses the request options' user agent" do
+          expect(request.options[:headers]["User-Agent"]).to eq("Fubar")
+        end
+      end
+
+      context "without headers" do
+        let(:options) { {:headers => {} } }
+
+        it "uses the global options' user agent" do
+          expect(request.options[:headers]["User-Agent"]).to eq("Default")
+        end
+      end
+    end
+
     context "when Config.verbose set" do
       before { Typhoeus.configure { |config| config.verbose = true} }
       after { Typhoeus.configure { |config| config.verbose = false} }
