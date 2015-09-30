@@ -86,9 +86,8 @@ module Faraday # :nodoc:
 
         req.on_complete do |resp|
           if resp.timed_out?
-            if parallel?(env)
-              # TODO: error callback in async mode
-            else
+            env[:typhoeus_timed_out] = true
+            unless parallel?(env)
               raise Faraday::Error::TimeoutError, "request timed out"
             end
           end
