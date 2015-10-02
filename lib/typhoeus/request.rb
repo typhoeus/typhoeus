@@ -211,13 +211,9 @@ module Typhoeus
     def set_defaults
       default_user_agent = Config.user_agent || Typhoeus::USER_AGENT
 
-      if @options[:headers]
-        @options[:headers] = {'User-Agent' => default_user_agent}.merge(options[:headers])
-      else
-        @options[:headers] = {'User-Agent' => default_user_agent}
-      end
-      @options[:verbose] = Typhoeus::Config.verbose if @options[:verbose].nil? && !Typhoeus::Config.verbose.nil?
-      @options[:maxredirs] ||= 50
+      options[:headers] = {'User-Agent' => default_user_agent}.merge(options[:headers] || {})
+      options[:verbose] = Typhoeus::Config.verbose if options[:verbose].nil? && !Typhoeus::Config.verbose.nil?
+      options[:maxredirs] ||= 50
     end
   end
 end
