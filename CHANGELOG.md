@@ -4,6 +4,9 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.3...master)
 
+* `EasyFactory`: Reduced object allocations and method calls during deprecated option handling.
+  ([Tasos Laskos](https://github.com/zapotek)
+
 ## 0.7.3
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.2...v0.7.3)
