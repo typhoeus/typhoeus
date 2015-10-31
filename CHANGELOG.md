@@ -5,7 +5,12 @@
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.3...master)
 
 * `EasyFactory`: Reduced object allocations and method calls during deprecated option handling.
-  ([Tasos Laskos](https://github.com/zapotek)
+  ([Tasos Laskos](https://github.com/zapotek))
+* `Response::Header` ([Tasos Laskos](https://github.com/zapotek))
+    * `#process_pair`: Halved `#set_value` calls.
+    * `#set_value`: Minimized `Hash` accesses.
+    * `#parse`: Use `String#start_with?` instead of `Regexp` match.
+    * `#process_line`: Optimized key/value sanitization.
 
 ## 0.7.3
 
