@@ -33,6 +33,9 @@ module Typhoeus
 
     REMOVED_OPTIONS =  Set.new([:cache_key_basis, :cache_timeout, :user_agent])
 
+    SANITIZE_IGNORE  = Set.new([:method, :cache_ttl])
+    SANITIZE_TIMEOUT = Set.new([:timeout_ms, :connecttimeout_ms])
+
     # Returns the request provided.
     #
     # @return [ Typhoeus::Request ]
@@ -94,12 +97,12 @@ module Typhoeus
       sanitized = {:nosignal => true}
       request.options.each do |k,v|
         s = k.to_sym
-        next if [:method, :cache_ttl].include?(s)
+        next if SANITIZE_IGNORE.include?(s)
         if new_option = RENAMED_OPTIONS[k.to_sym]
           warn("Deprecated option #{k}. Please use #{new_option} instead.")
           sanitized[new_option] = v
         # sanitize timeouts
-        elsif [:timeout_ms, :connecttimeout_ms].include?(s)
+        elsif SANITIZE_TIMEOUT.include?(s)
           if !v.integer?
             warn("Value '#{v}' for option '#{k}' must be integer.")
           end
