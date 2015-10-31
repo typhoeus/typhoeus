@@ -32,7 +32,7 @@ module Typhoeus
           end
         when String
           raw.lines.each do |header|
-            next if header.empty? || header =~ /^HTTP\/1.[01]/
+            next if header.empty? || header.start_with?( 'HTTP/1.' )
             process_line(header)
           end
         end
@@ -44,8 +44,8 @@ module Typhoeus
       #
       # @return [ void ]
       def process_line(header)
-        key, value = header.split(':', 2).map(&:strip)
-        process_pair(key, value)
+        key, value = header.split(':', 2)
+        process_pair(key.strip, value.strip)
       end
 
       # Sets key value pair for self and @sanitized.
@@ -53,16 +53,20 @@ module Typhoeus
       # @return [ void ]
       def process_pair(key, value)
         set_value(key, value, self)
-        set_value(key.downcase, value, @sanitized)
+        @sanitized[key.downcase] = self[key]
       end
 
       # Sets value for key in specified hash
       #
       # @return [ void ]
       def set_value(key, value, hash)
-        if hash.has_key?(key)
-          hash[key] = [hash[key]] unless hash[key].is_a? Array
-          hash[key].push(value)
+        current_value = hash[key]
+        if current_value
+          if current_value.is_a? Array
+            current_value << value
+          else
+            hash[key] = [current_value, value]
+          end
         else
           hash[key] = value
         end
