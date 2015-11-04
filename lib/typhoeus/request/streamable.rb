@@ -27,7 +27,7 @@ module Typhoeus
       #
       # @return [ Boolean ] True if any on_body blocks have been set.
       def streaming?
-        @on_body && @on_body.any?
+        defined?(@on_body) && @on_body.any?
       end
     end
   end
