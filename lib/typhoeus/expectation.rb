@@ -137,7 +137,7 @@ module Typhoeus
     # @return [ void ]
     def and_return(response=nil, &block)
       new_response = (response.nil? ? block : response)
-      responses.push *new_response
+      responses.push(*new_response)
     end
 
     # Checks whether this expectation matches
