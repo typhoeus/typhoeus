@@ -7,7 +7,7 @@ module Typhoeus
       attr_writer :cached
 
       def cached?
-        !!@cached
+        defined?(@cached) ? !!@cached : false
       end
     end
   end
