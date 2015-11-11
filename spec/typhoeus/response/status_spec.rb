@@ -12,22 +12,6 @@ describe Typhoeus::Response::Status do
         expect(response).to be_timed_out
       end
     end
-
-    context "when return code is couldnt_connect" do
-      let(:options) { {:return_code => :couldnt_connect} }
-
-      it "return true" do
-        expect(response).to be_timed_out
-      end
-    end
-
-    context "when return code is not operation_timedout or couldnt_connect" do
-      let(:options) { {:return_code => 14} }
-
-      it "returns false" do
-        expect(response).to_not be_timed_out
-      end
-    end
   end
 
   describe "#status_message" do
