@@ -7,11 +7,14 @@
 * `EasyFactory`: Reduced object allocations and method calls during deprecated
     option handling and option sanitization.
   ([Tasos Laskos](https://github.com/zapotek))
-* `Response::Header` ([Tasos Laskos](https://github.com/zapotek))
-    * `#process_pair`: Halved `#set_value` calls.
-    * `#set_value`: Minimized `Hash` accesses.
-    * `#parse`: Use `String#start_with?` instead of `Regexp` match.
-    * `#process_line`: Optimized key/value sanitization.
+* `Response` ([Tasos Laskos](https://github.com/zapotek))
+    * `Header`
+        * `#process_pair`: Halved `#set_value` calls.
+        * `#set_value`: Minimized `Hash` accesses.
+        * `#parse`: Use `String#start_with?` instead of `Regexp` match.
+        * `#process_line`: Optimized key/value sanitization.
+    * `Status`
+        * `#timed_out?`: Only return `true` when `#return_code` is `operation_timedout`.
 
 ## 0.7.3
 
