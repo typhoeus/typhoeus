@@ -83,6 +83,16 @@ describe Typhoeus::Hydra::Queueable do
           hydra.dequeue_many
         end
       end
+
+      context "when max_concurrency is a string" do
+        let(:options) { {:max_concurrency => "2"} }
+        it "adds requests from queue to multi" do
+          expect(hydra).to receive(:add).with(first)
+          expect(hydra).to receive(:add).with(second)
+          expect(hydra).to_not receive(:add).with(third)
+          hydra.dequeue_many
+        end
+      end
     end
   end
 end
