@@ -90,6 +90,11 @@ module Faraday # :nodoc:
             unless parallel?(env)
               raise Faraday::Error::TimeoutError, "request timed out"
             end
+          elsif resp.response_code == 0
+            env[:typhoeus_connection_failed] = true
+            unless parallel?(env)
+              raise Faraday::Error::ConnectionFailed, resp.return_message
+            end
           end
 
           save_response(env, resp.code, resp.body) do |response_headers|
