@@ -2,7 +2,15 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.3...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.0.0...master)
+
+## 1.0.0
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.8.0...v1.0.0)
+
+## O.8.0
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.3...v0.8.0)
 
 * `EasyFactory`: Reduced object allocations and method calls during deprecated
     option handling and option sanitization.
