@@ -59,14 +59,14 @@ module Typhoeus
         (mock || return_code == :ok) && response_code && response_code != 304
       end
 
-      # Return wether the response is timed out.
+      # Return whether the response is timed out.
       #
       # @example Return if the response timed out.
       #  response.timed_out?
       #
       # @return [ Boolean ] Return true if timed out, false else.
       def timed_out?
-        [:operation_timedout, :couldnt_connect].include?(return_code)
+        return_code == :operation_timedout
       end
 
       private
