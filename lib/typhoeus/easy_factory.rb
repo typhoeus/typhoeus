@@ -1,3 +1,5 @@
+require 'set'
+
 module Typhoeus
 
   # This is a Factory for easies to be used in the hydra.
