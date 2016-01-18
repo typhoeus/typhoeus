@@ -12,7 +12,7 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.8.0...v1.0.0)
 
-## O.8.0
+## 0.8.0
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v0.7.3...v0.8.0)
 
