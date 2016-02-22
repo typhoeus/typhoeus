@@ -535,7 +535,7 @@ Copyright © 2009-2010 [Paul Dix](http://www.pauldix.net/)
 
 Copyright © 2011-2012 [David Balatero](https://github.com/dbalatero/)
 
-Copyright © 2012-2014 [Hans Hasselberg](http://github.com/i0rek/)
+Copyright © 2012-2016 [Hans Hasselberg](http://github.com/i0rek/)
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
