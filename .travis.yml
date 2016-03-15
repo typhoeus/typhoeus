@@ -20,6 +20,4 @@ matrix:
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby-head
-    - rvm: rbx
-    - rvm: rbx-2
     - rvm: ree
