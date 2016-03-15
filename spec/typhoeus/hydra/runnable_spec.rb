@@ -106,8 +106,9 @@ describe Typhoeus::Hydra::Runnable do
       end
       let(:second) { Typhoeus::Request.new("localhost:3001/second") }
       let(:requests) { [first] }
+      let(:on_complete_counter){ double :mark => :twain }
 
-      before { Typhoeus.on_complete { |r| String.new(r.code) } }
+      before { Typhoeus.on_complete { |r| on_complete_counter.mark } }
       after { Typhoeus.on_complete.clear; Typhoeus.before.clear }
 
       context "when real request" do
@@ -115,7 +116,7 @@ describe Typhoeus::Hydra::Runnable do
           let(:options) { {} }
 
           it "calls on_complete callback once for every response" do
-            expect(String).to receive(:new).exactly(2).times
+            expect(on_complete_counter).to receive(:mark).exactly(2).times
             hydra.run
           end
         end
@@ -126,7 +127,7 @@ describe Typhoeus::Hydra::Runnable do
           before { Typhoeus.before{ |request|  request.finish(Typhoeus::Response.new) } }
 
           it "simulates real multi run and adds and finishes both requests" do
-            expect(String).to receive(:new).exactly(2).times
+            expect(on_complete_counter).to receive(:mark).exactly(2).times
             hydra.run
           end
         end
