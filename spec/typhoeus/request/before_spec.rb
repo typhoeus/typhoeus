@@ -2,13 +2,14 @@ require 'spec_helper'
 
 describe Typhoeus::Request::Before do
   let(:request) { Typhoeus::Request.new("") }
+  let(:receive_counter) { double :mark => :twain }
 
   describe "#queue" do
     context "when before" do
       context "when one" do
         it "executes" do
-          Typhoeus.before { |r| String.new(r.base_url) }
-          expect(String).to receive(:new).and_return("")
+          Typhoeus.before { |r| receive_counter.mark }
+          expect(receive_counter).to receive(:mark)
           request.run
         end
 
@@ -49,7 +50,7 @@ describe Typhoeus::Request::Before do
 
       context "when multi" do
         context "when all true" do
-          before { 3.times { Typhoeus.before { |r| String.new(r.base_url) } } }
+          before { 3.times { Typhoeus.before { |r| receive_counter.mark } } }
 
           it "calls super" do
             expect(Typhoeus::Expectation).to receive(:response_for)
@@ -57,16 +58,16 @@ describe Typhoeus::Request::Before do
           end
 
           it "executes all" do
-            expect(String).to receive(:new).exactly(3).times.and_return("")
+            expect(receive_counter).to receive(:mark).exactly(3)
             request.run
           end
         end
 
         context "when middle false" do
           before do
-            Typhoeus.before { |r| String.new(r.base_url) }
-            Typhoeus.before { |r| String.new(r.base_url); nil }
-            Typhoeus.before { |r| String.new(r.base_url) }
+            Typhoeus.before { |r| receive_counter.mark }
+            Typhoeus.before { |r| receive_counter.mark; nil }
+            Typhoeus.before { |r| receive_counter.mark }
           end
 
           it "doesn't call super" do
@@ -75,7 +76,7 @@ describe Typhoeus::Request::Before do
           end
 
           it "executes only two" do
-            expect(String).to receive(:new).exactly(2).times.and_return("")
+            expect(receive_counter).to receive(:mark).exactly(2).times
             request.run
           end
         end

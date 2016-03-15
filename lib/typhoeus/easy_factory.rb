@@ -121,7 +121,7 @@ module Typhoeus
     end
 
     def sanitize_timeout!(options, timeout)
-      timeout_ms = (timeout.to_s + '_ms').to_sym
+      timeout_ms = :"#{timeout}_ms"
       if options[timeout] && options[timeout].round != options[timeout]
         if !options[timeout_ms]
           options[timeout_ms] = (options[timeout]*1000).ceil
