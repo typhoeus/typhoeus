@@ -3,13 +3,14 @@ require 'spec_helper'
 describe Typhoeus::Hydra::Before do
   let(:request) { Typhoeus::Request.new("") }
   let(:hydra) { Typhoeus::Hydra.new }
+  let(:receive_counter) { double :mark => :twain }
 
   describe "#add" do
     context "when before" do
       context "when one" do
         it "executes" do
-          Typhoeus.before { |r| String.new(r.base_url) }
-          expect(String).to receive(:new).and_return("")
+          Typhoeus.before { |r| receive_counter.mark }
+          expect(receive_counter).to receive(:mark)
           hydra.add(request)
         end
 
@@ -54,7 +55,7 @@ describe Typhoeus::Hydra::Before do
 
       context "when multi" do
         context "when all true" do
-          before { 3.times { Typhoeus.before { |r| String.new(r.base_url) } } }
+          before { 3.times { Typhoeus.before { |r| receive_counter.mark } } }
 
           it "calls super" do
             expect(Typhoeus::Expectation).to receive(:response_for)
@@ -62,16 +63,16 @@ describe Typhoeus::Hydra::Before do
           end
 
           it "executes all" do
-            expect(String).to receive(:new).exactly(3).times.and_return("")
+            expect(receive_counter).to receive(:mark).exactly(3).times
             hydra.add(request)
           end
         end
 
         context "when middle false" do
           before do
-            Typhoeus.before { |r| String.new(r.base_url) }
-            Typhoeus.before { |r| String.new(r.base_url); nil }
-            Typhoeus.before { |r| String.new(r.base_url) }
+            Typhoeus.before { |r| receive_counter.mark }
+            Typhoeus.before { |r| receive_counter.mark; nil }
+            Typhoeus.before { |r| receive_counter.mark }
           end
 
           it "doesn't call super" do
@@ -80,7 +81,7 @@ describe Typhoeus::Hydra::Before do
           end
 
           it "executes only two" do
-            expect(String).to receive(:new).exactly(2).times.and_return("")
+            expect(receive_counter).to receive(:mark).exactly(2).times
             hydra.add(request)
           end
         end
