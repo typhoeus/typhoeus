@@ -1,3 +1,4 @@
+language: ruby
 script: "bundle exec rake"
 sudo: false
 rvm:
