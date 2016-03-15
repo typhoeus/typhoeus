@@ -1,7 +1,11 @@
 source "https://rubygems.org"
 gemspec
 
-gem "rake"
+if Gem.ruby_version < Gem::Version.new("1.9.3")
+  gem "rake", "< 11"
+else
+  gem "rake"
+end
 
 group :development, :test do
   gem "rspec", "~> 3.0"
