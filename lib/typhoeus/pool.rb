@@ -17,7 +17,9 @@ module Typhoeus
     # @example Release easy.
     #   Typhoeus::Pool.release(easy)
     def self.release(easy)
+      easy.cookielist = "flush" # dump all known cookies to 'cookiejar'
       easy.reset
+      easy.cookielist = "all" # remove all cookies from memory for this handle
       @mutex.synchronize { easies << easy }
     end
 
