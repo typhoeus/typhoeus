@@ -16,6 +16,13 @@ describe Typhoeus::Pool do
       Typhoeus::Pool.release(easy)
     end
 
+    it "flush cookies to disk" do
+      expect(easy).to receive(:cookielist=).with('flush')
+      expect(easy).to receive(:reset)
+      expect(easy).to receive(:cookielist=).with('all')
+      Typhoeus::Pool.release(easy)
+    end
+
     it "puts easy back into pool" do
       Typhoeus::Pool.release(easy)
       expect(Typhoeus::Pool.send(:easies)).to include(easy)
