@@ -23,6 +23,14 @@ TESTSERVER = Sinatra.new do
     [200, { 'Set-Cookie' => %w[ foo bar ], 'Content-Type' => 'text/plain' }, ['']]
   end
 
+  get '/cookies-test' do
+    [200, { 'Set-Cookie' => %w(foo=bar bar=foo), 'Content-Type' => 'text/plain' }, ['']]
+  end
+
+  get '/cookies-test2' do
+    [200, { 'Set-Cookie' => %w(foo2=bar bar2=foo), 'Content-Type' => 'text/plain' }, ['']]
+  end
+
   get '/fail/:number' do
     if fail_count >= params[:number].to_i
       "ok"
