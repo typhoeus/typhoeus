@@ -92,6 +92,19 @@ describe Typhoeus::Response::Header do
           expect(header[name.downcase]).to eq(value)
         end
       end
+
+      context 'includes line with only whitespace' do
+          let(:raw) do
+              'HTTP/1.1 200 OK
+               Date: Fri, 29 Jun 2012 10:09:23 GMT
+
+'
+        end
+
+        it 'ignores it' do
+          expect(header).to eq({ 'Date' => 'Fri, 29 Jun 2012 10:09:23 GMT' })
+        end
+      end
     end
   end
 end
