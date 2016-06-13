@@ -33,6 +33,7 @@ module Typhoeus
           end
         when String
           raw.lines.each do |header|
+            header.strip!
             next if header.empty? || header.start_with?( 'HTTP/1.' )
             process_line(header)
           end
