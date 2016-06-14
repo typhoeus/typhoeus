@@ -123,6 +123,37 @@ describe Faraday::Adapter::Typhoeus do
     end
   end
 
+  context "when the connection failed" do
+    before do
+      stub = Typhoeus::Response.new \
+          :response_code => 0,
+          :return_code => 0,
+          :mock          => true
+
+      Typhoeus.stub(base_url + '/').and_return(stub)
+    end
+
+    context "when parallel" do
+      it "isn't successful" do
+        response = nil
+        conn.in_parallel { response = conn.get("/") }
+        expect(response.success?).to be_falsey
+      end
+
+      it "translates the response code into an error message" do
+        response = nil
+        conn.in_parallel { response = conn.get("/") }
+        expect(response.env[:typhoeus_return_message]).to eq("No error")
+      end
+    end
+
+    context "when not parallel" do
+      it "raises an error" do
+        expect { conn.get("/") }.to raise_error(Faraday::Error::ConnectionFailed, "No error")
+      end
+    end
+  end
+
   describe "#configure_socket" do
     let(:env) { { :request => { :bind => { :host => "interface" } } } }
 
