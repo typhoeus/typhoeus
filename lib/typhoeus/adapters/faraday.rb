@@ -92,6 +92,7 @@ module Faraday # :nodoc:
             end
           elsif resp.response_code == 0
             env[:typhoeus_connection_failed] = true
+            env[:typhoeus_return_message] = resp.return_message
             unless parallel?(env)
               raise Faraday::Error::ConnectionFailed, resp.return_message
             end
