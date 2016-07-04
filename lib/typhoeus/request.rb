@@ -214,6 +214,7 @@ module Typhoeus
       options[:headers] = {'User-Agent' => default_user_agent}.merge(options[:headers] || {})
       options[:verbose] = Typhoeus::Config.verbose if options[:verbose].nil? && !Typhoeus::Config.verbose.nil?
       options[:maxredirs] ||= 50
+      options[:proxy] = Typhoeus::Config.proxy unless options.has_key?(:proxy) || Typhoeus::Config.proxy.nil?
     end
   end
 end
