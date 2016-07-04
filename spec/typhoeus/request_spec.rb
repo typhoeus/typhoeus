@@ -110,6 +110,23 @@ describe Typhoeus::Request do
         end
       end
     end
+
+    context "when Config.proxy set" do
+      before { Typhoeus.configure { |config| config.proxy = "http://proxy.internal" } }
+      after { Typhoeus.configure { |config| config.proxy = nil } }
+
+      it "respects" do
+        expect(request.options[:proxy]).to eq("http://proxy.internal")
+      end
+
+      context "when option proxy set" do
+        let(:options) { {:proxy => nil} }
+
+        it "does not override" do
+          expect(request.options[:proxy]).to be_nil
+        end
+      end
+    end
   end
 
   describe "#eql?" do
