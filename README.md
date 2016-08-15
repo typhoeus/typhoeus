@@ -397,7 +397,7 @@ and [`connecttimeout`](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLO
 `timeout` is the time limit for the entire request in seconds.
 `connecttimeout` is the time limit for just the connection phase, again in seconds.
 
-There are two additional more fine grained opptions `timeout_ms` and
+There are two additional more fine grained options `timeout_ms` and
 `connecttimeout_ms`. These options offer millisecond precision but are not always available (for instance on linux if `nosignal` is not set to true).
 
 When you pass a floating point `timeout` (or `connecttimeout`) Typhoeus will set `timeout_ms` for you if it has not been defined. The actual timeout values passed to curl will always be rounded up.
