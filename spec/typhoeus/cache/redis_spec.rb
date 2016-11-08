@@ -1,10 +1,10 @@
 require 'redis'
-require 'typhoeus/redis_cache'
+require 'typhoeus/cache/redis'
 require 'spec_helper'
 
-describe Typhoeus::RedisCache do
+describe Typhoeus::Cache::Redis do
   let(:redis) { instance_double(Redis) }
-  let(:cache) { Typhoeus::RedisCache.new(redis) }
+  let(:cache) { Typhoeus::Cache::Redis.new(redis) }
 
   let(:base_url) { "localhost:3001" }
   let(:request) { Typhoeus::Request.new(base_url, {:method => :get}) }
