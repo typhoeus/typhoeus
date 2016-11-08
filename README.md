@@ -308,20 +308,20 @@ For use with [Dalli](https://github.com/mperham/dalli):
 
 ```ruby
 dalli = Dalli::Client.new(...)
-Typhoeus::Config.cache = Typhoeus::DalliCache.new(dalli)
+Typhoeus::Config.cache = Typhoeus::Cache::Dalli.new(dalli)
 ```
 
 For use with Rails:
 
 ```ruby
-Typhoeus::Config.cache = Typhoeus::RailsCache.new
+Typhoeus::Config.cache = Typhoeus::Cache::Rails.new
 ```
 
 For use with [Redis](https://github.com/redis/redis-rb):
 
 ```ruby
 redis = Redis.new(...)
-Typhoeus::Config.cache = Typhoeus::RedisCache.new(redis)
+Typhoeus::Config.cache = Typhoeus::Cache::Redis.new(redis)
 ```
 
 All three of these adapters take an optional keyword argument `default_ttl`, which sets a default

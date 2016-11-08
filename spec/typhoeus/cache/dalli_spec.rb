@@ -1,10 +1,10 @@
 require 'dalli'
-require 'typhoeus/dalli_cache'
+require 'typhoeus/cache/dalli'
 require 'spec_helper'
 
-describe Typhoeus::DalliCache do
+describe Typhoeus::Cache::Dalli do
   let(:dalli) { instance_double(Dalli::Client) }
-  let(:cache) { Typhoeus::DalliCache.new(dalli) }
+  let(:cache) { Typhoeus::Cache::Dalli.new(dalli) }
 
   let(:base_url) { "localhost:3001" }
   let(:request) { Typhoeus::Request.new(base_url, {:method => :get}) }
