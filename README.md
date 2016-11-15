@@ -307,38 +307,25 @@ Typhoeus.get("www.example.com").cached?
 For use with [Dalli](https://github.com/mperham/dalli):
 
 ```ruby
-class Cache
-  def initialize
-    @client = Dalli::Client.new
-  end
-
-  def get(request)
-    @client.get(request.cache_key)
-  end
-
-  def set(request, response)
-    @client.set(request.cache_key, response)
-  end
-end
-
-Typhoeus::Config.cache = Cache.new
+dalli = Dalli::Client.new(...)
+Typhoeus::Config.cache = Typhoeus::Cache::Dalli.new(dalli)
 ```
 
 For use with Rails:
 
 ```ruby
-class Cache
-  def get(request)
-    Rails.cache.read(request)
-  end
-
-  def set(request, response)
-    Rails.cache.write(request, response)
-  end
-end
-
-Typhoeus::Config.cache = Cache.new
+Typhoeus::Config.cache = Typhoeus::Cache::Rails.new
 ```
+
+For use with [Redis](https://github.com/redis/redis-rb):
+
+```ruby
+redis = Redis.new(...)
+Typhoeus::Config.cache = Typhoeus::Cache::Redis.new(redis)
+```
+
+All three of these adapters take an optional keyword argument `default_ttl`, which sets a default
+TTL on cached responses (in seconds), for requests which do not have a cache TTL set.
 
 ### Direct Stubbing
 
