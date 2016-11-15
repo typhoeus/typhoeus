@@ -13,12 +13,9 @@ rvm:
   - jruby-head
   - jruby-18mode
   - jruby-19mode
-  - rbx  # It's actually RBX 3
-  - rbx-2
 matrix: 
   fast_finish: true
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby-head
     - rvm: ree
-    - rvm: rbx
