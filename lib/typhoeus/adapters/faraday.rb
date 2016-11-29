@@ -12,6 +12,9 @@ module Faraday # :nodoc:
     #
     #   conn = Faraday.new(url: "www.example.com") do |faraday|
     #     faraday.adapter :typhoeus
+    #
+    #     # You can include Typhoeus options to be used for every request
+    #     # faraday.adapter :typhoeus, forbid_reuse: true, maxredirs: 1
     #   end
     #
     #   response = conn.get("/")
@@ -31,6 +34,17 @@ module Faraday # :nodoc:
       remove_method :configure_timeout if method_defined? :configure_timeout
       remove_method :configure_socket  if method_defined? :configure_socket
       remove_method :parallel?         if method_defined? :parallel?
+
+      # Initialize the Typhoeus adapter
+      #
+      # @param [ App ] app Farday app
+      # @option [ Hash ] adapter_options Typhoeus options
+      #
+      # @return [ void ]
+      def initialize(app, adapter_options = {})
+        super(app)
+        @adapter_options = adapter_options
+      end
 
       # Setup Hydra with provided options.
       #
@@ -72,12 +86,7 @@ module Faraday # :nodoc:
       def request(env)
         read_body env
 
-        req = ::Typhoeus::Request.new(
-          env[:url].to_s,
-          :method  => env[:method],
-          :body    => env[:body],
-          :headers => env[:request_headers]
-        )
+        req = typhoeus_request(env)
 
         configure_ssl     req, env
         configure_proxy   req, env
@@ -106,6 +115,16 @@ module Faraday # :nodoc:
         end
 
         req
+      end
+
+      def typhoeus_request(env)
+        opts = {
+          :method => env[:method],
+          :body => env[:body],
+          :headers => env[:request_headers]
+        }.merge(@adapter_options)
+
+        ::Typhoeus::Request.new(env[:url].to_s, opts)
       end
 
       def read_body(env)

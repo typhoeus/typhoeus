@@ -4,7 +4,7 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
 
   describe Faraday::Adapter::Typhoeus do
     let(:base_url) { "http://localhost:3001" }
-    let(:adapter) { described_class.new }
+    let(:adapter) { described_class.new(nil) }
     let(:request) { Typhoeus::Request.new(base_url) }
     let(:conn) do
       Faraday.new(:url => base_url) do |faraday|
@@ -58,6 +58,19 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
 
       it 'stubs the headers' do
         expect(response.headers).to eq("Foo" => "2", "Bar" => "3")
+      end
+    end
+
+    describe "#initialize" do
+      let(:request) { adapter.method(:typhoeus_request).call({}) }
+
+      context "when typhoeus request options specified" do
+        let(:adapter) { described_class.new(nil, { :forbid_reuse => true, :maxredirs => 1 }) }
+
+        it "should set option for request" do
+          expect(request.options[:forbid_reuse]).to be_truthy
+          expect(request.options[:maxredirs]).to eq(1)
+        end
       end
     end
 
