@@ -19,17 +19,17 @@ end
 
 # If the Redis gem is available, load the redis cache adapter
 if defined?(Redis)
-  require "typhoeus/redis_cache"
+  require "typhoeus/cache/redis_cache"
 end
 
 # If the Dalli gem is available, load the Dalli cache adapter
 if defined?(Dalli)
-  require "typhoeus/dalli_cache"
+  require "typhoeus/cache/dalli_cache"
 end
 
 # If we are using Rails, load the Rails cache adapter
 if defined?(Rails)
-  require "typhoeus/rails_cache"
+  require "typhoeus/cache/rails_cache"
 end
 
 # If we are using Rails, then we will include the Typhoeus railtie.
