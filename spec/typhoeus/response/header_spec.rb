@@ -55,7 +55,7 @@ describe Typhoeus::Response::Header do
         Server: gws
         X-XSS-Protection: 1; mode=block
         X-Frame-Options: SAMEORIGIN
-        Transfer-Encoding: chunked'
+        Transfer-Encoding: chunked'.gsub(/^\s{8}/, '')
       end
 
       it "sets raw" do
@@ -93,12 +93,29 @@ describe Typhoeus::Response::Header do
         end
       end
 
-      context 'includes line with only whitespace' do
-          let(:raw) do
-              'HTTP/1.1 200 OK
-               Date: Fri, 29 Jun 2012 10:09:23 GMT
+      context 'includes a multi-line header' do
+        let(:raw) do
+          'HTTP/1.1 200 OK
+          Date: Fri, 29 Jun 2012 10:09:23 GMT
+          Content-Security-Policy: default-src "self";
+            img-src * data: "self";
+            upgrade-insecure-requests;'.gsub(/^\s{10}/, '')
+        end
 
-'
+        it "joins header parts" do
+          expect(header).to eq({
+            'Date' => 'Fri, 29 Jun 2012 10:09:23 GMT',
+            'Content-Security-Policy' => 'default-src "self"; img-src * data: "self"; upgrade-insecure-requests;'
+          })
+        end
+      end
+
+      context 'includes line with only whitespace' do
+        let(:raw) do
+          'HTTP/1.1 200 OK
+          Date: Fri, 29 Jun 2012 10:09:23 GMT
+            
+          '.gsub(/^\s{10}/, '')
         end
 
         it 'ignores it' do
