@@ -32,7 +32,7 @@ module Typhoeus
             process_pair(k, v)
           end
         when String
-          raw.lines.each do |header|
+          raw.split(/\r?\n(?!\s)/).each do |header|
             header.strip!
             next if header.empty? || header.start_with?( 'HTTP/1.' )
             process_line(header)
@@ -47,7 +47,7 @@ module Typhoeus
       # @return [ void ]
       def process_line(header)
         key, value = header.split(':', 2)
-        process_pair(key.strip, value.strip)
+        process_pair(key.strip, value.strip.gsub(/\r?\n\s*/, ' '))
       end
 
       # Sets key value pair for self and @sanitized.
