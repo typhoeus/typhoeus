@@ -34,7 +34,7 @@ module Typhoeus
         when String
           raw.split(/\r?\n(?!\s)/).each do |header|
             header.strip!
-            next if header.empty? || header.start_with?( 'HTTP/1.' )
+            next if header.empty? || header.start_with?( 'HTTP/' )
             process_line(header)
           end
         end
