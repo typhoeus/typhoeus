@@ -74,6 +74,17 @@ describe Typhoeus::Response::Informations do
             expect(response.response_headers).to include("\r\n")
           end
         end
+
+        context "when multiple values for a header" do
+          let(:options) { { :mock => true, :headers => {"Length" => 1, "Content-Type" => "text/plain", "set-cookie" => ["cookieone=one","cookietwo=two"] } } }
+
+          it "constructs response_headers" do
+            expect(response.response_headers).to include("Length: 1")
+            expect(response.response_headers).to include("Content-Type: text/plain")
+            expect(response.response_headers).to include("set-cookie: cookieone=one,cookietwo=two")
+            expect(response.response_headers).to include("\r\n")
+          end
+        end
       end
     end
   end
