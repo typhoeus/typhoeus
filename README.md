@@ -81,7 +81,7 @@ request.run
 ```
 
 ```ruby
-hydra = Typhoeus::Hydra.hydra
+hydra = Typhoeus::Hydra.new
 hydra.queue(request)
 hydra.run
 ```
@@ -196,7 +196,7 @@ request.run
 Generally, you should be running requests through hydra. Here is how that looks:
 
 ```ruby
-hydra = Typhoeus::Hydra.hydra
+hydra = Typhoeus::Hydra.new
 
 first_request = Typhoeus::Request.new("http://example.com/posts/1")
 first_request.on_complete do |response|
