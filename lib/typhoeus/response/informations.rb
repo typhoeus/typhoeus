@@ -53,20 +53,6 @@ module Typhoeus
         end
       end
 
-      # Return the last received HTTP, FTP or SMTP response code.
-      # The value will be zero if no server response code has
-      # been received. Note that a proxy's CONNECT response should
-      # be read with http_connect_code and not this.
-      #
-      # @example Get response_code.
-      #   response.response_code
-      #
-      # @return [ Integer ] The response_code.
-      def response_code
-        (options[:response_code] || options[:code]).to_i
-      end
-      alias :code :response_code
-
       # Return the available http auth methods.
       # Bitmask indicating the authentication method(s)
       # available.

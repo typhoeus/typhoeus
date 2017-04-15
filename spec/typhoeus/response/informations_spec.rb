@@ -89,24 +89,6 @@ describe Typhoeus::Response::Informations do
     end
   end
 
-  describe "#response_code" do
-    context "when response_code" do
-      let(:options) { { :response_code => "200" } }
-
-      it "returns response_code from options" do
-        expect(response.response_code).to eq(200)
-      end
-    end
-
-    context "when code" do
-      let(:options) { { :code => "200" } }
-
-      it "returns code from options" do
-        expect(response.code).to eq(200)
-      end
-    end
-  end
-
   describe "#httpauth_avail" do
     let(:options) { { :httpauth_avail => "code" } }
 
