@@ -46,7 +46,18 @@ module Typhoeus
       #
       # @return [ Boolean ] Return true if successful, false else.
       def success?
-        (mock || return_code == :ok) && response_code && response_code >= 200 && response_code < 300
+        (mock || return_code == :ok) && response_code && has_good_response_code?
+      end
+
+      # Return wether the response is a failure.
+      #
+      # @example Return if the response was failed.
+      #  response.failure?
+      #
+      # @return [ Boolean ] Return true if failure, false else.
+
+      def failure?
+        (mock || return_code == :internal_server_error) && response_code && has_bad_response_code?
       end
 
       # Return wether the response is modified.
@@ -80,6 +91,16 @@ module Typhoeus
             response_headers.to_s.split("\r\n").first
           end
         end
+      end
+
+      # :nodoc:
+      def has_good_response_code?
+        response_code >= 200 && response_code < 300
+      end
+
+      # :nodoc:
+      def has_bad_response_code?
+        !has_good_response_code?
       end
     end
   end
