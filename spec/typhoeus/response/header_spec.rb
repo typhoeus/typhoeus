@@ -122,6 +122,23 @@ describe Typhoeus::Response::Header do
           expect(header).to eq({ 'Date' => 'Fri, 29 Jun 2012 10:09:23 GMT' })
         end
       end
+
+      context 'with broken headers' do
+        let(:raw) do
+          'HTTP/1.1 200 OK
+          Date:
+          Content-Type
+          '.gsub(/^\s{10}/, '')
+        end
+
+        it 'returns empty string if no value' do
+          expect(header).to include({ 'Date' => '' })
+        end
+
+        it 'returns nil if no column' do
+          expect(header).to include({ 'Content-Type' => nil })
+        end
+      end
     end
   end
 end
