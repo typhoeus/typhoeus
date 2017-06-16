@@ -122,6 +122,19 @@ describe Typhoeus::Response::Header do
           expect(header).to eq({ 'Date' => 'Fri, 29 Jun 2012 10:09:23 GMT' })
         end
       end
+
+      context 'with broken headers' do
+        let(:raw) do
+          'HTTP/1.1 200 OK
+          Date:
+          Content-Type
+          '.gsub(/^\s{10}/, '')
+        end
+
+        it 'returns empty string for invalid headers' do
+          expect(header).to include({ 'Date' => '', 'Content-Type' => '' })
+        end
+      end
     end
   end
 end

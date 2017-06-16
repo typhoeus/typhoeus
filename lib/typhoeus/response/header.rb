@@ -47,7 +47,7 @@ module Typhoeus
       # @return [ void ]
       def process_line(header)
         key, value = header.split(':', 2)
-        process_pair(key.strip, value.strip.gsub(/\r?\n\s*/, ' '))
+        process_pair(key.strip, (value ? value.strip.gsub(/\r?\n\s*/, ' ') : ''))
       end
 
       # Sets key value pair for self and @sanitized.
