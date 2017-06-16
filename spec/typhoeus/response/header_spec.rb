@@ -131,12 +131,8 @@ describe Typhoeus::Response::Header do
           '.gsub(/^\s{10}/, '')
         end
 
-        it 'returns empty string if no value' do
-          expect(header).to include({ 'Date' => '' })
-        end
-
-        it 'returns nil if no column' do
-          expect(header).to include({ 'Content-Type' => nil })
+        it 'returns empty string for invalid headers' do
+          expect(header).to include({ 'Date' => '', 'Content-Type' => '' })
         end
       end
     end
