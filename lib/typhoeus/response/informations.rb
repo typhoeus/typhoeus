@@ -47,9 +47,13 @@ module Typhoeus
       def response_headers
         return options[:response_headers] if options[:response_headers]
         if mock? && h = options[:headers]
-            h.map{ |k,v| [k, v.respond_to?(:join) ? v.join(',') : v] }.
-              map{ |e| "#{e.first}: #{e.last}" }.
-              join("\r\n")
+            status_code = return_code || "200"
+            reason_phrase = status_code == "200" ? "OK" : "Mock Reason Phrase"
+            status_line = "HTTP/1.1 #{status_code} #{reason_phrase}"
+            actual_headers = h.map{ |k,v| [k, v.respond_to?(:join) ? v.join(',') : v] }.
+              map{ |e| "#{e.first}: #{e.last}" }
+
+            [status_line, *actual_headers].join("\r\n")
         end
       end
 
