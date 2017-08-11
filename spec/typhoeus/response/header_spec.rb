@@ -132,7 +132,7 @@ describe Typhoeus::Response::Header do
         end
 
         it 'returns empty string for invalid headers' do
-          expect(header).to include({ 'Date' => '', 'Content-Type' => '' })
+          expect(header.to_hash).to include({ 'Date' => '', 'Content-Type' => '' })
         end
       end
     end
