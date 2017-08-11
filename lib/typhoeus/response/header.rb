@@ -18,7 +18,10 @@ module Typhoeus
         @raw = raw
         @sanitized = {}
         parse
-        set_default_proc_on(self, lambda { |h, k| @sanitized[k.to_s.downcase] })
+      end
+
+      def [](key)
+        fetch(key) { @sanitized[key.to_s.downcase] }
       end
 
       # Parses the raw header.

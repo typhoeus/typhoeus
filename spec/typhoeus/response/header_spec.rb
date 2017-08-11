@@ -137,4 +137,11 @@ describe Typhoeus::Response::Header do
       end
     end
   end
+
+  it "can be Marshal'd" do
+    header = Typhoeus::Response::Header.new("Foo: Bar")
+    expect {
+      Marshal.dump(header)
+    }.not_to raise_error
+  end
 end
