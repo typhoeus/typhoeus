@@ -243,7 +243,7 @@ describe Typhoeus::Response::Informations do
         end
 
         it "returns headers" do
-          expect(response.headers).to include("Length" => "1")
+          expect(response.headers.to_hash).to include("Length" => "1")
         end
       end
     end
