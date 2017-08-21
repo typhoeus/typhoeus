@@ -128,6 +128,60 @@ describe Typhoeus::Response::Status do
     end
   end
 
+  describe "#failure?" do
+    context "when response code between 300-526 and 100-300" do
+      let(:options) { {:return_code => return_code, :response_code => 300} }
+
+      context "when mock" do
+        before { response.mock = true }
+
+        context "when return_code :internal_server_error" do
+          let(:return_code) { :internal_server_error }
+
+          it "returns true" do
+            expect(response.failure?).to be_truthy
+          end
+        end
+
+        context "when return_code nil" do
+          let(:return_code) { nil }
+
+          it "returns true" do
+            expect(response.failure?).to be_truthy
+          end
+        end
+      end
+
+      context "when no mock" do
+        before { response.mock = nil }
+
+        context "when return_code :internal_server_error" do
+          let(:return_code) { :internal_server_error }
+
+          it "returns true" do
+            expect(response.failure?).to be_truthy
+          end
+        end
+
+        context "when return_code nil" do
+          let(:return_code) { nil }
+
+          it "returns false" do
+            expect(response.failure?).to be_falsey
+          end
+        end
+      end
+    end
+
+    context "when response code is not 300-526" do
+      let(:options) { {:return_code => :ok, :response_code => 200} }
+
+      it "returns false" do
+        expect(response.failure?).to be_falsey
+      end
+    end
+  end
+
   describe "#modified?" do
     context "when response code 304" do
       let(:options) { {:return_code => :ok, :response_code => 304} }
