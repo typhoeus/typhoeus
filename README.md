@@ -191,6 +191,19 @@ end
 request.run
 ```
 
+If you need to interrupt the stream halfway,
+you can return the `:abort` symbol from the `on_body` block, example:
+
+```ruby
+request.on_body do |chunk|
+  buffer << chunk
+  :abort if buffer.size > 1024 * 1024
+end
+```
+
+This will properly stop the stream internally and avoid any memory leak which
+may happen if you interrupt with something like a `return`, `throw` or `raise`.
+
 ### Making Parallel Requests
 
 Generally, you should be running requests through hydra. Here is how that looks:
