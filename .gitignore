@@ -1,6 +1,7 @@
 *.gem
 Gemfile.lock
 doc/
+gemfiles/*.lock
 .yardoc
 .rvmrc
 coverage

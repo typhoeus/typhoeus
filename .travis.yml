@@ -1,6 +1,12 @@
 language: ruby
 script: "bundle exec rake"
 sudo: false
+gemfile:
+  - gemfiles/faraday_0.13.gemfile
+  - gemfiles/faraday_0.12.gemfile
+  - gemfiles/faraday_0.11.gemfile
+  - gemfiles/faraday_0.10.gemfile
+  - gemfiles/faraday_0.9.gemfile
 rvm:
   - 1.8.7
   - 1.9.2
