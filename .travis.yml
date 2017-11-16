@@ -1,13 +1,6 @@
 language: ruby
 script: "bundle exec rake"
 sudo: false
-gemfile:
-  - Gemfile
-  - gemfiles/faraday_0.13.gemfile
-  - gemfiles/faraday_0.12.gemfile
-  - gemfiles/faraday_0.11.gemfile
-  - gemfiles/faraday_0.10.gemfile
-  - gemfiles/faraday_0.9.gemfile
 rvm:
   - 1.8
   - 1.9
@@ -20,9 +13,68 @@ rvm:
   - jruby-head
   - jruby-18mode
   - jruby-19mode
+
 matrix:
   fast_finish: true
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby-head
     - rvm: ree
+
+  # Appraisals generated gemfiles use Ruby 2 syntax, so just run it for Ruby 2.0+
+  # Exlude is being ignored for some reason so... manual extra jobs!
+  include:
+    - rvm: 2.0
+      gemfile: gemfiles/faraday_0.13.gemfile
+    - rvm: 2.0
+      gemfile: gemfiles/faraday_0.12.gemfile
+    - rvm: 2.0
+      gemset: gemfiles/faraday_0.11.gemfile
+    - rvm: 2.0
+      gemfile: gemfiles/faraday_0.10.gemfile
+    - rvm: 2.0
+      gemfile: gemfiles/faraday_0.9.gemfile
+
+    - rvm: 2.1
+      gemfile: gemfiles/faraday_0.13.gemfile
+    - rvm: 2.1
+      gemset: gemfiles/faraday_0.12.gemfile
+    - rvm: 2.1
+      gemfile: gemfiles/faraday_0.11.gemfile
+    - rvm: 2.1
+      gemset: gemfiles/faraday_0.10.gemfile
+    - rvm: 2.1
+      gemset: gemfiles/faraday_0.9.gemfile
+
+    - rvm: 2.2
+      gemfile: gemfiles/faraday_0.13.gemfile
+    - rvm: 2.2
+      gemset: gemfiles/faraday_0.12.gemfile
+    - rvm: 2.2
+      gemfile: gemfiles/faraday_0.11.gemfile
+    - rvm: 2.2
+      gemset: gemfiles/faraday_0.10.gemfile
+    - rvm: 2.2
+      gemset: gemfiles/faraday_0.9.gemfile
+
+    - rvm: 2.3
+      gemfile: gemfiles/faraday_0.13.gemfile
+    - rvm: 2.3
+      gemset: gemfiles/faraday_0.12.gemfile
+    - rvm: 2.3
+      gemfile: gemfiles/faraday_0.11.gemfile
+    - rvm: 2.3
+      gemset: gemfiles/faraday_0.10.gemfile
+    - rvm: 2.3
+      gemset: gemfiles/faraday_0.9.gemfile
+
+    - rvm: 2.4
+      gemfile: gemfiles/faraday_0.13.gemfile
+    - rvm: 2.4
+      gemset: gemfiles/faraday_0.12.gemfile
+    - rvm: 2.4
+      gemfile: gemfiles/faraday_0.11.gemfile
+    - rvm: 2.4
+      gemset: gemfiles/faraday_0.10.gemfile
+    - rvm: 2.4
+      gemset: gemfiles/faraday_0.9.gemfile
