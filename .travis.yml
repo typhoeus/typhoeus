@@ -1,5 +1,6 @@
 language: ruby
-script: "bundle exec rake"
+install: bundle install --jobs=5 --retry=2
+script: bundle exec rake
 sudo: false
 rvm:
   - 1.8
