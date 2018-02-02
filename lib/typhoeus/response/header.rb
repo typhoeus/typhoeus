@@ -1,3 +1,5 @@
+require 'delegate'
+
 module Typhoeus
   class Response
 
