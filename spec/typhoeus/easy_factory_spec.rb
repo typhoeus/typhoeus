@@ -104,6 +104,12 @@ describe Typhoeus::EasyFactory do
   end
 
   describe "#set_callback" do
+    it "sets easy.on_progress callback when an on_progress callback is provided" do
+      request.on_progress { 1 }
+      expect(easy_factory.easy).to receive(:on_progress)
+      easy_factory.send(:set_callback)
+    end
+
     it "sets easy.on_complete callback" do
       expect(easy_factory.easy).to receive(:on_complete)
       easy_factory.send(:set_callback)
