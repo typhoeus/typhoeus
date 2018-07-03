@@ -15,7 +15,7 @@ module Typhoeus
       #
       # @option (see Typhoeus::Request#initialize)
       #
-      # @return (see Typhoeus::Request#initialize)
+      # @return (see Typhoeus::Response#initialize)
       #
       # @note (see Typhoeus::Request#initialize)
       def get(base_url, options = {})
@@ -31,7 +31,7 @@ module Typhoeus
       #
       # @option (see Typhoeus::Request#initialize)
       #
-      # @return (see Typhoeus::Request#initialize)
+      # @return (see Typhoeus::Response#initialize)
       #
       # @note (see Typhoeus::Request#initialize)
       def post(base_url, options = {})
@@ -50,7 +50,7 @@ module Typhoeus
       # @option options :body [ Hash ] Body hash which
       #   becomes a PUT request body.
       #
-      # @return (see Typhoeus::Request#initialize)
+      # @return (see Typhoeus::Response#initialize)
       #
       # @note (see Typhoeus::Request#initialize)
       def put(base_url, options = {})
@@ -66,7 +66,7 @@ module Typhoeus
       #
       # @option (see Typhoeus::Request#initialize)
       #
-      # @return (see Typhoeus::Request#initialize)
+      # @return (see Typhoeus::Response#initialize)
       #
       # @note (see Typhoeus::Request#initialize)
       def delete(base_url, options = {})
@@ -82,7 +82,7 @@ module Typhoeus
       #
       # @option (see Typhoeus::Request#initialize)
       #
-      # @return (see Typhoeus::Request#initialize)
+      # @return (see Typhoeus::Response#initialize)
       #
       # @note (see Typhoeus::Request#initialize)
       def head(base_url, options = {})
@@ -98,7 +98,7 @@ module Typhoeus
       #
       # @option (see Typhoeus::Request#initialize)
       #
-      # @return (see Typhoeus::Request#initialize)
+      # @return (see Typhoeus::Response#initialize)
       #
       # @note (see Typhoeus::Request#initialize)
       def patch(base_url, options = {})
@@ -114,7 +114,7 @@ module Typhoeus
       #
       # @option (see Typhoeus::Request#initialize)
       #
-      # @return (see Typhoeus::Request#initialize)
+      # @return (see Typhoeus::Response#initialize)
       #
       # @note (see Typhoeus::Request#initialize)
       def options(base_url, options = {})
