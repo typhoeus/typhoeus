@@ -35,7 +35,7 @@ module Typhoeus
 
     REMOVED_OPTIONS =  Set.new([:cache_key_basis, :cache_timeout, :user_agent])
 
-    SANITIZE_IGNORE  = Set.new([:method, :cache_ttl])
+    SANITIZE_IGNORE  = Set.new([:method, :cache_ttl, :cache])
     SANITIZE_TIMEOUT = Set.new([:timeout_ms, :connecttimeout_ms])
 
     # Returns the request provided.
