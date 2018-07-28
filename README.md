@@ -340,6 +340,14 @@ Typhoeus::Config.cache = Typhoeus::Cache::Redis.new(redis)
 All three of these adapters take an optional keyword argument `default_ttl`, which sets a default
 TTL on cached responses (in seconds), for requests which do not have a cache TTL set.
 
+You may also selectively choose not to cache by setting `cache` to `false` on a request or to use
+a different adapter.
+
+```ruby
+cache = Cache.new
+Typhoeus.get("www.example.com", cache: cache)
+```
+
 ### Direct Stubbing
 
 Hydra allows you to stub out specific urls and patterns to avoid hitting
