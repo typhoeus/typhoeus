@@ -60,7 +60,7 @@ describe Typhoeus::Request::Cacheable do
         before { Typhoeus::Config.cache = false }
 
         context "when cache is false" do
-          let(:options) { { cache: false } }
+          let(:options) { { :cache => false } }
 
           it "finishes request" do
             expect(request.response).to_not be(response)
