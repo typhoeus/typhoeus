@@ -69,7 +69,7 @@ describe Typhoeus::Request::Cacheable do
         end
 
         context "when cache is defined" do
-          let(:options) { { cache: cache } }
+          let(:options) { { :cache => false } }
 
           before { cache.memory[request] = response }
 
