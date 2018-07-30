@@ -55,6 +55,30 @@ describe Typhoeus::Request::Cacheable do
           request.run
         end
       end
+
+      context "when cache is specified on a request" do
+        before { Typhoeus::Config.cache = false }
+
+        context "when cache is false" do
+          let(:options) { { :cache => false } }
+
+          it "finishes request" do
+            expect(request.response).to_not be(response)
+            request.run
+          end
+        end
+
+        context "when cache is defined" do
+          let(:options) { { :cache => cache } }
+
+          before { cache.memory[request] = response }
+
+          it "finishes request" do
+            expect(request).to receive(:finish).with(response)
+            request.run
+          end
+        end
+      end
     end
   end
 
