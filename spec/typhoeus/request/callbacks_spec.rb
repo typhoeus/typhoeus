@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Typhoeus::Request::Callbacks do
   let(:request) { Typhoeus::Request.new("fubar") }
 
-  [:on_complete, :on_success, :on_failure].each do |callback|
+  [:on_complete, :on_success, :on_failure, :on_progress].each do |callback|
     describe "##{callback}" do
       it "responds" do
         expect(request).to respond_to(callback)
@@ -33,7 +33,7 @@ describe Typhoeus::Request::Callbacks do
   end
 
   describe "#execute_callbacks" do
-    [:on_complete, :on_success, :on_failure].each do |callback|
+    [:on_complete, :on_success, :on_failure, :on_progress].each do |callback|
       context "when #{callback}" do
         context "when local callback" do
           before do
