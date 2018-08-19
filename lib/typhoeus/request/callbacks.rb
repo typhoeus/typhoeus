@@ -89,6 +89,24 @@ module Typhoeus
           @on_headers << block if block_given?
           @on_headers
         end
+
+        # Set on_progress callback.
+        #
+        # @example Set on_progress.
+        #   request.on_progress do |dltotal, dlnow, ultotal, ulnow|
+        #     puts "dltotal (#{dltotal}), dlnow (#{dlnow}), ultotal (#{ultotal}), ulnow (#{ulnow})"
+        #   end
+        #
+        # @param [ Block ] block The block to execute.
+        #
+        # @yield [ Typhoeus::Response ]
+        #
+        # @return [ Array<Block> ] All on_progress blocks.
+        def on_progress(&block)
+          @on_progress ||= []
+          @on_progress << block if block_given?
+          @on_progress
+        end
       end
 
       # Execute the headers callbacks and yields response.
@@ -106,8 +124,8 @@ module Typhoeus
       end
 
       # Execute necessary callback and yields response. This
-      # include in every case on_complete, on_success if
-      # successful and on_failure if not.
+      # include in every case on_complete and on_progress, on_success
+      # if successful and on_failure if not.
       #
       # @example Execute callbacks.
       #   request.execute_callbacks
@@ -116,7 +134,7 @@ module Typhoeus
       #
       # @api private
       def execute_callbacks
-        callbacks = Typhoeus.on_complete + on_complete
+        callbacks = Typhoeus.on_complete + Typhoeus.on_progress + on_complete + on_progress
 
         if response && response.success?
           callbacks += Typhoeus.on_success + on_success

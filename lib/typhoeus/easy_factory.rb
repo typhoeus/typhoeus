@@ -155,6 +155,11 @@ module Typhoeus
           request.execute_headers_callbacks(Response.new(Ethon::Easy::Mirror.from_easy(easy).options))
         end
       end
+      request.on_progress.each do |callback|
+        easy.on_progress do |dltotal, dlnow, ultotal, ulnow, easy|
+          callback.call(dltotal, dlnow, ultotal, ulnow, response)
+        end
+      end
       easy.on_complete do |easy|
         request.finish(Response.new(easy.mirror.options))
         Typhoeus::Pool.release(easy)
