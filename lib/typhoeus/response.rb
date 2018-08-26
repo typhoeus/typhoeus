@@ -14,7 +14,7 @@ module Typhoeus
     # Remembers the corresponding request.
     #
     # @example Get request.
-    #   request = Typhoeus::Request.get("www.example.com")
+    #   request = Typhoeus::Request.new("www.example.com")
     #   response = request.run
     #   request == response.request
     #   #=> true
