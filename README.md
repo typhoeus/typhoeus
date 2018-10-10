@@ -255,6 +255,33 @@ end
 hydra.run
 ```
 
+### Making Parallel Requests with Faraday + Typhoeus
+
+```ruby
+require 'faraday'
+
+conn = Faraday.new(:url => 'http://httppage.com') do |builder|
+  builder.request  :url_encoded
+  builder.response :logger
+  builder.adapter  :typhoeus
+end
+
+conn.in_parallel do
+  response1 = conn.get('/first')
+  response2 = conn.get('/second')
+
+  # these will return nil here since the
+  # requests have not been completed
+  response1.body
+  response2.body
+end
+
+# after it has been completed the response information is fully available
+# response1.status, etc
+response1.body
+response2.body
+```
+
 ### Specifying Max Concurrency
 
 Hydra will also handle how many requests you can make in parallel. Things will get flakey if you try to make too many requests at the same time. The built in limit is 200. When more requests than that are queued up, hydra will save them for later and start the requests as others are finished. You can raise or lower the concurrency limit through the Hydra constructor.
