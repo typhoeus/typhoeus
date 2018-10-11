@@ -39,7 +39,7 @@ module Typhoeus
         @http_version ||= first_header_line ? first_header_line[/HTTP\/(\S+)/, 1] : nil
       end
 
-      # Return wether the response is a success.
+      # Return whether the response is a success.
       #
       # @example Return if the response was successful.
       #  response.success?
@@ -49,13 +49,12 @@ module Typhoeus
         (mock || return_code == :ok) && response_code && has_good_response_code?
       end
 
-      # Return wether the response is a failure.
+      # Return whether the response is a failure.
       #
       # @example Return if the response was failed.
       #  response.failure?
       #
       # @return [ Boolean ] Return true if failure, false else.
-
       def failure?
         (mock || return_code == :internal_server_error) && response_code && has_bad_response_code?
       end
