@@ -129,7 +129,7 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
       end
 
       it "sets headers" do
-        expect(request.original_options[:headers]).to eq({})
+        expect(request.original_options[:request_headers]).to eq({})
       end
 
       it "sets on_complete callback" do
