@@ -107,7 +107,7 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
 
     describe "#request" do
       let(:env) do
-        { :url => "url", :method => :get, :body => "body", :request_headers => {}, :ssl => {}, :request => {} }
+        { :url => "url", :method => :get, :body => "body", :headers => {}, :ssl => {}, :request => {} }
       end
 
       let(:request) { adapter.method(:request).call(env) }
