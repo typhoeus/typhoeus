@@ -97,13 +97,13 @@ module Faraday # :nodoc:
           if resp.timed_out?
             env[:typhoeus_timed_out] = true
             unless parallel?(env)
-              raise Faraday::Error::TimeoutError, "request timed out"
+              raise Faraday::TimeoutError, "request timed out"
             end
           elsif (resp.response_code == 0) || ((resp.return_code != :ok) && !resp.mock?)
             env[:typhoeus_connection_failed] = true
             env[:typhoeus_return_message] = resp.return_message
             unless parallel?(env)
-              raise Faraday::Error::ConnectionFailed, resp.return_message
+              raise Faraday::ConnectionFailed, resp.return_message
             end
           end
 
