@@ -97,7 +97,7 @@ module Typhoeus
       # set nosignal to true by default
       # this improves thread safety and timeout behavior
       sanitized = {:nosignal => true}
-      request.options.each do |k,v|
+      options.each do |k,v|
         s = k.to_sym
         next if SANITIZE_IGNORE.include?(s)
         if new_option = RENAMED_OPTIONS[k.to_sym]
