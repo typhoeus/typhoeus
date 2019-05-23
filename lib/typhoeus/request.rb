@@ -214,6 +214,8 @@ module Typhoeus
       options[:headers] = {'User-Agent' => default_user_agent}.merge(options[:headers] || {})
       options[:headers]['Expect'] ||= ''
       options[:verbose] = Typhoeus::Config.verbose if options[:verbose].nil? && !Typhoeus::Config.verbose.nil?
+      options[:timeout] = Typhoeus::Config.timeout if options[:timeout].nil? && !Typhoeus::Config.timeout.nil?
+      options[:connecttimeout] = Typhoeus::Config.connecttimeout if options[:connecttimeout].nil? && !Typhoeus::Config.connecttimeout.nil?
       options[:maxredirs] ||= 50
       options[:proxy] = Typhoeus::Config.proxy unless options.has_key?(:proxy) || Typhoeus::Config.proxy.nil?
     end

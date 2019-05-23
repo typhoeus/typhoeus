@@ -95,6 +95,24 @@ describe Typhoeus::Request do
       end
     end
 
+    context "when Config.timeout set" do
+      before { Typhoeus.configure { |config| config.timeout = 1} }
+      after { Typhoeus.configure { |config| config.timeout = 0} }
+
+      it "respects" do
+        expect(request.options[:timeout]).to be(1)
+      end
+    end
+
+    context "when Config.connecttimeout set" do
+      before { Typhoeus.configure { |config| config.connecttimeout = 1} }
+      after { Typhoeus.configure { |config| config.connecttimeout = 0} }
+
+      it "respects" do
+        expect(request.options[:connecttimeout]).to be(1)
+      end
+    end
+
     context "when maxredirs" do
       context "when not set" do
         it "defaults to 50" do
