@@ -19,7 +19,7 @@ module Typhoeus
       end
 
       def set(request, response)
-        @cache.write(request, response, :expires_in => request.cache_ttl || @default_ttl)
+        @cache.write(request.cache_key, response, :expires_in => request.cache_ttl || @default_ttl)
       end
     end
   end
