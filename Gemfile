@@ -10,12 +10,11 @@ else
 end
 
 group :development, :test do
+  gem "appraisal"
   gem "rspec", "~> 3.0"
-
   gem "sinatra", "~> 1.3"
 
-  if Gem.ruby_version >= Gem::Version.new("1.9.0")
-    gem "faraday", ">= 0.9"
+  if Gem.ruby_version >= Gem::Version.new("1.9.0") 
     gem "dalli", "~> 2.0"
   end
 
