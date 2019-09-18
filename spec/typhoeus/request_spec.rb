@@ -88,19 +88,30 @@ describe Typhoeus::Request do
 
     context "when Config.verbose set" do
       before { Typhoeus.configure { |config| config.verbose = true} }
-      after { Typhoeus.configure { |config| config.verbose = false} }
 
       it "respects" do
-        expect(request.options[:verbose]).to be_truthy
+        req = Typhoeus::Request.new(base_url)
+        expect(req.options[:verbose]).to be_truthy
+      end
+    end
+
+    context "when Config.verbose set to false" do
+      before { Typhoeus.configure { |config| config.verbose = false} }
+      after { Typhoeus.configure { |config| config.verbose = true} }
+
+      it "respects" do
+        req = Typhoeus::Request.new(base_url)
+        expect(req.options[:verbose]).to be_falsy
       end
     end
 
     context "when Config.timeout set" do
-      before { Typhoeus.configure { |config| config.timeout = 1} }
+      before { Typhoeus.configure { |config| config.timeout = 2} }
       after { Typhoeus.configure { |config| config.timeout = 0 } }
 
       it "respects" do
-        expect(request.options[:timeout]).to eq(1)
+        req = Typhoeus::Request.new(base_url)
+        expect(req.options[:timeout]).to eq(2)
       end
     end
 
@@ -109,7 +120,8 @@ describe Typhoeus::Request do
       after { Typhoeus.configure { |config| config.connecttimeout = 0 } }
 
       it "respects" do
-        expect(request.options[:connecttimeout]).to eq(1)
+        req = Typhoeus::Request.new(base_url)
+        expect(req.options[:connecttimeout]).to eq(1)
       end
     end
 
