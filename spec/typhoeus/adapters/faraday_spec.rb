@@ -163,7 +163,7 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
 
       context "when not parallel" do
         it "raises an error" do
-          expect { conn.get("/") }.to raise_error(Faraday::Error::ConnectionFailed, "No error")
+          expect { conn.get("/") }.to raise_error(Faraday::ConnectionFailed, "No error")
         end
       end
     end
