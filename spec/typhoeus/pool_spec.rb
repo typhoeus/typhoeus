@@ -88,12 +88,14 @@ describe Typhoeus::Pool do
 
       context "when threaded access" do
         it "creates correct number of easies" do
-          array = []
+          queue = Queue.new
           (0..9).map do |n|
             Thread.new do
-              array << Typhoeus::Pool.get
+              queue.enq(Typhoeus::Pool.get)
             end
           end.map(&:join)
+
+          array = Array.new(queue.size) { queue.pop }
           expect(array.uniq.size).to eq(10)
         end
       end
