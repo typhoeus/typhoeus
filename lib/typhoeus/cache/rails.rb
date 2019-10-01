@@ -7,7 +7,9 @@ module Typhoeus
       #
       # @param [ ActiveSupport::Cache::Store ] cache
       #   A Rails cache backend. Defaults to Rails.cache.
-      # @param [ Integer ] default_ttl
+      # @param [ Hash ] options
+      #   Options
+      # @option options [ Integer ] :default_ttl
       #   The default TTL of cached responses in seconds, for requests which do not set a cache_ttl.
       def initialize(cache = ::Rails.cache, options = {})
         @cache = cache

@@ -18,7 +18,7 @@ module Typhoeus
     # {Typhoeus::Errors::NoStub} error is raised,
     # when trying to do a real request. It's possible
     # to work around inside
-    # {Typhoeus#with_connection}.
+    # {Typhoeus.with_connection}.
     #
     # @return [ Boolean ]
     #

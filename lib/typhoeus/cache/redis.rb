@@ -8,7 +8,9 @@ module Typhoeus
       # @param [ Redis ] redis
       #   A connection to Redis. Defaults to `Redis.new`, which uses the
       #   `REDIS_URL` environment variable to connect
-      # @param [ Integer ] default_ttl
+      # @param [ Hash ] options
+      #   Options
+      # @option options [ Integer ] :default_ttl
       #   The default TTL of cached responses in seconds, for requests which do not set a cache_ttl.
       def initialize(redis = ::Redis.new, options = {})
         @redis = redis
