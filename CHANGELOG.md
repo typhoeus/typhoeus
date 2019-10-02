@@ -2,7 +2,19 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.1.2...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.4.1...master)
+
+## 1.4.1
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.1.2...v1.4.1)
+
+#### 1 feature
+- Faraday adapter exceptions namespace compatibility with Faraday v1 ([@iMacTia](https://github.com/iMacTia) in [#616](https://github.com/typhoeus/typhoeus/pull/616))
+
+#### 3 Others
+- Yard warning fixes ([@olleolleolle](https://github.com/olleolleolle) in [#622](https://github.com/typhoeus/typhoeus/pull/622))
+- Add more Ruby versions in CI matrix ([@olleolleolle](https://github.com/olleolleolle) in [#623](https://github.com/typhoeus/typhoeus/pull/623))
+- Use of argument passed in function instead of `attr_reader` ([@v-kolesnikov](https://github.com/v-kolesnikov) in [#625](https://github.com/typhoeus/typhoeus/pull/625))
 
 ## 1.1.2
 
