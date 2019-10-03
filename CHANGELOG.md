@@ -2,11 +2,11 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.4.1...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.4.0...master)
 
-## 1.4.1
+## 1.4.0
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.1.2...v1.4.1)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.1.2...v1.4.0)
 
 #### 1 feature
 - Faraday adapter exceptions namespace compatibility with Faraday v1 ([@iMacTia](https://github.com/iMacTia) in [#616](https://github.com/typhoeus/typhoeus/pull/616))
