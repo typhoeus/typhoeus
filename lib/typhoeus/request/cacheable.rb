@@ -11,12 +11,16 @@ module Typhoeus
       end
 
       def run
-        if cacheable? && response = cache.get(self)
+        if response = cached_response
           response.cached = true
           finish(response)
         else
           super
         end
+      end
+
+      def cached_response
+        cacheable? && cache.get(self)
       end
 
       def cache_ttl
