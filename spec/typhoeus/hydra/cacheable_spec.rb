@@ -60,8 +60,9 @@ describe Typhoeus::Hydra::Cacheable do
         context "when cache is false" do
           let(:non_cached_request) { Typhoeus::Request.new(base_url, {:method => :get, :cache => false}) }
 
-          it "finishes request" do
-            expect(non_cached_request.response).to_not be_truthy
+          it "initiates an HTTP call" do
+            expect(Typhoeus::EasyFactory).to receive(:new).with(non_cached_request, hydra).and_call_original
+
             hydra.add(non_cached_request)
           end
         end
@@ -71,9 +72,13 @@ describe Typhoeus::Hydra::Cacheable do
 
           before { cache.memory[cached_request] = response }
 
-          it "finishes request" do
-            expect(cached_request).to receive(:finish).with(response)
+          it "uses the cache instead of making a new request" do
+            expect(Typhoeus::EasyFactory).not_to receive(:new)
+
             hydra.add(cached_request)
+
+            expect(cached_request.response).to be_cached
+            expect(cached_request.response).to eq(response)
           end
         end
       end
