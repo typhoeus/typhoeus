@@ -127,6 +127,23 @@ describe Typhoeus::Request do
         end
       end
     end
+
+    context "when Config.noproxy set" do
+      before { Typhoeus.configure { |config| config.noproxy = "localhost,.localdomain" } }
+      after { Typhoeus.configure { |config| config.noproxy = nil } }
+
+      it "respects" do
+        expect(request.options[:noproxy]).to eq("localhost,.localdomain")
+      end
+
+      context "when option noproxy set" do
+        let(:options) { {:noproxy => nil} }
+
+        it "does not override" do
+          expect(request.options[:noproxy]).to be_nil
+        end
+      end
+    end
   end
 
   describe "#eql?" do

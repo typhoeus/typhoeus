@@ -222,6 +222,14 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
           it "sets proxyuserpwd" do
             expect(request.options[:proxyuserpwd]).to eq("a:b")
           end
+	end
+
+        context "when noproxy" do
+          let(:env) { { :request => { :proxy => { :uri => double(:scheme => 'http', :host => "localhost", :port => "3001") }, :noproxy => "localhost,.localdomain" } } }
+
+          it "sets noproxy" do
+            expect(request.options[:noproxy]).to eq("localhost,.localdomain")
+          end
         end
       end
     end
