@@ -72,6 +72,11 @@ req = Typhoeus::Request.new(url, options)
 
 Note that `proxyuserpwd` is a colon-separated username and password, in the vein of basic auth `userpwd` option.
 
+If some domains/addresses need to connect directly and bypass the proxy (e.g. local network), add them to the `noproxy` option key:
+```ruby
+options = {proxy: 'http://proxyurl.com', proxyuserpwd: 'user:password', noproxy: 'localhost, .localdomain'}
+req = Typhoeus::Request.new(url, options)
+```
 
 You can run the query either on its own or through the hydra:
 
