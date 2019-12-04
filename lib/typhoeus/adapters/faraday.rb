@@ -153,7 +153,7 @@ module Faraday # :nodoc:
         return unless proxy
 
         noproxy = env[:request][:noproxy]
-	req.options[:noproxy] = noproxy
+        req.options[:noproxy] = noproxy
 
         req.options[:proxy] = "#{proxy[:uri].scheme}://#{proxy[:uri].host}:#{proxy[:uri].port}"
 
