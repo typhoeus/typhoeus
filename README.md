@@ -19,13 +19,16 @@ hydra.run
 ```
 
 ## Installation
+Add the following line to your Gemfile:
+```
+gem "typhoeus"
+```
+Then run `bundle install`
+
+Or install it yourself as:
 
 ```
 gem install typhoeus
-```
-
-```
-gem "typhoeus"
 ```
 
 ## Project Tracking
