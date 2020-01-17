@@ -199,6 +199,14 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
             expect(request.options[:timeout_ms]).to eq(1000)
           end
         end
+
+        context "is a float" do
+          let(:env) { { :request => { :timeout => 1.09 } } }
+
+          it "preserves numericality & sets timeout_ms" do
+            expect(request.options[:timeout_ms]).to eq(1090)
+          end
+        end
       end
 
       context "when open_timeout" do

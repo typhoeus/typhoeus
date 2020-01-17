@@ -162,8 +162,8 @@ module Faraday # :nodoc:
 
       def configure_timeout(req, env)
         env_req = env[:request]
-        req.options[:timeout_ms] = env_req[:timeout].to_i * 1000             if env_req[:timeout]
-        req.options[:connecttimeout_ms] = env_req[:open_timeout].to_i * 1000 if env_req[:open_timeout]
+        req.options[:timeout_ms] = (env_req[:timeout].to_f * 1000).to_i             if env_req[:timeout]
+        req.options[:connecttimeout_ms] = (env_req[:open_timeout].to_f * 1000).to_i if env_req[:open_timeout]
       end
 
       def configure_socket(req, env)
