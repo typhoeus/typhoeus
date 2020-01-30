@@ -368,16 +368,16 @@ Typhoeus::Config.cache = Typhoeus::Cache::Redis.new(redis)
 ```
 
 All three of these adapters take an optional keyword argument `default_ttl`, which sets a default
-TTL on cached responses (in seconds), for requests which do not have a cache TTL set.
+TTL on cached responses (in seconds), for requests which do not have a cache TTL set. 
 
-You can use `default_ttl` as:
+You can use `default_ttl` with Dalli as:
 
 ```ruby
 dalli = Dalli::Client.new(...)
 Typhoeus::Config.cache = Typhoeus::Cache::Dalli.new(dalli, default_ttl: 3600)
 ```
 
-With redis
+Or with Redis:
 
 ```ruby
 redis = Redis.new(...)
