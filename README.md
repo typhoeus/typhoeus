@@ -33,8 +33,7 @@ gem install typhoeus
 
 ## Project Tracking
 
-* [Documentation](http://rubydoc.info/github/typhoeus/typhoeus/frames/Typhoeus) (GitHub master)
-* [Mailing list](http://groups.google.com/group/typhoeus)
+* [API Documentation](https://rubydoc.info/github/typhoeus/typhoeus/frames/Typhoeus) (GitHub master)
 
 ## Usage
 
