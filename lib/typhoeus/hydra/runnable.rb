@@ -13,6 +13,9 @@ module Typhoeus
       def run
         dequeue_many
         multi.perform
+
+        # Reset multi (releases it for reuse).
+        self.multi = nil
       end
     end
   end

@@ -23,6 +23,13 @@ describe Typhoeus::Hydra::Runnable do
       hydra.run
     end
 
+    it "releases multi back to pool" do
+      expect(Typhoeus::Pooling::Multis).to receive(:release).with(hydra.multi)
+      hydra.run
+      expect(Typhoeus::Pooling::Multis).to receive(:get).and_call_original
+      hydra.multi
+    end
+
     context "when request queued" do
       let(:first) { Typhoeus::Request.new("localhost:3001/first") }
       let(:requests) { [first] }

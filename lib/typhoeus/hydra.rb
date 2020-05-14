@@ -52,9 +52,6 @@ module Typhoeus
     #   Typhoeus::Hydra.new(max_concurrency: 20)
     attr_accessor :max_concurrency
 
-    # @api private
-    attr_reader :multi
-
     class << self
 
       # Returns a memoized hydra instance.
@@ -89,7 +86,27 @@ module Typhoeus
     def initialize(options = {})
       @options = options
       @max_concurrency = Integer(@options.fetch(:max_concurrency, 200))
-      @multi = Ethon::Multi.new(options.reject{|k,_| k==:max_concurrency})
     end
+
+    # Get the underlying multi handle.
+    #
+    # @returns [ Ethon::Multi ]
+    #
+    # @api private
+    def multi
+      @multi || self.multi = Pooling::Multis.get
+    end
+
+    private
+
+    def multi=(value)
+      if value
+        value.set_attributes(@options.reject { |k,_| k == :max_concurrency })
+      end
+      Pooling::Multis.release(@multi)  if @multi
+      @multi = value
+    end
+
   end
+
 end
