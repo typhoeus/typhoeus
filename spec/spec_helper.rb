@@ -17,6 +17,7 @@ RSpec.configure do |config|
 
   config.after do
     Typhoeus::Pooling::Easies.clear
+    Typhoeus::Pooling::Multis.clear
     Typhoeus::Expectation.clear
     Typhoeus.before.clear
     Typhoeus.on_complete.clear
