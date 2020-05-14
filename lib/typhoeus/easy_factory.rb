@@ -67,7 +67,7 @@ module Typhoeus
     #
     # @return [ Ethon::Easy ] The easy.
     def easy
-      @easy ||= Typhoeus::Pool.get
+      @easy ||= Pooling::Easies.get
     end
 
     # Fabricated easy.
@@ -162,7 +162,7 @@ module Typhoeus
       end
       easy.on_complete do |easy|
         request.finish(Response.new(easy.mirror.options))
-        Typhoeus::Pool.release(easy)
+        Pooling::Easies.release(easy)
         if hydra && !hydra.queued_requests.empty?
           hydra.dequeue_many
         end
