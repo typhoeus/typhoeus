@@ -1,5 +1,3 @@
-require 'thread'
-
 module Typhoeus::Pooling
 
   # The easy pool stores already initialized
@@ -8,8 +6,7 @@ module Typhoeus::Pooling
   #
   # @api private
   module Easies
-    @mutex = Mutex.new
-    @pid = Process.pid
+    @pool = Pool.new
 
     # Releases easy into the pool. The easy handle is
     # reset before it gets back in.
@@ -20,7 +17,7 @@ module Typhoeus::Pooling
       easy.cookielist = "flush" # dump all known cookies to 'cookiejar'
       easy.cookielist = "all" # remove all cookies from memory for this handle
       easy.reset
-      @mutex.synchronize { easies << easy }
+      @pool.release(easy)
     end
 
     # Return an easy from the pool.
@@ -30,22 +27,12 @@ module Typhoeus::Pooling
     #
     # @return [ Ethon::Easy ] The easy.
     def self.get
-      @mutex.synchronize do
-        if @pid == Process.pid
-          easies.pop
-        else
-          # Process has forked. Clear all easies to avoid sockets being
-          # shared between processes.
-          @pid = Process.pid
-          easies.clear
-          nil
-        end
-      end || Ethon::Easy.new
+      @pool.get || Ethon::Easy.new
     end
 
     # Clear the pool
     def self.clear
-      @mutex.synchronize { easies.clear }
+      @pool.clear
     end
 
     # Use yielded easy, will be released automatically afterwards.
@@ -59,12 +46,6 @@ module Typhoeus::Pooling
       yield easy
     ensure
       release(easy) if easy
-    end
-
-    private
-
-    def self.easies
-      @easies ||= []
     end
   end
 end
