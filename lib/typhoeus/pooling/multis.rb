@@ -9,12 +9,18 @@ module Typhoeus::Pooling
     @pool = Pool.new
 
     # Releases multi into the pool.
+    # Cleans up any attached easy handles.
     #
     # @example
     #   Typhoeus::Pooling::Multis.release(multi)
     #
     # @param [Ethon::Multi] multi
     def self.release(multi)
+      # Clean up any handles that didn't complete.
+      multi.easy_handles.dup.each do |easy|
+        multi.delete(easy)
+        Easies.release(easy)
+      end
       @pool.release(multi)
     end
 

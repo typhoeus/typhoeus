@@ -11,6 +11,20 @@ describe Typhoeus::Pooling::Multis do
       expect(pool).to receive(:release).with(multi)
       multis.release(multi)
     end
+
+    context "when easy handles attached" do
+      before { 2.times { multi.add(Ethon::Easy.new) } }
+
+      it "unattaches them" do
+        multis.release(multi)
+        expect(multi.easy_handles.size).to eq(0)
+      end
+
+      it "releases them back to pool" do
+        expect(Typhoeus::Pooling::Easies).to receive(:release).twice
+        multis.release(multi)
+      end
+    end
   end
 
   describe "#get" do

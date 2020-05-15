@@ -63,6 +63,25 @@ module Typhoeus
       def hydra
         Thread.current[:typhoeus_hydra] ||= new
       end
+
+      # Creates a new hydra with the given options and yields it to the block.
+      # Releases the underlying handle for reuse afterwards.
+      #
+      # @example
+      #   Typhoeus::Hydra.with_hydra do |hydra|
+      #     # Use hydra.
+      #   end
+      #
+      # @param [Hash] options
+      # @yield [Typhoeus::Hydra] hydra
+      #
+      # @see Typhoeus::Hydra#initialize
+      def with_hydra(options = {})
+        hydra = new(options)
+        yield(hydra)
+      ensure
+        hydra.reset if hydra
+      end
     end
 
     # Create a new hydra. All
@@ -86,6 +105,13 @@ module Typhoeus
     def initialize(options = {})
       @options = options
       @max_concurrency = Integer(@options.fetch(:max_concurrency, 200))
+      @multi = nil
+    end
+
+    # Releases the underlying handle for reuse.
+    def reset
+      Pooling::Multis.release(@multi) if @multi
+      @multi = nil
     end
 
     # Get the underlying multi handle.
@@ -94,19 +120,11 @@ module Typhoeus
     #
     # @api private
     def multi
-      @multi || self.multi = Pooling::Multis.get
-    end
-
-    private
-
-    def multi=(value)
-      if value
-        value.set_attributes(@options.reject { |k,_| k == :max_concurrency })
+      unless @multi
+        @multi = Pooling::Multis.get
+        @multi.set_attributes(@options.reject { |k,_| k == :max_concurrency })
       end
-      Pooling::Multis.release(@multi)  if @multi
-      @multi = value
+      @multi
     end
-
   end
-
 end

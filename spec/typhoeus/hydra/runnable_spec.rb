@@ -23,13 +23,6 @@ describe Typhoeus::Hydra::Runnable do
       hydra.run
     end
 
-    it "releases multi back to pool" do
-      expect(Typhoeus::Pooling::Multis).to receive(:release).with(hydra.multi)
-      hydra.run
-      expect(Typhoeus::Pooling::Multis).to receive(:get).and_call_original
-      hydra.multi
-    end
-
     context "when request queued" do
       let(:first) { Typhoeus::Request.new("localhost:3001/first") }
       let(:requests) { [first] }
@@ -138,6 +131,14 @@ describe Typhoeus::Hydra::Runnable do
             hydra.run
           end
         end
+      end
+    end
+
+    context "when ran twice" do
+      after { 2.times { hydra.run } }
+      it "reuses multi handle" do
+        allow(Typhoeus::Pooling::Multis).to receive(:get) { Ethon::Multi.new }
+        expect(hydra.multi).to receive(:perform).twice
       end
     end
   end
