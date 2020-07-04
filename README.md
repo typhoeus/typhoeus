@@ -1,4 +1,4 @@
-# Typhoeus [![Build Status](https://img.shields.io/travis/typhoeus/typhoeus/master.svg)](https://travis-ci.org/typhoeus/typhoeus) [![Code Climate](https://img.shields.io/codeclimate/github/typhoeus/typhoeus.svg)](https://codeclimate.com/github/typhoeus/typhoeus) [![Gem Version](https://img.shields.io/gem/v/typhoeus.svg)](https://rubygems.org/gems/typhoeus)
+# Typhoeus [![Build Status](https://img.shields.io/travis/typhoeus/typhoeus/master.svg)](https://travis-ci.org/typhoeus/typhoeus) [![Code Climate](https://img.shields.io/codeclimate/maintainability/typhoeus/typhoeus.svg)](https://codeclimate.com/github/typhoeus/typhoeus) [![Gem Version](https://img.shields.io/gem/v/typhoeus.svg)](https://rubygems.org/gems/typhoeus)
 
 Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.
 
@@ -19,19 +19,21 @@ hydra.run
 ```
 
 ## Installation
+Add the following line to your Gemfile:
+```
+gem "typhoeus"
+```
+Then run `bundle install`
+
+Or install it yourself as:
 
 ```
 gem install typhoeus
 ```
 
-```
-gem "typhoeus"
-```
-
 ## Project Tracking
 
-* [Documentation](http://rubydoc.info/github/typhoeus/typhoeus/frames/Typhoeus) (GitHub master)
-* [Mailing list](http://groups.google.com/group/typhoeus)
+* [API Documentation](https://rubydoc.info/github/typhoeus/typhoeus/frames/Typhoeus) (GitHub master)
 
 ## Usage
 

@@ -127,11 +127,12 @@ module Typhoeus
   #     #=> :ok
   #   end
   #
-  # @param [ Block ] block The block to execute.
-  #
+  # @yield Yields control to the block after disabling block_connection.
+  #        Afterwards, the block_connection is set to its original
+  #        value.
   # @return [ Object ] Returns the return value of the block.
   #
-  # @see Typhoeus::Config#block_connection
+  # @see Typhoeus::Config.block_connection
   def self.with_connection
     old = Config.block_connection
     Config.block_connection = false

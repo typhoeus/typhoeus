@@ -7,7 +7,9 @@ module Typhoeus
       #
       # @param [ Dalli::Client ] client
       #   A connection to the cache server. Defaults to `Dalli::Client.new`
-      # @param [ Integer ] default_ttl
+      # @param [ Hash ] options
+      #   Options
+      # @option options [ Integer ] :default_ttl
       #   The default TTL of cached responses in seconds, for requests which do not set a cache_ttl.
       def initialize(client = ::Dalli::Client.new, options = {})
         @client = client
