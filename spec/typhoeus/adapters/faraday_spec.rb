@@ -306,7 +306,7 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
       end
 
       context "when verify is false but ssl_verifyhost is 2" do
-        let(:request) { Typhoeus::Request.new(base_url, ssl_verifyhost: 2) }
+        let(:request) { Typhoeus::Request.new(base_url, { :ssl_verifyhost => 2 }) }
         let(:env) { { :ssl => { :verify => false } } }
 
         it "sets ssl_verifyhost to 0" do
@@ -327,7 +327,7 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
       end
 
       context "when verify is true and ssl_verifyhost is 2" do
-        let(:request) { Typhoeus::Request.new(base_url, ssl_verifyhost: 2) }
+        let(:request) { Typhoeus::Request.new(base_url, { :ssl_verifyhost => 2 }) }
         let(:env) { { :ssl => { :verify => true } } }
 
         it "sets ssl_verifyhost to 2" do
@@ -336,7 +336,7 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
       end
 
       context "when verify is true but ssl_verifyhost is 0" do
-        let(:request) { Typhoeus::Request.new(base_url, ssl_verifyhost: 0) }
+        let(:request) { Typhoeus::Request.new(base_url, { :ssl_verifyhost => 0 }) }
         let(:env) { { :ssl => { :verify => true } } }
 
         it "sets ssl_verifyhost to 0" do
