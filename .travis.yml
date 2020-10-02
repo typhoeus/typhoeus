@@ -13,6 +13,7 @@ rvm:
   - jruby-head
   - jruby-18mode
   - jruby-19mode
+  - truffleruby-head
 matrix: 
   fast_finish: true
   allow_failures:
