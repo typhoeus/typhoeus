@@ -140,6 +140,8 @@ module Faraday # :nodoc:
         req.options[:ssl_verifyhost] = ssl_verifyhost
         req.options[:ssl_verifypeer] = verify_p
         req.options[:sslversion] = ssl[:version]     if ssl[:version]
+        req.options[:sslmaxversion] = ssl[:max_version]     if ssl[:max_version]
+        req.options[:sslminversion] = ssl[:min_version]     if ssl[:min_version]
         req.options[:sslcert]    = ssl[:client_cert] if ssl[:client_cert]
         req.options[:sslkey]     = ssl[:client_key]  if ssl[:client_key]
         req.options[:cainfo]     = ssl[:ca_file]     if ssl[:ca_file]
