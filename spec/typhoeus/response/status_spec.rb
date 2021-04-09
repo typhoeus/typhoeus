@@ -74,6 +74,33 @@ describe Typhoeus::Response::Status do
     end
   end
 
+  describe "#complete?" do
+    subject(:complete?) { response.complete? }
+
+    let(:options) { {:return_code => return_code, :response_code => response_code} }
+
+    context "when response code 200-299" do
+      let(:return_code) { :ok }
+      let(:response_code) { 200 }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context "when response code 0" do
+      let(:return_code) { :ok }
+      let(:response_code) { 0 }
+
+      it { is_expected.to eq(false) }
+    end
+
+    context "when return_code :operation_timedout" do
+      let(:return_code) { :operation_timedout }
+      let(:response_code) { 200 }
+
+      it { is_expected.to eq(false) }
+    end
+  end
+
   describe "#success?" do
     context "when response code 200-299" do
       let(:options) { {:return_code => return_code, :response_code => 201} }
