@@ -349,6 +349,8 @@ Typhoeus.get("www.example.com").cached?
 For use with [Dalli](https://github.com/mperham/dalli):
 
 ```ruby
+require "typhoeus/cache/dalli"
+
 dalli = Dalli::Client.new(...)
 Typhoeus::Config.cache = Typhoeus::Cache::Dalli.new(dalli)
 ```
@@ -356,12 +358,16 @@ Typhoeus::Config.cache = Typhoeus::Cache::Dalli.new(dalli)
 For use with Rails:
 
 ```ruby
+require "typhoeus/cache/rails"
+
 Typhoeus::Config.cache = Typhoeus::Cache::Rails.new
 ```
 
 For use with [Redis](https://github.com/redis/redis-rb):
 
 ```ruby
+require "typhoeus/cache/redis"
+
 redis = Redis.new(...)
 Typhoeus::Config.cache = Typhoeus::Cache::Redis.new(redis)
 ```
