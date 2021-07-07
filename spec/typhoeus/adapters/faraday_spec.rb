@@ -184,10 +184,28 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
       before { adapter.method(:configure_timeout).call(request, env) }
 
       context "when timeout" do
-        let(:env) { { :request => { :timeout => 1 } } }
+        context "is an int" do
+          let(:env) { { :request => { :timeout => 1 } } }
 
-        it "sets timeout_ms" do
-          expect(request.options[:timeout_ms]).to eq(1000)
+          it "sets timeout_ms" do
+            expect(request.options[:timeout_ms]).to eq(1000)
+          end
+        end
+
+        context "is a string" do
+          let(:env) { { :request => { :timeout => "1" } } }
+
+          it "sets timeout_ms" do
+            expect(request.options[:timeout_ms]).to eq(1000)
+          end
+        end
+
+        context "is a float" do
+          let(:env) { { :request => { :timeout => 1.09 } } }
+
+          it "preserves numericality & sets timeout_ms" do
+            expect(request.options[:timeout_ms]).to eq(1090)
+          end
         end
       end
 
