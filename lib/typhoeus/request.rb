@@ -129,7 +129,7 @@ module Typhoeus
     def url
       easy = EasyFactory.new(self).get
       url = easy.url
-      Typhoeus::Pool.release(easy)
+      Pooling::Easies.release(easy)
       url
     end
 

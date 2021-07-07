@@ -52,9 +52,6 @@ module Typhoeus
     #   Typhoeus::Hydra.new(max_concurrency: 20)
     attr_accessor :max_concurrency
 
-    # @api private
-    attr_reader :multi
-
     class << self
 
       # Returns a memoized hydra instance.
@@ -65,6 +62,25 @@ module Typhoeus
       # @return [Typhoeus::Hydra] A new hydra.
       def hydra
         Thread.current[:typhoeus_hydra] ||= new
+      end
+
+      # Creates a new hydra with the given options and yields it to the block.
+      # Releases the underlying handle for reuse afterwards.
+      #
+      # @example
+      #   Typhoeus::Hydra.with_hydra do |hydra|
+      #     # Use hydra.
+      #   end
+      #
+      # @param [Hash] options
+      # @yield [Typhoeus::Hydra] hydra
+      #
+      # @see Typhoeus::Hydra#initialize
+      def with_hydra(options = {})
+        hydra = new(options)
+        yield(hydra)
+      ensure
+        hydra.reset if hydra
       end
     end
 
@@ -89,7 +105,26 @@ module Typhoeus
     def initialize(options = {})
       @options = options
       @max_concurrency = Integer(@options.fetch(:max_concurrency, 200))
-      @multi = Ethon::Multi.new(options.reject{|k,_| k==:max_concurrency})
+      @multi = nil
+    end
+
+    # Releases the underlying handle for reuse.
+    def reset
+      Pooling::Multis.release(@multi) if @multi
+      @multi = nil
+    end
+
+    # Get the underlying multi handle.
+    #
+    # @returns [ Ethon::Multi ]
+    #
+    # @api private
+    def multi
+      unless @multi
+        @multi = Pooling::Multis.get
+        @multi.set_attributes(@options.reject { |k,_| k == :max_concurrency })
+      end
+      @multi
     end
   end
 end
