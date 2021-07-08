@@ -44,6 +44,22 @@ module Typhoeus
     # @see http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTVERBOSE
     attr_accessor :verbose
 
+    # Defines the default HTTP timeout for the entire request in seconds
+    # See README for more details about timeouts
+    #
+    # @return [ Integer, Float ]
+    #
+    # @see https://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTTIMEOUT
+    attr_accessor :timeout
+
+    # Defines the default HTTP timeout for the connection phase in seconds
+    # See README for more details about timeouts
+    #
+    # @return [ Integer, Float ]
+    #
+    # @see https://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUT
+    attr_accessor :connecttimeout
+
     # Defines whether requests are cached.
     #
     # @return [ Object ]

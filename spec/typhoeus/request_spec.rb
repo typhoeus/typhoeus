@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Typhoeus::Request do
   let(:base_url) { "localhost:3001" }
-  let(:options) { {:verbose => true, :headers => { 'User-Agent' => "Fubar", 'Expect' => "" }, :maxredirs => 50} }
+  let(:options) { {:verbose => true, :headers => { 'User-Agent' => "Fubar", 'Expect' => "" }, :maxredirs => 50, :connecttimeout => 0, :timeout => 0 } }
   let(:request) { Typhoeus::Request.new(base_url, options) }
 
   describe ".url" do
@@ -88,10 +88,40 @@ describe Typhoeus::Request do
 
     context "when Config.verbose set" do
       before { Typhoeus.configure { |config| config.verbose = true} }
-      after { Typhoeus.configure { |config| config.verbose = false} }
 
       it "respects" do
-        expect(request.options[:verbose]).to be_truthy
+        req = Typhoeus::Request.new(base_url)
+        expect(req.options[:verbose]).to be_truthy
+      end
+    end
+
+    context "when Config.verbose set to false" do
+      before { Typhoeus.configure { |config| config.verbose = false} }
+      after { Typhoeus.configure { |config| config.verbose = true} }
+
+      it "respects" do
+        req = Typhoeus::Request.new(base_url)
+        expect(req.options[:verbose]).to be_falsy
+      end
+    end
+
+    context "when Config.timeout set" do
+      before { Typhoeus.configure { |config| config.timeout = 2} }
+      after { Typhoeus.configure { |config| config.timeout = 0 } }
+
+      it "respects" do
+        req = Typhoeus::Request.new(base_url)
+        expect(req.options[:timeout]).to eq(2)
+      end
+    end
+
+    context "when Config.connecttimeout set" do
+      before { Typhoeus.configure { |config| config.connecttimeout = 1} }
+      after { Typhoeus.configure { |config| config.connecttimeout = 0 } }
+
+      it "respects" do
+        req = Typhoeus::Request.new(base_url)
+        expect(req.options[:connecttimeout]).to eq(1)
       end
     end
 
@@ -167,7 +197,7 @@ describe Typhoeus::Request do
 
         context "when different order" do
           let(:other_options) {
-            {:headers => { 'User-Agent' => "Fubar", 'Expect' => ""}, :verbose => true }
+            {:headers => { 'User-Agent' => "Fubar", 'Expect' => ""}, :verbose => true, :connecttimeout => 0, :timeout => 0 }
           }
           let(:other) { Typhoeus::Request.new(base_url, other_options)}
 
@@ -183,7 +213,7 @@ describe Typhoeus::Request do
     context "when request.eql?(other)" do
       context "when different order" do
         let(:other_options) {
-          {:headers => { 'User-Agent' => "Fubar", 'Expect' => "" }, :verbose => true }
+          {:headers => { 'User-Agent' => "Fubar", 'Expect' => "" }, :verbose => true, :connecttimeout => 0, :timeout => 0 }
         }
         let(:other) { Typhoeus::Request.new(base_url, other_options)}
 
