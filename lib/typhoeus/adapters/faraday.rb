@@ -178,3 +178,5 @@ module Faraday # :nodoc:
     end
   end
 end
+
+Faraday::Adapter.register_middleware :typhoeus => :Typhoeus
