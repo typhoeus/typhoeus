@@ -93,6 +93,24 @@ module Faraday # :nodoc:
         configure_timeout req, env
         configure_socket  req, env
 
+        if env[:request][:on_data].is_a?(Proc)
+          yielded = false
+          size = 0
+
+          req.on_body do |chunk|
+            if chunk.bytesize.positive? || size.positive?
+              yielded = true
+              size += chunk.bytesize
+
+              env[:request][:on_data].call(chunk, size)
+            end
+          end
+
+          req.on_complete do |resp|
+            env[:request][:on_data].call(+'', 0) unless yielded
+          end
+        end
+
         req.on_complete do |resp|
           if resp.timed_out?
             env[:typhoeus_timed_out] = true
