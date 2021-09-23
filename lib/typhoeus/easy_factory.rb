@@ -114,14 +114,13 @@ module Typhoeus
         end
       end
 
-      sanitize_timeout!(sanitized, :timeout)
-      sanitize_timeout!(sanitized, :connecttimeout)
+      sanitize_timeout!(sanitized, :timeout, :timeout_ms)
+      sanitize_timeout!(sanitized, :connecttimeout, :connecttimeout_ms)
 
       sanitized
     end
 
-    def sanitize_timeout!(options, timeout)
-      timeout_ms = :"#{timeout}_ms"
+    def sanitize_timeout!(options, timeout, timeout_ms)
       if options[timeout] && options[timeout].round != options[timeout]
         if !options[timeout_ms]
           options[timeout_ms] = (options[timeout]*1000).ceil
