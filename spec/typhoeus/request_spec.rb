@@ -2,7 +2,13 @@ require 'spec_helper'
 
 describe Typhoeus::Request do
   let(:base_url) { "localhost:3001" }
-  let(:options) { {:verbose => true, :headers => { 'User-Agent' => "Fubar", 'Expect' => "" }, :maxredirs => 50} }
+  let(:options) do
+    {
+      verbose: true,
+      headers: { "User-Agent" => "Fubar", "Expect" => "" },
+      maxredirs: 50
+    }
+  end
   let(:request) { Typhoeus::Request.new(base_url, options) }
 
   describe ".url" do
@@ -92,6 +98,24 @@ describe Typhoeus::Request do
 
       it "respects" do
         expect(request.options[:verbose]).to be_truthy
+      end
+    end
+
+    context "when Config.timeout set" do
+      before { Typhoeus.configure { |config| config.timeout = 10 } }
+      after { Typhoeus.configure { |config| config.timeout = nil } }
+
+      it "respects configuration" do
+        expect(request.options[:timeout]).to eq(10)
+      end
+    end
+
+    context "when Config.connecttimeout set" do
+      before { Typhoeus.configure { |config| config.connecttimeout = 10 } }
+      after { Typhoeus.configure { |config| config.connecttimeout = nil } }
+
+      it "respects configuration" do
+        expect(request.options[:connecttimeout]).to eq(10)
       end
     end
 
