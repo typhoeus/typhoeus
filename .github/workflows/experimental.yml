@@ -1,0 +1,23 @@
+name: Experimental
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby:
+          - ruby-head
+          - jruby-head
+          - truffleruby-head
+    name: Ruby ${{ matrix.ruby }}
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Ruby ${{ matrix.ruby }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Run tests
+        continue-on-error: true
+        run: |
+          bundle exec rake
