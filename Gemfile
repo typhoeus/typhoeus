@@ -19,6 +19,10 @@ group :development, :test do
     gem "dalli", "~> 2.0"
   end
 
+  if Gem.ruby_version >= Gem::Version.new("3.0.0")
+    gem 'webrick'
+  end
+
   gem "redis", "~> 3.0"
 
   if RUBY_PLATFORM == "java"
