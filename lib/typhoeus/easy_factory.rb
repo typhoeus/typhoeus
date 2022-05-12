@@ -78,11 +78,17 @@ module Typhoeus
     # @return [ Ethon::Easy ] The easy.
     def get
       begin
+        read_callback_body = request.options.delete(:set_read_callback)
+
         easy.http_request(
           request.base_url.to_s,
           request.options.fetch(:method, :get),
           sanitize(request.options)
         )
+
+        # this needs to happen after http_request because
+        # ethon will set infilesize to zero if form.empty?
+        set_read_callback(read_callback_body) if !read_callback_body.nil?
       rescue Ethon::Errors::InvalidOption => e
         help = provide_help(e.message.match(/:\s(\w+)/)[1])
         raise $!, "#{$!}#{help}", $!.backtrace
@@ -167,6 +173,26 @@ module Typhoeus
           hydra.dequeue_many
         end
       end
+    end
+
+    # Sets up an easy upload with CURLOPT_READFUNCTION
+    # along with CURLOPT_INFILESIZE_LARGE and CURLOPT_UPLOAD
+    #
+    # @param [ String/File ] body The body read by the readfunction.
+    #
+    # @return [ Ethon::Easy ] The easy.
+    def set_read_callback(body)
+      easy.infilesize_large =
+        if body.respond_to?(:bytesize)
+          body.bytesize
+        elsif body.respond_to?(:size)
+          body.size
+        end
+
+      easy.upload = true
+      easy.set_read_callback(body)
+
+      easy
     end
 
     def provide_help(option)
