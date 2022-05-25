@@ -195,6 +195,14 @@ describe Typhoeus::Response::Informations do
     end
   end
 
+  describe "#redirect_url" do
+    let(:options) { { :redirect_url => "http://www.example.com" } }
+
+    it "returns redirect_url from options" do
+      expect(response.redirect_url).to eq("http://www.example.com")
+    end
+  end
+
   describe "#request_size" do
     let(:options) { { :request_size => 2 } }
 
