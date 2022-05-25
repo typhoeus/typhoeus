@@ -210,6 +210,16 @@ module Typhoeus
         options[:redirect_count]
       end
 
+      # Return the URL a redirect would take you to, had you enabled redirects.
+      #
+      # @example Get redirect_url.
+      #   response.redirect_url
+      #
+      # @return [ String ] The redirect_url.
+      def redirect_url
+        options[:redirect_url]
+      end
+
       def request_size
         options[:request_size]
       end
