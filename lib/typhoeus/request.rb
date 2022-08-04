@@ -211,7 +211,8 @@ module Typhoeus
     def set_defaults
       default_user_agent = Config.user_agent || Typhoeus::USER_AGENT
 
-      options[:headers] = {'User-Agent' => default_user_agent}.merge(options[:headers] || {})
+      options[:headers] ||= {}
+      options[:headers]['User-Agent'] ||= default_user_agent
       options[:headers]['Expect'] ||= ''
       options[:verbose] = Typhoeus::Config.verbose if options[:verbose].nil? && !Typhoeus::Config.verbose.nil?
       options[:timeout] = Typhoeus::Config.timeout if options[:timeout].nil? && !Typhoeus::Config.timeout.nil?
