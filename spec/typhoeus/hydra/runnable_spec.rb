@@ -133,5 +133,13 @@ describe Typhoeus::Hydra::Runnable do
         end
       end
     end
+
+    context "when ran twice" do
+      after { 2.times { hydra.run } }
+      it "reuses multi handle" do
+        allow(Typhoeus::Pooling::Multis).to receive(:get) { Ethon::Multi.new }
+        expect(hydra.multi).to receive(:perform).twice
+      end
+    end
   end
 end

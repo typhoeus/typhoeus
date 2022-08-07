@@ -129,8 +129,8 @@ describe Typhoeus::EasyFactory do
 
     it "pushes easy back into the pool" do
       easy_factory.send(:set_callback)
+      expect(Typhoeus::Pooling::Easies).to receive(:release).with(easy_factory.easy)
       easy_factory.easy.complete
-      expect(Typhoeus::Pool.send(:easies)).to include(easy_factory.easy)
     end
 
     it "adds next request" do
