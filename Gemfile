@@ -17,6 +17,7 @@ group :development, :test do
   if Gem.ruby_version >= Gem::Version.new("1.9.0")
     gem "faraday", ">= 0.9", "< 2.0"
     gem "dalli", "~> 2.0"
+    gem "webrick"
   end
 
   if Gem.ruby_version >= Gem::Version.new("3.0.0")
