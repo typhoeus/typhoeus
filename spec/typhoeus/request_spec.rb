@@ -243,6 +243,22 @@ describe Typhoeus::Request do
     end
   end
 
+  describe '#cache_key' do
+    context 'with different cache store instances' do
+      let(:request_with_cache) do
+        proc { |cache_store| described_class.new(base_url, :cache => cache_store) }
+      end
+
+      let(:request_1) { request_with_cache.call(MemoryCache.new) }
+      let(:request_2) { request_with_cache.call(MemoryCache.new) }
+
+      it 'returns the same cache key' do
+        expect(request_1.options[:cache]).to_not eq(request_2.options[:cache])
+        expect(request_1.cache_key).to eq(request_2.cache_key)
+      end
+    end
+  end
+
   describe "#encoded_body" do
     let(:request) {
       Typhoeus::Request.new("www.example.com",:body => {:a => 1})
