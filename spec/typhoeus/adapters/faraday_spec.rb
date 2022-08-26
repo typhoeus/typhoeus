@@ -237,6 +237,22 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
         end
       end
 
+      context "when max version" do
+        let(:env) { { :ssl => { :max_version => "a" } } }
+
+        it "sets sslmaxversion" do
+          expect(request.options[:sslmaxversion]).to eq("a")
+        end
+      end
+
+      context "when min version" do
+        let(:env) { { :ssl => { :min_version => "a" } } }
+
+        it "sets sslminversion" do
+          expect(request.options[:sslminversion]).to eq("a")
+        end
+      end
+
       context "when client_cert" do
         let(:env) { { :ssl => { :client_cert => "a" } } }
 
