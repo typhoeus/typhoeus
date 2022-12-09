@@ -49,6 +49,17 @@ module Typhoeus
     # @api private
     attr_reader :from
 
+    # Whenever an expectation is triggered this counter increases which can be used in testing to ensure that a defined stub is actually used.
+    #
+    # @example Stub a request and check if it was used
+    #   expected = Typhoeus::Response.new
+    #   Typhoeus.stub("www.example.com").and_return(expected)
+    #
+    #   actual = Typhoeus.get("www.example.com")
+    #   expect(expected.response_counter).to eq 1
+    #   #=> true
+    attr_reader :response_counter
+
     class << self
 
       # Returns all expectations.
