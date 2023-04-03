@@ -1,6 +1,5 @@
 module Typhoeus
   class Hydra
-
     # This module handles the GET request memoization
     # on the hydra side. Memoization needs to be turned
     # on:
@@ -10,7 +9,6 @@ module Typhoeus
     #
     # @api private
     module Memoizable
-
       # Return the memory.
       #
       # @example Return the memory.

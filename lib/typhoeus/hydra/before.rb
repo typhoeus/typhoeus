@@ -1,6 +1,5 @@
 module Typhoeus
   class Hydra
-
     # This module provides a way to hook into before
     # a request gets queued in hydra. This is very powerful
     # and you should be careful because when you accidently
@@ -8,7 +7,6 @@ module Typhoeus
     #
     # @api private
     module Before
-
       # Overrride add in order to execute callbacks in
       # Typhoeus.before. Will break and return when a
       # callback returns nil, false or a response. Calls super

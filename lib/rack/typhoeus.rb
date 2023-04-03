@@ -1,1 +1,1 @@
-require "rack/typhoeus/middleware/params_decoder"
+require 'rack/typhoeus/middleware/params_decoder'

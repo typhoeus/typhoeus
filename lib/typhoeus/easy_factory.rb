@@ -1,7 +1,6 @@
 require 'set'
 
 module Typhoeus
-
   # This is a Factory for easies to be used in the hydra.
   # Before an easy is ready to be added to a multi the
   # on_complete callback to be set.
@@ -9,34 +8,33 @@ module Typhoeus
   #
   # @api private
   class EasyFactory
+    RENAMED_OPTIONS = {
+      auth_method: :httpauth,
+      connect_timeout: :connecttimeout,
+      encoding: :accept_encoding,
+      follow_location: :followlocation,
+      max_redirects: :maxredirs,
+      proxy_type: :proxytype,
+      ssl_cacert: :cainfo,
+      ssl_capath: :capath,
+      ssl_cert: :sslcert,
+      ssl_cert_type: :sslcerttype,
+      ssl_key: :sslkey,
+      ssl_key_password: :keypasswd,
+      ssl_key_type: :sslkeytype,
+      ssl_version: :sslversion
+    }
 
-    RENAMED_OPTIONS =  {
-          :auth_method => :httpauth,
-          :connect_timeout => :connecttimeout,
-          :encoding => :accept_encoding,
-          :follow_location => :followlocation,
-          :max_redirects => :maxredirs,
-          :proxy_type => :proxytype,
-          :ssl_cacert => :cainfo,
-          :ssl_capath => :capath,
-          :ssl_cert => :sslcert,
-          :ssl_cert_type => :sslcerttype,
-          :ssl_key => :sslkey,
-          :ssl_key_password => :keypasswd,
-          :ssl_key_type => :sslkeytype,
-          :ssl_version => :sslversion,
-      }
+    CHANGED_OPTIONS = {
+      disable_ssl_host_verification: :ssl_verifyhost,
+      disable_ssl_peer_verification: :ssl_verifypeer,
+      proxy_auth_method: :proxyauth
+    }
 
-    CHANGED_OPTIONS =  {
-          :disable_ssl_host_verification => :ssl_verifyhost,
-          :disable_ssl_peer_verification => :ssl_verifypeer,
-          :proxy_auth_method => :proxyauth,
-      }
+    REMOVED_OPTIONS =  Set.new(%i[cache_key_basis cache_timeout user_agent])
 
-    REMOVED_OPTIONS =  Set.new([:cache_key_basis, :cache_timeout, :user_agent])
-
-    SANITIZE_IGNORE  = Set.new([:method, :cache_ttl, :cache])
-    SANITIZE_TIMEOUT = Set.new([:timeout_ms, :connecttimeout_ms])
+    SANITIZE_IGNORE  = Set.new(%i[method cache_ttl cache])
+    SANITIZE_TIMEOUT = Set.new(%i[timeout_ms connecttimeout_ms])
 
     # Returns the request provided.
     #
@@ -88,7 +86,7 @@ module Typhoeus
 
         # this needs to happen after http_request because
         # ethon will set infilesize to zero if form.empty?
-        set_read_callback(read_callback_body) if !read_callback_body.nil?
+        set_read_callback(read_callback_body) unless read_callback_body.nil?
       rescue Ethon::Errors::InvalidOption => e
         help = provide_help(e.message.match(/:\s(\w+)/)[1])
         raise $!, "#{$!}#{help}", $!.backtrace
@@ -102,18 +100,17 @@ module Typhoeus
     def sanitize(options)
       # set nosignal to true by default
       # this improves thread safety and timeout behavior
-      sanitized = {:nosignal => true}
-      options.each do |k,v|
+      sanitized = { nosignal: true }
+      options.each do |k, v|
         s = k.to_sym
         next if SANITIZE_IGNORE.include?(s)
+
         if new_option = RENAMED_OPTIONS[k.to_sym]
           warn("Deprecated option #{k}. Please use #{new_option} instead.")
           sanitized[new_option] = v
         # sanitize timeouts
         elsif SANITIZE_TIMEOUT.include?(s)
-          if !v.integer?
-            warn("Value '#{v}' for option '#{k}' must be integer.")
-          end
+          warn("Value '#{v}' for option '#{k}' must be integer.") unless v.integer?
           sanitized[k] = v.ceil
         else
           sanitized[k] = v
@@ -129,9 +126,7 @@ module Typhoeus
     def sanitize_timeout!(options, timeout)
       timeout_ms = :"#{timeout}_ms"
       if options[timeout] && options[timeout].round != options[timeout]
-        if !options[timeout_ms]
-          options[timeout_ms] = (options[timeout]*1000).ceil
-        end
+        options[timeout_ms] = (options[timeout] * 1000).ceil unless options[timeout_ms]
         options[timeout] = options[timeout].ceil
       end
       options
@@ -152,7 +147,7 @@ module Typhoeus
           request.execute_headers_callbacks(response)
         end
         request.on_body.each do |callback|
-          easy.on_body do |chunk, easy|
+          easy.on_body do |chunk, _easy|
             callback.call(chunk, response)
           end
         end
@@ -162,16 +157,14 @@ module Typhoeus
         end
       end
       request.on_progress.each do |callback|
-        easy.on_progress do |dltotal, dlnow, ultotal, ulnow, easy|
+        easy.on_progress do |dltotal, dlnow, ultotal, ulnow, _easy|
           callback.call(dltotal, dlnow, ultotal, ulnow, response)
         end
       end
       easy.on_complete do |easy|
         request.finish(Response.new(easy.mirror.options))
         Typhoeus::Pool.release(easy)
-        if hydra && !hydra.queued_requests.empty?
-          hydra.dequeue_many
-        end
+        hydra.dequeue_many if hydra && !hydra.queued_requests.empty?
       end
     end
 

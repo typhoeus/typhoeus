@@ -1,6 +1,5 @@
 module Typhoeus
   class Request
-
     # This module handles the GET request memoization
     # on the request side. Memoization needs to be turned
     # on:
@@ -10,7 +9,6 @@ module Typhoeus
     #
     # @api private
     module Memoizable
-
       # Override response setter and memoizes response
       # if the request is memoizable.
       #

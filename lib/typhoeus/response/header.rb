@@ -2,14 +2,12 @@ require 'delegate'
 
 module Typhoeus
   class Response
-
     # This class represents the response header.
     # It can be accessed like a hash.
     # Values can be strings (normal case) or arrays of strings (for duplicates headers)
     #
     # @api private
     class Header < DelegateClass(Hash)
-
       # Create a new header.
       #
       # @example Create new header.
@@ -40,7 +38,8 @@ module Typhoeus
         when String
           raw.split(/\r?\n(?!\s)/).each do |header|
             header.strip!
-            next if header.empty? || header.start_with?( 'HTTP/' )
+            next if header.empty? || header.start_with?('HTTP/')
+
             process_line(header)
           end
         end

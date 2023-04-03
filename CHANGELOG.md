@@ -4,6 +4,9 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.4.0...master)
 
+* Added RuboCop.
+  ([dblock](https://github.com/dblock))
+
 * Added getter for `redirect_url` value.
   ([Adrien Rey-Jarthon](https://github.com/jarthod))
 

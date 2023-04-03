@@ -20,6 +20,7 @@ module Typhoeus
       def get(request)
         serialized_response = @redis.get(request.cache_key)
         return unless serialized_response
+
         Marshal.load(serialized_response)
       end
 

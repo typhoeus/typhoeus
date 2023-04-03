@@ -3,7 +3,6 @@ require 'rack/typhoeus/middleware/params_decoder/helper'
 module Rack
   module Typhoeus
     module Middleware
-
       # This Rack middleware takes care of the proper deserialization of
       # the nested params encoded by Typhoeus.
       #
@@ -47,9 +46,9 @@ module Rack
             found = true
             req.POST[k] = v
           end
-          unless found
-            req.GET[k] = v
-          end
+          return if found
+
+          req.GET[k] = v
         end
       end
     end

@@ -4,44 +4,44 @@ describe Typhoeus::Response::Header do
   let(:raw) { nil }
   let(:header) { Typhoeus::Response::Header.new(raw) }
 
-  describe ".new" do
-    context "when string" do
+  describe '.new' do
+    context 'when string' do
       let(:raw) { 'Date: Fri, 29 Jun 2012 10:09:23 GMT' }
 
-      it "sets Date" do
+      it 'sets Date' do
         expect(header['Date']).to eq('Fri, 29 Jun 2012 10:09:23 GMT')
       end
 
-      it "provides case insensitive access" do
+      it 'provides case insensitive access' do
         expect(header['DaTe']).to eq('Fri, 29 Jun 2012 10:09:23 GMT')
       end
 
-      it "provides symbol access" do
+      it 'provides symbol access' do
         expect(header[:date]).to eq('Fri, 29 Jun 2012 10:09:23 GMT')
       end
     end
 
-    context "when hash" do
+    context 'when hash' do
       let(:raw) { { 'Date' => 'Fri, 29 Jun 2012 10:09:23 GMT' } }
 
-      it "sets Date" do
+      it 'sets Date' do
         expect(header['Date']).to eq(raw['Date'])
       end
 
-      it "provides case insensitive access" do
+      it 'provides case insensitive access' do
         expect(header['DaTe']).to eq(raw['Date'])
       end
     end
   end
 
-  describe "#parse" do
-    context "when no header" do
-      it "returns nil" do
+  describe '#parse' do
+    context 'when no header' do
+      it 'returns nil' do
         expect(header).to be_empty
       end
     end
 
-    context "when header" do
+    context 'when header' do
       let(:raw) do
         'HTTP/1.1 200 OK
         Set-Cookie: NID=61=LblqYgUOu; expires=Sat, 29-Dec-2012 10:09:23 GMT; path=/; domain=.google.de; HttpOnly
@@ -58,15 +58,15 @@ describe Typhoeus::Response::Header do
         Transfer-Encoding: chunked'.gsub(/^\s{8}/, '')
       end
 
-      it "sets raw" do
+      it 'sets raw' do
         expect(header.send(:raw)).to eq(raw)
       end
 
-      it "sets Set-Cookie" do
+      it 'sets Set-Cookie' do
         expect(header['set-cookie'].size).to eq(3)
       end
 
-      it "provides case insensitive access" do
+      it 'provides case insensitive access' do
         expect(header['Set-CooKie'].size).to eq(3)
       end
 
@@ -102,11 +102,11 @@ describe Typhoeus::Response::Header do
             upgrade-insecure-requests;'.gsub(/^\s{10}/, '')
         end
 
-        it "joins header parts" do
+        it 'joins header parts' do
           expect(header).to eq({
-            'Date' => 'Fri, 29 Jun 2012 10:09:23 GMT',
-            'Content-Security-Policy' => 'default-src "self"; img-src * data: "self"; upgrade-insecure-requests;'
-          })
+                                 'Date' => 'Fri, 29 Jun 2012 10:09:23 GMT',
+                                 'Content-Security-Policy' => 'default-src "self"; img-src * data: "self"; upgrade-insecure-requests;'
+                               })
         end
       end
 
@@ -114,7 +114,6 @@ describe Typhoeus::Response::Header do
         let(:raw) do
           'HTTP/1.1 200 OK
           Date: Fri, 29 Jun 2012 10:09:23 GMT
-            
           '.gsub(/^\s{10}/, '')
         end
 
@@ -139,9 +138,9 @@ describe Typhoeus::Response::Header do
   end
 
   it "can be Marshal'd" do
-    header = Typhoeus::Response::Header.new("Foo: Bar")
-    expect {
+    header = Typhoeus::Response::Header.new('Foo: Bar')
+    expect do
       Marshal.dump(header)
-    }.not_to raise_error
+    end.not_to raise_error
   end
 end

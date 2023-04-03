@@ -1,7 +1,4 @@
-require 'thread'
-
 module Typhoeus
-
   # The easy pool stores already initialized
   # easy handles for future use. This is useful
   # because creating them is expensive.
@@ -17,8 +14,8 @@ module Typhoeus
     # @example Release easy.
     #   Typhoeus::Pool.release(easy)
     def self.release(easy)
-      easy.cookielist = "flush" # dump all known cookies to 'cookiejar'
-      easy.cookielist = "all" # remove all cookies from memory for this handle
+      easy.cookielist = 'flush' # dump all known cookies to 'cookiejar'
+      easy.cookielist = 'all' # remove all cookies from memory for this handle
       easy.reset
       @mutex.synchronize { easies << easy }
     end
@@ -54,14 +51,12 @@ module Typhoeus
     #   Typhoeus::Pool.with_easy do |easy|
     #     # use easy
     #   end
-    def self.with_easy(&block)
+    def self.with_easy
       easy = get
       yield easy
     ensure
       release(easy) if easy
     end
-
-    private
 
     def self.easies
       @easies ||= []

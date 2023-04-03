@@ -11,7 +11,9 @@ a test!
 
 4. Make the test pass.
 
-5. Push to your fork and submit a pull request.
+5. Run `rubocop -a` and `rubocop --auto-gen-config` to lint code.
+
+6. Push to your fork and submit a pull request.
 
 And in case we didn't emphasize it enough: we love tests!
 

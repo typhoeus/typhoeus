@@ -13,7 +13,6 @@ require 'typhoeus/request/streamable'
 require 'typhoeus/request/stubbable'
 
 module Typhoeus
-
   # This class represents a request.
   #
   # @example (see #initialize)
@@ -145,8 +144,8 @@ module Typhoeus
     # @api private
     def eql?(other)
       self.class == other.class &&
-        self.base_url == other.base_url &&
-        fuzzy_hash_eql?(self.options, other.options)
+        base_url == other.base_url &&
+        fuzzy_hash_eql?(options, other.options)
     end
 
     # Overrides Object#hash.
@@ -189,7 +188,7 @@ module Typhoeus
     #   same values for same keys and same length,
     #   even if the keys are given in a different order.
     def fuzzy_hash_eql?(left, right)
-      return true if (left == right)
+      return true if left == right
 
       (left.count == right.count) && left.inject(true) do |res, kvp|
         res && (kvp[1] == right[kvp[0]])
@@ -199,9 +198,9 @@ module Typhoeus
     def hashable_string_for(obj)
       case obj
       when Hash
-        hashable_string_for(obj.sort_by {|sub_obj| sub_obj.first.to_s})
+        hashable_string_for(obj.sort_by { |sub_obj| sub_obj.first.to_s })
       when Array
-        obj.map {|sub_obj| hashable_string_for(sub_obj)}.to_s
+        obj.map { |sub_obj| hashable_string_for(sub_obj) }.to_s
       else
         obj.to_s
       end
@@ -211,11 +210,14 @@ module Typhoeus
     def set_defaults
       default_user_agent = Config.user_agent || Typhoeus::USER_AGENT
 
-      options[:headers] = {'User-Agent' => default_user_agent}.merge(options[:headers] || {})
+      options[:headers] = { 'User-Agent' => default_user_agent }.merge(options[:headers] || {})
       options[:headers]['Expect'] ||= ''
       options[:verbose] = Typhoeus::Config.verbose if options[:verbose].nil? && !Typhoeus::Config.verbose.nil?
       options[:timeout] = Typhoeus::Config.timeout if options[:timeout].nil? && !Typhoeus::Config.timeout.nil?
-      options[:connecttimeout] = Typhoeus::Config.connecttimeout if options[:connecttimeout].nil? && !Typhoeus::Config.connecttimeout.nil?
+      if options[:connecttimeout].nil? && !Typhoeus::Config.connecttimeout.nil?
+        options[:connecttimeout] =
+          Typhoeus::Config.connecttimeout
+      end
       options[:maxredirs] ||= 50
       options[:proxy] = Typhoeus::Config.proxy unless options.has_key?(:proxy) || Typhoeus::Config.proxy.nil?
     end

@@ -1,10 +1,8 @@
 module Typhoeus
   class Request
-
     # This module contains logic for having a reponse
     # getter and setter.
     module Responseable
-
       # Set the response.
       #
       # @example Set response.
