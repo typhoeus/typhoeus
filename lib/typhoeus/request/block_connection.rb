@@ -1,6 +1,5 @@
 module Typhoeus
   class Request
-
     # This module handles the blocked connection request mode on
     # the request side, where only stubbed requests
     # are allowed.
@@ -14,7 +13,6 @@ module Typhoeus
     #
     # @api private
     module BlockConnection
-
       # Overrides run in order to check before if block connection
       # is turned on. If thats the case a NoStub error is
       # raised.
@@ -25,11 +23,9 @@ module Typhoeus
       # @raise [Typhoeus::Errors::NoStub] If connection is blocked
       #   and no stub defined.
       def run
-        if blocked?
-          raise Typhoeus::Errors::NoStub.new(self)
-        else
-          super
-        end
+        raise Typhoeus::Errors::NoStub, self if blocked?
+
+        super
       end
 
       # Returns wether a request is blocked or not. Takes

@@ -5,7 +5,7 @@ require 'net/http'
 # The code for this is inspired by Capybara's server:
 #   http://github.com/jnicklas/capybara/blob/0.3.9/lib/capybara/server.rb
 class LocalhostServer
-  READY_MESSAGE = "Server ready"
+  READY_MESSAGE = 'Server ready'
 
   class Identify
     def initialize(app)
@@ -13,7 +13,7 @@ class LocalhostServer
     end
 
     def call(env)
-      if env["PATH_INFO"] == "/__identify__"
+      if env['PATH_INFO'] == '/__identify__'
         [200, {}, [LocalhostServer::READY_MESSAGE]]
       else
         @app.call(env)
@@ -27,7 +27,7 @@ class LocalhostServer
     @port = port || find_available_port
     @rack_app = rack_app
     concurrently { boot }
-    wait_until(10, "Boot failed.") { booted? }
+    wait_until(10, 'Boot failed.') { booted? }
   end
 
   private
@@ -41,21 +41,19 @@ class LocalhostServer
 
   def boot
     # Use WEBrick since it's part of the ruby standard library and is available on all ruby interpreters.
-    options = { :Port => port }
-    options.merge!(:AccessLog => [], :Logger => WEBrick::BasicLog.new(StringIO.new)) unless ENV['VERBOSE_SERVER']
+    options = { Port: port }
+    options.merge!(AccessLog: [], Logger: WEBrick::BasicLog.new(StringIO.new)) unless ENV['VERBOSE_SERVER']
     Rack::Handler::WEBrick.run(Identify.new(@rack_app), options)
   end
 
   def booted?
-    res = ::Net::HTTP.get_response("localhost", '/__identify__', port)
-    if res.is_a?(::Net::HTTPSuccess) or res.is_a?(::Net::HTTPRedirection)
-      return res.body == READY_MESSAGE
-    end
+    res = ::Net::HTTP.get_response('localhost', '/__identify__', port)
+    return res.body == READY_MESSAGE if res.is_a?(::Net::HTTPSuccess) or res.is_a?(::Net::HTTPRedirection)
   rescue Errno::ECONNREFUSED, Errno::EBADF
-    return false
+    false
   end
 
-  def concurrently
+  def concurrently(&block)
     if should_use_subprocess?
       pid = Process.fork do
         trap(:INT) { ::Rack::Handler::WEBrick.shutdown }
@@ -72,7 +70,7 @@ class LocalhostServer
         end
       end
     else
-      Thread.new { yield }
+      Thread.new(&block)
     end
   end
 
@@ -81,14 +79,14 @@ class LocalhostServer
     false
   end
 
-  def wait_until(timeout, error_message, &block)
+  def wait_until(timeout, error_message)
     start_time = Time.now
 
     while true
       return if yield
-      raise TimeoutError.new(error_message) if (Time.now - start_time) > timeout
+      raise TimeoutError, error_message if (Time.now - start_time) > timeout
+
       sleep(0.05)
     end
   end
 end
-

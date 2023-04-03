@@ -1,6 +1,5 @@
 module Typhoeus
   class Hydra
-
     # This module handles the blocked connection request mode on
     # the hydra side, where only stubbed requests
     # are allowed.
@@ -14,7 +13,6 @@ module Typhoeus
     #
     # @api private
     module BlockConnection
-
       # Overrides add in order to check before if block connection
       # is turned on. If thats the case a NoStub error is
       # raised.
@@ -24,11 +22,9 @@ module Typhoeus
       #
       # @param [ Request ] request The request to enqueue.
       def add(request)
-        if request.blocked?
-          raise Typhoeus::Errors::NoStub.new(request)
-        else
-          super
-        end
+        raise Typhoeus::Errors::NoStub, request if request.blocked?
+
+        super
       end
     end
   end

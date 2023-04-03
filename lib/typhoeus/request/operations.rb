@@ -1,10 +1,8 @@
 module Typhoeus
   class Request
-
     # This module contains everything what is necessary
     # to make a single request.
     module Operations
-
       # Run a request.
       #
       # @example Run a request.

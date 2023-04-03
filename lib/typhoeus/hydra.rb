@@ -8,7 +8,6 @@ require 'typhoeus/hydra/runnable'
 require 'typhoeus/hydra/stubbable'
 
 module Typhoeus
-
   # Hydra manages making parallel HTTP requests. This
   # is achieved by using libcurls multi interface:
   # http://curl.haxx.se/libcurl/c/libcurl-multi.html
@@ -56,7 +55,6 @@ module Typhoeus
     attr_reader :multi
 
     class << self
-
       # Returns a memoized hydra instance.
       #
       # @example Get a hydra.
@@ -89,7 +87,7 @@ module Typhoeus
     def initialize(options = {})
       @options = options
       @max_concurrency = Integer(@options.fetch(:max_concurrency, 200))
-      @multi = Ethon::Multi.new(options.reject{|k,_| k==:max_concurrency})
+      @multi = Ethon::Multi.new(options.reject { |k, _| k == :max_concurrency })
     end
   end
 end

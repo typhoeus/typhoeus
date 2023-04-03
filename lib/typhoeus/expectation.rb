@@ -1,5 +1,4 @@
 module Typhoeus
-
   # This class represents an expectation. It is part
   # of the stubbing mechanism. An expectation contains
   # a url and options, like a request. They are compared
@@ -39,7 +38,6 @@ module Typhoeus
   #     )
   #   end
   class Expectation
-
     # @api private
     attr_reader :base_url
 
@@ -50,7 +48,6 @@ module Typhoeus
     attr_reader :from
 
     class << self
-
       # Returns all expectations.
       #
       # @example Return expectations.
@@ -135,7 +132,7 @@ module Typhoeus
     #   expectation.and_return(response)
     #
     # @return [ void ]
-    def and_return(response=nil, &block)
+    def and_return(response = nil, &block)
       new_response = (response.nil? ? block : response)
       responses.push(*new_response)
     end
@@ -179,9 +176,7 @@ module Typhoeus
     # @api private
     def response(request)
       response = responses.fetch(@response_counter, responses.last)
-      if response.respond_to?(:call)
-        response = response.call(request)
-      end
+      response = response.call(request) if response.respond_to?(:call)
       @response_counter += 1
       response.mock = @from || true
       response
@@ -192,7 +187,7 @@ module Typhoeus
     # Check whether the options matches the request options.
     # I checks options and original options.
     def options_match?(request)
-      (options ? options.all?{ |k,v| request.original_options[k] == v || request.options[k] == v } : true)
+      (options ? options.all? { |k, v| request.original_options[k] == v || request.options[k] == v } : true)
     end
 
     # Check whether the base_url matches the request url.

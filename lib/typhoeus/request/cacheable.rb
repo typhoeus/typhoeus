@@ -31,6 +31,7 @@ module Typhoeus
 
       def cache
         return nil if options[:cache] === false
+
         options[:cache] || Typhoeus::Config.cache
       end
     end

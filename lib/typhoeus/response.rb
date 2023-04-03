@@ -4,7 +4,6 @@ require 'typhoeus/response/status'
 require 'typhoeus/response/cacheable'
 
 module Typhoeus
-
   # This class represents the response.
   class Response
     include Response::Informations
@@ -54,7 +53,7 @@ module Typhoeus
     def mock
       defined?(@mock) ? @mock : options[:mock]
     end
-    alias :mock? :mock
+    alias mock? mock
 
     # Returns the handled_response if it has
     # been defined; otherwise, returns the response

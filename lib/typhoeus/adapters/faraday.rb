@@ -2,7 +2,6 @@ require 'faraday'
 
 module Faraday # :nodoc:
   class Adapter # :nodoc:
-
     # Adapter to use Faraday with Typhoeus.
     #
     # @example Use Typhoeus.
@@ -96,15 +95,11 @@ module Faraday # :nodoc:
         req.on_complete do |resp|
           if resp.timed_out?
             env[:typhoeus_timed_out] = true
-            unless parallel?(env)
-              raise Faraday::TimeoutError, "request timed out"
-            end
+            raise Faraday::TimeoutError, 'request timed out' unless parallel?(env)
           elsif (resp.response_code == 0) || ((resp.return_code != :ok) && !resp.mock?)
             env[:typhoeus_connection_failed] = true
             env[:typhoeus_return_message] = resp.return_message
-            unless parallel?(env)
-              raise Faraday::ConnectionFailed, resp.return_message
-            end
+            raise Faraday::ConnectionFailed, resp.return_message unless parallel?(env)
           end
 
           save_response(env, resp.code, resp.body) do |response_headers|
@@ -119,9 +114,9 @@ module Faraday # :nodoc:
 
       def typhoeus_request(env)
         opts = {
-          :method => env[:method],
-          :body => env[:body],
-          :headers => env[:request_headers]
+          method: env[:method],
+          body: env[:body],
+          headers: env[:request_headers]
         }.merge(@adapter_options)
 
         ::Typhoeus::Request.new(env[:url].to_s, opts)
@@ -144,7 +139,7 @@ module Faraday # :nodoc:
         req.options[:sslkey]     = ssl[:client_key]  if ssl[:client_key]
         req.options[:cainfo]     = ssl[:ca_file]     if ssl[:ca_file]
         req.options[:capath]     = ssl[:ca_path]     if ssl[:ca_path]
-        client_cert_passwd_key   = [:client_cert_passwd, :client_certificate_password].detect { |name| ssl.key?(name) }
+        client_cert_passwd_key   = %i[client_cert_passwd client_certificate_password].detect { |name| ssl.key?(name) }
         req.options[:keypasswd]  = ssl[client_cert_passwd_key] if client_cert_passwd_key
       end
 
@@ -154,10 +149,10 @@ module Faraday # :nodoc:
 
         req.options[:proxy] = "#{proxy[:uri].scheme}://#{proxy[:uri].host}:#{proxy[:uri].port}"
 
-        if proxy[:user] && proxy[:password]
-          req.options[:proxyauth] = :any
-          req.options[:proxyuserpwd] = "#{proxy[:user]}:#{proxy[:password]}"
-        end
+        return unless proxy[:user] && proxy[:password]
+
+        req.options[:proxyauth] = :any
+        req.options[:proxyuserpwd] = "#{proxy[:user]}:#{proxy[:password]}"
       end
 
       def configure_timeout(req, env)
@@ -167,9 +162,9 @@ module Faraday # :nodoc:
       end
 
       def configure_socket(req, env)
-        if bind = env[:request][:bind]
-          req.options[:interface] = bind[:host]
-        end
+        return unless bind = env[:request][:bind]
+
+        req.options[:interface] = bind[:host]
       end
 
       def parallel?(env)

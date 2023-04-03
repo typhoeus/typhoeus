@@ -1,10 +1,8 @@
 module Typhoeus
   class Response
-
     # This module contains logic about informations
     # on a response.
     module Informations
-
       # Return libcurls return value.
       #
       # @example Get return_code.
@@ -36,7 +34,7 @@ module Typhoeus
       def response_body
         options[:response_body] || options[:body]
       end
-      alias :body :response_body
+      alias body response_body
 
       # Return the http response headers.
       #
@@ -46,15 +44,16 @@ module Typhoeus
       # @return [ String ] The response_headers.
       def response_headers
         return options[:response_headers] if options[:response_headers]
-        if mock? && h = options[:headers]
-            status_code = return_code || "200"
-            reason_phrase = status_code == "200" ? "OK" : "Mock Reason Phrase"
-            status_line = "HTTP/1.1 #{status_code} #{reason_phrase}"
-            actual_headers = h.map{ |k,v| [k, v.respond_to?(:join) ? v.join(',') : v] }.
-              map{ |e| "#{e.first}: #{e.last}" }
 
-            [status_line, *actual_headers].join("\r\n")
-        end
+        return unless mock? && h = options[:headers]
+
+        status_code = return_code || '200'
+        reason_phrase = status_code == '200' ? 'OK' : 'Mock Reason Phrase'
+        status_line = "HTTP/1.1 #{status_code} #{reason_phrase}"
+        actual_headers = h.map { |k, v| [k, v.respond_to?(:join) ? v.join(',') : v] }
+                          .map { |e| "#{e.first}: #{e.last}" }
+
+        [status_line, *actual_headers].join("\r\n")
       end
 
       # Return the last received HTTP, FTP or SMTP response code.
@@ -69,7 +68,7 @@ module Typhoeus
       def response_code
         (options[:response_code] || options[:code]).to_i
       end
-      alias :code :response_code
+      alias code response_code
 
       # Return the available http auth methods.
       # Bitmask indicating the authentication method(s)
@@ -83,7 +82,6 @@ module Typhoeus
         options[:httpauth_avail]
       end
 
-
       # Return the total time in seconds for the previous
       # transfer, including name resolving, TCP connect etc.
       #
@@ -94,7 +92,7 @@ module Typhoeus
       def total_time
         options[:total_time] || options[:time]
       end
-      alias :time :total_time
+      alias time total_time
 
       # Return the time, in seconds, it took from the start
       # until the first byte is received by libcurl. This
@@ -108,7 +106,7 @@ module Typhoeus
       def starttransfer_time
         options[:starttransfer_time] || options[:start_transfer_time]
       end
-      alias :start_transfer_time :starttransfer_time
+      alias start_transfer_time starttransfer_time
 
       # Return the time, in seconds, it took from the start
       # until the SSL/SSH connect/handshake to the remote
@@ -124,7 +122,7 @@ module Typhoeus
       def appconnect_time
         options[:appconnect_time] || options[:app_connect_time]
       end
-      alias :app_connect_time :appconnect_time
+      alias app_connect_time appconnect_time
 
       # Return the time, in seconds, it took from the start
       # until the file transfer is just about to begin. This
@@ -162,7 +160,7 @@ module Typhoeus
       def namelookup_time
         options[:namelookup_time] || options[:name_lookup_time]
       end
-      alias :name_lookup_time :namelookup_time
+      alias name_lookup_time namelookup_time
 
       # Return the time, in seconds, it took for all redirection steps
       # include name lookup, connect, pretransfer and transfer before the
@@ -234,7 +232,6 @@ module Typhoeus
         options[:size_upload]
       end
 
-
       # Return the bytes, the total amount of bytes that were downloaded.
       # The amount is only for the latest transfer and will be reset again
       # for each new transfer. This counts actual payload data, what's
@@ -284,9 +281,10 @@ module Typhoeus
       def headers
         return Header.new(options[:headers]) if mock? && options[:headers]
         return nil if response_headers.nil? && !defined?(@headers)
+
         @headers ||= Header.new(response_headers.split("\r\n\r\n").last)
       end
-      alias :headers_hash :headers
+      alias headers_hash headers
 
       # Return all redirections in between as multiple
       # responses with header.
@@ -297,9 +295,9 @@ module Typhoeus
       # @return [ Array<Typhoeus::Response> ] The redirections
       def redirections
         return [] unless response_headers
-        response_headers.split("\r\n\r\n")[0..-2].map{ |h| Response.new(:response_headers => h) }
+
+        response_headers.split("\r\n\r\n")[0..-2].map { |h| Response.new(response_headers: h) }
       end
     end
   end
 end
-

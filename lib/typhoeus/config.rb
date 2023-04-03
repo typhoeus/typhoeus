@@ -1,5 +1,4 @@
 module Typhoeus
-
   # The Typhoeus configuration used to set global
   # options.
   # @example Set the configuration options within a block.

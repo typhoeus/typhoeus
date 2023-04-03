@@ -1,9 +1,7 @@
 module Typhoeus
   class Request
-
     # This module contians the logic for response streaming.
     module Streamable
-
       # Set on_body callback.
       #
       # This callback will be called each time a portion of the body is read from the socket.

@@ -1,12 +1,10 @@
 module Typhoeus
   class Hydra
-
     # This module handles the request adding on
     # hydra.
     #
     # @api private
     module Addable
-
       # Adds request to multi.
       #
       # @example Add request.

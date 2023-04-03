@@ -1,6 +1,5 @@
 module Typhoeus
   class Request
-
     # This module contains the logic for the response callbacks.
     #
     # You can set multiple callbacks, which are then executed
@@ -24,7 +23,6 @@ module Typhoeus
     #   requests, then callbacks are delaying the
     #   request execution.
     module Callbacks
-
       module Types # :nodoc:
         # Set on_complete callback.
         #
@@ -143,7 +141,7 @@ module Typhoeus
         end
 
         callbacks.each do |callback|
-          self.response.handled_response = callback.call(self.response)
+          response.handled_response = callback.call(response)
         end
       end
     end

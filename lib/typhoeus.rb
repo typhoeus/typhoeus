@@ -13,24 +13,16 @@ require 'typhoeus/version'
 
 # If we are using any Rack-based application, then we need the Typhoeus rack
 # middleware to ensure our app is running properly.
-if defined?(Rack)
-  require "rack/typhoeus"
-end
+require 'rack/typhoeus' if defined?(Rack)
 
 # If the Redis gem is available, load the redis cache adapter
-if defined?(Redis)
-  require "typhoeus/cache/redis"
-end
+require 'typhoeus/cache/redis' if defined?(Redis)
 
 # If the Dalli gem is available, load the Dalli cache adapter
-if defined?(Dalli)
-  require "typhoeus/cache/dalli"
-end
+require 'typhoeus/cache/dalli' if defined?(Dalli)
 
 # If we are using Rails, load the Rails cache adapter
-if defined?(Rails)
-  require "typhoeus/cache/rails"
-end
+require 'typhoeus/cache/rails' if defined?(Rails)
 
 # If we are using Rails, then we will include the Typhoeus railtie.
 # if defined?(Rails)
@@ -62,7 +54,7 @@ module Typhoeus
   extend Request::Callbacks::Types
 
   # The default Typhoeus user agent.
-  USER_AGENT = "Typhoeus - https://github.com/typhoeus/typhoeus"
+  USER_AGENT = 'Typhoeus - https://github.com/typhoeus/typhoeus'
 
   # Set the Typhoeus configuration options by passing a block.
   #
@@ -88,7 +80,7 @@ module Typhoeus
   #
   # @see Typhoeus::Expectation
   def self.stub(base_url, options = {}, &block)
-    expectation = Expectation.all.find{ |e| e.base_url == base_url && e.options == options }
+    expectation = Expectation.all.find { |e| e.base_url == base_url && e.options == options }
     if expectation.nil?
       expectation = Expectation.new(base_url, options)
       Expectation.all << expectation

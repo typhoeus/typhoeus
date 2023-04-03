@@ -1,10 +1,8 @@
 module Typhoeus
   class Response
-
     # This module contains logic about the http
     # status.
     module Status
-
       # Return the status message if present.
       #
       # @example Return status message.
@@ -22,11 +20,9 @@ module Typhoeus
         # This means 'HTTP/1.1 404' is as valid as 'HTTP/1.1 404 Not Found' and we have to handle it.
         #
         # Regexp doc: http://rubular.com/r/eAr1oVYsVa
-        if first_header_line != nil and first_header_line[/\d{3} (.*)$/, 1] != nil
-          @status_message = first_header_line[/\d{3} (.*)$/, 1].chomp
-        else
-          @status_message = nil
-        end
+        @status_message = if !first_header_line.nil? and first_header_line[/\d{3} (.*)$/, 1] != nil
+                            first_header_line[/\d{3} (.*)$/, 1].chomp
+                          end
       end
 
       # Return the http version.
@@ -36,7 +32,7 @@ module Typhoeus
       #
       # @return [ String ] The http version.
       def http_version
-        @http_version ||= first_header_line ? first_header_line[/HTTP\/(\S+)/, 1] : nil
+        @http_version ||= first_header_line ? first_header_line[%r{HTTP/(\S+)}, 1] : nil
       end
 
       # Return whether the response is a success.
@@ -83,13 +79,11 @@ module Typhoeus
 
       # :nodoc:
       def first_header_line
-        @first_header_line ||= begin
-          if response_headers.to_s.include?("\r\n\r\n")
-            response_headers.to_s.split("\r\n\r\n").last.split("\r\n").first
-          else
-            response_headers.to_s.split("\r\n").first
-          end
-        end
+        @first_header_line ||= if response_headers.to_s.include?("\r\n\r\n")
+                                 response_headers.to_s.split("\r\n\r\n").last.split("\r\n").first
+                               else
+                                 response_headers.to_s.split("\r\n").first
+                               end
       end
 
       # :nodoc:

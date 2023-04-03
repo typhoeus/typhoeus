@@ -1,9 +1,8 @@
 require 'spec_helper'
 
-describe "Rack::Typhoeus::Middleware::ParamsDecoder" do
-
+describe 'Rack::Typhoeus::Middleware::ParamsDecoder' do
   before(:all) do
-    require "rack/typhoeus"
+    require 'rack/typhoeus'
   end
 
   let(:app) do
@@ -18,14 +17,14 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder" do
     Rack::Typhoeus::Middleware::ParamsDecoder
   end
 
-  describe "#call" do
+  describe '#call' do
   end
 
-  context "when requesting" do
-    let(:response) { Typhoeus.get("localhost:3001", :params => {:x => [:a]}) }
+  context 'when requesting' do
+    let(:response) { Typhoeus.get('localhost:3001', params: { x: [:a] }) }
 
-    it "transforms parameters" do
-      expect(response.body).to include("query_hash\":{\"x\":[\"a\"]}")
+    it 'transforms parameters' do
+      expect(response.body).to include('query_hash":{"x":["a"]}')
     end
   end
 end

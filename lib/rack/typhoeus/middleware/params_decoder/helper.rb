@@ -3,7 +3,6 @@ module Rack
     module Middleware
       class ParamsDecoder
         module Helper
-
           # Recursively decodes Typhoeus encoded arrays in given Hash.
           #
           # @example Use directly in a Rails controller.
@@ -24,7 +23,8 @@ module Rack
           # @return [Hash] Hash with properly decoded nested arrays.
           def decode!(hash)
             return hash unless hash.is_a?(Hash)
-            hash.each_pair do |key,value|
+
+            hash.each_pair do |key, value|
               if value.is_a?(Hash)
                 decode!(value)
                 hash[key] = convert(value)
@@ -48,12 +48,13 @@ module Rack
           # @return [Boolean] True if its a encoded Array, else false.
           def encoded?(hash)
             return false if hash.empty?
-	          if hash.keys.size > 1
-              keys = hash.keys.map{|i| i.to_i if i.respond_to?(:to_i)}.sort
+
+            if hash.keys.size > 1
+              keys = hash.keys.map { |i| i.to_i if i.respond_to?(:to_i) }.sort
               keys == hash.keys.size.times.to_a
-	          else
+            else
               hash.keys.first =~ /0/
-	          end
+            end
           end
 
           # If the Hash is an array encoded by typhoeus an array is returned
@@ -64,7 +65,7 @@ module Rack
           # @return [Arraya/Hash]
           def convert(hash)
             if encoded?(hash)
-              hash.sort{ |a, b| a[0].to_i <=> b[0].to_i }.map{ |key, value| value }
+              hash.sort { |a, b| a[0].to_i <=> b[0].to_i }.map { |_key, value| value }
             else
               hash
             end
