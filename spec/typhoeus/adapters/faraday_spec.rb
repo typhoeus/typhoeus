@@ -335,5 +335,33 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
         end
       end
     end
+
+    describe "streaming response" do
+      let(:streamed_result) { [] }
+
+      it "streams a single empty chunk if the response is empty" do
+        conn.get('/empty') do |req|
+          req.options.on_data = proc do |*args|
+            streamed_result << args
+          end
+        end
+
+        expect(streamed_result).to eq([['', 0]])
+      end
+
+      it "streams the content in chunks" do
+        res = conn.get('/big') do |req|
+          req.options.on_data = proc do |*args|
+            streamed_result << args
+          end
+        end
+
+        expect(res.body).to eq('')
+        expect(streamed_result.length).to eq(4)
+        total_size = streamed_result.last[1]
+        expect(total_size).not_to be_zero
+        expect(total_size).to eq(res['X-Expected-Size'].to_i)
+      end
+    end
   end
 end
