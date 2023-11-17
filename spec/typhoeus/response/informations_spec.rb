@@ -195,11 +195,51 @@ describe Typhoeus::Response::Informations do
     end
   end
 
+  describe "#redirect_url" do
+    let(:options) { { :redirect_url => "http://www.example.com" } }
+
+    it "returns redirect_url from options" do
+      expect(response.redirect_url).to eq("http://www.example.com")
+    end
+  end
+
   describe "#request_size" do
     let(:options) { { :request_size => 2 } }
 
     it "returns request_size from options" do
       expect(response.request_size).to eq(2)
+    end
+  end
+
+  describe "#size_upload" do
+    let(:options) { { :size_upload => 2.0 } }
+
+    it "returns size_upload from options" do
+      expect(response.size_upload).to eq(2.0)
+    end
+  end
+
+  describe "#size_download" do
+    let(:options) { { :size_download => 2.0 } }
+
+    it "returns size_download from options" do
+      expect(response.size_download).to eq(2.0)
+    end
+  end
+
+  describe "#speed_upload" do
+    let(:options) { { :speed_upload => 2.0 } }
+
+    it "returns speed_upload from options" do
+      expect(response.speed_upload).to eq(2.0)
+    end
+  end
+
+  describe "#speed_download" do
+    let(:options) { { :speed_download => 2.0 } }
+
+    it "returns speed_download from options" do
+      expect(response.speed_download).to eq(2.0)
     end
   end
 

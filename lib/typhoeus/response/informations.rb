@@ -210,8 +210,65 @@ module Typhoeus
         options[:redirect_count]
       end
 
+      # Return the URL a redirect would take you to, had you enabled redirects.
+      #
+      # @example Get redirect_url.
+      #   response.redirect_url
+      #
+      # @return [ String ] The redirect_url.
+      def redirect_url
+        options[:redirect_url]
+      end
+
       def request_size
         options[:request_size]
+      end
+
+      # Return the bytes, the total amount of bytes that were uploaded
+      #
+      # @example Get size_upload.
+      #   response.size_upload
+      #
+      # @return [ Float ] The size_upload.
+      def size_upload
+        options[:size_upload]
+      end
+
+
+      # Return the bytes, the total amount of bytes that were downloaded.
+      # The amount is only for the latest transfer and will be reset again
+      # for each new transfer. This counts actual payload data, what's
+      # also commonly called body. All meta and header data are excluded
+      # and will not be counted in this number.
+      #
+      # @example Get size_download
+      #   response.size_download
+      #
+      # @return [ Float ] The size_download.
+      def size_download
+        options[:size_download]
+      end
+
+      # Return the bytes/second, the average upload speed that curl
+      # measured for the complete upload
+      #
+      # @example Get speed_upload.
+      #   response.speed_upload
+      #
+      # @return [ Float ] The speed_upload.
+      def speed_upload
+        options[:speed_upload]
+      end
+
+      # Return the bytes/second, the average download speed that curl
+      # measured for the complete download
+      #
+      # @example Get speed_download.
+      #   response.speed_download
+      #
+      # @return [ Float ] The speed_download.
+      def speed_download
+        options[:speed_download]
       end
 
       def debug_info
