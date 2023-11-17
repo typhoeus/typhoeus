@@ -2,10 +2,11 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.4.0...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.4.1...master)
 
-* Added getter for `redirect_url` value.
-  ([Adrien Rey-Jarthon](https://github.com/jarthod))
+## 1.4.1
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.4.0...v1.4.1)
 
 ## 1.4.0
 
