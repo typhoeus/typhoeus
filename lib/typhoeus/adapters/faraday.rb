@@ -136,7 +136,12 @@ module Faraday # :nodoc:
 
         verify_p = (ssl && ssl.fetch(:verify, true))
 
-        ssl_verifyhost = verify_p ? 2 : 0
+        if verify_p
+          ssl_verifyhost = req.options.fetch(:ssl_verifyhost, 2)
+        else
+          ssl_verifyhost = 0
+        end
+
         req.options[:ssl_verifyhost] = ssl_verifyhost
         req.options[:ssl_verifypeer] = verify_p
         req.options[:sslversion] = ssl[:version]     if ssl[:version]
