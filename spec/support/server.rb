@@ -85,6 +85,16 @@ TESTSERVER = Sinatra.new do
     gzipped_env
   end
 
+  get '/empty' do
+    [200, { 'Content-Type' => 'text/plain' }, ['']]
+  end
+
+  get '/big' do
+    kb = 1024
+    str = (32..126).map(&:chr).cycle.take(50 * kb).join
+    [200, { 'Content-Type' => 'text/plain', 'X-Expected-Size' => str.bytesize.to_s }, [str]]
+  end
+
   get '/**' do
     sleep params["delay"].to_i if params.has_key?("delay")
     request.env.merge!(:body => request.body.read).to_json
