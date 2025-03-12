@@ -20,7 +20,9 @@ group :development, :test do
   end
 
   if Gem.ruby_version >= Gem::Version.new("3.0.0")
-    gem 'webrick'
+    gem "webrick"
+    gem "logger"
+    gem "ostruct"
   end
 
   gem "redis", "~> 3.0"
@@ -31,6 +33,6 @@ group :development, :test do
 
   unless ENV["CI"]
     gem "guard-rspec", "~> 0.7"
-    gem 'rb-fsevent', '~> 0.9.1'
+    gem "rb-fsevent", '~> 0.9.1'
   end
 end
