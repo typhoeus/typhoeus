@@ -152,12 +152,16 @@ module Faraday # :nodoc:
         proxy = env[:request][:proxy]
         return unless proxy
 
+        noproxy = env[:request][:noproxy]
+        req.options[:noproxy] = noproxy
+
         req.options[:proxy] = "#{proxy[:uri].scheme}://#{proxy[:uri].host}:#{proxy[:uri].port}"
 
         if proxy[:user] && proxy[:password]
           req.options[:proxyauth] = :any
           req.options[:proxyuserpwd] = "#{proxy[:user]}:#{proxy[:password]}"
         end
+
       end
 
       def configure_timeout(req, env)

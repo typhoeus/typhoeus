@@ -75,11 +75,18 @@ module Typhoeus
     # @see Typhoeus::Request#set_defaults
     attr_accessor :user_agent
 
-    # Defines wether to use a proxy server for every request.
+    # Defines whether to use a proxy server for every request.
     #
     # @return [ String ]
     #
     # @see Typhoeus::Request#set_defaults
     attr_accessor :proxy
+
+    # Defines which domains won't go through the defined proxy server.
+    #
+    # @return [ String ]
+    #
+    # @see Typhoeus::Request#set_defaults
+    attr_accessor :noproxy
   end
 end

@@ -218,6 +218,7 @@ module Typhoeus
       options[:connecttimeout] = Typhoeus::Config.connecttimeout if options[:connecttimeout].nil? && !Typhoeus::Config.connecttimeout.nil?
       options[:maxredirs] ||= 50
       options[:proxy] = Typhoeus::Config.proxy unless options.has_key?(:proxy) || Typhoeus::Config.proxy.nil?
+      options[:noproxy] = Typhoeus::Config.noproxy unless options.has_key?(:noproxy) || Typhoeus::Config.noproxy.nil?
     end
   end
 end
