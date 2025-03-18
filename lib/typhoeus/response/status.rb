@@ -79,6 +79,16 @@ module Typhoeus
         return_code == :operation_timedout
       end
 
+      # Return whether the response has been completed.
+      #
+      # @example Return if the response has been completed.
+      #  response.complete?
+      #
+      # @return [ Boolean ] Return true if not timed out and a valid status code, false else.
+      def complete?
+        response_code != 0 && !timed_out?
+      end
+
       private
 
       # :nodoc:
