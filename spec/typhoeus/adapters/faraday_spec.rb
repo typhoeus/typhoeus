@@ -227,93 +227,116 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
     end
 
     describe "#configure_ssl" do
-      before { adapter.method(:configure_ssl).call(request, env) }
+      context "with valid arguments" do
+        before { adapter.method(:configure_ssl).call(request, env) }
 
-      context "when version" do
-        let(:env) { { :ssl => { :version => "a" } } }
+        context "when version" do
+          let(:env) { { :ssl => { :version => "a" } } }
 
-        it "sets sslversion" do
-          expect(request.options[:sslversion]).to eq("a")
+          it "sets sslversion" do
+            expect(request.options[:sslversion]).to eq("a")
+          end
+        end
+
+        context "when client_cert" do
+          let(:env) { { :ssl => { :client_cert => "a" } } }
+
+          it "sets sslcert" do
+            expect(request.options[:sslcert]).to eq("a")
+          end
+        end
+
+        context "when client_key"  do
+          let(:env) { { :ssl => { :client_key => "a" } } }
+
+          it "sets sslkey" do
+            expect(request.options[:sslkey]).to eq("a")
+          end
+        end
+
+        context "when ca_file"  do
+          let(:env) { { :ssl => { :ca_file => "a" } } }
+
+          it "sets cainfo" do
+            expect(request.options[:cainfo]).to eq("a")
+          end
+        end
+
+        context "when ca_path" do
+          let(:env) { { :ssl => { :ca_path => "a" } } }
+
+          it "sets capath" do
+            expect(request.options[:capath]).to eq("a")
+          end
+        end
+
+        context "when client_cert_passwd" do
+          let(:env) { { :ssl => { :client_cert_passwd => "a" } } }
+
+          it "sets keypasswd to the value of client_cert_passwd" do
+            expect(request.options[:keypasswd]).to eq("a")
+          end
+        end
+
+        context "when client_certificate_password" do
+          let(:env) { { :ssl => { :client_certificate_password => "a" } } }
+
+          it "sets keypasswd to the value of client_cert_passwd" do
+            expect(request.options[:keypasswd]).to eq("a")
+          end
+        end
+
+        context "when no client_cert_passwd" do
+          let(:env) { { :ssl => { } } }
+
+          it "does not set keypasswd on options" do
+            expect(request.options).not_to have_key :keypasswd
+          end
+        end
+
+        context "when verify is false" do
+          let(:env) { { :ssl => { :verify => false } } }
+
+          it "sets ssl_verifyhost to 0" do
+            expect(request.options[:ssl_verifyhost]).to eq(0)
+          end
+
+          it "sets ssl_verifypeer to false" do
+            expect(request.options[:ssl_verifypeer]).to be_falsey
+          end
+        end
+
+        context "when verify is true" do
+          let(:env) { { :ssl => { :verify => true } } }
+
+          it "sets ssl_verifyhost to 2" do
+            expect(request.options[:ssl_verifyhost]).to eq(2)
+          end
+
+          it "sets ssl_verifypeer to true" do
+            expect(request.options[:ssl_verifypeer]).to be_truthy
+          end
         end
       end
 
-      context "when client_cert" do
-        let(:env) { { :ssl => { :client_cert => "a" } } }
+      context "with invalid arguments" do
+        subject { adapter.method(:configure_ssl).call(request, env) }
 
-        it "sets sslcert" do
-          expect(request.options[:sslcert]).to eq("a")
-        end
-      end
+        context "when a non-path (non-String) is given for the client cert" do
+          let(:env) { { :ssl => { :client_cert => Hash.new('pretend_im_a_file') } } }
 
-      context "when client_key"  do
-        let(:env) { { :ssl => { :client_key => "a" } } }
-
-        it "sets sslkey" do
-          expect(request.options[:sslkey]).to eq("a")
-        end
-      end
-
-      context "when ca_file"  do
-        let(:env) { { :ssl => { :ca_file => "a" } } }
-
-        it "sets cainfo" do
-          expect(request.options[:cainfo]).to eq("a")
-        end
-      end
-
-      context "when ca_path" do
-        let(:env) { { :ssl => { :ca_path => "a" } } }
-
-        it "sets capath" do
-          expect(request.options[:capath]).to eq("a")
-        end
-      end
-
-      context "when client_cert_passwd" do
-        let(:env) { { :ssl => { :client_cert_passwd => "a" } } }
-
-        it "sets keypasswd to the value of client_cert_passwd" do
-          expect(request.options[:keypasswd]).to eq("a")
-        end
-      end
-
-      context "when client_certificate_password" do
-        let(:env) { { :ssl => { :client_certificate_password => "a" } } }
-
-        it "sets keypasswd to the value of client_cert_passwd" do
-          expect(request.options[:keypasswd]).to eq("a")
-        end
-      end
-
-      context "when no client_cert_passwd" do
-        let(:env) { { :ssl => { } } }
-
-        it "does not set keypasswd on options" do
-          expect(request.options).not_to have_key :keypasswd
-        end
-      end
-
-      context "when verify is false" do
-        let(:env) { { :ssl => { :verify => false } } }
-
-        it "sets ssl_verifyhost to 0" do
-          expect(request.options[:ssl_verifyhost]).to eq(0)
+          it "raises a PathExpectedError" do
+            expect { subject }.to raise_error Faraday::Adapter::Typhoeus::PathExpectedError
+          end
         end
 
-        it "sets ssl_verifypeer to false" do
-          expect(request.options[:ssl_verifypeer]).to be_falsey
-        end
-      end
 
-      context "when verify is true" do
-        let(:env) { { :ssl => { :verify => true } } }
+        context "when a non-path (non-String) is given for the client key" do
+          let(:env) { { :ssl => { :client_key => Hash.new('pretend_im_a_file') } } }
 
-        it "sets ssl_verifyhost to 2" do
-          expect(request.options[:ssl_verifyhost]).to eq(2)
-        end
-
-        it "sets ssl_verifypeer to true" do
-          expect(request.options[:ssl_verifypeer]).to be_truthy
+          it "raises a PathExpectedError" do
+            expect { subject }.to raise_error Faraday::Adapter::Typhoeus::PathExpectedError
+          end
         end
       end
     end
