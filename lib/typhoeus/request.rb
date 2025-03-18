@@ -163,7 +163,15 @@ module Typhoeus
     #
     # @return [ String ] The cache key.
     def cache_key
-      Digest::SHA1.hexdigest "#{self.class.name}#{base_url}#{hashable_string_for(options)}"
+      hashable_options = options.dup.tap { |dup_opts| dup_opts.delete(:cache) }
+
+      cache_key_components = [
+        self.class.name,
+        base_url,
+        hashable_string_for(hashable_options)
+      ]
+
+      Digest::SHA1.hexdigest(cache_key_components.join)
     end
 
     # Mimics libcurls POST body generation. This is not accurate, but good
