@@ -207,6 +207,8 @@ module Typhoeus
         base_url == request_url
       when Regexp
         base_url === request_url
+      when URI
+        base_url === request_url
       when nil
         true
       else
