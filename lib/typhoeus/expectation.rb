@@ -204,11 +204,11 @@ module Typhoeus
     def url_match?(request_url)
       case base_url
       when String
-        base_url == request_url
+        base_url == request_url.to_s
       when Regexp
-        base_url === request_url
-      when URI
-        base_url === request_url
+        base_url === request_url.to_s
+      when defined?(URI) && URI
+        base_url.to_s == request_url.to_s
       when nil
         true
       else
