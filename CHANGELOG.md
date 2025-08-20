@@ -4,6 +4,8 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.4.0...master)
 
+* Added support for URI objects in `Typhoeus.stub()`.
+  ([Katelyn Schiesser](https://github.com/slowbro), [#732](https://github.com/typhoeus/typhoeus/pull/732))
 * Added getter for `redirect_url` value.
   ([Adrien Rey-Jarthon](https://github.com/jarthod))
 

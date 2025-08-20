@@ -211,6 +211,26 @@ describe Typhoeus::Expectation do
       end
     end
 
+    context "when URI" do
+      let(:base_url) { URI("https://example.com") }
+
+      context "when match" do
+        let(:request_url) { "https://example.com" }
+
+        it "returns true" do
+          expect(url_match).to be_truthy
+        end
+      end
+
+      context "when no match" do
+        let(:request_url) { "https://nomatch.com" }
+
+        it "returns false" do
+          expect(url_match).to be_falsey
+        end
+      end
+    end
+
     context "when nil" do
       let(:base_url) { nil }
 

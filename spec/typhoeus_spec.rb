@@ -62,6 +62,18 @@ describe Typhoeus do
         expect(Typhoeus::Expectation.all.size).to eq(1)
       end
     end
+
+    context "when base_url is URI" do
+      it "stubs and matches URI base_url" do
+        uri = URI("https://example.com")
+        expected_response = Typhoeus::Response.new(body: "stubbed")
+
+        Typhoeus.stub(uri).and_return(expected_response)
+        response = Typhoeus.get(uri)
+
+        expect(response.body).to eq("stubbed")
+      end
+    end
   end
 
   describe ".before" do
