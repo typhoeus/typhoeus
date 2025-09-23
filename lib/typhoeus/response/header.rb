@@ -24,7 +24,7 @@ module Typhoeus
       end
 
       def [](key)
-        fetch(key) { @sanitized[key.to_s.downcase] }
+        @sanitized[convert_key(key)]
       end
 
       # Parses the raw header.
@@ -60,8 +60,9 @@ module Typhoeus
       #
       # @return [ void ]
       def process_pair(key, value)
-        set_value(key, value, self)
-        @sanitized[key.downcase] = self[key]
+        sanitized_key = convert_key(key)
+        set_value(sanitized_key, value, @sanitized)
+        self[key] = @sanitized[sanitized_key]
       end
 
       # Sets value for key in specified hash
@@ -99,6 +100,10 @@ module Typhoeus
         else
           hash.replace(Hash.new(&default_proc).merge(hash))
         end
+      end
+
+      def convert_key(key)
+        key.to_s.downcase
       end
     end
   end

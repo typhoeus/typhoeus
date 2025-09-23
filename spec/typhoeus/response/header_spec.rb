@@ -55,6 +55,8 @@ describe Typhoeus::Response::Header do
         Server: gws
         X-XSS-Protection: 1; mode=block
         X-Frame-Options: SAMEORIGIN
+        Vary: Accept-Encoding
+        vary: Origin
         Transfer-Encoding: chunked'.gsub(/^\s{8}/, '')
       end
 
@@ -68,6 +70,12 @@ describe Typhoeus::Response::Header do
 
       it "provides case insensitive access" do
         expect(header['Set-CooKie'].size).to eq(3)
+      end
+
+      it "provides case insensitive access when underlying headers were mixed case" do
+        expect(header['Vary'].size).to eq(2)
+        expect(header['VaRy'].size).to eq(2)
+        expect(header['vary'].size).to eq(2)
       end
 
       [
