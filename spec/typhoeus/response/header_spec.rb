@@ -19,6 +19,66 @@ describe Typhoeus::Response::Header do
       it "provides symbol access" do
         expect(header[:date]).to eq('Fri, 29 Jun 2012 10:09:23 GMT')
       end
+
+      it "provides case insensitive include? and aliases" do
+        expect(header.include?('DaTe')).to eq(true)
+        expect(header.key?('DaTe')).to eq(true)
+        expect(header.has_key?('DaTe')).to eq(true)
+        expect(header.member?('DaTe')).to eq(true)
+      end
+
+      it "provides symbol include? and aliases" do
+        expect(header.include?(:date)).to eq(true)
+        expect(header.key?(:date)).to eq(true)
+        expect(header.has_key?(:date)).to eq(true)
+        expect(header.member?(:date)).to eq(true)
+      end
+
+      it "provides case insensitive fetch" do
+        expect(header.fetch('DaTe')).to eq('Fri, 29 Jun 2012 10:09:23 GMT')
+        expect(header.fetch('foo', 'default')).to eq('default')
+        expect(header.fetch('foo') { |key| key }).to eq('foo')
+      end
+
+      it "provides symbol fetch" do
+        expect(header.fetch(:date)).to eq('Fri, 29 Jun 2012 10:09:23 GMT')
+        expect(header.fetch(:foo, 'default')).to eq('default')
+        expect(header.fetch(:foo) { |key| key }).to eq('foo')
+      end
+
+      it "provides case insensitive dig" do
+        expect(header.dig('DaTe')).to eq('Fri, 29 Jun 2012 10:09:23 GMT')
+      end
+
+      it "provides symbol dig" do
+        expect(header.dig(:date)).to eq('Fri, 29 Jun 2012 10:09:23 GMT')
+      end
+
+      it "provides case insensitive assoc" do
+        expect(header.assoc('DaTe')).to eq(['date', 'Fri, 29 Jun 2012 10:09:23 GMT'])
+      end
+
+      it "provides symbol assoc" do
+        expect(header.assoc(:date)).to eq(['date', 'Fri, 29 Jun 2012 10:09:23 GMT'])
+      end
+
+      it "provides case insensitive values_at" do
+        expect(header.values_at('DaTe')).to eq(['Fri, 29 Jun 2012 10:09:23 GMT'])
+      end
+
+      it "provides symbol values_at" do
+        expect(header.values_at(:date)).to eq(['Fri, 29 Jun 2012 10:09:23 GMT'])
+      end
+
+      it "provides case insensitive fetch_values" do
+        expect(header.fetch_values('DaTe')).to eq(['Fri, 29 Jun 2012 10:09:23 GMT'])
+        expect(header.fetch_values('DaTe', 'foo') { |key| key }).to eq(['Fri, 29 Jun 2012 10:09:23 GMT', 'foo'])
+      end
+
+      it "provides symbol fetch_values" do
+        expect(header.fetch_values(:date)).to eq(['Fri, 29 Jun 2012 10:09:23 GMT'])
+        expect(header.fetch_values(:date, :foo) { |key| key }).to eq(['Fri, 29 Jun 2012 10:09:23 GMT', 'foo'])
+      end
     end
 
     context "when hash" do
