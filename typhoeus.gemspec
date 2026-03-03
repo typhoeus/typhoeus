@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
     'source_code_uri'       => "https://github.com/typhoeus/typhoeus/tree/v#{s.version}"
   }
 
-  s.add_dependency('ethon', [">= 0.9.0", "< 0.16.0"])
+  s.add_dependency('ethon', [">= 0.9.0", "< 0.19.0"])
 
   s.files = Dir.chdir(__dir__) do
     `git ls-files -z`.split("\x0").reject do |file|
