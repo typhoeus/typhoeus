@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
 require 'rack'
-require 'rack/handler/webrick'
+begin
+  require 'rackup/handler/webrick'
+rescue LoadError
+  # If Rackup handler (and Rack 3.x) cannot be loaded, try to fallback to Rack 2.x.
+  require 'rack/handler/webrick'
+  Rackup = Rack
+end
 require 'net/http'
 
 # The code for this is inspired by Capybara's server:
@@ -45,7 +51,7 @@ class LocalhostServer
     # Use WEBrick since it's part of the ruby standard library and is available on all ruby interpreters.
     options = { :Port => port }
     options.merge!(:AccessLog => [], :Logger => WEBrick::BasicLog.new(StringIO.new)) unless ENV['VERBOSE_SERVER']
-    Rack::Handler::WEBrick.run(Identify.new(@rack_app), options)
+    Rackup::Handler::WEBrick.run(Identify.new(@rack_app), options)
   end
 
   def booted?
@@ -60,7 +66,7 @@ class LocalhostServer
   def concurrently
     if should_use_subprocess?
       pid = Process.fork do
-        trap(:INT) { ::Rack::Handler::WEBrick.shutdown }
+        trap(:INT) { ::Rackup::Handler::WEBrick.shutdown }
         yield
         exit # manually exit; otherwise this sub-process will re-run the specs that haven't run yet.
       end
