@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'redis'
 require 'typhoeus/cache/redis'
 require 'spec_helper'

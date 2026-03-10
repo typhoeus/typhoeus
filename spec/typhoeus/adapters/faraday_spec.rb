@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
   require 'spec_helper'
   require 'typhoeus/adapters/faraday'

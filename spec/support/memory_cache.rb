@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MemoryCache
   attr_reader :memory
 

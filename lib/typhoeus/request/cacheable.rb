@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Typhoeus
   class Request
     module Cacheable

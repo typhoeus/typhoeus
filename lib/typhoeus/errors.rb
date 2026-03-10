@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'typhoeus/errors/typhoeus_error'
 require 'typhoeus/errors/no_stub'
 

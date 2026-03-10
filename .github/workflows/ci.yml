@@ -27,4 +27,7 @@ jobs:
           bundler-cache: true
       - name: Run tests
         run: |
+          if [[ $(ruby -e 'puts RUBY_ENGINE') == 'ruby' ]]; then
+            export RUBYOPT='--enable=frozen-string-literal --debug=frozen-string-literal'
+          fi
           bundle exec rake

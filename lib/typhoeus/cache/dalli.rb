@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Typhoeus
   module Cache
     # This module provides a simple way to cache HTTP responses using Dalli.

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Typhoeus
 
   # This class represents an expectation. It is part
