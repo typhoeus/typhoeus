@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'zlib'
 require 'digest/sha1'
 require 'typhoeus/request/actions'

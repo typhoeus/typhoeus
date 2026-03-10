@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'typhoeus/hydra/addable'
 require 'typhoeus/hydra/before'
 require 'typhoeus/hydra/cacheable'

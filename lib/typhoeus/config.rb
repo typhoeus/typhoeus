@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Typhoeus
 
   # The Typhoeus configuration used to set global

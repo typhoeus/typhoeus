@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'typhoeus/response/header'
 require 'typhoeus/response/informations'
 require 'typhoeus/response/status'
