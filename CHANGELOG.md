@@ -2,7 +2,18 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.5.0...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.6.0...master)
+
+## 1.6.0
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.5.0...v1.6.0)
+
+* Require Ethon >= 0.18.0, removing the upper bound constraint.
+  ([Geremia Taglialatela](https://github.com/tagliala), [#742](https://github.com/typhoeus/typhoeus/pull/742))
+* Update RubyDoc link in gemspec metadata.
+  ([Felipe Mesquita](https://github.com/felipedmesquita), [#737](https://github.com/typhoeus/typhoeus/pull/737))
+* Update gem version badge and remove Code Climate badge.
+  ([Felipe Mesquita](https://github.com/felipedmesquita), [#736](https://github.com/typhoeus/typhoeus/pull/736))
 
 ## 1.5.0
 
