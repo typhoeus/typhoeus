@@ -8,6 +8,8 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.5.0...v1.6.0)
 
+* Add Ruby 4.0 to CI matrix and update checkout action to v6.
+  ([Geremia Taglialatela](https://github.com/tagliala), [#744](https://github.com/typhoeus/typhoeus/pull/744))
 * Require Ethon >= 0.18.0, removing the upper bound constraint.
   ([Geremia Taglialatela](https://github.com/tagliala), [#742](https://github.com/typhoeus/typhoeus/pull/742))
 * Update RubyDoc link in gemspec metadata.
