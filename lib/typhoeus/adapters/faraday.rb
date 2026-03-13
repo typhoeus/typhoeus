@@ -37,6 +37,8 @@ module Faraday # :nodoc:
       remove_method :configure_socket  if method_defined? :configure_socket
       remove_method :parallel?         if method_defined? :parallel?
 
+      PathExpectedError = Class.new(StandardError)
+
       # Initialize the Typhoeus adapter
       #
       # @param [ App ] app Farday app
@@ -135,6 +137,9 @@ module Faraday # :nodoc:
 
       def configure_ssl(req, env)
         ssl = env[:ssl]
+
+        raise PathExpectedError, 'Typhoeus expects a path for `client_cert`' unless ssl.fetch(:client_cert, '').is_a? String
+        raise PathExpectedError, 'Typhoeus expects a path for `client_key`' unless ssl.fetch(:client_key, '').is_a? String
 
         verify_p = (ssl && ssl.fetch(:verify, true))
 

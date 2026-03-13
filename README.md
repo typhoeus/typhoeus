@@ -205,6 +205,36 @@ end
 This will properly stop the stream internally and avoid any memory leak which
 may happen if you interrupt with something like a `return`, `throw` or `raise`.
 
+### Usage with Faraday
+
+Typhoeus includes a [Faraday](https://github.com/lostisland/faraday) adapter.
+
+```ruby
+conn = Faraday.new(:url => 'http://httppage.com') do |builder|
+  # Other Faraday middlewares...
+  builder.adapter  :typhoeus # must be last
+end
+
+# OR
+
+Faraday.default_adapter = :typhoeus
+
+conn = Faraday.new(:url => 'http://httppage.com') do |builder|
+  # Other Faraday middlewares...
+  builder.adapter  Faraday.default_adapter # must be last
+end
+```
+
+One caveat is that, unlike some other Faraday adapters, Typhoeus expects client certificates and keys to be the path to the files rather than the files themselves, and will raise a `PathExpectedError` if you configure these with files.
+
+```ruby
+conn = Faraday.new(:url => '...', :ssl_options => { :client_cert => OpenSSL::X509::Certificate.new(File.read(cert_path)) })
+# => raises Faraday::Adapter::Typhoeus::PathExpectedError
+
+conn = Faraday.new(:url => '...', :ssl_options => { :client_cert => cert_path })
+# => works
+```
+
 ### Making Parallel Requests
 
 Generally, you should be running requests through hydra. Here is how that looks:
