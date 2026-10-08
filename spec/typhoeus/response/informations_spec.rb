@@ -38,6 +38,36 @@ describe Typhoeus::Response::Informations do
     end
   end
 
+  describe "#error_message" do
+    let(:options) { { :error_message => "Maximum (1) redirects followed" } }
+
+    it "returns error_message from options" do
+      expect(response.error_message).to eq("Maximum (1) redirects followed")
+    end
+
+    context "when performing a request", :if => Ethon::Easy.method_defined?(:error_message) do
+      let(:response) { Typhoeus.get("localhost:3001/bad_redirect", :followlocation => true, :maxredirs => 1, :errorbuffer => errorbuffer) }
+
+      context "with errorbuffer" do
+        let(:errorbuffer) { true }
+
+        it "returns the libcurl error message" do
+          expect(response.return_code).to eq(:too_many_redirects)
+          expect(response.error_message).to eq("Maximum (1) redirects followed")
+        end
+      end
+
+      context "without errorbuffer" do
+        let(:errorbuffer) { nil }
+
+        it "returns nil" do
+          expect(response.return_code).to eq(:too_many_redirects)
+          expect(response.error_message).to be_nil
+        end
+      end
+    end
+  end
+
   describe "#response_body" do
     context "when response_body" do
       let(:options) { { :response_body => "body" } }
