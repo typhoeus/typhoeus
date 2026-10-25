@@ -3,6 +3,28 @@
 require 'spec_helper'
 require "rack/typhoeus"
 
+class FakeParams
+  def initialize(hash)
+    @hash = hash
+  end
+
+  def each_pair(&block)
+    @hash.each_pair(&block)
+  end
+
+  def [](key)
+    @hash[key]
+  end
+
+  def []=(key, value)
+    @hash[key] = value
+  end
+
+  def to_h
+    @hash
+  end
+end
+
 describe "Rack::Typhoeus::Middleware::ParamsDecoder::Helper" do
 
   let(:klass) do
@@ -21,6 +43,16 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder::Helper" do
 
     it "doesn't modify" do
       expect(decoded).to_not be(params)
+    end
+
+    context "when nested" do
+      let(:params) { { "a" => { "0" => { "0" => "x", "1" => "y" } } } }
+
+      it "does not modify the input" do
+        klass.decode(params)
+
+        expect(params).to eq("a" => { "0" => { "0" => "x", "1" => "y" } })
+      end
     end
   end
 
@@ -89,6 +121,22 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder::Helper" do
         it "doesn't modify" do
           expect(decoded).to be(params)
         end
+      end
+    end
+
+    context "when hash-like" do
+      let(:params) { { "a" => FakeParams.new("0" => "x", "1" => "y") } }
+
+      it "decodes" do
+        expect(decoded["a"]).to eq(["x", "y"])
+      end
+    end
+
+    context "when symbol keys" do
+      let(:params) { { "a" => { :"0" => "x", :"1" => "y" } } }
+
+      it "decodes" do
+        expect(decoded["a"]).to eq(["x", "y"])
       end
     end
 
