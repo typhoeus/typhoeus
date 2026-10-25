@@ -275,8 +275,11 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
         end
       end
 
-      context "when ssl is a Faraday::SSLOptions" do
-        let(:env) { { :ssl => Faraday::SSLOptions.new(:version => :TLSv1_2) } }
+      context "when ssl is an object with accessors" do
+        let(:ssl_class) do
+          Struct.new(:verify, :verify_hostname, :version, :min_version, :max_version, :keyword_init => true)
+        end
+        let(:env) { { :ssl => ssl_class.new(:version => :TLSv1_2) } }
 
         it "sets sslversion" do
           expect(request.options[:sslversion]).to eq(:tlsv1_2)
