@@ -91,6 +91,9 @@ module Typhoeus
     def initialize(options = {})
       @options = options
       @max_concurrency = Integer(@options.fetch(:max_concurrency, 200))
+      if @max_concurrency <= 0
+        raise ArgumentError, "max_concurrency must be greater than zero"
+      end
       @multi = Ethon::Multi.new(options.reject{|k,_| k==:max_concurrency})
     end
   end
