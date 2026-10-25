@@ -47,6 +47,51 @@ describe Typhoeus::Hydra::Runnable do
       end
     end
 
+    context "when the multi raises a fatal error" do
+      let(:multi_error) do
+        Class.new(StandardError) do
+          def initialize(*)
+            super("multi perform failed")
+          end
+        end
+      end
+
+      before do
+        stub_const("Ethon::Errors::MultiPerform", multi_error)
+      end
+
+      it "replaces the multi handle" do
+        old_multi = hydra.multi
+        allow(old_multi).to receive(:perform).and_raise(multi_error.new)
+
+        expect { hydra.run }.to raise_error(multi_error)
+        expect(hydra.multi).not_to eq(old_multi)
+      end
+
+      it "runs requests again" do
+        allow(hydra.multi).to receive(:perform).and_raise(multi_error.new)
+
+        expect { hydra.run }.to raise_error(multi_error)
+
+        request = Typhoeus::Request.new("#{base_url}/first")
+        hydra.queue(request)
+        hydra.run
+
+        expect(request.response.code).to eq(200)
+      end
+    end
+
+    context "when the multi raises another error" do
+      it "keeps the multi handle" do
+        original_multi = hydra.multi
+        allow(original_multi).to receive(:perform).and_raise("boom")
+
+        expect { hydra.run }.to raise_error("boom")
+
+        expect(hydra.multi).to be(original_multi)
+      end
+    end
+
     context "when three request queued" do
       let(:first) { Typhoeus::Request.new("localhost:3001/first") }
       let(:second) { Typhoeus::Request.new("localhost:3001/second") }

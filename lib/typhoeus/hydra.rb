@@ -93,7 +93,7 @@ module Typhoeus
     def initialize(options = {})
       @options = options
       self.max_concurrency = @options.fetch(:max_concurrency, 200)
-      @multi = Ethon::Multi.new(options.reject{|k,_| k==:max_concurrency})
+      @multi = build_multi
     end
 
     # Set the maximum number of concurrent requests.
@@ -113,6 +113,17 @@ module Typhoeus
         raise ArgumentError, "max_concurrency must be greater than zero"
       end
       @max_concurrency = concurrency
+    end
+
+    private
+
+    # Build the multi handle from the options the hydra was created with.
+    #
+    # @return [ Ethon::Multi ] The new multi handle.
+    #
+    # @api private
+    def build_multi
+      Ethon::Multi.new(@options.reject { |key, _| key == :max_concurrency })
     end
   end
 end
