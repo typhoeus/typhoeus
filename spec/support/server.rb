@@ -21,6 +21,16 @@ TESTSERVER = Sinatra.new do
     }.to_json
   end
 
+  put '/file' do
+    {
+      'content-type' => params[:file][:type],
+      'filename' => params[:file][:filename],
+      'content' => params[:file][:tempfile].read,
+      'request-content-type' => request.env['CONTENT_TYPE'],
+      'request-method' => request.env['REQUEST_METHOD']
+    }.to_json
+  end
+
   get '/multiple-headers' do
     [200, { 'Set-Cookie' => %w[ foo bar ], 'Content-Type' => 'text/plain' }, ['']]
   end
