@@ -59,6 +59,35 @@ describe Typhoeus::EasyFactory do
 
     end
 
+    context "when timeouts are not numeric" do
+      let(:options) { { :timeout => "1" } }
+
+      it "raises a helpful error" do
+        expect { easy_factory.get }.to raise_error(ArgumentError, /timeout.*must be a number/)
+      end
+
+      it "releases the easy" do
+        expect(Typhoeus::Pool).to receive(:release).with(anything, :cleanup => false)
+        expect { easy_factory.get }.to raise_error(ArgumentError)
+      end
+
+      context "when timeout_ms" do
+        let(:options) { { :timeout_ms => "100" } }
+
+        it "raises a helpful error" do
+          expect { easy_factory.get }.to raise_error(ArgumentError, /timeout_ms.*must be a number/)
+        end
+      end
+
+      context "when connecttimeout" do
+        let(:options) { { :connecttimeout => false } }
+
+        it "raises a helpful error" do
+          expect { easy_factory.get }.to raise_error(ArgumentError, /connecttimeout.*must be a number/)
+        end
+      end
+    end
+
     context "when request has a read callback body" do
       let(:options) { {:set_read_callback => "body"} }
 

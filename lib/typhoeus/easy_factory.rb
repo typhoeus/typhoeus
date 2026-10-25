@@ -128,6 +128,9 @@ module Typhoeus
           sanitized[new_option] = v
         # sanitize timeouts
         elsif SANITIZE_TIMEOUT.include?(s)
+          unless v.is_a?(Numeric)
+            raise ArgumentError, "Value '#{v}' for option '#{k}' must be a number."
+          end
           if !v.integer?
             warn("Value '#{v}' for option '#{k}' must be integer.")
           end
@@ -145,11 +148,18 @@ module Typhoeus
 
     def sanitize_timeout!(options, timeout)
       timeout_ms = :"#{timeout}_ms"
-      if options[timeout] && options[timeout].round != options[timeout]
+      value = options[timeout]
+      return options if value.nil?
+
+      unless value.is_a?(Numeric)
+        raise ArgumentError, "Value '#{value}' for option '#{timeout}' must be a number."
+      end
+
+      if value.round != value
         if !options[timeout_ms]
-          options[timeout_ms] = (options[timeout]*1000).ceil
+          options[timeout_ms] = (value*1000).ceil
         end
-        options[timeout] = options[timeout].ceil
+        options[timeout] = value.ceil
       end
       options
     end
