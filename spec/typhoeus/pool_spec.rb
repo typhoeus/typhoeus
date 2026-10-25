@@ -13,6 +13,14 @@ describe Typhoeus::Pool do
   end
 
   describe "#release" do
+    context "when cleanup is requested" do
+      it "cleans up instead of pooling" do
+        expect(easy).to receive(:cleanup)
+        Typhoeus::Pool.release(easy, :cleanup => true)
+        expect(Typhoeus::Pool.send(:easies)).to be_empty
+      end
+    end
+
     it "resets easy" do
       expect(easy).to receive(:reset)
       Typhoeus::Pool.release(easy)

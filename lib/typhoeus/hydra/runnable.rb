@@ -37,7 +37,7 @@ module Typhoeus
             # The handle may already be unusable.
           end
           begin
-            Typhoeus::Pool.release(easy)
+            Typhoeus::Pool.release(easy, :cleanup => true)
           rescue StandardError
             # Keep cleaning up the remaining handles.
           end

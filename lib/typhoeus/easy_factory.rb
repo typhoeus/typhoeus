@@ -154,6 +154,8 @@ module Typhoeus
       options
     end
 
+    public
+
     # Releases the easy into the pool once. Easies that used a custom
     # resolve list are cleaned up instead because libcurl keeps the
     # resolved addresses in its DNS cache across resets.
@@ -163,17 +165,11 @@ module Typhoeus
     # @return [ void ]
     #
     # @api private
-    public
-
     def release_easy(easy)
       return if released?
 
       begin
-        if request.options[:resolve]
-          easy.cleanup
-        else
-          Typhoeus::Pool.release(easy)
-        end
+        Typhoeus::Pool.release(easy, :cleanup => !request.options[:resolve].nil?)
       ensure
         @released = true
       end

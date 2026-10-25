@@ -37,7 +37,7 @@ describe Typhoeus::Request::Operations do
 
     it "releases easy when performing raises" do
       allow(easy).to receive(:perform).and_raise("boom")
-      expect(Typhoeus::Pool).to receive(:release).with(easy)
+      expect(Typhoeus::Pool).to receive(:release).with(easy, :cleanup => false)
       expect { request.run }.to raise_error("boom")
     end
 

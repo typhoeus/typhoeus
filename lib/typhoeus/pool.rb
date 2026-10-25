@@ -18,7 +18,15 @@ module Typhoeus
     #
     # @example Release easy.
     #   Typhoeus::Pool.release(easy)
-    def self.release(easy)
+    #
+    # @example Clean up instead of pooling.
+    #   Typhoeus::Pool.release(easy, :cleanup => true)
+    def self.release(easy, cleanup: false)
+      if cleanup
+        easy.cleanup
+        return
+      end
+
       if @pid != Process.pid
         @mutex.synchronize do
           @pid = Process.pid

@@ -31,7 +31,7 @@ describe Typhoeus::Hydra::Addable do
     allow(hydra).to receive(:multi).and_return(multi)
     allow(multi).to receive(:add).with(easy).and_raise("boom")
 
-    expect(Typhoeus::Pool).to receive(:release).with(easy)
+    expect(easy_factory).to receive(:release_easy).with(easy)
     expect { hydra.add(request) }.to raise_error("boom")
   end
 end

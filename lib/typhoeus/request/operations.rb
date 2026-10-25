@@ -19,7 +19,7 @@ module Typhoeus
         begin
           easy.perform
         rescue Exception
-          Typhoeus::Pool.release(easy) unless easy_factory.released?
+          easy_factory.release_easy(easy) unless easy_factory.released?
           raise
         end
         response

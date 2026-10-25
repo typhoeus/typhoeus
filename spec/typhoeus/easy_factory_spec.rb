@@ -126,15 +126,14 @@ describe Typhoeus::EasyFactory do
       let(:options) { {:resolve => "example.com:80:127.0.0.1"} }
 
       it "cleans the easy up instead of pooling it" do
-        expect(easy).to receive(:cleanup)
-        expect(Typhoeus::Pool).to_not receive(:release)
+        expect(Typhoeus::Pool).to receive(:release).with(easy, :cleanup => true)
         easy_factory.release_easy(easy)
       end
     end
 
     context "when request did not use resolve" do
       it "releases the easy to the pool" do
-        expect(Typhoeus::Pool).to receive(:release).with(easy)
+        expect(Typhoeus::Pool).to receive(:release).with(easy, :cleanup => false)
         easy_factory.release_easy(easy)
       end
     end
