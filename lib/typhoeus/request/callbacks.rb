@@ -94,6 +94,9 @@ module Typhoeus
 
         # Set on_progress callback.
         #
+        # The callback is invoked by libcurl while the request transfers data.
+        # It is not called when the request completes.
+        #
         # @example Set on_progress.
         #   request.on_progress do |dltotal, dlnow, ultotal, ulnow|
         #     puts "dltotal (#{dltotal}), dlnow (#{dlnow}), ultotal (#{ultotal}), ulnow (#{ulnow})"
@@ -101,7 +104,8 @@ module Typhoeus
         #
         # @param [ Block ] block The block to execute.
         #
-        # @yield [ Typhoeus::Response ]
+        # @yield [ Integer, Integer, Integer, Integer ] The download total,
+        #   downloaded bytes, upload total, and uploaded bytes.
         #
         # @return [ Array<Block> ] All on_progress blocks.
         def on_progress(&block)
