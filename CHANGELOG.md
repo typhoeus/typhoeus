@@ -37,6 +37,10 @@
   ([#759](https://github.com/typhoeus/typhoeus/pull/759))
 * Load the Rack middleware and the cache adapters independent of require order.
   ([#760](https://github.com/typhoeus/typhoeus/pull/760))
+* Bound the easy pool with `Typhoeus::Config.max_idle_easies` (20 by default)
+  and replace the pool mutex after a fork instead of deadlocking on the
+  inherited lock.
+  ([#761](https://github.com/typhoeus/typhoeus/pull/761))
 
 ## 1.6.0
 
