@@ -509,6 +509,10 @@ but it cannot reset libcurl's process-global state. If your application
 initializes libcurl before forking, for example by making a request during
 boot, use `fork` followed by `exec` or fork before the first request.
 
+Typhoeus keeps at most `Typhoeus::Config.max_idle_easies` idle easy handles in
+the pool (20 by default). Handles beyond that limit are cleaned up instead of
+pooled. Set it to `nil` to keep every handle or `0` to disable pooling.
+
 Exceptions raised by `on_body` and `on_complete` callbacks are propagated by
 Ethon 0.19 and later. Typhoeus releases the underlying easy handle before
 re-raising.
