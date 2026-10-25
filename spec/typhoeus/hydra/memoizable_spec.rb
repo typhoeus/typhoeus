@@ -51,5 +51,13 @@ describe Typhoeus::Hydra::Memoizable do
       expect(hydra.memory).to receive(:clear)
       hydra.run
     end
+
+    it "clears memory when the run raises" do
+      hydra.memory[request] = Typhoeus::Response.new
+      allow(hydra).to receive(:multi).and_raise("boom")
+
+      expect { hydra.run }.to raise_error("boom")
+      expect(hydra.memory).to be_empty
+    end
   end
 end

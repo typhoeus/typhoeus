@@ -51,6 +51,7 @@ module Typhoeus
       #   hydra.run
       def run
         super
+      ensure
         memory.clear
       end
     end
