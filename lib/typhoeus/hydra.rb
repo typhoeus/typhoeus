@@ -52,7 +52,9 @@ module Typhoeus
 
     # @example Set max_concurrency.
     #   Typhoeus::Hydra.new(max_concurrency: 20)
-    attr_accessor :max_concurrency
+    #
+    # @return [ Integer ] The maximum number of concurrent requests.
+    attr_reader :max_concurrency
 
     # @api private
     attr_reader :multi
@@ -90,11 +92,27 @@ module Typhoeus
     #   Ethon::Multi#initialize
     def initialize(options = {})
       @options = options
-      @max_concurrency = Integer(@options.fetch(:max_concurrency, 200))
-      if @max_concurrency <= 0
+      self.max_concurrency = @options.fetch(:max_concurrency, 200)
+      @multi = Ethon::Multi.new(options.reject{|k,_| k==:max_concurrency})
+    end
+
+    # Set the maximum number of concurrent requests.
+    #
+    # @example Set max_concurrency.
+    #   hydra.max_concurrency = 20
+    #
+    # @param [ Integer, String ] value The maximum number of requests to run
+    #   at the same time.
+    #
+    # @raise [ ArgumentError ] When the value is not greater than zero.
+    #
+    # @return [ Integer ] The maximum number of concurrent requests.
+    def max_concurrency=(value)
+      concurrency = Integer(value)
+      if concurrency <= 0
         raise ArgumentError, "max_concurrency must be greater than zero"
       end
-      @multi = Ethon::Multi.new(options.reject{|k,_| k==:max_concurrency})
+      @max_concurrency = concurrency
     end
   end
 end
