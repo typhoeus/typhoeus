@@ -6,6 +6,25 @@ describe Typhoeus::Request::Before do
   let(:request) { Typhoeus::Request.new("") }
   let(:receive_counter) { double :mark => :twain }
 
+  describe "#before" do
+    it "responds" do
+      expect(request).to respond_to(:before)
+    end
+
+    context "when no block given" do
+      it "returns an empty array" do
+        expect(request.before).to eq([])
+      end
+    end
+
+    context "when block given" do
+      it "stores the block" do
+        request.before { true }
+        expect(request.before.size).to eq(1)
+      end
+    end
+  end
+
   describe "#queue" do
     context "when before" do
       context "when one" do
@@ -46,6 +65,30 @@ describe Typhoeus::Request::Before do
           it "returns response" do
             Typhoeus.before { |r| r.response = Typhoeus::Response.new }
             expect(request.run).to be_a(Typhoeus::Response)
+          end
+        end
+      end
+
+      context "when one local" do
+        it "executes" do
+          request.before { |r| receive_counter.mark }
+          expect(receive_counter).to receive(:mark)
+          request.run
+        end
+
+        it "runs global callbacks first" do
+          order = []
+          Typhoeus.before { order << :global }
+          request.before { order << :local; false }
+          request.run
+          expect(order).to eq([:global, :local])
+        end
+
+        context "when false" do
+          it "doesn't call super" do
+            request.before { false }
+            expect(Typhoeus::Expectation).to receive(:response_for).never
+            request.run
           end
         end
       end

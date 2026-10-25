@@ -55,6 +55,40 @@ describe Typhoeus::Hydra::Before do
         end
       end
 
+      context "when one local" do
+        it "executes" do
+          request.before { |r| receive_counter.mark }
+          expect(receive_counter).to receive(:mark)
+          hydra.add(request)
+        end
+
+        context "when false" do
+          it "does not call super" do
+            request.before { false }
+            expect(Typhoeus::Expectation).to receive(:response_for).never
+            hydra.add(request)
+          end
+        end
+      end
+
+      context "when one local and one global" do
+        it "executes both" do
+          Typhoeus.before { |r| receive_counter.mark }
+          request.before { |r| receive_counter.mark }
+          expect(receive_counter).to receive(:mark).twice
+          hydra.add(request)
+        end
+      end
+
+      context "when multiple" do
+        before { 2.times { request.before { |r| receive_counter.mark } } }
+
+        it "executes all" do
+          expect(receive_counter).to receive(:mark).exactly(2).times
+          hydra.add(request)
+        end
+      end
+
       context "when multi" do
         context "when all true" do
           before { 3.times { Typhoeus.before { |r| receive_counter.mark } } }

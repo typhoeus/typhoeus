@@ -119,6 +119,20 @@ Typhoeus.put("www.example.com/posts/1",
     )
 ```
 
+### Before callbacks
+
+Use `Typhoeus.before` to register a callback for every request, or
+`request.before` to register a callback for a single request. Callbacks receive
+the request, run before it is performed, and can modify it. Returning `nil` or
+`false` skips the request.
+
+```ruby
+Typhoeus.before { |request| request.options[:timeout] ||= 5 }
+
+request = Typhoeus::Request.new("www.example.com")
+request.before { |request| request.options[:headers] ||= {} }
+```
+
 ### Handling HTTP errors
 
 You can query the response object to figure out if you had a successful

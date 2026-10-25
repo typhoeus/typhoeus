@@ -12,14 +12,14 @@ module Typhoeus
     module Before
 
       # Overrride add in order to execute callbacks in
-      # Typhoeus.before. Will break and return when a
-      # callback returns nil, false or a response. Calls super
-      # otherwise.
+      # Typhoeus.before and request specific callbacks. Will
+      # break and return when a callback returns nil, false or
+      # a response. Calls super otherwise.
       #
       # @example Add the request.
       #   hydra.add(request)
       def add(request)
-        Typhoeus.before.each do |callback|
+        (Typhoeus.before + request.before).each do |callback|
           value = callback.call(request)
           if value.nil? || value == false || value.is_a?(Response)
             dequeue
