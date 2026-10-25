@@ -150,6 +150,38 @@ describe Typhoeus::Response::Informations do
             expect(response.response_headers).to include("\r\n")
           end
         end
+
+        context "when no response code" do
+          let(:options) { { :mock => true, :headers => {"Length" => 1} } }
+
+          it "uses 200 for the status line" do
+            expect(response.response_headers).to start_with("HTTP/1.1 200 OK")
+          end
+        end
+
+        context "when a return code" do
+          let(:options) { { :mock => true, :return_code => :internal_server_error, :headers => {"Length" => 1} } }
+
+          it "does not use the return code as the status" do
+            expect(response.response_headers).to start_with("HTTP/1.1 200 OK")
+          end
+        end
+
+        context "when a response code" do
+          let(:options) { { :mock => true, :response_code => 404, :headers => {"Length" => 1} } }
+
+          it "uses the response code for the status line" do
+            expect(response.response_headers).to start_with("HTTP/1.1 404 Mock Reason Phrase")
+          end
+        end
+
+        context "when a code" do
+          let(:options) { { :mock => true, :code => 201, :headers => {"Length" => 1} } }
+
+          it "uses the code for the status line" do
+            expect(response.response_headers).to start_with("HTTP/1.1 201 Mock Reason Phrase")
+          end
+        end
       end
     end
   end
