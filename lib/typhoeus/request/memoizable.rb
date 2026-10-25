@@ -21,7 +21,7 @@ module Typhoeus
       # @example Set response.
       #   request.response = response
       def response=(response)
-        hydra.memory[self] = response if memoizable?
+        hydra.memory[self] = response if memoizable? && hydra
         super
       end
 

@@ -31,6 +31,14 @@ describe Typhoeus::Request::Memoizable do
           expect(hydra.memory[request]).to be_nil
         end
       end
+
+      context "when no hydra" do
+        let(:options) { {:method => :get} }
+
+        it "doesn't raise" do
+          expect { request.response = response }.to_not raise_error
+        end
+      end
     end
   end
 end
