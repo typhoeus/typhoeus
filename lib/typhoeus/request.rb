@@ -216,11 +216,16 @@ module Typhoeus
     def hashable_string_for(obj)
       case obj
       when Hash
-        hashable_string_for(obj.sort_by {|sub_obj| sub_obj.first.to_s})
+        pairs = obj.sort_by { |key, _| key.to_s }.map do |key, value|
+          "#{hashable_string_for(key)}#{hashable_string_for(value)}"
+        end
+        "hash:#{obj.size}:#{pairs.join}"
       when Array
-        obj.map {|sub_obj| hashable_string_for(sub_obj)}.to_s
+        values = obj.map { |value| hashable_string_for(value) }
+        "array:#{obj.size}:#{values.join}"
       else
-        obj.to_s
+        value = obj.to_s
+        "#{obj.class}:#{value.bytesize}:#{value}"
       end
     end
 

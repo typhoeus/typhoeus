@@ -30,6 +30,13 @@ describe Typhoeus::Request::Operations do
       expect(request.response).to be
     end
 
+    it "does not raise for an empty url with params" do
+      response = Typhoeus::Request.new("", :params => { :a => 1 }).run
+
+      expect(response).to be_a(Typhoeus::Response)
+      expect(response.return_code).to eq(:url_malformat)
+    end
+
     it "releases easy" do
       expect(Typhoeus::Pool).to receive(:release)
       request.run
