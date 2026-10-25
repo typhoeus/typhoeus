@@ -1,0 +1,46 @@
+name: Ethon master
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    name: test (${{ matrix.os }}, ${{ matrix.ruby-version }})
+    runs-on: ${{ matrix.os }}-latest
+    timeout-minutes: 10
+    env:
+      BUNDLE_GEMFILE: Gemfile
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - { os: ubuntu, ruby-version: '3.2' }
+        - { os: ubuntu, ruby-version: '3.4' }
+        - { os: ubuntu, ruby-version: '4.0' }
+        - { os: macos, ruby-version: '4.0' }
+    steps:
+    - uses: actions/checkout@v7
+    - name: Check out Ethon master
+      uses: actions/checkout@v7
+      with:
+        repository: typhoeus/ethon
+        path: ethon
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby-version }}
+        bundler-cache: true
+    - name: Run tests against Ethon master
+      run: |
+        export RUBYLIB="$GITHUB_WORKSPACE/ethon/lib"
+        if [[ $(ruby -e 'puts RUBY_ENGINE') == 'ruby' ]]; then
+          export RUBYOPT='--enable=frozen-string-literal --debug=frozen-string-literal'
+        fi
+        bundle exec rake

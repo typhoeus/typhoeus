@@ -1,33 +1,48 @@
 name: CI
-on: [push, pull_request]
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
-  build:
+  test:
+    name: test (${{ matrix.os }}, ${{ matrix.ruby-version }})
+    runs-on: ${{ matrix.os }}-latest
+    timeout-minutes: 10
     env:
       BUNDLE_GEMFILE: Gemfile
-    runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu, macos]
-        ruby-version: ['2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4', '4.0', truffleruby]
+        include:
+        - { os: ubuntu, ruby-version: '2.6' }
+        - { os: ubuntu, ruby-version: '2.7' }
+        - { os: ubuntu, ruby-version: '3.0' }
+        - { os: ubuntu, ruby-version: '3.1' }
+        - { os: ubuntu, ruby-version: '3.2' }
+        - { os: ubuntu, ruby-version: '3.3' }
+        - { os: ubuntu, ruby-version: '3.4' }
+        - { os: ubuntu, ruby-version: '4.0' }
+        - { os: ubuntu, ruby-version: 'truffleruby' }
+        - { os: macos, ruby-version: '2.6' }
+        - { os: macos, ruby-version: '3.2' }
+        - { os: macos, ruby-version: '4.0' }
     steps:
-      - uses: actions/checkout@v6
-      - name: Install libcurl header
-        run: |
-          if ${{ matrix.os == 'macos' }}
-          then
-            brew install curl
-          else
-            sudo apt update && sudo apt install -y --no-install-recommends libcurl4-openssl-dev
-          fi
-      - name: Set up Ruby ${{ matrix.ruby-version }}
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby-version }}
-          bundler-cache: true
-      - name: Run tests
-        run: |
-          if [[ $(ruby -e 'puts RUBY_ENGINE') == 'ruby' ]]; then
-            export RUBYOPT='--enable=frozen-string-literal --debug=frozen-string-literal'
-          fi
-          bundle exec rake
+    - uses: actions/checkout@v7
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby-version }}
+        bundler-cache: true
+    - name: Run tests
+      run: |
+        if [[ $(ruby -e 'puts RUBY_ENGINE') == 'ruby' ]]; then
+          export RUBYOPT='--enable=frozen-string-literal --debug=frozen-string-literal'
+        fi
+        bundle exec rake
