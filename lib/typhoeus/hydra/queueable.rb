@@ -69,13 +69,23 @@ module Typhoeus
       # adds them to the hydra until max_concurrency
       # is reached.
       #
+      # Short-circuited requests call this method while it is already
+      # draining the queue. The guard keeps that from recursing.
+      #
       # @example Dequeue requests.
       #   hydra.dequeue_many
       #
       # @since 0.6.8
       def dequeue_many
-        until multi.easy_handles.count >= max_concurrency || queued_requests.empty?
-          add(queued_requests.shift)
+        return if @dequeuing_many
+
+        begin
+          @dequeuing_many = true
+          until multi.easy_handles.count >= max_concurrency || queued_requests.empty?
+            add(queued_requests.shift)
+          end
+        ensure
+          @dequeuing_many = false
         end
       end
     end
