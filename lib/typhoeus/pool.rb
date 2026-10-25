@@ -85,9 +85,11 @@ module Typhoeus
     def self.reset_after_fork
       return if @pid == Process.pid
 
-      @pid = Process.pid
+      # Replace the lock before publishing the new pid so a thread that sees
+      # the new pid cannot pick up the inherited lock.
       @mutex = Mutex.new
       @easies = []
+      @pid = Process.pid
     end
 
     def self.max_size
