@@ -1,10 +1,10 @@
 name: Ethon master
 
+# Run against Ethon master weekly until the next Ethon release.
 on:
-  push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
