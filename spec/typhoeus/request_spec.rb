@@ -300,6 +300,24 @@ describe Typhoeus::Request do
         expect(request_1.cache_key).to eq(request_2.cache_key)
       end
     end
+
+    context 'with different cache ttls' do
+      let(:request_1) { described_class.new(base_url, :cache_ttl => 10) }
+      let(:request_2) { described_class.new(base_url, :cache_ttl => 60) }
+
+      it 'returns the same cache key' do
+        expect(request_1.cache_key).to eq(request_2.cache_key)
+      end
+    end
+
+    context 'with different options' do
+      let(:request_1) { described_class.new(base_url, :params => { :a => 1 }) }
+      let(:request_2) { described_class.new(base_url, :params => { :a => 2 }) }
+
+      it 'returns different cache keys' do
+        expect(request_1.cache_key).to_not eq(request_2.cache_key)
+      end
+    end
   end
 
   describe "#encoded_body" do
