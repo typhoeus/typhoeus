@@ -66,6 +66,12 @@ describe Typhoeus::Request::Before do
             Typhoeus.before { |r| r.response = Typhoeus::Response.new }
             expect(request.run).to be_a(Typhoeus::Response)
           end
+
+          it "returns the callback's response" do
+            response = Typhoeus::Response.new
+            Typhoeus.before { response }
+            expect(request.run).to be(response)
+          end
         end
       end
 
@@ -82,6 +88,12 @@ describe Typhoeus::Request::Before do
           request.before { order << :local; false }
           request.run
           expect(order).to eq([:global, :local])
+        end
+
+        it "returns the callback's response" do
+          response = Typhoeus::Response.new
+          request.before { response }
+          expect(request.run).to be(response)
         end
 
         context "when false" do

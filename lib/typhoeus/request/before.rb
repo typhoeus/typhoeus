@@ -30,7 +30,8 @@ module Typhoeus
       # Overrride run in order to execute callbacks in
       # Typhoeus.before and request specific callbacks. Will
       # break and return when a callback returns nil or false.
-      # Calls super otherwise.
+      # A callback that returns a Response short-circuits the
+      # request and that response is returned. Calls super otherwise.
       #
       # @example Run the request.
       #   request.run
@@ -38,6 +39,7 @@ module Typhoeus
         (Typhoeus.before + before).each do |callback|
           value = callback.call(self)
           if value.nil? || value == false || value.is_a?(Response)
+            return value if value.is_a?(Response)
             return response
           end
         end
