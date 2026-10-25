@@ -37,7 +37,7 @@ module Typhoeus
 
     REMOVED_OPTIONS =  Set.new([:cache_key_basis, :cache_timeout, :user_agent])
 
-    SANITIZE_IGNORE  = Set.new([:method, :cache_ttl, :cache])
+    SANITIZE_IGNORE  = Set.new([:method, :cache_ttl, :cache, :set_read_callback])
     SANITIZE_TIMEOUT = Set.new([:timeout_ms, :connecttimeout_ms])
 
     # Returns the request provided.
@@ -91,7 +91,7 @@ module Typhoeus
     def get
       @released = false
       begin
-        read_callback_body = request.options.delete(:set_read_callback)
+        read_callback_body = request.options[:set_read_callback]
 
         easy.http_request(
           request.base_url.to_s,
@@ -154,22 +154,32 @@ module Typhoeus
       options
     end
 
-    # Releases the easy into the pool once.
+    # Releases the easy into the pool once. Easies that used a custom
+    # resolve list are cleaned up instead because libcurl keeps the
+    # resolved addresses in its DNS cache across resets.
     #
     # @param [ Ethon::Easy ] easy The easy to release.
     #
     # @return [ void ]
     #
     # @api private
+    public
+
     def release_easy(easy)
       return if released?
 
       begin
-        Typhoeus::Pool.release(easy)
+        if request.options[:resolve]
+          easy.cleanup
+        else
+          Typhoeus::Pool.release(easy)
+        end
       ensure
         @released = true
       end
     end
+
+    private
 
     # Sets on_complete callback on easy in order to be able to
     # track progress.

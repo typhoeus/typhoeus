@@ -59,6 +59,15 @@ describe Typhoeus::EasyFactory do
 
     end
 
+    context "when request has a read callback body" do
+      let(:options) { {:set_read_callback => "body"} }
+
+      it "keeps the option" do
+        easy_factory.get
+        expect(request.options[:set_read_callback]).to eq("body")
+      end
+    end
+
     context "when invalid option" do
       let(:options) { {:invalid => 1} }
 
@@ -106,6 +115,27 @@ describe Typhoeus::EasyFactory do
         expect(easy_factory).to receive(:warn)
         expect(easy_factory.easy).to receive(:connecttimeout=).with(1)
         easy_factory.get
+      end
+    end
+  end
+
+  describe "#release_easy" do
+    let(:easy) { double("easy") }
+
+    context "when request used resolve" do
+      let(:options) { {:resolve => "example.com:80:127.0.0.1"} }
+
+      it "cleans the easy up instead of pooling it" do
+        expect(easy).to receive(:cleanup)
+        expect(Typhoeus::Pool).to_not receive(:release)
+        easy_factory.release_easy(easy)
+      end
+    end
+
+    context "when request did not use resolve" do
+      it "releases the easy to the pool" do
+        expect(Typhoeus::Pool).to receive(:release).with(easy)
+        easy_factory.release_easy(easy)
       end
     end
   end

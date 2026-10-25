@@ -34,6 +34,13 @@ describe Typhoeus::Request do
       expect(Typhoeus::Pool).to receive(:release).with(easy)
       request.url
     end
+
+    it "keeps the read callback option" do
+      request.options[:set_read_callback] = "body"
+      request.url
+
+      expect(request.options[:set_read_callback]).to eq("body")
+    end
   end
 
   describe ".new" do
