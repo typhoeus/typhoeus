@@ -28,6 +28,9 @@
 * Build the synthetic status line for mocked responses from `response_code`/
   `code`. It previously used the libcurl `return_code` symbol.
   ([#754](https://github.com/typhoeus/typhoeus/pull/754))
+* Raise `ArgumentError` with the option name for non-numeric timeout options
+  instead of failing with `NoMethodError` inside option sanitization.
+  ([#758](https://github.com/typhoeus/typhoeus/pull/758))
 
 ## 1.6.0
 
