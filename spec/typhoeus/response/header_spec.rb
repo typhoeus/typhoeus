@@ -98,6 +98,18 @@ describe Typhoeus::Response::Header do
         expect(header['DaTe']).to eq(raw['Date'])
       end
     end
+
+    context "when hash with symbol keys" do
+      let(:raw) { { :Date => 'Fri, 29 Jun 2012 10:09:23 GMT' } }
+
+      it "sets Date" do
+        expect(header['Date']).to eq(raw[:Date])
+      end
+
+      it "provides case insensitive access" do
+        expect(header['DaTe']).to eq(raw[:Date])
+      end
+    end
   end
 
   describe "#parse" do
