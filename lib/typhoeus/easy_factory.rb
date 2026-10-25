@@ -128,6 +128,9 @@ module Typhoeus
           sanitized[new_option] = v
         # sanitize timeouts
         elsif SANITIZE_TIMEOUT.include?(s)
+          # An unset value means "no timeout" and never reaches Ethon.
+          next if v.nil?
+
           unless v.is_a?(Numeric)
             raise ArgumentError, "Value '#{v}' for option '#{k}' must be a number."
           end

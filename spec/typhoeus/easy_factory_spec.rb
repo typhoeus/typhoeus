@@ -86,6 +86,22 @@ describe Typhoeus::EasyFactory do
           expect { easy_factory.get }.to raise_error(ArgumentError, /connecttimeout.*must be a number/)
         end
       end
+
+      context "when connecttimeout_ms" do
+        let(:options) { { :connecttimeout_ms => "100" } }
+
+        it "raises a helpful error" do
+          expect { easy_factory.get }.to raise_error(ArgumentError, /connecttimeout_ms.*must be a number/)
+        end
+      end
+
+      context "when timeout_ms is nil" do
+        let(:options) { { :timeout_ms => nil, :connecttimeout_ms => nil } }
+
+        it "ignores the option" do
+          expect { easy_factory.get }.not_to raise_error
+        end
+      end
     end
 
     context "when request has a read callback body" do
