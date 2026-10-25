@@ -41,6 +41,28 @@
   and replace the pool mutex after a fork instead of deadlocking on the
   inherited lock.
   ([#761](https://github.com/typhoeus/typhoeus/pull/761))
+* Drain short-circuited hydra requests iteratively and finish the request when
+  a `before` callback returns a `Response`.
+  ([#762](https://github.com/typhoeus/typhoeus/pull/762))
+* Only cache complete, successful, non-mock responses and replay `on_headers`
+  and `on_body` callbacks for cache hits.
+  ([#763](https://github.com/typhoeus/typhoeus/pull/763))
+* Keep callback results and per-request response objects intact when requests
+  are memoized, and clear stale memoization between runs.
+  ([#764](https://github.com/typhoeus/typhoeus/pull/764))
+* Ignore HTTP/1.1 trailer blocks when parsing response headers and keep
+  `Response::Header` mutations in sync with case-insensitive reads.
+  ([#765](https://github.com/typhoeus/typhoeus/pull/765))
+* Honor Faraday `verify_hostname` and SSL version options, and preserve the
+  response reason phrase.
+  ([#766](https://github.com/typhoeus/typhoeus/pull/766))
+* Decode parameters for hash-like objects such as
+  `ActionController::Parameters`, deep-copy in `decode`, and register the Rack
+  middleware class in the Railtie.
+  ([#767](https://github.com/typhoeus/typhoeus/pull/767))
+* Make `Request#cache_key` unambiguous for values that stringify the same, and
+  return a libcurl error instead of raising for an empty URL with params.
+  ([#768](https://github.com/typhoeus/typhoeus/pull/768))
 
 ## 1.6.0
 
