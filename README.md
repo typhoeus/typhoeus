@@ -412,6 +412,12 @@ cache = Cache.new
 Typhoeus.get("www.example.com", cache: cache)
 ```
 
+The cache key is derived from the request URL and every request option except
+the cache store and `cache_ttl`. The store decides where a response is cached
+and the TTL decides how long it is cached; neither changes which response is
+cached. Changing the TTL therefore still reads responses cached by an
+equivalent request with a different TTL.
+
 ### Direct Stubbing
 
 Hydra allows you to stub out specific urls and patterns to avoid hitting

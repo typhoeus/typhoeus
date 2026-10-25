@@ -166,7 +166,13 @@ module Typhoeus
     #
     # @return [ String ] The cache key.
     def cache_key
-      hashable_options = options.dup.tap { |dup_opts| dup_opts.delete(:cache) }
+      # The cache store and the TTL only affect where and how long a response
+      # is stored, not what the response is. Leaving them in the key would
+      # silently miss the cache whenever the TTL changes.
+      hashable_options = options.dup.tap do |dup_opts|
+        dup_opts.delete(:cache)
+        dup_opts.delete(:cache_ttl)
+      end
 
       cache_key_components = [
         self.class.name,
