@@ -630,8 +630,9 @@ requests are running:
 - `Typhoeus.stub` and `Typhoeus::Expectation.all`
 - the easy pool used by `Typhoeus::Pool`
 
-The easy pool has no fixed maximum size and belongs to the process that created
-it. It is cleared after `fork`.
+The easy pool belongs to the process that created it. It keeps at most
+`Typhoeus::Config.max_idle_easies` idle handles (20 by default) and is cleared
+after `fork`.
 
 ### Default User Agent Header
 
