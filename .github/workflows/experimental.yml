@@ -22,7 +22,6 @@ jobs:
         ruby-version:
         - ruby-head
         - jruby-head
-        - truffleruby-head
     steps:
     - uses: actions/checkout@v7
     - name: Set up Ruby
