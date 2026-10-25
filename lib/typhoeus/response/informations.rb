@@ -29,6 +29,17 @@ module Typhoeus
         Ethon::Curl.easy_strerror(return_code) if return_code
       end
 
+      # Returns the detailed error message from libcurl's error buffer,
+      # only available when the request was made with errorbuffer: true.
+      #
+      # @example Get error_message.
+      #   response.error_message
+      #
+      # @return [ String, nil ] The error_message.
+      def error_message
+        options[:error_message]
+      end
+
       # Return the http response body.
       #
       # @example Get response_body.
