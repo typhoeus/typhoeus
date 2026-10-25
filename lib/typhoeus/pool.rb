@@ -22,22 +22,26 @@ module Typhoeus
     # @example Clean up instead of pooling.
     #   Typhoeus::Pool.release(easy, :cleanup => true)
     def self.release(easy, cleanup: false)
+      reset_after_fork
+
       if cleanup
         easy.cleanup
         return
       end
 
-      if @pid != Process.pid
-        @mutex.synchronize do
-          @pid = Process.pid
-          easies.clear
-        end
-      end
-
       easy.cookielist = "flush" # dump all known cookies to 'cookiejar'
       easy.cookielist = "all" # remove all cookies from memory for this handle
       easy.reset
-      @mutex.synchronize { easies << easy }
+
+      discarded = nil
+      @mutex.synchronize do
+        if max_size && easies.length >= max_size
+          discarded = easy
+        else
+          easies << easy
+        end
+      end
+      discarded.cleanup if discarded
     rescue StandardError => e
       # Ethon 0.19+ refuses to reset handles created before a fork.
       raise unless defined?(Ethon::Errors::ForkSafety) && e.is_a?(Ethon::Errors::ForkSafety)
@@ -50,21 +54,13 @@ module Typhoeus
     #
     # @return [ Ethon::Easy ] The easy.
     def self.get
-      @mutex.synchronize do
-        if @pid == Process.pid
-          easies.pop
-        else
-          # Process has forked. Clear all easies to avoid sockets being
-          # shared between processes.
-          @pid = Process.pid
-          easies.clear
-          nil
-        end
-      end || Ethon::Easy.new
+      reset_after_fork
+      @mutex.synchronize { easies.pop } || Ethon::Easy.new
     end
 
     # Clear the pool
     def self.clear
+      reset_after_fork
       @mutex.synchronize { easies.clear }
     end
 
@@ -82,6 +78,21 @@ module Typhoeus
     end
 
     private
+
+    # Drop state inherited from a parent process. The previous mutex may have
+    # been locked by a thread that does not exist after the fork, so it is
+    # replaced without locking it to avoid a deadlock.
+    def self.reset_after_fork
+      return if @pid == Process.pid
+
+      @pid = Process.pid
+      @mutex = Mutex.new
+      @easies = []
+    end
+
+    def self.max_size
+      Typhoeus::Config.max_idle_easies if defined?(Typhoeus::Config)
+    end
 
     def self.easies
       @easies ||= []

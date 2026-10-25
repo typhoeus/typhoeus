@@ -27,5 +27,6 @@ RSpec.configure do |config|
     Typhoeus::Config.verbose = false
     Typhoeus::Config.block_connection = false
     Typhoeus::Config.memoize = false
+    Typhoeus::Config.max_idle_easies = 20
   end
 end

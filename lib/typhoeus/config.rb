@@ -83,5 +83,16 @@ module Typhoeus
     #
     # @see Typhoeus::Request#set_defaults
     attr_accessor :proxy
+
+    # Defines the maximum number of idle easy handles kept in the
+    # process-wide pool. Defaults to 20. Set it to nil to keep every
+    # handle, or to 0 to disable pooling.
+    #
+    # @return [ Integer, nil ]
+    #
+    # @see Typhoeus::Pool
+    attr_accessor :max_idle_easies
+
+    @max_idle_easies = 20
   end
 end

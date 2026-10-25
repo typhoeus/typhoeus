@@ -70,6 +70,30 @@ describe Typhoeus::Pool do
       expect(Typhoeus::Pool.send(:easies)).to include(easy)
     end
 
+    context "when the pool is full" do
+      before { Typhoeus::Config.max_idle_easies = 1 }
+
+      it "cleans up the extra easy instead of pooling it" do
+        other = Ethon::Easy.new
+        Typhoeus::Pool.release(easy)
+        expect(other).to receive(:cleanup)
+
+        Typhoeus::Pool.release(other)
+
+        expect(Typhoeus::Pool.send(:easies)).to eq([easy])
+      end
+    end
+
+    context "when max_idle_easies is nil" do
+      before { Typhoeus::Config.max_idle_easies = nil }
+
+      it "keeps every easy" do
+        3.times { Typhoeus::Pool.release(Ethon::Easy.new) }
+
+        expect(Typhoeus::Pool.send(:easies).size).to eq(3)
+      end
+    end
+
     context "when easy was created before a fork" do
       before do
         skip unless defined?(Ethon::Errors::ForkSafety)
@@ -141,6 +165,34 @@ describe Typhoeus::Pool do
 
       it "creates" do
         expect(Typhoeus::Pool.get).to be(forked_easy)
+      end
+    end
+
+    context "when forked while the pool lock is held" do
+      let(:forked_easy) { double("forked easy") }
+      let(:old_mutex) { Typhoeus::Pool.instance_variable_get(:@mutex) }
+
+      before do
+        allow(Ethon::Easy).to receive(:new).and_return(forked_easy)
+        old_mutex.lock
+        allow(Process).to receive(:pid).and_return(Process.pid + 1)
+      end
+
+      after do
+        old_mutex.unlock if old_mutex.owned?
+        allow(Process).to receive(:pid).and_call_original
+        Typhoeus::Pool.instance_variable_set(:@pid, Process.pid)
+      end
+
+      it "does not block on the inherited mutex" do
+        getter = Thread.new { Typhoeus::Pool.get }
+
+        unless getter.join(5)
+          getter.kill
+          raise "Pool.get blocked on the mutex inherited from the parent process"
+        end
+
+        expect(getter.value).to be(forked_easy)
       end
     end
   end
