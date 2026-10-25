@@ -112,8 +112,7 @@ describe Typhoeus::Response::Header do
     end
   end
 
-  describe "#parse" do
-    context "when no header" do
+  describe "#parse" do    context "when no header" do
       it "returns nil" do
         expect(header).to be_empty
       end
@@ -229,5 +228,54 @@ describe Typhoeus::Response::Header do
     expect {
       Marshal.dump(header)
     }.not_to raise_error
+  end
+
+  describe "mutation" do
+    let(:raw) { "A: 1" }
+
+    it "updates case insensitive access on []=" do
+      header["A"] = "2"
+
+      expect(header["A"]).to eq("2")
+      expect(header["a"]).to eq("2")
+      expect(header.to_hash).to eq("A" => "2")
+    end
+
+    it "removes duplicate casings on []=" do
+      header["a"] = "2"
+
+      expect(header.to_hash.keys).to eq(["a"])
+    end
+
+    it "deletes from both stores" do
+      expect(header.delete("A")).to eq("1")
+
+      expect(header["A"]).to be_nil
+      expect(header.include?("A")).to be(false)
+      expect(header.to_hash).to be_empty
+    end
+
+    it "clears both stores" do
+      header.clear
+
+      expect(header["A"]).to be_nil
+      expect(header.to_hash).to be_empty
+    end
+
+    it "updates from a hash" do
+      header.update("B" => "2", "C" => "3")
+
+      expect(header["b"]).to eq("2")
+      expect(header["c"]).to eq("3")
+      expect(header.to_hash).to include("B" => "2", "C" => "3")
+    end
+
+    it "replaces a hash" do
+      header.replace("B" => "2")
+
+      expect(header["A"]).to be_nil
+      expect(header["B"]).to eq("2")
+      expect(header.to_hash).to eq("B" => "2")
+    end
   end
 end

@@ -296,9 +296,9 @@ module Typhoeus
       #
       # @return [ Typhoeus::Header ] The response header.
       def headers
-        return Header.new(options[:headers]) if mock? && options[:headers]
-        return nil if response_headers.nil? && !defined?(@headers)
-        @headers ||= Header.new(response_headers.split("\r\n\r\n").last)
+        return @headers if defined?(@headers) && @headers
+        return nil if response_headers.nil?
+        @headers = Header.new(last_response_block)
       end
       alias :headers_hash :headers
 
@@ -311,10 +311,29 @@ module Typhoeus
       # @return [ Array<Typhoeus::Response> ] The redirections
       def redirections
         return [] unless response_headers
-        response_headers.split("\r\n\r\n")[0..-2].map{ |h| Response.new(:response_headers => h) }
+
+        http_blocks = response_blocks.select { |block| block.start_with?("HTTP/") }
+        blocks = http_blocks.empty? ? response_blocks[0..-2] : http_blocks[0..-2]
+        blocks.map { |header| Response.new(:response_headers => header) }
       end
 
       private
+
+      # Split the raw response headers into their header blocks.
+      #
+      # @return [ Array<String> ] The blocks.
+      def response_blocks
+        response_headers.to_s.split("\r\n\r\n")
+      end
+
+      # Return the last block that starts a new response. HTTP/1.1 trailers
+      # add a block without a status line after the response headers.
+      #
+      # @return [ String ] The response block.
+      def last_response_block
+        http_blocks = response_blocks.select { |block| block.start_with?("HTTP/") }
+        (http_blocks.empty? ? response_blocks.last : http_blocks.last).to_s
+      end
 
       # Force the body to the charset advertised by the Content-Type
       # header, but leave binary and already encoded bodies alone.
