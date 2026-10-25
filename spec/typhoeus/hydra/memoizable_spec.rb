@@ -23,6 +23,20 @@ describe Typhoeus::Hydra::Memoizable do
         end
       end
 
+      context "when request is still in flight" do
+        let(:key) { rand(1_000_000).to_s }
+        let(:requests) do
+          2.times.map { Typhoeus::Request.new("localhost:3001/count/#{key}") }
+        end
+
+        it "issues one request and shares the response" do
+          requests.each { |queued_request| hydra.queue(queued_request) }
+          hydra.run
+
+          expect(requests.map { |queued_request| queued_request.response.body }).to eq(["1", "1"])
+        end
+      end
+
       context "when request in memory" do
         let(:response) { Typhoeus::Response.new }
         before { hydra.memory[request] = response }

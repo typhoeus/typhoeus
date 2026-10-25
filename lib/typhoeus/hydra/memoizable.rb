@@ -4,8 +4,8 @@ module Typhoeus
   class Hydra
 
     # This module handles the GET request memoization
-    # on the hydra side. Memoization needs to be turned
-    # on:
+    # on the hydra side. Memoization needs to be
+    # turned on:
     #   Typhoeus.configure do |config|
     #     config.memoize = true
     #   end
@@ -15,7 +15,7 @@ module Typhoeus
 
       # Return the memory.
       #
-      # @example Return the memory.
+      # @example Get memory.
       #   hydra.memory
       #
       # @return [ Hash ] The memory.
@@ -23,29 +23,46 @@ module Typhoeus
         @memory ||= {}
       end
 
-      # Overrides add in order to check before if request
-      # is memoizable and already in memory. If thats the case,
-      # super is not called, instead the response is set and
-      # the on_complete callback called.
+      # Requests that are waiting for an identical request to finish.
       #
-      # @example Add the request.
-      #   hydra.add(request)
+      # @return [ Hash ]
       #
-      # @param [ Request ] request The request to add.
+      # @api private
+      def pending
+        @pending ||= {}
+      end
+
+      # Add a request. Memoized requests that are already completed are
+      # answered from memory. Requests that are still in flight are attached
+      # to the pending request so they share its response.
       #
-      # @return [ Request ] The added request.
+      # @param [ Typhoeus::Request ] request
+      #
+      # @return [ Object ]
       def add(request)
-        if request.memoizable? && memory.has_key?(request)
-          response = memory[request]
-          request.finish(response, true)
-          dequeue
+        if request.memoizable?
+          if memory.key?(request)
+            response = memory[request]
+            request.finish(response, true)
+            dequeue
+          elsif pending.key?(request)
+            pending[request] << request
+          else
+            pending[request] = []
+            request.on_complete { |response| finish_pending(request, response) }
+            begin
+              super
+            rescue Exception
+              pending.delete(request)
+              raise
+            end
+          end
         else
           super
         end
       end
 
-      # Overrides run to make sure the memory is cleared after
-      # each run.
+      # Run the hydra and clear the memoization state afterwards.
       #
       # @example Run hydra.
       #   hydra.run
@@ -53,6 +70,22 @@ module Typhoeus
         super
       ensure
         memory.clear
+        pending.clear
+      end
+
+      private
+
+      # Finish all requests that waited for the given request.
+      #
+      # @param [ Typhoeus::Request ] request
+      # @param [ Typhoeus::Response ] response
+      #
+      # @return [ void ]
+      def finish_pending(request, response)
+        requests = pending.delete(request)
+        return unless requests
+
+        requests.each { |pending_request| pending_request.finish(response, true) }
       end
     end
   end
