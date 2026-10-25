@@ -47,11 +47,15 @@ TESTSERVER = Sinatra.new do
   end
 
   get '/redirect' do
-    redirect '/'
+    status 302
+    headers 'Location' => '/'
+    body ''
   end
 
   get '/bad_redirect' do
-    redirect '/bad_redirect'
+    status 302
+    headers 'Location' => '/bad_redirect'
+    body ''
   end
 
   get '/auth_basic/:username/:password' do
