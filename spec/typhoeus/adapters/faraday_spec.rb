@@ -225,6 +225,18 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
           it "sets proxyuserpwd" do
             expect(request.options[:proxyuserpwd]).to eq("a:b")
           end
+
+          it "defaults to basic proxy authentication" do
+            expect(request.options[:proxyauth]).to eq(:basic)
+          end
+
+          context "when proxyauth is provided" do
+            let(:request) { Typhoeus::Request.new(base_url, { :proxyauth => :ntlm }) }
+
+            it "keeps the provided value" do
+              expect(request.options[:proxyauth]).to eq(:ntlm)
+            end
+          end
         end
       end
     end
