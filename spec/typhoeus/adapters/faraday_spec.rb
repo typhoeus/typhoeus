@@ -3,6 +3,7 @@
 if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
   require 'spec_helper'
   require 'typhoeus/adapters/faraday'
+  require 'pathname'
 
   describe Faraday::Adapter::Typhoeus do
     let(:base_url) { "http://localhost:3001" }
@@ -255,6 +256,22 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
         end
       end
 
+      context "when client_cert is a Pathname" do
+        let(:env) { { :ssl => { :client_cert => Pathname.new("/tmp/cert") } } }
+
+        it "sets sslcert to the path" do
+          expect(request.options[:sslcert]).to eq("/tmp/cert")
+        end
+      end
+
+      context "when client_key is a Pathname" do
+        let(:env) { { :ssl => { :client_key => Pathname.new("/tmp/key") } } }
+
+        it "sets sslkey to the path" do
+          expect(request.options[:sslkey]).to eq("/tmp/key")
+        end
+      end
+
       context "when ca_file"  do
         let(:env) { { :ssl => { :ca_file => "a" } } }
 
@@ -344,6 +361,22 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
         it "sets ssl_verifyhost to 0" do
           expect(request.options[:ssl_verifyhost]).to eq(0)
         end
+      end
+    end
+
+    describe "#path_for" do
+      it "accepts strings" do
+        expect(adapter.send(:path_for, "a", :client_cert)).to eq("a")
+      end
+
+      it "accepts pathnames" do
+        expect(adapter.send(:path_for, Pathname.new("/tmp/cert"), :client_cert)).to eq("/tmp/cert")
+      end
+
+      it "raises for other objects" do
+        expect {
+          adapter.send(:path_for, Object.new, :client_cert)
+        }.to raise_error(Faraday::Adapter::Typhoeus::PathExpectedError, /client_cert/)
       end
     end
 

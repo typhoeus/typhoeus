@@ -21,6 +21,8 @@ module Faraday # :nodoc:
     #
     #   response = conn.get("/")
     class Typhoeus < Faraday::Adapter
+      PathExpectedError = Class.new(StandardError)
+
       self.supports_parallel = true
 
       (class << self; self; end).instance_eval do
@@ -147,8 +149,8 @@ module Faraday # :nodoc:
         req.options[:ssl_verifyhost] = ssl_verifyhost
         req.options[:ssl_verifypeer] = verify_p
         req.options[:sslversion] = ssl[:version]     if ssl[:version]
-        req.options[:sslcert]    = ssl[:client_cert] if ssl[:client_cert]
-        req.options[:sslkey]     = ssl[:client_key]  if ssl[:client_key]
+        req.options[:sslcert]    = path_for(ssl[:client_cert], :client_cert) if ssl[:client_cert]
+        req.options[:sslkey]     = path_for(ssl[:client_key], :client_key)   if ssl[:client_key]
         req.options[:cainfo]     = ssl[:ca_file]     if ssl[:ca_file]
         req.options[:capath]     = ssl[:ca_path]     if ssl[:ca_path]
         client_cert_passwd_key   = [:client_cert_passwd, :client_certificate_password].detect { |name| ssl.key?(name) }
@@ -181,6 +183,13 @@ module Faraday # :nodoc:
 
       def parallel?(env)
         !!env[:parallel_manager]
+      end
+
+      def path_for(value, name)
+        return value if value.is_a?(String)
+        return value.to_path if value.respond_to?(:to_path)
+
+        raise PathExpectedError, "Typhoeus expects a path for `#{name}`"
       end
     end
   end
