@@ -56,6 +56,10 @@ describe Typhoeus::Response::Header do
         expect(header.dig(:date)).to eq('Fri, 29 Jun 2012 10:09:23 GMT')
       end
 
+      it "returns nil for a missing dig key" do
+        expect(header.dig(:foo)).to be_nil
+      end
+
       it "provides case insensitive assoc" do
         expect(header.assoc('DaTe')).to eq(['date', 'Fri, 29 Jun 2012 10:09:23 GMT'])
       end

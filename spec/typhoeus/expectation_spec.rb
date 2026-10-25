@@ -17,7 +17,7 @@ describe Typhoeus::Expectation do
     end
 
     it "initializes response_counter" do
-      expect(expectation.instance_variable_get(:@response_counter)).to eq(0)
+      expect(expectation.response_counter).to eq(0)
     end
   end
 
@@ -148,6 +148,18 @@ describe Typhoeus::Expectation do
           expect(expectation.response(request)).to be(responses[i])
         end
       end
+    end
+  end
+
+  describe "#response_counter" do
+    let(:request) { Typhoeus::Request.new("") }
+
+    before { expectation.instance_variable_set(:@responses, [Typhoeus::Response.new]) }
+
+    it "increments when a response is returned" do
+      expect {
+        expectation.response(request)
+      }.to change(expectation, :response_counter).from(0).to(1)
     end
   end
 

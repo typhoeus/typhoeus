@@ -40,9 +40,8 @@ module Typhoeus
         @sanitized.fetch(convert_key(key), *extras, &block)
       end
 
-      def dig(*args)
-        args[0] = convert_key(args[0]) if args.size > 0
-        @sanitized.fetch(*args)
+      def dig(key, *identifiers)
+        @sanitized.dig(convert_key(key), *identifiers)
       end
 
       def assoc(key)
