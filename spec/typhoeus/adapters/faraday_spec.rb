@@ -4,6 +4,7 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
   require 'spec_helper'
   require 'typhoeus/adapters/faraday'
   require 'pathname'
+  require 'socket'
 
   describe Faraday::Adapter::Typhoeus do
     let(:base_url) { "http://localhost:3001" }
@@ -37,6 +38,28 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
 
       it "succeeds" do
         expect(response.status).to be(200)
+      end
+    end
+
+    context "when the server sends a reason phrase" do
+      it "passes it to Faraday" do
+        server = TCPServer.new("127.0.0.1", 0)
+        port = server.addr[1]
+        thread = Thread.new do
+          client = server.accept
+          client.readpartial(4096) rescue nil
+          client.write("HTTP/1.1 200 Reason Here\r\nContent-Length: 0\r\n\r\n")
+          client.close
+        end
+
+        connection = Faraday.new(:url => "http://127.0.0.1:#{port}") do |faraday|
+          faraday.adapter :typhoeus
+        end
+
+        expect(connection.get("/").reason_phrase).to eq("Reason Here")
+      ensure
+        thread&.join(1)
+        server&.close
       end
     end
 
@@ -245,10 +268,34 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
       before { adapter.method(:configure_ssl).call(request, env) }
 
       context "when version" do
-        let(:env) { { :ssl => { :version => "a" } } }
+        let(:env) { { :ssl => { :version => :TLSv1_2 } } }
+
+        it "sets the Ethon version" do
+          expect(request.options[:sslversion]).to eq(:tlsv1_2)
+        end
+      end
+
+      context "when ssl is a Faraday::SSLOptions" do
+        let(:env) { { :ssl => Faraday::SSLOptions.new(:version => :TLSv1_2) } }
 
         it "sets sslversion" do
-          expect(request.options[:sslversion]).to eq("a")
+          expect(request.options[:sslversion]).to eq(:tlsv1_2)
+        end
+      end
+
+      context "when min_version and max_version match" do
+        let(:env) { { :ssl => { :min_version => :TLSv1_2, :max_version => :TLSv1_2 } } }
+
+        it "uses that version" do
+          expect(request.options[:sslversion]).to eq(:tlsv1_2)
+        end
+      end
+
+      context "when verify_hostname is false" do
+        let(:env) { { :ssl => { :verify => true, :verify_hostname => false } } }
+
+        it "sets ssl_verifyhost to 0" do
+          expect(request.options[:ssl_verifyhost]).to eq(0)
         end
       end
 
@@ -373,6 +420,22 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
         it "sets ssl_verifyhost to 0" do
           expect(request.options[:ssl_verifyhost]).to eq(0)
         end
+      end
+    end
+
+    describe "#configure_ssl with invalid versions" do
+      it "raises for an unknown version" do
+        env = { :ssl => { :version => :not_a_version } }
+
+        expect { adapter.method(:configure_ssl).call(request, env) }.
+          to raise_error(ArgumentError, /SSL version/)
+      end
+
+      it "raises for only a min_version" do
+        env = { :ssl => { :min_version => :TLSv1_2 } }
+
+        expect { adapter.method(:configure_ssl).call(request, env) }.
+          to raise_error(ArgumentError, /min_version/)
       end
     end
 
