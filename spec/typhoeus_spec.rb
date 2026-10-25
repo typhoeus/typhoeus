@@ -99,6 +99,14 @@ describe Typhoeus do
     it "returns result of block" do
       expect(Typhoeus.with_connection { "123" }).to eq("123")
     end
+
+    it "sets block connection back when the block raises" do
+      Typhoeus::Config.block_connection = true
+      expect {
+        Typhoeus.with_connection { raise "boom" }
+      }.to raise_error("boom")
+      expect(Typhoeus::Config.block_connection).to be(true)
+    end
   end
 
   [:get, :post, :put, :delete, :head, :patch, :options].each do |name|

@@ -138,8 +138,8 @@ module Typhoeus
   def self.with_connection
     old = Config.block_connection
     Config.block_connection = false
-    result = yield if block_given?
+    yield if block_given?
+  ensure
     Config.block_connection = old
-    result
   end
 end
