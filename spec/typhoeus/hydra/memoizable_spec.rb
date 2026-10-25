@@ -61,9 +61,65 @@ describe Typhoeus::Hydra::Memoizable do
   end
 
   describe "#run" do
+    before { Typhoeus::Config.memoize = true }
+
     it "clears memory before starting" do
-      expect(hydra.memory).to receive(:clear)
+      hydra.memory[request] = Typhoeus::Response.new
       hydra.run
+      expect(hydra.memory).to be_empty
+    end
+
+    it "keeps the callback handled_response" do
+      request.on_complete { |_| :handled }
+      hydra.queue(request)
+      hydra.run
+
+      expect(request.response.handled_response).to eq(:handled)
+    end
+
+    it "gives each request its own response" do
+      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      first = Typhoeus::Request.new(url)
+      second = Typhoeus::Request.new(url)
+      first.on_complete { |_| :first }
+      second.on_complete { |_| :second }
+      hydra.queue(first)
+      hydra.queue(second)
+      hydra.run
+
+      expect(first.response).to_not equal(second.response)
+      expect(first.response.request).to equal(first)
+      expect(second.response.request).to equal(second)
+      expect(first.response.handled_response).to eq(:first)
+      expect(second.response.handled_response).to eq(:second)
+    end
+
+    it "does not serve responses memoized by a direct run between runs" do
+      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      first = Typhoeus::Request.new(url)
+      hydra.queue(first)
+      hydra.run
+      first.run
+
+      second = Typhoeus::Request.new(url)
+      hydra.queue(second)
+      hydra.run
+
+      expect(second.response.body).to eq("3")
+    end
+
+    it "finishes waiting requests when the leader's callback raises" do
+      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      leader = Typhoeus::Request.new(url)
+      follower = Typhoeus::Request.new(url)
+      leader.on_complete { |_| raise "boom" }
+      hydra.queue(leader)
+      hydra.queue(follower)
+
+      expect { hydra.run }.to raise_error("boom")
+
+      expect(follower.response).not_to be_nil
+      expect(follower.response.request).to equal(follower)
     end
 
     it "clears memory when the run raises" do
