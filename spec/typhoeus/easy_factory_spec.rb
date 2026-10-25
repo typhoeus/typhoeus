@@ -79,6 +79,14 @@ describe Typhoeus::EasyFactory do
         expect { easy_factory.get }.to raise_error(Ethon::Errors::InvalidOption)
         expect(Typhoeus::Pool.send(:easies)).to include(easy_factory.easy)
       end
+
+      it "keeps the original error when the message cannot be parsed" do
+        error = Ethon::Errors::InvalidOption.new("x")
+        allow(error).to receive(:message).and_return("invalid option")
+        expect(easy_factory.easy).to receive(:http_request).and_raise(error)
+
+        expect { easy_factory.get }.to raise_error(Ethon::Errors::InvalidOption)
+      end
     end
 
     context "when removed option" do

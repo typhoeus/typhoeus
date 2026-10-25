@@ -104,8 +104,8 @@ module Typhoeus
         set_read_callback(read_callback_body) if !read_callback_body.nil?
       rescue Ethon::Errors::InvalidOption => e
         release_easy(@easy) if @easy
-        help = provide_help(e.message.match(/:\s(\w+)/)[1])
-        raise $!, "#{$!}#{help}", $!.backtrace
+        help = provide_help($1) if e.message =~ /:\s:?(\w+)/
+        raise e.class, "#{e.message}#{help}", e.backtrace
       rescue Exception
         release_easy(@easy) if @easy
         raise

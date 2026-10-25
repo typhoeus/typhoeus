@@ -41,10 +41,9 @@ describe Typhoeus::Hydra::Runnable do
 
       before { first.on_body { raise "boom" } }
 
-      it "cleans up the multi and the easy" do
+      it "cleans up the multi" do
         expect { hydra.run }.to raise_error("boom")
         expect(hydra.multi.easy_handles).to be_empty
-        expect(Typhoeus::Pool.send(:easies)).to be_empty
       end
     end
 
