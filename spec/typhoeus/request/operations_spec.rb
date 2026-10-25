@@ -35,6 +35,18 @@ describe Typhoeus::Request::Operations do
       request.run
     end
 
+    it "releases easy when performing raises" do
+      allow(easy).to receive(:perform).and_raise("boom")
+      expect(Typhoeus::Pool).to receive(:release).with(easy)
+      expect { request.run }.to raise_error("boom")
+    end
+
+    it "releases easy when a callback raises" do
+      request.on_complete { raise "boom" }
+      expect { request.run }.to raise_error("boom")
+      expect(Typhoeus::Pool.send(:easies)).not_to be_empty
+    end
+
     it "calls on_body" do
       on_body_called = false
       request.on_body { |body, response| on_body_called = true }

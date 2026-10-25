@@ -62,6 +62,18 @@ describe Typhoeus::Pool do
       expect(Typhoeus::Pool.send(:easies)).to include(easy)
     end
 
+    context "when easy was created before a fork" do
+      before do
+        skip unless defined?(Ethon::Errors::ForkSafety)
+        allow(easy).to receive(:cookielist=).and_raise(Ethon::Errors::ForkSafety.new)
+      end
+
+      it "drops the easy instead of raising" do
+        expect { Typhoeus::Pool.release(easy) }.not_to raise_error
+        expect(Typhoeus::Pool.send(:easies)).not_to include(easy)
+      end
+    end
+
     context "when threaded access" do
       it "releases correct number of easies" do
         (0..9).map do |n|
@@ -104,7 +116,11 @@ describe Typhoeus::Pool do
     end
 
     context "when forked" do
+      let(:easy) { double("easy") }
+      let(:forked_easy) { double("forked easy") }
+
       before do
+        allow(Ethon::Easy).to receive(:new).and_return(forked_easy)
         allow(Process).to receive(:pid).and_return(1)
         Typhoeus::Pool.send(:easies) << easy
         allow(Process).to receive(:pid).and_return(2)
@@ -116,7 +132,7 @@ describe Typhoeus::Pool do
       end
 
       it "creates" do
-        expect(Typhoeus::Pool.get).to_not eq(easy)
+        expect(Typhoeus::Pool.get).to be(forked_easy)
       end
     end
   end

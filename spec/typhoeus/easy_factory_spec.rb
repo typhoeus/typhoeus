@@ -65,6 +65,11 @@ describe Typhoeus::EasyFactory do
       it "reraises" do
         expect{ easy_factory.get }.to raise_error(Ethon::Errors::InvalidOption)
       end
+
+      it "releases easy" do
+        expect { easy_factory.get }.to raise_error(Ethon::Errors::InvalidOption)
+        expect(Typhoeus::Pool.send(:easies)).to include(easy_factory.easy)
+      end
     end
 
     context "when removed option" do
@@ -133,6 +138,13 @@ describe Typhoeus::EasyFactory do
       easy_factory.send(:set_callback)
       easy_factory.easy.complete
       expect(Typhoeus::Pool.send(:easies)).to include(easy_factory.easy)
+    end
+
+    it "releases easy when finishing raises" do
+      easy_factory.send(:set_callback)
+      allow(request).to receive(:finish).and_raise("boom")
+      expect(Typhoeus::Pool).to receive(:release)
+      expect { easy_factory.easy.complete }.to raise_error("boom")
     end
 
     it "adds next request" do

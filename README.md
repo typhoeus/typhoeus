@@ -478,6 +478,19 @@ DNS timeouts of less than one second are not supported unless curl is compiled w
 
 The default `timeout` is 0 (zero) which means curl never times out during transfer. The default `connecttimeout` is 300 seconds. A `connecttimeout` of 0 will also result in the default `connecttimeout` of 300 seconds.
 
+### Threads and forking
+
+Typhoeus delegates handle management to Ethon. Ethon 0.19 and later reject
+`Ethon::Easy` and `Ethon::Multi` handles inherited across `fork`, and raise
+`Ethon::Errors::ForkSafety`. Typhoeus clears its easy pool in the child process,
+but it cannot reset libcurl's process-global state. If your application
+initializes libcurl before forking, for example by making a request during
+boot, use `fork` followed by `exec` or fork before the first request.
+
+Exceptions raised by `on_body` and `on_complete` callbacks are propagated by
+Ethon 0.19 and later. Typhoeus releases the underlying easy handle before
+re-raising.
+
 ### Following Redirections
 
 Use `followlocation: true`, eg:
@@ -518,6 +531,13 @@ If you just want cookies enabled, you need to pass the same filename for both op
 ### Other CURL options
 
 Are available and documented [here](http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy/Options)
+
+With Ethon 0.19 and later, an empty header value suppresses libcurl's default
+header. To send a header with an empty value, end the key with a semicolon:
+
+```ruby
+Typhoeus.get("www.example.com", headers: {"X-Empty;" => ""})
+```
 
 ### SSL
 

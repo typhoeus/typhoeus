@@ -4,6 +4,10 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.6.0...master)
 
+* Prepare for Ethon 0.19: release easy handles when callbacks raise, clean up
+  failed hydra runs, drop inherited handles after fork, document fork and
+  empty-header behavior, and test against Ethon master.
+
 ## 1.6.0
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.5.0...v1.6.0)

@@ -18,7 +18,14 @@ module Typhoeus
       #
       # @return [ void ]
       def add(request)
-        multi.add(EasyFactory.new(request, self).get)
+        easy_factory = EasyFactory.new(request, self)
+        easy = easy_factory.get
+        begin
+          multi.add(easy)
+        rescue Exception
+          Typhoeus::Pool.release(easy) unless easy_factory.released?
+          raise
+        end
       end
     end
   end

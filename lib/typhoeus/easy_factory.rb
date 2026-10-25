@@ -60,6 +60,16 @@ module Typhoeus
     def initialize(request, hydra = nil)
       @request = request
       @hydra = hydra
+      @released = false
+    end
+
+    # Returns whether the easy was already returned to the pool.
+    #
+    # @return [ Boolean ]
+    #
+    # @api private
+    def released?
+      @released
     end
 
     # Return the easy in question.
@@ -79,6 +89,7 @@ module Typhoeus
     #
     # @return [ Ethon::Easy ] The easy.
     def get
+      @released = false
       begin
         read_callback_body = request.options.delete(:set_read_callback)
 
@@ -92,8 +103,12 @@ module Typhoeus
         # ethon will set infilesize to zero if form.empty?
         set_read_callback(read_callback_body) if !read_callback_body.nil?
       rescue Ethon::Errors::InvalidOption => e
+        release_easy(@easy) if @easy
         help = provide_help(e.message.match(/:\s(\w+)/)[1])
         raise $!, "#{$!}#{help}", $!.backtrace
+      rescue Exception
+        release_easy(@easy) if @easy
+        raise
       end
       set_callback
       easy
@@ -139,6 +154,23 @@ module Typhoeus
       options
     end
 
+    # Releases the easy into the pool once.
+    #
+    # @param [ Ethon::Easy ] easy The easy to release.
+    #
+    # @return [ void ]
+    #
+    # @api private
+    def release_easy(easy)
+      return if released?
+
+      begin
+        Typhoeus::Pool.release(easy)
+      ensure
+        @released = true
+      end
+    end
+
     # Sets on_complete callback on easy in order to be able to
     # track progress.
     #
@@ -169,8 +201,11 @@ module Typhoeus
         end
       end
       easy.on_complete do |easy|
-        request.finish(Response.new(easy.mirror.options))
-        Typhoeus::Pool.release(easy)
+        begin
+          request.finish(Response.new(easy.mirror.options))
+        ensure
+          release_easy(easy)
+        end
         if hydra && !hydra.queued_requests.empty?
           hydra.dequeue_many
         end

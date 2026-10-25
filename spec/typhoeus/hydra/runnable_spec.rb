@@ -35,6 +35,19 @@ describe Typhoeus::Hydra::Runnable do
       end
     end
 
+    context "when a callback raises" do
+      let(:first) { Typhoeus::Request.new("localhost:3001/first") }
+      let(:requests) { [first] }
+
+      before { first.on_body { raise "boom" } }
+
+      it "cleans up the multi and releases the easy" do
+        expect { hydra.run }.to raise_error("boom")
+        expect(hydra.multi.easy_handles).to be_empty
+        expect(Typhoeus::Pool.send(:easies)).not_to be_empty
+      end
+    end
+
     context "when three request queued" do
       let(:first) { Typhoeus::Request.new("localhost:3001/first") }
       let(:second) { Typhoeus::Request.new("localhost:3001/second") }

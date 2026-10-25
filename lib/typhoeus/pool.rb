@@ -19,10 +19,20 @@ module Typhoeus
     # @example Release easy.
     #   Typhoeus::Pool.release(easy)
     def self.release(easy)
+      if @pid != Process.pid
+        @mutex.synchronize do
+          @pid = Process.pid
+          easies.clear
+        end
+      end
+
       easy.cookielist = "flush" # dump all known cookies to 'cookiejar'
       easy.cookielist = "all" # remove all cookies from memory for this handle
       easy.reset
       @mutex.synchronize { easies << easy }
+    rescue StandardError => e
+      # Ethon 0.19+ refuses to reset handles created before a fork.
+      raise unless defined?(Ethon::Errors::ForkSafety) && e.is_a?(Ethon::Errors::ForkSafety)
     end
 
     # Return an easy from the pool.

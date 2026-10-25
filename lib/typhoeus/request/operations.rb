@@ -14,8 +14,14 @@ module Typhoeus
       #
       # @return [ Response ] The response.
       def run
-        easy = EasyFactory.new(self).get
-        easy.perform
+        easy_factory = EasyFactory.new(self)
+        easy = easy_factory.get
+        begin
+          easy.perform
+        rescue Exception
+          Typhoeus::Pool.release(easy) unless easy_factory.released?
+          raise
+        end
         response
       end
 
