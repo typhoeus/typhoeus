@@ -229,6 +229,8 @@ module Typhoeus
       options[:connecttimeout] = Typhoeus::Config.connecttimeout if options[:connecttimeout].nil? && !Typhoeus::Config.connecttimeout.nil?
       options[:maxredirs] ||= 50
       options[:proxy] = Typhoeus::Config.proxy unless options.has_key?(:proxy) || Typhoeus::Config.proxy.nil?
+      options[:cainfo] = ENV["SSL_CERT_FILE"] if options[:cainfo].nil? && ENV["SSL_CERT_FILE"]
+      options[:capath] = ENV["SSL_CERT_DIR"] if options[:capath].nil? && ENV["SSL_CERT_DIR"]
     end
   end
 end

@@ -544,7 +544,9 @@ Typhoeus.get("www.example.com", headers: {"X-Empty;" => ""})
 SSL comes built in to libcurl so it’s in Typhoeus as well. If you pass in a
 url with "https" it should just work assuming that you have your [cert
 bundle](http://curl.haxx.se/docs/caextract.html) in order and the server is
-verifiable. You must also have libcurl built with SSL support enabled. You can
+verifiable. If `SSL_CERT_FILE` or `SSL_CERT_DIR` is set, Typhoeus uses it as
+the default CA bundle or path; explicit `:cainfo` and `:capath` options take
+precedence. You must also have libcurl built with SSL support enabled. You can
 check that by doing this:
 
 ```

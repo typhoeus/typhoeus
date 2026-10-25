@@ -144,6 +144,40 @@ describe Typhoeus::Request do
       end
     end
 
+    context "when SSL_CERT_FILE is set" do
+      before do
+        @old_ssl_cert_file = ENV["SSL_CERT_FILE"]
+        ENV["SSL_CERT_FILE"] = "/tmp/ca.pem"
+      end
+
+      after { ENV["SSL_CERT_FILE"] = @old_ssl_cert_file }
+
+      it "sets cainfo" do
+        expect(request.options[:cainfo]).to eq("/tmp/ca.pem")
+      end
+
+      context "when cainfo is set" do
+        let(:options) { {:cainfo => "/tmp/other.pem"} }
+
+        it "respects the option" do
+          expect(request.options[:cainfo]).to eq("/tmp/other.pem")
+        end
+      end
+    end
+
+    context "when SSL_CERT_DIR is set" do
+      before do
+        @old_ssl_cert_dir = ENV["SSL_CERT_DIR"]
+        ENV["SSL_CERT_DIR"] = "/tmp/certs"
+      end
+
+      after { ENV["SSL_CERT_DIR"] = @old_ssl_cert_dir }
+
+      it "sets capath" do
+        expect(request.options[:capath]).to eq("/tmp/certs")
+      end
+    end
+
     context "when Config.proxy set" do
       before { Typhoeus.configure { |config| config.proxy = "http://proxy.internal" } }
       after { Typhoeus.configure { |config| config.proxy = nil } }
