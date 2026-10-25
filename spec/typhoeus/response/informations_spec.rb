@@ -84,6 +84,39 @@ describe Typhoeus::Response::Informations do
         expect(response.body).to eq("body")
       end
     end
+
+    context "when content type has a charset" do
+      let(:body) { "body".dup.force_encoding(Encoding::BINARY) }
+      let(:options) do
+        { :mock => true, :body => body, :headers => { "Content-Type" => "text/html; charset=UTF-8" } }
+      end
+
+      it "sets the body encoding" do
+        expect(response.body.encoding).to eq(Encoding::UTF_8)
+      end
+    end
+
+    context "when content type has no charset" do
+      let(:body) { "body".dup.force_encoding(Encoding::BINARY) }
+      let(:options) do
+        { :mock => true, :body => body, :headers => { "Content-Type" => "text/html" } }
+      end
+
+      it "leaves the body encoding alone" do
+        expect(response.body.encoding).to eq(Encoding::BINARY)
+      end
+    end
+
+    context "when content type has an unknown charset" do
+      let(:body) { "body".dup.force_encoding(Encoding::BINARY) }
+      let(:options) do
+        { :mock => true, :body => body, :headers => { "Content-Type" => "text/html; charset=nope" } }
+      end
+
+      it "leaves the body encoding alone" do
+        expect(response.body.encoding).to eq(Encoding::BINARY)
+      end
+    end
   end
 
   describe "#response_headers" do

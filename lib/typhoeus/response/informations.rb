@@ -47,7 +47,8 @@ module Typhoeus
       #
       # @return [ String ] The response_body.
       def response_body
-        options[:response_body] || options[:body]
+        body = options[:response_body] || options[:body]
+        apply_content_type_charset(body)
       end
       alias :body :response_body
 
@@ -311,6 +312,29 @@ module Typhoeus
       def redirections
         return [] unless response_headers
         response_headers.split("\r\n\r\n")[0..-2].map{ |h| Response.new(:response_headers => h) }
+      end
+
+      private
+
+      # Force the body to the charset advertised by the Content-Type
+      # header, but leave binary and already encoded bodies alone.
+      #
+      # @param [ String, nil ] body The response body.
+      #
+      # @return [ String, nil ] The response body.
+      def apply_content_type_charset(body)
+        return body unless body.is_a?(String) && !body.frozen?
+        return body unless body.encoding == Encoding::BINARY
+
+        content_type = headers && headers["Content-Type"]
+        return body unless content_type
+
+        charset = content_type.to_s[/;\s*charset\s*=\s*["']?([^"';,\s]+)/i, 1]
+        return body unless charset
+
+        body.force_encoding(Encoding.find(charset))
+      rescue ArgumentError
+        body
       end
     end
   end
