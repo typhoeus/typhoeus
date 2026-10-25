@@ -78,6 +78,24 @@ describe Typhoeus::Request::Operations do
       request.run
     end
 
+    it "calls on_progress with transfer progress" do
+      progress = []
+      request.on_progress { |dltotal, dlnow, ultotal, ulnow| progress << [dltotal, dlnow, ultotal, ulnow] }
+      request.run
+
+      expect(progress).not_to be_empty
+      expect(progress.flatten).to all(be_a(Numeric))
+    end
+
+    it "calls global on_progress with transfer progress" do
+      progress = []
+      Typhoeus.on_progress { |dltotal, dlnow, ultotal, ulnow| progress << [dltotal, dlnow, ultotal, ulnow] }
+      request.run
+
+      expect(progress).not_to be_empty
+      expect(progress.flatten).to all(be_a(Numeric))
+    end
+
     it "calls on_complete" do
       callback = double(:call)
       expect(callback).to receive(:call)

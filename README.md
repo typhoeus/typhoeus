@@ -219,6 +219,22 @@ end
 This will properly stop the stream internally and avoid any memory leak which
 may happen if you interrupt with something like a `return`, `throw` or `raise`.
 
+### Progress callbacks
+
+Set `on_progress` to observe the transfer while it is running. The callback
+receives the total and current number of downloaded and uploaded bytes:
+
+```ruby
+request = Typhoeus::Request.new("www.example.com/huge.iso")
+request.on_progress do |dltotal, dlnow, ultotal, ulnow|
+  puts "#{dlnow}/#{dltotal} bytes"
+end
+request.run
+```
+
+Progress callbacks run while libcurl transfers data. They are not called when
+the request finishes, use `on_complete` for that.
+
 ### Making Parallel Requests
 
 Generally, you should be running requests through hydra. Here is how that looks:
