@@ -24,6 +24,8 @@ RSpec.configure do |config|
     Typhoeus.on_complete.clear
     Typhoeus.on_success.clear
     Typhoeus.on_failure.clear
+    Typhoeus.on_progress.clear
+    Typhoeus.on_headers.clear
     Typhoeus::Config.verbose = false
     Typhoeus::Config.block_connection = false
     Typhoeus::Config.memoize = false

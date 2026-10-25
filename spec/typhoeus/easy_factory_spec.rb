@@ -154,6 +154,19 @@ describe Typhoeus::EasyFactory do
       easy_factory.send(:set_callback)
     end
 
+    it "sets easy.on_progress callback when a global on_progress callback is provided" do
+      Typhoeus.on_progress { 1 }
+      expect(easy_factory.easy).to receive(:on_progress)
+      easy_factory.send(:set_callback)
+    end
+
+    it "sets easy.on_progress callback for global and local callbacks" do
+      Typhoeus.on_progress { 1 }
+      request.on_progress { 2 }
+      expect(easy_factory.easy).to receive(:on_progress).twice
+      easy_factory.send(:set_callback)
+    end
+
     it "sets easy.on_complete callback" do
       expect(easy_factory.easy).to receive(:on_complete)
       easy_factory.send(:set_callback)

@@ -201,7 +201,7 @@ module Typhoeus
           request.execute_headers_callbacks(Response.new(Ethon::Easy::Mirror.from_easy(easy).options))
         end
       end
-      request.on_progress.each do |callback|
+      (Typhoeus.on_progress + request.on_progress).each do |callback|
         easy.on_progress do |dltotal, dlnow, ultotal, ulnow, easy|
           callback.call(dltotal, dlnow, ultotal, ulnow, response)
         end

@@ -35,7 +35,7 @@ describe Typhoeus::Request::Callbacks do
   end
 
   describe "#execute_callbacks" do
-    [:on_complete, :on_success, :on_failure, :on_progress].each do |callback|
+    [:on_complete, :on_success, :on_failure].each do |callback|
       context "when #{callback}" do
         context "when local callback" do
           before do
@@ -81,6 +81,18 @@ describe Typhoeus::Request::Callbacks do
             request.execute_callbacks
           end
         end
+      end
+    end
+
+    context "when on_progress" do
+      it "is not executed on completion" do
+        response = Typhoeus::Response.new(:mock => true, :response_code => 200)
+        request.response = response
+        request.on_progress { raise "local progress ran on completion" }
+        Typhoeus.on_progress { raise "global progress ran on completion" }
+
+        expect { request.execute_callbacks }.not_to raise_error
+        expect(response.handled_response).to be(response)
       end
     end
 
