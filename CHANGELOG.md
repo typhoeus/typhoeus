@@ -7,6 +7,40 @@
 * Prepare for Ethon 0.19: release easy handles when callbacks raise, clean up
   failed hydra runs, drop inherited handles after fork, document fork and
   empty-header behavior, and test against Ethon master.
+* Return the response from a `before` callback that short-circuits a request
+  instead of returning `nil`.
+  ([#748](https://github.com/typhoeus/typhoeus/pull/748))
+* Don't marshal per-request `before` callbacks. Requests with a `before`
+  callback can be dumped again.
+  ([#749](https://github.com/typhoeus/typhoeus/pull/749))
+* Only invoke `on_progress` callbacks while libcurl transfers data. They are no
+  longer called with a `Response` when the request completes, and global
+  `Typhoeus.on_progress` callbacks now run during the transfer as well.
+  ([#750](https://github.com/typhoeus/typhoeus/pull/750))
+* Exclude `cache_ttl` from `Request#cache_key`. Changing the TTL no longer
+  misses responses cached by an equivalent request with a different TTL.
+  ([#751](https://github.com/typhoeus/typhoeus/pull/751))
+* Release the easy handle when installing response callbacks fails.
+  ([#752](https://github.com/typhoeus/typhoeus/pull/752))
+* Raise `ArgumentError` for a non-positive `Hydra` `max_concurrency`, including
+  when it is assigned after the hydra is created, instead of leaving every
+  queued request unperformed.
+  ([#753](https://github.com/typhoeus/typhoeus/pull/753))
+* Build the synthetic status line for mocked responses from `response_code`/
+  `code`. It previously used the libcurl `return_code` symbol.
+  ([#754](https://github.com/typhoeus/typhoeus/pull/754))
+* Raise `ArgumentError` with the option name for non-numeric timeout options
+  instead of failing with `NoMethodError` inside option sanitization.
+  ([#758](https://github.com/typhoeus/typhoeus/pull/758))
+* Replace the hydra's multi handle after a fatal `curl_multi_perform` error so
+  the hydra can run requests again.
+  ([#759](https://github.com/typhoeus/typhoeus/pull/759))
+* Load the Rack middleware and the cache adapters independent of require order.
+  ([#760](https://github.com/typhoeus/typhoeus/pull/760))
+* Bound the easy pool with `Typhoeus::Config.max_idle_easies` (20 by default)
+  and replace the pool mutex after a fork instead of deadlocking on the
+  inherited lock.
+  ([#761](https://github.com/typhoeus/typhoeus/pull/761))
 
 ## 1.6.0
 
