@@ -117,6 +117,20 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder::Helper" do
           expect(encoded).to be_falsey
         end
       end
+
+      context "and it contains a zero" do
+        let(:params){ {'a0' => 1} }
+        it 'returns false' do
+          expect(encoded).to be_falsey
+        end
+      end
+
+      context "and it is 10" do
+        let(:params){ {'10' => 1} }
+        it 'returns false' do
+          expect(encoded).to be_falsey
+        end
+      end
     end
 
     context "when keys are ascending numbers starting with zero" do
@@ -127,8 +141,32 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder::Helper" do
       end
     end
 
+    context "when there are multiple keys but they are not numeric" do
+      let(:params) { {'10' => 1, 'a0' => 2} }
+
+      it "returns false" do
+        expect(encoded).to be_falsey
+      end
+    end
+
     context "when keys are not ascending numbers starting with zero" do
       let(:params) { {:a => 1} }
+
+      it "returns false" do
+        expect(encoded).to be_falsey
+      end
+    end
+
+    context "when keys are not canonical numbers" do
+      let(:params) { {'0' => 1, '01' => 2} }
+
+      it "returns false" do
+        expect(encoded).to be_falsey
+      end
+    end
+
+    context "when keys contain non-numbers" do
+      let(:params) { {'0' => 1, '1x' => 2} }
 
       it "returns false" do
         expect(encoded).to be_falsey
