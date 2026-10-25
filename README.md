@@ -491,6 +491,21 @@ Exceptions raised by `on_body` and `on_complete` callbacks are propagated by
 Ethon 0.19 and later. Typhoeus releases the underlying easy handle before
 re-raising.
 
+### Ethon 0.19
+
+Typhoeus supports Ethon 0.18 and later. Ethon 0.19 makes several errors visible
+that earlier releases ignored:
+
+- Unknown enum and bitmask option values raise `Ethon::Errors::InvalidValue`,
+  and options the loaded libcurl does not know raise
+  `Ethon::Errors::UnsupportedOption`. Guard optional options with
+  `Ethon::Curl.supports_option?` when you need to support older libcurl builds.
+- Exceptions raised by `on_body` and `on_complete` callbacks are re-raised.
+- Multipart PUT requests are sent as `multipart/form-data`. With Ethon 0.18 the
+  body was URL-encoded instead.
+- Pass `errorbuffer: true` to expose libcurl's detailed error as
+  `response.error_message`.
+
 ### Following Redirections
 
 Use `followlocation: true`, eg:
@@ -587,8 +602,36 @@ or globally:
 Typhoeus::Config.verbose = true
 ```
 
-Just remember that libcurl prints it’s debug output to the console (to
-STDERR), so you’ll need to run your scripts from the console to see it.
+Ethon 0.19 and later route libcurl's verbose output through `Ethon.logger` at
+the debug level, so no longer prints it to STDERR directly. Enable debug
+logging to see it:
+
+```ruby
+require "logger"
+Ethon.logger = Logger.new(STDERR)
+Ethon.logger.level = Logger::DEBUG
+```
+
+With Ethon 0.18 the output goes to STDERR.
+
+### Thread safety
+
+`Typhoeus::Request` and `Typhoeus::Hydra` instances are not thread-safe. An
+`Ethon::Easy` handle is checked out of the process-wide pool for the duration
+of a request and checked back in when it completes, so create requests and
+hydras per thread. `Typhoeus::Hydra.hydra` is memoized per thread.
+
+These are process-wide and should be configured during boot rather than while
+requests are running:
+
+- `Typhoeus::Config` (`cache`, `memoize`, `verbose`, timeouts, proxy, user agent)
+- `Typhoeus.before`, `Typhoeus.on_complete`, `Typhoeus.on_success`,
+  `Typhoeus.on_failure`, `Typhoeus.on_progress`, and `Typhoeus.on_headers`
+- `Typhoeus.stub` and `Typhoeus::Expectation.all`
+- the easy pool used by `Typhoeus::Pool`
+
+The easy pool has no fixed maximum size and belongs to the process that created
+it. It is cleared after `fork`.
 
 ### Default User Agent Header
 
