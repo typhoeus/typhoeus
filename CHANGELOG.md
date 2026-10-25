@@ -22,12 +22,18 @@
   ([#751](https://github.com/typhoeus/typhoeus/pull/751))
 * Release the easy handle when installing response callbacks fails.
   ([#752](https://github.com/typhoeus/typhoeus/pull/752))
-* Raise `ArgumentError` for a non-positive `Hydra` `max_concurrency` instead of
-  leaving every queued request unperformed.
+* Raise `ArgumentError` for a non-positive `Hydra` `max_concurrency`, including
+  when it is assigned after the hydra is created, instead of leaving every
+  queued request unperformed.
   ([#753](https://github.com/typhoeus/typhoeus/pull/753))
 * Build the synthetic status line for mocked responses from `response_code`/
   `code`. It previously used the libcurl `return_code` symbol.
   ([#754](https://github.com/typhoeus/typhoeus/pull/754))
+* Replace the hydra's multi handle after a fatal `curl_multi_perform` error so
+  the hydra can run requests again.
+  ([#759](https://github.com/typhoeus/typhoeus/pull/759))
+* Load the Rack middleware and the cache adapters independent of require order.
+  ([#760](https://github.com/typhoeus/typhoeus/pull/760))
 * Raise `ArgumentError` with the option name for non-numeric timeout options
   instead of failing with `NoMethodError` inside option sanitization.
   ([#758](https://github.com/typhoeus/typhoeus/pull/758))
