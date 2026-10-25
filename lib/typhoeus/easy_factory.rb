@@ -102,6 +102,7 @@ module Typhoeus
         # this needs to happen after http_request because
         # ethon will set infilesize to zero if form.empty?
         set_read_callback(read_callback_body) if !read_callback_body.nil?
+        set_callback
       rescue Ethon::Errors::InvalidOption => e
         release_easy(@easy) if @easy
         help = provide_help($1) if e.message =~ /:\s:?(\w+)/
@@ -110,7 +111,6 @@ module Typhoeus
         release_easy(@easy) if @easy
         raise
       end
-      set_callback
       easy
     end
 

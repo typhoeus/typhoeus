@@ -68,6 +68,25 @@ describe Typhoeus::EasyFactory do
       end
     end
 
+    context "when setting callbacks fails" do
+      let(:easy) { Ethon::Easy.new }
+
+      before do
+        allow(Typhoeus::Pool).to receive(:get).and_return(easy)
+        allow(easy_factory).to receive(:set_callback).and_raise("callback setup failed")
+      end
+
+      it "releases the easy" do
+        expect(Typhoeus::Pool).to receive(:release).with(easy, :cleanup => false)
+        expect { easy_factory.get }.to raise_error("callback setup failed")
+      end
+
+      it "marks the easy as released" do
+        expect { easy_factory.get }.to raise_error("callback setup failed")
+        expect(easy_factory.released?).to be(true)
+      end
+    end
+
     context "when invalid option" do
       let(:options) { {:invalid => 1} }
 
