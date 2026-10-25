@@ -34,6 +34,17 @@ describe Typhoeus::Hydra::Cacheable do
           expect(response.cached?).to be_truthy
         end
 
+        it "passes the cached response body to on_body callbacks" do
+          cached = Typhoeus::Response.new(:body => "cached body")
+          cache.memory[request] = cached
+          chunks = []
+          request.on_body { |chunk, _| chunks << chunk }
+
+          hydra.add(request)
+
+          expect(chunks).to eq(["cached body"])
+        end
+
         context "when no queued requests" do
           it "finishes request" do
             expect(request).to receive(:finish).with(response)
