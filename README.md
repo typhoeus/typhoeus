@@ -272,6 +272,8 @@ hydra.run
 
 ### Making Parallel Requests with Faraday + Typhoeus
 
+The built-in adapter supports Faraday 1.x and 2.x.
+
 ```ruby
 require 'faraday'
 

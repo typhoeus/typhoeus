@@ -11,7 +11,7 @@ group :development, :test do
 
   gem "sinatra", "~> 1.3"
 
-  gem "faraday", ">= 0.9", "< 2.0"
+  gem "faraday", ">= 1.0", "< 3.0"
   gem "dalli", "~> 2.0"
 
   gem "webrick"
