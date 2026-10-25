@@ -26,7 +26,37 @@ module Typhoeus
       end
 
       def [](key)
-        fetch(key) { @sanitized[key.to_s.downcase] }
+        @sanitized[convert_key(key)]
+      end
+
+      def include?(key)
+        @sanitized.include?(convert_key(key))
+      end
+      alias_method :has_key?, :include?
+      alias_method :key?, :include?
+      alias_method :member?, :include?
+
+      def fetch(key, *extras, &block)
+        @sanitized.fetch(convert_key(key), *extras, &block)
+      end
+
+      def dig(*args)
+        args[0] = convert_key(args[0]) if args.size > 0
+        @sanitized.fetch(*args)
+      end
+
+      def assoc(key)
+        @sanitized.assoc(convert_key(key))
+      end
+
+      def values_at(*keys)
+        keys.map! { |key| convert_key(key) }
+        @sanitized.values_at(*keys)
+      end
+
+      def fetch_values(*indices, &block)
+        indices.map! { |key| convert_key(key) }
+        @sanitized.fetch_values(*indices, &block)
       end
 
       # Parses the raw header.
@@ -62,8 +92,9 @@ module Typhoeus
       #
       # @return [ void ]
       def process_pair(key, value)
-        set_value(key, value, self)
-        @sanitized[key.downcase] = self[key]
+        sanitized_key = convert_key(key)
+        set_value(sanitized_key, value, @sanitized)
+        self[key] = @sanitized[sanitized_key]
       end
 
       # Sets value for key in specified hash
@@ -101,6 +132,10 @@ module Typhoeus
         else
           hash.replace(Hash.new(&default_proc).merge(hash))
         end
+      end
+
+      def convert_key(key)
+        key.to_s.downcase
       end
     end
   end
