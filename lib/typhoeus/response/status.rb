@@ -58,7 +58,7 @@ module Typhoeus
       #
       # @return [ Boolean ] Return true if failure, false else.
       def failure?
-        (mock || return_code == :internal_server_error) && response_code && has_bad_response_code?
+        (mock || !return_code.nil?) && !success?
       end
 
       # Return wether the response is modified.

@@ -182,6 +182,22 @@ describe Typhoeus::Response::Status do
         expect(response.failure?).to be_falsey
       end
     end
+
+    context "when response code is bad and return_code is :ok" do
+      let(:options) { {:return_code => :ok, :response_code => 500} }
+
+      it "returns true" do
+        expect(response.failure?).to be_truthy
+      end
+    end
+
+    context "when the connection failed" do
+      let(:options) { {:return_code => :couldnt_connect, :response_code => 0} }
+
+      it "returns true" do
+        expect(response.failure?).to be_truthy
+      end
+    end
   end
 
   describe "#modified?" do
