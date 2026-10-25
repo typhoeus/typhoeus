@@ -124,7 +124,8 @@ Typhoeus.put("www.example.com/posts/1",
 Use `Typhoeus.before` to register a callback for every request, or
 `request.before` to register a callback for a single request. Callbacks receive
 the request, run before it is performed, and can modify it. Returning `nil` or
-`false` skips the request.
+`false` skips the request and returns the request's assigned response. Returning
+a `Typhoeus::Response` skips the request and returns that response.
 
 ```ruby
 Typhoeus.before { |request| request.options[:timeout] ||= 5 }
