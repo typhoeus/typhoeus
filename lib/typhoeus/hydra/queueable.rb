@@ -74,10 +74,8 @@ module Typhoeus
       #
       # @since 0.6.8
       def dequeue_many
-        number = multi.easy_handles.count
-        until number == max_concurrency || queued_requests.empty?
+        until multi.easy_handles.count >= max_concurrency || queued_requests.empty?
           add(queued_requests.shift)
-          number += 1
         end
       end
     end

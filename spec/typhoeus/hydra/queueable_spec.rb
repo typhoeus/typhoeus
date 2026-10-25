@@ -40,7 +40,12 @@ describe Typhoeus::Hydra::Queueable do
   end
 
   describe "#dequeue_many" do
+    let(:multi) { double("multi", :easy_handles => easies) }
+    let(:easies) { [] }
+
     before do
+      allow(hydra).to receive(:multi).and_return(multi)
+      allow(hydra).to receive(:add) { |request| easies << request }
       requests.each { |r| hydra.queue r }
     end
 
@@ -93,6 +98,17 @@ describe Typhoeus::Hydra::Queueable do
           expect(hydra).to receive(:add).with(second)
           expect(hydra).to_not receive(:add).with(third)
           hydra.dequeue_many
+        end
+      end
+
+      context "when add does not create an easy" do
+        let(:options) { {:max_concurrency => 2} }
+
+        before { allow(hydra).to receive(:add) }
+
+        it "drains the queue" do
+          hydra.dequeue_many
+          expect(hydra.queued_requests).to be_empty
         end
       end
     end
