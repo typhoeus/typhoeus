@@ -101,6 +101,57 @@ describe Typhoeus::Request do
       end
     end
 
+    context "when header with lowercase user agent" do
+      let(:options) { {:headers => {'user-agent' => "Custom"} } }
+
+      it "doesn't add the default user agent" do
+        expect(request.options[:headers]).to eq(
+          'user-agent' => "Custom",
+          'Expect' => ""
+        )
+      end
+
+      it "sends the custom user agent without a duplicate" do
+        response = Typhoeus.get(
+          "http://localhost:3001/",
+          :headers => {'user-agent' => "Custom"}
+        )
+
+        expect(JSON.parse(response.body)["HTTP_USER_AGENT"]).to eq("Custom")
+      end
+    end
+
+    context "when header with lowercase expect" do
+      let(:options) { {:headers => {'expect' => "100-continue"} } }
+
+      it "doesn't add the default Expect header" do
+        expect(request.options[:headers]).to eq(
+          'User-Agent' => Typhoeus::USER_AGENT,
+          'expect' => "100-continue"
+        )
+      end
+
+      it "sends the caller's Expect header" do
+        response = Typhoeus.get(
+          "http://localhost:3001/",
+          :headers => {'expect' => "100-continue"}
+        )
+
+        expect(JSON.parse(response.body)["HTTP_EXPECT"]).to eq("100-continue")
+      end
+
+      context "when the value is nil" do
+        let(:options) { {:headers => {'expect' => nil} } }
+
+        it "uses the default empty value" do
+          expect(request.options[:headers]).to eq(
+            'User-Agent' => Typhoeus::USER_AGENT,
+            'expect' => ""
+          )
+        end
+      end
+    end
+
     context "when header without user agent" do
       let(:options) { {:headers => {} } }
 
@@ -238,6 +289,33 @@ describe Typhoeus::Request do
     context "when same class" do
       let(:other) { Typhoeus::Request.new("base_url", options) }
 
+      context "when the default method is implicit" do
+        let(:request) { described_class.new(base_url) }
+        let(:other) { described_class.new(base_url, :method => :get) }
+
+        it "returns true" do
+          expect(request).to eql other
+        end
+      end
+
+      context "when the method has a different spelling" do
+        let(:request) { described_class.new(base_url, :method => "GET") }
+        let(:other) { described_class.new(base_url, :method => :get) }
+
+        it "returns true" do
+          expect(request).to eql other
+        end
+      end
+
+      context "when the url is a URI instead of a String" do
+        let(:request) { described_class.new(URI("http://localhost:3001")) }
+        let(:other) { described_class.new("http://localhost:3001") }
+
+        it "returns true" do
+          expect(request).to eql other
+        end
+      end
+
       context "when other base_url" do
         it "returns false" do
           expect(request).to_not eql other
@@ -254,6 +332,24 @@ describe Typhoeus::Request do
 
 
       context "when same base_url and options" do
+        context "when the default method is implicit" do
+          let(:request) { described_class.new(base_url) }
+          let(:other) { described_class.new(base_url, :method => :get) }
+
+          it "has same hashes" do
+            expect(request.hash).to eq(other.hash)
+          end
+        end
+
+        context "when the method has a different spelling" do
+          let(:request) { described_class.new(base_url, :method => "GET") }
+          let(:other) { described_class.new(base_url, :method => :get) }
+
+          it "has same hashes" do
+            expect(request.hash).to eq(other.hash)
+          end
+        end
+
         context "when same order" do
           let(:other) { Typhoeus::Request.new(base_url, options) }
 
@@ -340,6 +436,24 @@ describe Typhoeus::Request do
       end
     end
 
+    context 'with an implicit default method' do
+      let(:request_1) { described_class.new(base_url) }
+      let(:request_2) { described_class.new(base_url, :method => :get) }
+
+      it 'returns the same cache key' do
+        expect(request_1.cache_key).to eq(request_2.cache_key)
+      end
+    end
+
+    context 'with a differently spelled method' do
+      let(:request_1) { described_class.new(base_url, :method => "GET") }
+      let(:request_2) { described_class.new(base_url, :method => :get) }
+
+      it 'returns the same cache key' do
+        expect(request_1.cache_key).to eq(request_2.cache_key)
+      end
+    end
+
     context 'with different options' do
       let(:request_1) { described_class.new(base_url, :params => { :a => 1 }) }
       let(:request_2) { described_class.new(base_url, :params => { :a => 2 }) }
@@ -397,6 +511,17 @@ describe Typhoeus::Request do
       expect(request.encoded_body).to eq("a%5B%5D=1&a%5B%5D=2")
     end
 
+    it "keeps arrays intact with params_encoding :none" do
+      request = Typhoeus::Request.new(
+        "www.example.com",
+        :method => :post,
+        :body => { "a" => [1, 2] },
+        :params_encoding => :none
+      )
+
+      expect(request.encoded_body).to eq("a=%5B1%2C%202%5D")
+    end
+
     it "uses the request's escaping" do
       request = Typhoeus::Request.new(
         "www.example.com",
@@ -408,12 +533,12 @@ describe Typhoeus::Request do
       expect(request.encoded_body).to eq("a=a b")
     end
 
-    it "escapes PUT bodies like Ethon does" do
+    it "escapes PUT bodies when escaping is enabled" do
       request = Typhoeus::Request.new(
         "www.example.com",
         :method => :put,
         :body => { "a" => "a b" },
-        :escape => false
+        :escape => true
       )
 
       expect(request.encoded_body).to eq("a=a%20b")
@@ -425,6 +550,18 @@ describe Typhoeus::Request do
         :method => :put,
         :body => { "a" => "a b" },
         :escape => false
+      )
+      response = request.run
+
+      expect(JSON.parse(response.body)["body"]).to eq(request.encoded_body)
+    end
+
+    it "matches the body sent for a PUT with escaping" do
+      request = Typhoeus::Request.new(
+        "http://localhost:3001/encoded-body",
+        :method => :put,
+        :body => { "a" => "a b" },
+        :escape => true
       )
       response = request.run
 

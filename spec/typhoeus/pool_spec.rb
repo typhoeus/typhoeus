@@ -115,9 +115,11 @@ describe Typhoeus::Pool do
     end
 
     context "when easy was created before a fork" do
+      let(:fork_safety) { Class.new(StandardError) }
+
       before do
-        skip unless defined?(Ethon::Errors::ForkSafety)
-        allow(easy).to receive(:cookielist=).and_raise(Ethon::Errors::ForkSafety.new)
+        stub_const("Ethon::Errors::ForkSafety", fork_safety)
+        allow(easy).to receive(:cookielist=).and_raise(fork_safety.new)
       end
 
       it "drops the easy instead of raising" do
@@ -127,10 +129,12 @@ describe Typhoeus::Pool do
     end
 
     context "when libcurl does not support cookies" do
+      let(:unsupported_option) { Class.new(StandardError) }
+
       before do
-        skip unless defined?(Ethon::Errors::UnsupportedOption)
+        stub_const("Ethon::Errors::UnsupportedOption", unsupported_option)
         allow(easy).to receive(:cookielist=).and_raise(
-          Ethon::Errors::UnsupportedOption.new(:cookielist)
+          unsupported_option.new(:cookielist)
         )
       end
 
@@ -151,6 +155,39 @@ describe Typhoeus::Pool do
         end.map(&:join)
         expect(Typhoeus::Pool.send(:easies).size).to eq(10)
       end
+    end
+  end
+
+  describe "#clear" do
+    it "cleans up every pooled easy" do
+      first = double("first easy")
+      second = double("second easy")
+      Typhoeus::Pool.send(:easies).push(first, second)
+
+      expect(first).to receive(:cleanup)
+      expect(second).to receive(:cleanup)
+
+      Typhoeus::Pool.clear
+
+      expect(Typhoeus::Pool.send(:easies)).to be_empty
+    end
+
+    it "keeps cleaning the remaining easies when one cannot be cleaned up" do
+      failing = double("failing easy")
+      working = double("working easy")
+      Typhoeus::Pool.send(:easies).push(failing, working)
+
+      allow(failing).to receive(:cleanup).and_raise("already cleaned up")
+      expect(working).to receive(:cleanup)
+
+      expect { Typhoeus::Pool.clear }.not_to raise_error
+      expect(Typhoeus::Pool.send(:easies)).to be_empty
+    end
+
+    it "returns the empty pool" do
+      Typhoeus::Pool.send(:easies) << double("easy", :cleanup => nil)
+
+      expect(Typhoeus::Pool.clear).to be(Typhoeus::Pool.send(:easies))
     end
   end
 

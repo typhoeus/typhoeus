@@ -118,6 +118,31 @@ describe Typhoeus do
     end
   end
 
+  describe "timeouts" do
+    after { Typhoeus::Config.timeout = nil }
+
+    it "prefers an explicit timeout_ms over timeout" do
+      response = Typhoeus.get(
+        "http://localhost:3001/?delay=1",
+        :timeout_ms => 100,
+        :timeout => 5
+      )
+
+      expect(response).to be_timed_out
+    end
+
+    it "prefers timeout_ms over the configured timeout" do
+      Typhoeus::Config.timeout = 5
+
+      response = Typhoeus.get(
+        "http://localhost:3001/?delay=1",
+        :timeout_ms => 100
+      )
+
+      expect(response).to be_timed_out
+    end
+  end
+
   [:get, :post, :put, :delete, :head, :patch, :options].each do |name|
     describe ".#{name}" do
       let(:response) { Typhoeus::Request.method(name).call("http://localhost:3001") }

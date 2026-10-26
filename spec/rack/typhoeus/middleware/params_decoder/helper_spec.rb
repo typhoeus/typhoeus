@@ -55,10 +55,51 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder::Helper" do
         expect(params).to eq("a" => { "0" => { "0" => "x", "1" => "y" } })
       end
     end
+
+    context "when the value is an array" do
+      let(:params) { { "a" => [{ "b" => "c" }] } }
+
+      it "does not share the array with the input" do
+        decoded = klass.decode(params)
+        decoded["a"] << { "d" => "e" }
+
+        expect(params["a"]).to eq([{ "b" => "c" }])
+      end
+
+      it "decodes encoded hashes inside the array" do
+        params = { "a" => [{ "0" => "x", "1" => "y" }] }
+
+        expect(klass.decode(params)["a"]).to eq([["x", "y"]])
+      end
+    end
+
+    context "when given an array" do
+      let(:params) { [{ "0" => "x", "1" => "y" }] }
+
+      it "decodes the array" do
+        expect(klass.decode(params)).to eq([["x", "y"]])
+      end
+    end
   end
 
   describe "#decode!" do
     let(:decoded) { klass.decode!(params) }
+
+    context "when frozen" do
+      let(:params) { { "a" => "b" }.freeze }
+
+      it "returns the params unchanged" do
+        expect(decoded).to be(params)
+      end
+    end
+
+    context "when a frozen array" do
+      let(:params) { ["a"].freeze }
+
+      it "returns the array unchanged" do
+        expect(decoded).to be(params)
+      end
+    end
 
     context "when hash" do
       context "when encoded" do
@@ -122,6 +163,15 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder::Helper" do
         it "doesn't modify" do
           expect(decoded).to be(params)
         end
+      end
+    end
+
+    context "when array" do
+      let(:params) { ["a", { "0" => "x", "1" => "y" }] }
+
+      it "decodes in place" do
+        expect(decoded).to eq(["a", ["x", "y"]])
+        expect(decoded).to be(params)
       end
     end
 
