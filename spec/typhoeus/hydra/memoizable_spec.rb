@@ -42,8 +42,23 @@ describe Typhoeus::Hydra::Memoizable do
         before { hydra.memory[request] = response }
 
         it "finishes request" do
-          expect(request).to receive(:finish).with(response, true)
+          expect(request).to receive(:finish).with(an_instance_of(Typhoeus::Response), true)
           hydra.add(request)
+        end
+
+        it "finishes request with a copy" do
+          hydra.add(request)
+
+          expect(request.response).not_to be(response)
+          expect(request.response.request).to be(request)
+        end
+
+        it "runs headers callbacks" do
+          called = false
+          request.on_headers { |_| called = true }
+          hydra.add(request)
+
+          expect(called).to be(true)
         end
 
         context "when queued request" do
@@ -51,8 +66,8 @@ describe Typhoeus::Hydra::Memoizable do
 
           it "dequeues" do
             hydra.queue(queued_request)
-            expect(request).to receive(:finish).with(response, true)
-            expect(queued_request).to receive(:finish).with(response, true)
+            expect(request).to receive(:finish).with(an_instance_of(Typhoeus::Response), true)
+            expect(queued_request).to receive(:finish).with(an_instance_of(Typhoeus::Response), true)
             hydra.add(request)
           end
         end

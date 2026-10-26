@@ -8,6 +8,34 @@ describe Typhoeus::Request::Memoizable do
   let(:response) { Typhoeus::Response.new }
   let(:hydra) { Typhoeus::Hydra.new }
 
+  describe "#memoizable?" do
+    context "when memoization activated" do
+      before { Typhoeus::Config.memoize = true }
+      after { Typhoeus::Config.memoize = false }
+
+      it "is true for a GET request" do
+        expect(Typhoeus::Request.new("fu", :method => :get)).to be_memoizable
+      end
+
+      it "is false for a non-GET request" do
+        expect(Typhoeus::Request.new("fu", :method => :post)).not_to be_memoizable
+      end
+
+      it "is false for a streaming request" do
+        request = Typhoeus::Request.new("fu", :method => :get)
+        request.on_body { |_, _| }
+
+        expect(request).not_to be_memoizable
+      end
+    end
+
+    context "when memoization is disabled" do
+      it "is false" do
+        expect(Typhoeus::Request.new("fu", :method => :get)).not_to be_memoizable
+      end
+    end
+  end
+
   describe "#response=" do
     context "when memoization activated" do
       before { Typhoeus::Config.memoize = true }

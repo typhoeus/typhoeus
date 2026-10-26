@@ -42,8 +42,7 @@ module Typhoeus
       def add(request)
         if request.memoizable?
           if memory.key?(request)
-            response = memory[request]
-            request.finish(response, true)
+            finish_request(request, memory[request])
             dequeue_many
           elsif pending.key?(request)
             pending[request] << request
@@ -90,7 +89,7 @@ module Typhoeus
         error = nil
         requests.each do |pending_request|
           begin
-            pending_request.finish(response.dup, true)
+            finish_request(pending_request, response)
           rescue StandardError => e
             error ||= e
           end
@@ -98,6 +97,21 @@ module Typhoeus
         raise error if error
 
         response.handled_response
+      end
+
+      # Finish a request whose response is already available. Every request gets
+      # its own response object and the same header callbacks it would see for
+      # a stub or a cache hit.
+      #
+      # @param [ Typhoeus::Request ] request The waiting request.
+      # @param [ Typhoeus::Response ] response The response to copy.
+      #
+      # @return [ Object ] The response's handled response.
+      def finish_request(request, response)
+        copy = response.dup
+        copy.request = request
+        request.execute_headers_callbacks(copy)
+        request.finish(copy, true)
       end
 
       # Finish followers whose leader produced a response but whose callbacks
@@ -113,7 +127,7 @@ module Typhoeus
             next if pending_request.response
 
             begin
-              pending_request.finish(response.dup, true)
+              finish_request(pending_request, response)
             rescue StandardError
               # Preserve the original run error.
             end
