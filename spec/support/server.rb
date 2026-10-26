@@ -97,12 +97,8 @@ TESTSERVER = Sinatra.new do
   end
 
   get '/gzipped' do
-    req_env = request.env.to_json
-    z = Zlib::Deflate.new
-    gzipped_env = z.deflate(req_env, Zlib::FINISH)
-    z.close
     response['Content-Encoding'] = 'gzip'
-    gzipped_env
+    Zlib.gzip(request.env.to_json)
   end
 
   get '/**' do

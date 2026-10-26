@@ -14,7 +14,18 @@ describe "Typhoeus HTTP features" do
       expect(response.code).to eq(200)
       expect(response.redirect_count).to eq(1)
       expect(response.redirections.size).to eq(1)
+      expect(response.redirections.first.headers["Location"]).to eq("#{base_url}/")
       expect(JSON.parse(response.body)["PATH_INFO"]).to eq("/")
+    end
+
+    it "runs on_headers for the final response" do
+      codes = []
+      request = Typhoeus::Request.new("#{base_url}/redirect", :followlocation => true)
+      request.on_headers { |response| codes << response.code }
+
+      request.run
+
+      expect(codes).to eq([200])
     end
 
     it "returns the redirect when followlocation is disabled" do
@@ -63,7 +74,30 @@ describe "Typhoeus HTTP features" do
         :headers => { "Accept-Encoding" => "gzip" }
       )
 
+      expect(response.body.byteslice(0, 2).bytes).to eq([0x1f, 0x8b])
       expect { JSON.parse(response.body) }.to raise_error(JSON::ParserError)
+    end
+  end
+
+  describe "cookies" do
+    it "persists cookies through the configured jar" do
+      jar = Tempfile.new("typhoeus-cookies")
+      jar.close
+
+      Typhoeus.get(
+        "#{base_url}/cookies-test",
+        :cookiefile => jar.path,
+        :cookiejar => jar.path
+      )
+      response = Typhoeus.get(
+        "#{base_url}/",
+        :cookiefile => jar.path,
+        :cookiejar => jar.path
+      )
+
+      expect(JSON.parse(response.body)["HTTP_COOKIE"]).to include("foo=bar")
+    ensure
+      jar.close! if jar
     end
   end
 
@@ -105,6 +139,19 @@ describe "Typhoeus HTTP features" do
 
       expect(response.code).to eq(500)
       expect(failures).to eq([response])
+    end
+
+    it "yields chunks without buffering the response" do
+      chunks = []
+      request = Typhoeus::Request.new("#{base_url}/stream")
+      request.on_body { |chunk, _| chunks << chunk }
+
+      response = request.run
+
+      expect(chunks).not_to be_empty
+      expect(chunks.join).to include('"PATH_INFO":"/stream"')
+      expect(response.body).to eq("")
+      expect(response.code).to eq(200)
     end
 
     it "stops streaming when on_body returns :abort" do
