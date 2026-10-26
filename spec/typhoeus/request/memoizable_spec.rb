@@ -17,6 +17,10 @@ describe Typhoeus::Request::Memoizable do
         expect(Typhoeus::Request.new("fu", :method => :get)).to be_memoizable
       end
 
+      it "is true for a GET request in a different spelling" do
+        expect(Typhoeus::Request.new("fu", :method => "GET")).to be_memoizable
+      end
+
       it "is false for a non-GET request" do
         expect(Typhoeus::Request.new("fu", :method => :post)).not_to be_memoizable
       end

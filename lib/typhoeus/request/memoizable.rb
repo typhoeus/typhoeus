@@ -37,7 +37,7 @@ module Typhoeus
       def memoizable?
         Typhoeus::Config.memoize &&
           !streaming? &&
-          (options[:method].nil? || options[:method] == :get)
+          request_method == :get
       end
     end
   end

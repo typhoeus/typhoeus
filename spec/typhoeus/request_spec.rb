@@ -238,6 +238,33 @@ describe Typhoeus::Request do
     context "when same class" do
       let(:other) { Typhoeus::Request.new("base_url", options) }
 
+      context "when the default method is implicit" do
+        let(:request) { described_class.new(base_url) }
+        let(:other) { described_class.new(base_url, :method => :get) }
+
+        it "returns true" do
+          expect(request).to eql other
+        end
+      end
+
+      context "when the method has a different spelling" do
+        let(:request) { described_class.new(base_url, :method => "GET") }
+        let(:other) { described_class.new(base_url, :method => :get) }
+
+        it "returns true" do
+          expect(request).to eql other
+        end
+      end
+
+      context "when the url is a URI instead of a String" do
+        let(:request) { described_class.new(URI("http://localhost:3001")) }
+        let(:other) { described_class.new("http://localhost:3001") }
+
+        it "returns true" do
+          expect(request).to eql other
+        end
+      end
+
       context "when other base_url" do
         it "returns false" do
           expect(request).to_not eql other
@@ -254,6 +281,24 @@ describe Typhoeus::Request do
 
 
       context "when same base_url and options" do
+        context "when the default method is implicit" do
+          let(:request) { described_class.new(base_url) }
+          let(:other) { described_class.new(base_url, :method => :get) }
+
+          it "has same hashes" do
+            expect(request.hash).to eq(other.hash)
+          end
+        end
+
+        context "when the method has a different spelling" do
+          let(:request) { described_class.new(base_url, :method => "GET") }
+          let(:other) { described_class.new(base_url, :method => :get) }
+
+          it "has same hashes" do
+            expect(request.hash).to eq(other.hash)
+          end
+        end
+
         context "when same order" do
           let(:other) { Typhoeus::Request.new(base_url, options) }
 
@@ -334,6 +379,24 @@ describe Typhoeus::Request do
     context 'with different cache ttls' do
       let(:request_1) { described_class.new(base_url, :cache_ttl => 10) }
       let(:request_2) { described_class.new(base_url, :cache_ttl => 60) }
+
+      it 'returns the same cache key' do
+        expect(request_1.cache_key).to eq(request_2.cache_key)
+      end
+    end
+
+    context 'with an implicit default method' do
+      let(:request_1) { described_class.new(base_url) }
+      let(:request_2) { described_class.new(base_url, :method => :get) }
+
+      it 'returns the same cache key' do
+        expect(request_1.cache_key).to eq(request_2.cache_key)
+      end
+    end
+
+    context 'with a differently spelled method' do
+      let(:request_1) { described_class.new(base_url, :method => "GET") }
+      let(:request_2) { described_class.new(base_url, :method => :get) }
 
       it 'returns the same cache key' do
         expect(request_1.cache_key).to eq(request_2.cache_key)

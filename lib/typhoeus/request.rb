@@ -144,8 +144,8 @@ module Typhoeus
     # @api private
     def eql?(other)
       self.class == other.class &&
-        self.base_url == other.base_url &&
-        fuzzy_hash_eql?(self.options, other.options)
+        base_url.to_s == other.base_url.to_s &&
+        fuzzy_hash_eql?(normalized_options, other.normalized_options)
     end
 
     # Overrides Object#hash.
@@ -165,7 +165,7 @@ module Typhoeus
       # The cache store and the TTL only affect where and how long a response
       # is stored, not what the response is. Leaving them in the key would
       # silently miss the cache whenever the TTL changes.
-      hashable_options = options.dup.tap do |dup_opts|
+      hashable_options = normalized_options.tap do |dup_opts|
         dup_opts.delete(:cache)
         dup_opts.delete(:cache_ttl)
       end
@@ -199,6 +199,28 @@ module Typhoeus
       ensure
         Typhoeus::Pool.release(easy) if easy
       end
+    end
+
+    # Return the request method with the same defaults and spelling Ethon
+    # uses. Cache keys, memoization, and equality must not depend on whether
+    # the caller wrote :get, "GET", or omitted the default method.
+    #
+    # @return [ Symbol ] The normalized method.
+    #
+    # @api private
+    def request_method
+      (options[:method] || :get).to_s.downcase.to_sym
+    end
+
+    # Return the options with their implicit defaults filled in for comparison.
+    #
+    # @return [ Hash ] The normalized options.
+    #
+    # @api private
+    def normalized_options
+      normalized = options.merge(:method => request_method)
+      normalized.delete("method")
+      normalized
     end
 
     private
