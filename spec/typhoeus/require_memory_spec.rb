@@ -2,6 +2,7 @@
 
 require "spec_helper"
 require "rbconfig"
+require "open3"
 
 describe "require 'typhoeus' memory usage" do
   # Retained Ruby heap memory that requiring typhoeus may add. The baseline
@@ -32,8 +33,9 @@ describe "require 'typhoeus' memory usage" do
     RUBY
 
     lib = File.expand_path("../../lib", __dir__)
-    expect(
-      system(RbConfig.ruby, "-I", lib, "-e", script, MAX_RETAINED_BYTES.to_s)
-    ).to be(true)
+    stdout, stderr, status = Open3.capture3(
+      RbConfig.ruby, "-I", lib, "-e", script, MAX_RETAINED_BYTES.to_s
+    )
+    expect(status).to be_success, [stdout, stderr].reject(&:empty?).join("\n")
   end
 end

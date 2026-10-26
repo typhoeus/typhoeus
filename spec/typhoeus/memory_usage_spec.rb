@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require 'rbconfig'
+require 'open3'
 
 describe "repeated Typhoeus transfers" do
   it "does not accumulate easy handles, responses, or file descriptors" do
@@ -12,6 +13,7 @@ describe "repeated Typhoeus transfers" do
       url = ARGV.fetch(0)
 
       def snapshot
+        pooled = Typhoeus::Pool.send(:easies).size
         Typhoeus::Pool.clear
         3.times { GC.start }
 
@@ -20,7 +22,7 @@ describe "repeated Typhoeus transfers" do
           :multi => ObjectSpace.each_object(Ethon::Multi).count,
           :response => ObjectSpace.each_object(Typhoeus::Response).count,
           :file => ObjectSpace.each_object(File).count,
-          :pool => Typhoeus::Pool.send(:easies).size
+          :pool => pooled
         }
         if defined?(Ethon::Curl::OwnedPointer)
           counts[:native] = Ethon::Curl::OwnedPointer.owners.size
@@ -81,6 +83,9 @@ describe "repeated Typhoeus transfers" do
 
     lib = File.expand_path("../../lib", __dir__)
     url = defined?(TestServer) ? TestServer.url : "http://localhost:3001"
-    expect(system(RbConfig.ruby, "-I", lib, "-e", script, url)).to be(true)
+    stdout, stderr, status = Open3.capture3(
+      RbConfig.ruby, "-I", lib, "-e", script, url
+    )
+    expect(status).to be_success, [stdout, stderr].reject(&:empty?).join("\n")
   end
 end
