@@ -9,11 +9,13 @@ module Typhoeus
     # replacement or removal hint that Typhoeus adds.
     class InvalidOption < Ethon::Errors::InvalidOption
       def initialize(option, help = nil)
-        super(option)
         @help = help
+        super(option)
       end
 
-      def message
+      # Exception#message calls #to_s, so the hint is included everywhere the
+      # error is rendered and not only when #message is called explicitly.
+      def to_s
         "#{super}#{@help}"
       end
     end
