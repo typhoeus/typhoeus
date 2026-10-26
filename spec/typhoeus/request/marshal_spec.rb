@@ -57,6 +57,36 @@ describe Typhoeus::Request::Marshal do
       end
     end
 
+    context "when the request ran" do
+      before do
+        Typhoeus.stub(base_url).and_return(
+          Typhoeus::Response.new(:code => 200, :body => "response")
+        )
+        request.on_complete { |_| proc { } }
+        request.run
+      end
+
+      it "doesn't include @response" do
+        expect(request.send(:marshal_dump).map(&:first)).to_not include("@response")
+      end
+
+      it "dumps the completed request" do
+        expect { Marshal.dump(request) }.to_not raise_error
+      end
+
+      context "when loading" do
+        let(:loaded) { Marshal.load(Marshal.dump(request)) }
+
+        it "includes base_url" do
+          expect(loaded.base_url).to eq(request.base_url)
+        end
+
+        it "has no response" do
+          expect(loaded.response).to be_nil
+        end
+      end
+    end
+
     context 'when run through hydra' do
       let(:options) { {} }
       let(:hydra) { Typhoeus::Hydra.new(options) }
