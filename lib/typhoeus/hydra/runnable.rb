@@ -43,6 +43,9 @@ module Typhoeus
             # Keep cleaning up the remaining handles.
           end
         end
+      ensure
+        # A hydra that cannot create its multi has not dequeued anything, so
+        # clear the queue even when the handles cannot be inspected.
         queued_requests.clear
       end
 
