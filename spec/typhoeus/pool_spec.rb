@@ -95,9 +95,11 @@ describe Typhoeus::Pool do
     end
 
     context "when easy was created before a fork" do
+      let(:fork_safety) { Class.new(StandardError) }
+
       before do
-        skip unless defined?(Ethon::Errors::ForkSafety)
-        allow(easy).to receive(:cookielist=).and_raise(Ethon::Errors::ForkSafety.new)
+        stub_const("Ethon::Errors::ForkSafety", fork_safety)
+        allow(easy).to receive(:cookielist=).and_raise(fork_safety.new)
       end
 
       it "drops the easy instead of raising" do
@@ -107,10 +109,12 @@ describe Typhoeus::Pool do
     end
 
     context "when libcurl does not support cookies" do
+      let(:unsupported_option) { Class.new(StandardError) }
+
       before do
-        skip unless defined?(Ethon::Errors::UnsupportedOption)
+        stub_const("Ethon::Errors::UnsupportedOption", unsupported_option)
         allow(easy).to receive(:cookielist=).and_raise(
-          Ethon::Errors::UnsupportedOption.new(:cookielist)
+          unsupported_option.new(:cookielist)
         )
       end
 

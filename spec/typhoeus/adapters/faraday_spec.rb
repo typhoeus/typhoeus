@@ -113,9 +113,22 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
 
       context "parallel_manager" do
         context "when given" do
-          let(:env) { { :parallel_manager => double(:queue => true), :ssl => {}, :request => {} } }
+          let(:parallel_manager) { double(:queue => true) }
+          let(:env) do
+            {
+              :parallel_manager => parallel_manager,
+              :url => "url",
+              :method => :get,
+              :body => nil,
+              :request_headers => {},
+              :ssl => {},
+              :request => {}
+            }
+          end
 
-          it "uses" do
+          it "queues the request on the parallel manager" do
+            expect(parallel_manager).to receive(:queue).with(instance_of(Typhoeus::Request))
+
             adapter.method(:perform_request).call(env)
           end
         end
