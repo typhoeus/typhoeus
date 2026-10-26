@@ -123,7 +123,7 @@ describe Typhoeus do
 
     it "prefers an explicit timeout_ms over timeout" do
       response = Typhoeus.get(
-        "http://localhost:3001/?delay=1",
+        "#{TestServer.url}/?delay=1",
         :timeout_ms => 100,
         :timeout => 5
       )
@@ -135,7 +135,7 @@ describe Typhoeus do
       Typhoeus::Config.timeout = 5
 
       response = Typhoeus.get(
-        "http://localhost:3001/?delay=1",
+        "#{TestServer.url}/?delay=1",
         :timeout_ms => 100
       )
 
@@ -145,7 +145,7 @@ describe Typhoeus do
 
   [:get, :post, :put, :delete, :head, :patch, :options].each do |name|
     describe ".#{name}" do
-      let(:response) { Typhoeus::Request.method(name).call("http://localhost:3001") }
+      let(:response) { Typhoeus::Request.method(name).call(TestServer.url) }
 
       it "returns ok" do
         expect(response.return_code).to eq(:ok)

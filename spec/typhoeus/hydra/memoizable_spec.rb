@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Typhoeus::Hydra::Memoizable do
-  let(:base_url) { "localhost:3001" }
+  let(:base_url) { TestServer.host }
   let(:hydra) { Typhoeus::Hydra.new() }
   let(:request) { Typhoeus::Request.new(base_url) }
 
@@ -24,9 +24,9 @@ describe Typhoeus::Hydra::Memoizable do
       end
 
       context "when request is still in flight" do
-        let(:key) { rand(1_000_000).to_s }
+        let(:key) { TestServer.next_id.to_s }
         let(:requests) do
-          2.times.map { Typhoeus::Request.new("localhost:3001/count/#{key}") }
+          2.times.map { Typhoeus::Request.new("#{TestServer.host}/count/#{key}") }
         end
 
         it "issues one request and shares the response" do
@@ -93,7 +93,7 @@ describe Typhoeus::Hydra::Memoizable do
     end
 
     it "gives each request its own response" do
-      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      url = "#{TestServer.url}/count/memo-#{TestServer.next_id}"
       first = Typhoeus::Request.new(url)
       second = Typhoeus::Request.new(url)
       first.on_complete { |_| :first }
@@ -110,7 +110,7 @@ describe Typhoeus::Hydra::Memoizable do
     end
 
     it "does not let a follower change the leader's response" do
-      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      url = "#{TestServer.url}/count/memo-#{TestServer.next_id}"
       leader = Typhoeus::Request.new(url)
       follower = Typhoeus::Request.new(url)
       follower.on_complete do |response|
@@ -128,7 +128,7 @@ describe Typhoeus::Hydra::Memoizable do
     end
 
     it "does not copy the leader's handled response to a follower" do
-      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      url = "#{TestServer.url}/count/memo-#{TestServer.next_id}"
       leader = Typhoeus::Request.new(url)
       follower = Typhoeus::Request.new(url)
       leader.on_complete { |_| :leader }
@@ -140,7 +140,7 @@ describe Typhoeus::Hydra::Memoizable do
     end
 
     it "does not serve responses memoized by a direct run between runs" do
-      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      url = "#{TestServer.url}/count/memo-#{TestServer.next_id}"
       first = Typhoeus::Request.new(url)
       hydra.queue(first)
       hydra.run
@@ -154,7 +154,7 @@ describe Typhoeus::Hydra::Memoizable do
     end
 
     it "finishes waiting requests when the leader's callback raises" do
-      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      url = "#{TestServer.url}/count/memo-#{TestServer.next_id}"
       leader = Typhoeus::Request.new(url)
       follower = Typhoeus::Request.new(url)
       leader.on_complete { |_| raise "boom" }
@@ -168,7 +168,7 @@ describe Typhoeus::Hydra::Memoizable do
     end
 
     it "finishes the remaining followers when a follower's callback raises" do
-      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      url = "#{TestServer.url}/count/memo-#{TestServer.next_id}"
       leader = Typhoeus::Request.new(url)
       failing = Typhoeus::Request.new(url)
       follower = Typhoeus::Request.new(url)
@@ -184,7 +184,7 @@ describe Typhoeus::Hydra::Memoizable do
     end
 
     it "finishes waiting requests when the leader changes its options" do
-      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      url = "#{TestServer.url}/count/memo-#{TestServer.next_id}"
       leader = Typhoeus::Request.new(url)
       follower = Typhoeus::Request.new(url)
       leader.on_complete { leader.options[:changed] = true }
@@ -198,7 +198,7 @@ describe Typhoeus::Hydra::Memoizable do
     end
 
     it "finishes waiting requests when the leader's callback changes options and raises" do
-      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      url = "#{TestServer.url}/count/memo-#{TestServer.next_id}"
       leader = Typhoeus::Request.new(url)
       follower = Typhoeus::Request.new(url)
       leader.on_complete do

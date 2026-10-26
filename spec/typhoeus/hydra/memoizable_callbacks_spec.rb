@@ -9,7 +9,7 @@ describe Typhoeus::Hydra::Memoizable do
   after { Typhoeus::Config.memoize = false }
 
   it "runs on_headers callbacks for a follower" do
-    url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+    url = "#{TestServer.url}/count/memo-#{TestServer.next_id}"
     leader = Typhoeus::Request.new(url)
     follower = Typhoeus::Request.new(url)
     codes = []
@@ -22,7 +22,7 @@ describe Typhoeus::Hydra::Memoizable do
   end
 
   it "sets the follower on the response for header callbacks" do
-    url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+    url = "#{TestServer.url}/count/memo-#{TestServer.next_id}"
     leader = Typhoeus::Request.new(url)
     follower = Typhoeus::Request.new(url)
     seen_request = nil
@@ -35,7 +35,7 @@ describe Typhoeus::Hydra::Memoizable do
   end
 
   it "does not memoize streaming requests" do
-    url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+    url = "#{TestServer.url}/count/memo-#{TestServer.next_id}"
     requests = 2.times.map { Typhoeus::Request.new(url) }
     chunks = []
     requests.each_with_index do |request, index|

@@ -8,7 +8,7 @@ require 'tempfile'
 # capability checks keep the suite green against Ethon 0.18 until it is
 # released.
 describe "Ethon 0.19 compatibility" do
-  let(:base_url) { "http://localhost:3001" }
+  let(:base_url) { TestServer.url }
 
   context "when multipart PUT is supported", :if => Ethon::Easy.method_defined?(:error_message) do
     it "sends the body as multipart/form-data" do

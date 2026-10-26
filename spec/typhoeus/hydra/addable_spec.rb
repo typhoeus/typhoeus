@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe Typhoeus::Hydra::Addable do
   let(:hydra) { Typhoeus::Hydra.new() }
-  let(:request) { Typhoeus::Request.new("localhost:3001", {:method => :get}) }
+  let(:request) { Typhoeus::Request.new(TestServer.host, {:method => :get}) }
 
   it "asks easy factory for an easy" do
     multi = double

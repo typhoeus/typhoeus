@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Typhoeus::Request do
-  let(:base_url) { "localhost:3001" }
+  let(:base_url) { TestServer.host }
   let(:options) do
     {
       verbose: true,
@@ -113,7 +113,7 @@ describe Typhoeus::Request do
 
       it "sends the custom user agent without a duplicate" do
         response = Typhoeus.get(
-          "http://localhost:3001/",
+          "#{TestServer.url}/",
           :headers => {'user-agent' => "Custom"}
         )
 
@@ -133,7 +133,7 @@ describe Typhoeus::Request do
 
       it "sends the caller's Expect header" do
         response = Typhoeus.get(
-          "http://localhost:3001/",
+          "#{TestServer.url}/",
           :headers => {'expect' => "100-continue"}
         )
 
@@ -308,8 +308,8 @@ describe Typhoeus::Request do
       end
 
       context "when the url is a URI instead of a String" do
-        let(:request) { described_class.new(URI("http://localhost:3001")) }
-        let(:other) { described_class.new("http://localhost:3001") }
+        let(:request) { described_class.new(URI(TestServer.url)) }
+        let(:other) { described_class.new(TestServer.url) }
 
         it "returns true" do
           expect(request).to eql other
@@ -546,7 +546,7 @@ describe Typhoeus::Request do
 
     it "matches the body sent for a PUT without escaping" do
       request = Typhoeus::Request.new(
-        "http://localhost:3001/encoded-body",
+        "#{TestServer.url}/encoded-body",
         :method => :put,
         :body => { "a" => "a b" },
         :escape => false
@@ -558,7 +558,7 @@ describe Typhoeus::Request do
 
     it "matches the body sent for a PUT with escaping" do
       request = Typhoeus::Request.new(
-        "http://localhost:3001/encoded-body",
+        "#{TestServer.url}/encoded-body",
         :method => :put,
         :body => { "a" => "a b" },
         :escape => true
@@ -578,7 +578,7 @@ describe Typhoeus::Request do
 
       cases.each do |params_encoding, body|
         request = Typhoeus::Request.new(
-          "http://localhost:3001/encoded-body",
+          "#{TestServer.url}/encoded-body",
           :method => :post,
           :body => body,
           :params_encoding => params_encoding

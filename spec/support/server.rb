@@ -10,8 +10,6 @@ TESTSERVER = Sinatra.new do
   set :logging, false
   use Rack::Typhoeus::Middleware::ParamsDecoder
 
-  fail_count = 0
-
   post '/file' do
     {
       'content-type' => params[:file][:type],
@@ -43,24 +41,23 @@ TESTSERVER = Sinatra.new do
     [200, { 'Set-Cookie' => %w(foo2=bar bar2=foo), 'Content-Type' => 'text/plain' }, ['']]
   end
 
-  get '/fail/:number' do
-    if fail_count >= params[:number].to_i
-      "ok"
-    else
-      fail_count += 1
-      error 500, "oh noes!"
-    end
-  end
-
   get '/fail_forever' do
     error 500, "oh noes!"
   end
 
+  get '/slow' do
+    sleep 0.2
+    "slow"
+  end
+
   counts = Hash.new(0)
+  counts_mutex = Mutex.new
 
   get '/count/:key' do
-    counts[params[:key]] += 1
-    counts[params[:key]].to_s
+    counts_mutex.synchronize do
+      counts[params[:key]] += 1
+      counts[params[:key]].to_s
+    end
   end
 
   get '/redirect' do

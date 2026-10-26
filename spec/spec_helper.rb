@@ -5,6 +5,21 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 
 require "bundler"
 Bundler.setup
+
+if ENV["COVERAGE"] == "true"
+  require "simplecov"
+
+  SimpleCov.root(File.expand_path("..", __dir__))
+  SimpleCov.start do
+    add_filter "/spec/"
+    # Loaded before coverage starts, or only when Rails is present.
+    add_filter "lib/typhoeus/railtie.rb"
+    add_filter "lib/typhoeus/version.rb"
+    track_files "lib/**/*.rb"
+    enable_coverage :branch
+  end
+end
+
 require "typhoeus"
 require "rspec"
 
@@ -14,7 +29,7 @@ RSpec.configure do |config|
   config.order = :rand
 
   config.before(:suite) do
-    LocalhostServer.new(TESTSERVER.new, 3001)
+    TestServer.port = LocalhostServer.new(TESTSERVER.new).port
   end
 
   config.after do

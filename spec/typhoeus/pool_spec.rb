@@ -38,7 +38,7 @@ describe Typhoeus::Pool do
       tempfile2 = Tempfile.new('cookies')
 
       easy.cookiejar = tempfile1.path
-      easy.url = "localhost:3001/cookies-test"
+      easy.url = "#{TestServer.host}/cookies-test"
       easy.perform
 
       Typhoeus::Pool.release(easy)
@@ -49,7 +49,7 @@ describe Typhoeus::Pool do
 
       # do it again - and check if tempfile1 wasn't change
       easy.cookiejar = tempfile2.path
-      easy.url = "localhost:3001/cookies-test2"
+      easy.url = "#{TestServer.host}/cookies-test2"
       easy.perform
 
       Typhoeus::Pool.release(easy)

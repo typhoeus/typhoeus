@@ -18,7 +18,7 @@ describe Typhoeus::Cache::Rails do
 
   let(:cache_store) { RecordingRailsCache.new }
   let(:cache) { described_class.new(cache_store) }
-  let(:request) { Typhoeus::Request.new("localhost:3001", :cache_ttl => 5) }
+  let(:request) { Typhoeus::Request.new(TestServer.host, :cache_ttl => 5) }
   let(:response) { Typhoeus::Response.new(:body => "body") }
 
   describe "#get" do
@@ -40,7 +40,7 @@ describe Typhoeus::Cache::Rails do
 
     it "uses the default ttl" do
       cache = described_class.new(cache_store, :default_ttl => 60)
-      request = Typhoeus::Request.new("localhost:3001")
+      request = Typhoeus::Request.new(TestServer.host)
 
       cache.set(request, response)
 
@@ -48,7 +48,7 @@ describe Typhoeus::Cache::Rails do
     end
 
     it "omits an unset ttl" do
-      request = Typhoeus::Request.new("localhost:3001")
+      request = Typhoeus::Request.new(TestServer.host)
 
       cache.set(request, response)
 

@@ -5,7 +5,7 @@ require 'json'
 require 'tempfile'
 
 describe "Typhoeus HTTP features" do
-  let(:base_url) { "http://localhost:3001" }
+  let(:base_url) { TestServer.url }
 
   describe "redirections" do
     it "follows a redirect when followlocation is enabled" do
@@ -82,6 +82,16 @@ describe "Typhoeus HTTP features" do
       expect(json["request-content-type"]).to start_with("multipart/form-data")
     ensure
       file.close! if file
+    end
+  end
+
+  describe "timeouts" do
+    it "reports a timed out request" do
+      response = Typhoeus.get("#{base_url}/slow", :timeout => 0.05)
+
+      expect(response.timed_out?).to be(true)
+      expect(response.success?).to be(false)
+      expect(response.return_code).to eq(:operation_timedout)
     end
   end
 
