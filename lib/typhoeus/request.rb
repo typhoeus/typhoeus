@@ -282,12 +282,12 @@ module Typhoeus
       unless header_key?(headers, "User-Agent")
         headers = {"User-Agent" => default_user_agent}.merge(headers)
       end
-      expect_key = headers.keys.find { |key| key.to_s.casecmp?("Expect") }
-      if expect_key
-        headers[expect_key] ||= ""
-      else
+      # An empty value suppresses libcurl's 100-continue. A nil value opts out
+      # of the header entirely, which lets libcurl add it when it sees fit.
+      unless header_key?(headers, "Expect")
         headers["Expect"] = ""
       end
+      headers.reject! { |key, value| key.to_s.casecmp?("Expect") && value.nil? }
       options[:headers] = headers
       options[:verbose] = Typhoeus::Config.verbose if options[:verbose].nil? && !Typhoeus::Config.verbose.nil?
       options[:timeout] = Typhoeus::Config.timeout if options[:timeout].nil? && !Typhoeus::Config.timeout.nil?

@@ -101,6 +101,9 @@
 * Merge the default `User-Agent` and `Expect` headers case-insensitively. A
   caller using a lowercase header name no longer sends a duplicate value.
   ([#784](https://github.com/typhoeus/typhoeus/pull/784))
+* Let `Expect: nil` opt out of Typhoeus's empty `Expect` header, so libcurl
+  decides when to send `100-continue`.
+  ([#808](https://github.com/typhoeus/typhoeus/pull/808))
 * Normalize the request method and URL for cache keys, equality, and
   memoization. `Typhoeus.get`, an implicit GET, `method: "GET"`, and a URI base
   URL now refer to the same request.

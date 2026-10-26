@@ -583,6 +583,14 @@ header. To send a header with an empty value, end the key with a semicolon:
 Typhoeus.get("www.example.com", headers: {"X-Empty;" => ""})
 ```
 
+Typhoeus sends an empty `Expect` header by default to suppress the
+`100-continue` handshake. Pass `nil` to leave the decision to libcurl, which
+adds the header for uploads with an unknown size and for multipart bodies:
+
+```ruby
+Typhoeus.post("www.example.com", headers: {"Expect" => nil}, body: data)
+```
+
 ### SSL
 
 SSL comes built in to libcurl so it’s in Typhoeus as well. If you pass in a

@@ -143,10 +143,9 @@ describe Typhoeus::Request do
       context "when the value is nil" do
         let(:options) { {:headers => {'expect' => nil} } }
 
-        it "uses the default empty value" do
+        it "doesn't set the expect header" do
           expect(request.options[:headers]).to eq(
-            'User-Agent' => Typhoeus::USER_AGENT,
-            'expect' => ""
+            'User-Agent' => Typhoeus::USER_AGENT
           )
         end
       end
