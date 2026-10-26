@@ -7,9 +7,10 @@ module Typhoeus
     module Marshal
 
       # Return the important data needed to serialize this Request, except the
-      # request callbacks and `hydra`, since they cannot be marshalled.
+      # request callbacks, `hydra`, and the response. The response may contain
+      # arbitrary callback results and can be serialized separately.
       def marshal_dump
-        unmarshallable = %w(@on_complete @on_success @on_failure @on_progress @on_headers @on_body @before @hydra)
+        unmarshallable = %w(@on_complete @on_success @on_failure @on_progress @on_headers @on_body @before @hydra @response)
         (instance_variables - unmarshallable - unmarshallable.map(&:to_sym)).map do |name|
           [name, instance_variable_get(name)]
         end
