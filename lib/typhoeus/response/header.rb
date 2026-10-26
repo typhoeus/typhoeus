@@ -202,7 +202,7 @@ module Typhoeus
       # @return [ void ]
       def process_pair(key, value)
         sanitized_key = convert_key(key)
-        set_value(sanitized_key, value, @sanitized)
+        set_value(sanitized_key, duplicate_value(value), @sanitized)
         self[key] = @sanitized[sanitized_key]
       end
 
