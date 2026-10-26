@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'typhoeus/errors/no_response'
+
 module Typhoeus
 
   # This class represents an expectation. It is part
@@ -191,9 +193,25 @@ module Typhoeus
     # @api private
     def response(request)
       response = responses.fetch(@response_counter, responses.last)
+      raise Errors::NoResponse.new(base_url) if response.nil?
+
       if response.respond_to?(:call)
         response = response.call(request)
+        if response.nil?
+          raise Errors::NoResponse.new(
+            base_url,
+            "the response block returned nil"
+          )
+        end
       end
+
+      unless response.is_a?(Response)
+        raise Errors::NoResponse.new(
+          base_url,
+          "expected a Typhoeus::Response, got #{response.class}"
+        )
+      end
+
       @response_counter += 1
       response.mock = @from || true
       response

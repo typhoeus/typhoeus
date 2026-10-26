@@ -2,6 +2,7 @@
 
 require 'typhoeus/errors/typhoeus_error'
 require 'typhoeus/errors/no_stub'
+require 'typhoeus/errors/no_response'
 require 'typhoeus/errors/invalid_option'
 
 module Typhoeus

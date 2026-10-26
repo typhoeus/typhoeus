@@ -47,6 +47,15 @@ describe Typhoeus do
         Typhoeus.stub(:get, "")
         expect(Typhoeus::Expectation.all.size).to eq(1)
       end
+
+      it "raises when the stub has no response" do
+        Typhoeus.stub(base_url)
+
+        expect { Typhoeus.get(base_url) }.to raise_error(
+          Typhoeus::Errors::NoResponse,
+          /No response defined for stub/
+        )
+      end
     end
 
     context "when similar expectation exists" do

@@ -149,6 +149,39 @@ describe Typhoeus::Expectation do
         end
       end
     end
+
+    context "when no response" do
+      let(:responses) { [] }
+
+      it "raises a helpful error" do
+        expect { expectation.response(request) }.to raise_error(
+          Typhoeus::Errors::NoResponse,
+          /No response defined for stub/
+        )
+      end
+    end
+
+    context "when the block returns nil" do
+      let(:responses) { [ Proc.new { nil } ] }
+
+      it "raises a helpful error" do
+        expect { expectation.response(request) }.to raise_error(
+          Typhoeus::Errors::NoResponse,
+          /the response block returned nil/
+        )
+      end
+    end
+
+    context "when the block returns another object" do
+      let(:responses) { [ Proc.new { "not a response" } ] }
+
+      it "raises a helpful error" do
+        expect { expectation.response(request) }.to raise_error(
+          Typhoeus::Errors::NoResponse,
+          /expected a Typhoeus::Response, got String/
+        )
+      end
+    end
   end
 
   describe "#response_counter" do
