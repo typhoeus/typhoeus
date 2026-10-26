@@ -94,6 +94,36 @@ describe Typhoeus::Hydra::Memoizable do
       expect(second.response.handled_response).to eq(:second)
     end
 
+    it "does not let a follower change the leader's response" do
+      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      leader = Typhoeus::Request.new(url)
+      follower = Typhoeus::Request.new(url)
+      follower.on_complete do |response|
+        response.options[:follower] = true
+        response.headers["X-Follower"] = "1"
+        response.body << "!"
+      end
+      hydra.queue(leader)
+      hydra.queue(follower)
+      hydra.run
+
+      expect(leader.response.options).not_to have_key(:follower)
+      expect(leader.response.headers["X-Follower"]).to be_nil
+      expect(leader.response.body).to eq("1")
+    end
+
+    it "does not copy the leader's handled response to a follower" do
+      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      leader = Typhoeus::Request.new(url)
+      follower = Typhoeus::Request.new(url)
+      leader.on_complete { |_| :leader }
+      hydra.queue(leader)
+      hydra.queue(follower)
+      hydra.run
+
+      expect(follower.response.handled_response).to equal(follower.response)
+    end
+
     it "does not serve responses memoized by a direct run between runs" do
       url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
       first = Typhoeus::Request.new(url)

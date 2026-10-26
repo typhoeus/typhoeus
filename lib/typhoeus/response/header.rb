@@ -25,6 +25,22 @@ module Typhoeus
         parse
       end
 
+      def initialize_dup(other)
+        super
+        copy_delegate(other)
+      end
+      private :initialize_dup
+
+      def initialize_clone(other, freeze: nil)
+        if freeze.nil?
+          super(other)
+        else
+          super(other, freeze: freeze)
+        end
+        copy_delegate(other)
+      end
+      private :initialize_clone
+
       def [](key)
         @sanitized[convert_key(key)]
       end
@@ -93,12 +109,11 @@ module Typhoeus
       # @example Parse header.
       #   header.parse
       def parse
-        case @raw
-        when Hash
-          raw.each do |k, v|
+        if raw.respond_to?(:each_pair)
+          raw.each_pair do |k, v|
             process_pair(k, v)
           end
-        when String
+        elsif raw.is_a?(String)
           raw.split(/\r?\n(?!\s)/).each do |header|
             header.strip!
             next if header.empty? || header.start_with?( 'HTTP/' )
@@ -154,6 +169,42 @@ module Typhoeus
 
       def convert_key(key)
         key.to_s.downcase
+      end
+
+      def duplicate_value(value)
+        case value
+        when Array
+          value.map { |nested| duplicate_value(nested) }
+        when String
+          value.dup
+        else
+          value
+        end
+      end
+
+      # DelegateClass copies only the delegated hash itself. Rebuild both
+      # hashes so later mutations cannot reach the original header. The
+      # sanitized index is built from the copied hash so both stores keep
+      # referring to the same values, as they do on the original.
+      def copy_delegate(other)
+        copy = {}
+        other.__getobj__.each do |key, value|
+          copy[key] = duplicate_value(value)
+        end
+        __setobj__(copy)
+
+        @sanitized = {}
+        copy.each do |key, value|
+          converted = convert_key(key)
+          if @sanitized.key?(converted)
+            existing = @sanitized[converted]
+            existing = [existing] unless existing.is_a?(Array)
+            existing.concat(value.is_a?(Array) ? value : [value])
+            @sanitized[converted] = existing
+          else
+            @sanitized[converted] = value
+          end
+        end
       end
 
       def delete_underlying_key(key)

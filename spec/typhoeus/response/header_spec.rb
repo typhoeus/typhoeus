@@ -110,6 +110,58 @@ describe Typhoeus::Response::Header do
         expect(header['DaTe']).to eq(raw[:Date])
       end
     end
+
+    context "when another header" do
+      let(:raw) { Typhoeus::Response::Header.new("A: 1\r\nA: 2") }
+
+      it "copies the values" do
+        expect(header["A"]).to eq(["1", "2"])
+      end
+    end
+  end
+
+  describe "#dup" do
+    let(:raw) { "A: 1\r\nA: 2" }
+
+    it "does not share the delegated hash" do
+      copy = header.dup
+      copy["B"] = "3"
+
+      expect(header["B"]).to be_nil
+      expect(copy["B"]).to eq("3")
+    end
+
+    it "does not share header value arrays" do
+      copy = header.dup
+      copy["A"] << "3"
+
+      expect(header["A"]).to eq(["1", "2"])
+      expect(copy["A"]).to eq(["1", "2", "3"])
+    end
+
+    it "keeps the copied hash in sync with the copied index" do
+      copy = header.dup
+      copy["A"] << "3"
+
+      expect(copy.to_hash["A"]).to eq(["1", "2", "3"])
+    end
+
+    it "does not share header value strings" do
+      header["C"] = "3"
+      copy = header.dup
+      copy["C"] << "!"
+
+      expect(header["C"]).to eq("3")
+      expect(copy["C"]).to eq("3!")
+      expect(copy.to_hash["C"]).to eq("3!")
+    end
+
+    it "does not share the delegated hash with clone" do
+      copy = header.clone
+      copy["B"] = "3"
+
+      expect(header["B"]).to be_nil
+    end
   end
 
   describe "#parse" do
