@@ -40,6 +40,7 @@ describe Typhoeus::Hydra::Queueable do
     let(:easies) { [] }
 
     before do
+      hydra.instance_variable_set(:@multi, multi)
       allow(hydra).to receive(:multi).and_return(multi)
       allow(hydra).to receive(:add) { |request| easies << request }
       requests.each { |r| hydra.queue r }
@@ -51,6 +52,11 @@ describe Typhoeus::Hydra::Queueable do
       it "does nothing" do
         expect(hydra).to_not receive(:add)
         hydra.dequeue_many
+      end
+
+      it "does not create the multi handle" do
+        expect(Ethon::Multi).to_not receive(:new)
+        Typhoeus::Hydra.new.dequeue_many
       end
     end
 

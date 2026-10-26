@@ -35,6 +35,26 @@ describe Typhoeus::Hydra::Runnable do
       end
     end
 
+    context "when every request is stubbed" do
+      let(:first) { Typhoeus::Request.new("http://localhost:3001/stubbed") }
+      let(:requests) { [first] }
+
+      before do
+        Typhoeus.stub("http://localhost:3001/stubbed").and_return(
+          Typhoeus::Response.new(:code => 200, :body => "stubbed")
+        )
+      end
+
+      it "does not create the multi handle" do
+        expect(Ethon::Multi).to_not receive(:new)
+
+        hydra.run
+
+        expect(first.response.code).to eq(200)
+        expect(hydra.queued_requests).to be_empty
+      end
+    end
+
     context "when a callback raises" do
       let(:first) { Typhoeus::Request.new("#{TestServer.host}/first") }
       let(:requests) { [first] }
