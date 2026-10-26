@@ -63,4 +63,15 @@ describe Typhoeus::Hydra do
       expect(Typhoeus::Hydra.hydra).to be_a(Typhoeus::Hydra)
     end
   end
+
+  describe "#add" do
+    it "sets the hydra on the request" do
+      Typhoeus.stub(base_url).and_return(Typhoeus::Response.new)
+      request = Typhoeus::Request.new(base_url)
+
+      hydra.add(request)
+
+      expect(request.hydra).to be(hydra)
+    end
+  end
 end
