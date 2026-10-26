@@ -95,6 +95,9 @@
 * Move the test dependencies to Sinatra 3, Rack 2.2, Dalli 3, and Redis 5.
   This also makes the Ethon master workflow pass with frozen string literals.
   ([#779](https://github.com/typhoeus/typhoeus/pull/779))
+* Deliver an independent response for cache hits so `on_headers` callbacks and
+  `handled_response` from an earlier request do not leak into the cached object.
+  ([#781](https://github.com/typhoeus/typhoeus/pull/781))
 
 ## 1.6.0
 
