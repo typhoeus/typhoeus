@@ -147,6 +147,25 @@ describe Typhoeus::EasyFactory do
         easy_factory.get
         expect(request.options[:set_read_callback]).to eq("body")
       end
+
+      context "when the body is an IO that was already read from" do
+        it "uploads the body from the beginning" do
+          file = Tempfile.new(["typhoeus", ".txt"])
+          file.write("upload body")
+          file.rewind
+          file.read(2)
+
+          response = Typhoeus.put(
+            "#{base_url}/read-callback",
+            :set_read_callback => file
+          )
+
+          expect(response.code).to eq(200)
+          expect(JSON.parse(response.body)["body"]).to eq("upload body")
+        ensure
+          file.close!
+        end
+      end
     end
 
     context "when setting callbacks fails" do
