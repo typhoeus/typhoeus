@@ -38,10 +38,15 @@ module Typhoeus
       def run
         (Typhoeus.before + before).each do |callback|
           value = callback.call(self)
-          if value.nil? || value == false || value.is_a?(Response)
-            return value if value.is_a?(Response)
-            return response
+          if value.is_a?(Response)
+            unless response
+              execute_headers_callbacks(value)
+              on_body.each { |body_callback| body_callback.call(value.body, value) }
+              finish(value)
+            end
+            return value
           end
+          return response if value.nil? || value == false
         end
         super
       end

@@ -96,6 +96,18 @@ describe Typhoeus::Hydra::Cacheable do
         end
       end
 
+      context "when many requests are cached" do
+        it "drains the queue without recursing" do
+          url = "http://example.com/"
+          2_000.times do |i|
+            cache.memory[Typhoeus::Request.new("#{url}#{i}")] = Typhoeus::Response.new(:code => 200)
+            hydra.queue(Typhoeus::Request.new("#{url}#{i}"))
+          end
+
+          expect { hydra.run }.not_to raise_error
+          expect(hydra.queued_requests).to be_empty
+        end
+      end
     end
   end
 end

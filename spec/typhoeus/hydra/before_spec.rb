@@ -51,6 +51,20 @@ describe Typhoeus::Hydra::Before do
               expect(Typhoeus::Expectation).to receive(:response_for).never
               hydra.add(request)
             end
+
+            it "finishes the request with the response" do
+              response = Typhoeus::Response.new
+              Typhoeus.before { response }
+              hydra.add(request)
+              expect(request.response).to be(response)
+            end
+
+            it "runs the completion callbacks" do
+              Typhoeus.before { Typhoeus::Response.new }
+              expect(receive_counter).to receive(:mark)
+              request.on_complete { |_| receive_counter.mark }
+              hydra.add(request)
+            end
           end
         end
       end
