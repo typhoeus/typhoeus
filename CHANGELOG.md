@@ -63,6 +63,41 @@
 * Make `Request#cache_key` unambiguous for values that stringify the same, and
   return a libcurl error instead of raising for an empty URL with params.
   ([#768](https://github.com/typhoeus/typhoeus/pull/768))
+* Raise `Ethon::Errors::InvalidOption` with a clean message for removed and
+  replaced options instead of wrapping the error message as the option name.
+  ([#770](https://github.com/typhoeus/typhoeus/pull/770))
+* Build `Request#url` from the URL-related options only, so unrelated invalid
+  options do not break it, and fall back to the base URL in `NoStub` when the
+  full URL cannot be built.
+  ([#771](https://github.com/typhoeus/typhoeus/pull/771))
+* Make duplicated responses independent. Memoized followers no longer share
+  options, headers, body strings, or the leader's `handled_response`, and
+  `Header.new(header)` preserves its values.
+  ([#772](https://github.com/typhoeus/typhoeus/pull/772))
+* Keep `Response::Header` case-insensitive lookups in sync after `delete_if`,
+  `select!`, `keep_if`, `reject!`, `shift`, `compact!`, and `transform_*!`.
+  ([#773](https://github.com/typhoeus/typhoeus/pull/773))
+* Run `on_headers` callbacks for memoized followers, disable memoization for
+  streaming requests whose body is not retained, and set `request.hydra` when a
+  request is added directly.
+  ([#774](https://github.com/typhoeus/typhoeus/pull/774))
+* Make `Request#encoded_body` match the form sent on the wire, including
+  `params_encoding` and escaping.
+  ([#775](https://github.com/typhoeus/typhoeus/pull/775))
+* Raise `Typhoeus::Errors::NoResponse` when a stub has no response or its
+  response block returns `nil` or a non-`Response` object.
+  ([#776](https://github.com/typhoeus/typhoeus/pull/776))
+* Keep pooling easy handles when libcurl was built without cookie support, and
+  validate `Typhoeus::Config.max_idle_easies` when it is assigned.
+  ([#777](https://github.com/typhoeus/typhoeus/pull/777))
+* Read Rails cache entries with the same cache key that was written.
+  ([#778](https://github.com/typhoeus/typhoeus/pull/778))
+* Move the test dependencies to Sinatra 3, Rack 2.2, Dalli 3, and Redis 5.
+  This also makes the Ethon master workflow pass with frozen string literals.
+  ([#779](https://github.com/typhoeus/typhoeus/pull/779))
+* Deliver an independent response for cache hits so `on_headers` callbacks and
+  `handled_response` from an earlier request do not leak into the cached object.
+  ([#781](https://github.com/typhoeus/typhoeus/pull/781))
 
 ## 1.6.0
 
