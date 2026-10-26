@@ -41,6 +41,36 @@ describe Typhoeus::Request do
 
       expect(request.options[:set_read_callback]).to eq("body")
     end
+
+    it "does not apply unrelated request options" do
+      request = Typhoeus::Request.new(base_url, :not_an_option => 1)
+
+      expect(request.url).to eq(base_url)
+    end
+
+    it "only passes URL related options to Ethon" do
+      easy = double.as_null_object
+      allow(Typhoeus::Pool).to receive(:get).and_return(easy)
+      allow(Typhoeus::Pool).to receive(:release)
+      request = Typhoeus::Request.new(
+        base_url,
+        :params => { :a => 1 },
+        :params_encoding => :rack,
+        :escape => false,
+        :headers => { "X-Test" => "1" }
+      )
+
+      expect(easy).to receive(:http_request).with(
+        base_url,
+        :get,
+        hash_including(
+          :params => { :a => 1 },
+          :params_encoding => :rack,
+          :escape => false
+        )
+      )
+      request.url
+    end
   end
 
   describe ".new" do

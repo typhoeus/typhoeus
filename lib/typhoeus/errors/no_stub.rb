@@ -7,7 +7,12 @@ module Typhoeus
     # and making a real request.
     class NoStub < TyphoeusError
       def initialize(request)
-        super("The connection is blocked and no stub defined: #{request.url}")
+        url = begin
+          request.url
+        rescue StandardError
+          request.base_url
+        end
+        super("The connection is blocked and no stub defined: #{url}")
       end
     end
   end
