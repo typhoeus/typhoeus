@@ -47,7 +47,7 @@ describe Typhoeus::Request::Cacheable do
         before { cache.memory[request] = response }
 
         it "finishes request" do
-          expect(request).to receive(:finish).with(response)
+          expect(request).to receive(:finish).with(an_instance_of(Typhoeus::Response))
           request.run
         end
 
@@ -62,6 +62,35 @@ describe Typhoeus::Request::Cacheable do
           request.run
 
           expect(called).to be(true)
+        end
+
+        it "finishes with a copy" do
+          request.run
+
+          expect(request.response).to_not be(response)
+        end
+
+        it "does not copy the cached callback result" do
+          response.handled_response = :cached
+          request.run
+
+          expect(request.response.handled_response).to be(request.response)
+        end
+
+        it "does not change the cached response" do
+          request.run
+
+          expect(response.request).to be_nil
+          expect(response.cached?).to be(false)
+        end
+
+        it "sets the request for header callbacks" do
+          seen_request = nil
+          request.on_headers { |header_response| seen_request = header_response.request }
+
+          request.run
+
+          expect(seen_request).to be(request)
         end
 
         it "passes the cached body to on_body callbacks" do
@@ -89,7 +118,7 @@ describe Typhoeus::Request::Cacheable do
         before { cache.memory[request] = response }
 
         it "finishes request" do
-          expect(request).to receive(:finish).with(response)
+          expect(request).to receive(:finish).with(an_instance_of(Typhoeus::Response))
           request.run
         end
       end
@@ -112,7 +141,7 @@ describe Typhoeus::Request::Cacheable do
           before { cache.memory[request] = response }
 
           it "finishes request" do
-            expect(request).to receive(:finish).with(response)
+            expect(request).to receive(:finish).with(an_instance_of(Typhoeus::Response))
             request.run
           end
         end

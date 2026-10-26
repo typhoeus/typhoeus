@@ -16,7 +16,6 @@ module Typhoeus
 
       def run
         if response = cached_response
-          response.cached = true
           finish_cached_response(response)
         else
           super
@@ -32,9 +31,12 @@ module Typhoeus
       #
       # @api private
       def finish_cached_response(response)
-        execute_headers_callbacks(response)
-        on_body.each { |callback| callback.call(response.body, response) }
-        finish(response)
+        copy = response.dup
+        copy.cached = true
+        copy.request = self
+        execute_headers_callbacks(copy)
+        on_body.each { |callback| callback.call(copy.body, copy) }
+        finish(copy)
       end
 
       def cached_response
