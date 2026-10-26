@@ -276,6 +276,11 @@ module Typhoeus
     #
     # @return [ Ethon::Easy ] The easy.
     def set_read_callback(body)
+      # Uploading a file means sending it from the beginning. An IO that was
+      # already read from would otherwise be shorter than the advertised
+      # infilesize and libcurl would fail with a read error.
+      rewind_body(body)
+
       easy.infilesize_large =
         if body.respond_to?(:bytesize)
           body.bytesize
@@ -287,6 +292,22 @@ module Typhoeus
       easy.set_read_callback(body)
 
       easy
+    end
+
+    # Rewind a seekable body so the read callback starts at its first byte.
+    # Pipes and other non-seekable bodies do not respond to rewind.
+    #
+    # @param [ Object ] body The body to rewind.
+    #
+    # @return [ void ]
+    def rewind_body(body)
+      return unless body.respond_to?(:rewind)
+
+      body.rewind
+    rescue IOError, SystemCallError
+      # A body that cannot be rewound is still usable from its current
+      # position. Do not turn that into a request setup error.
+      nil
     end
   end
 end
