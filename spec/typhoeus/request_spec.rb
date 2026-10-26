@@ -397,6 +397,17 @@ describe Typhoeus::Request do
       expect(request.encoded_body).to eq("a%5B%5D=1&a%5B%5D=2")
     end
 
+    it "keeps arrays intact with params_encoding :none" do
+      request = Typhoeus::Request.new(
+        "www.example.com",
+        :method => :post,
+        :body => { "a" => [1, 2] },
+        :params_encoding => :none
+      )
+
+      expect(request.encoded_body).to eq("a=%5B1%2C%202%5D")
+    end
+
     it "uses the request's escaping" do
       request = Typhoeus::Request.new(
         "www.example.com",
