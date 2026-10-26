@@ -378,6 +378,29 @@ describe Typhoeus::Request do
       expect(request.encoded_body).to eq("a=a b")
     end
 
+    it "escapes PUT bodies like Ethon does" do
+      request = Typhoeus::Request.new(
+        "www.example.com",
+        :method => :put,
+        :body => { "a" => "a b" },
+        :escape => false
+      )
+
+      expect(request.encoded_body).to eq("a=a%20b")
+    end
+
+    it "matches the body sent for a PUT without escaping" do
+      request = Typhoeus::Request.new(
+        "http://localhost:3001/encoded-body",
+        :method => :put,
+        :body => { "a" => "a b" },
+        :escape => false
+      )
+      response = request.run
+
+      expect(JSON.parse(response.body)["body"]).to eq(request.encoded_body)
+    end
+
     it "matches the body sent for every params encoding" do
       cases = {
         :typhoeus => { "a" => "a b", "b" => [1, 2] },

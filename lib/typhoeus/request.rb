@@ -197,7 +197,8 @@ module Typhoeus
           form.params_encoding = options[:params_encoding]
         end
         easy.escape = options[:escape] if options.key?(:escape)
-        form.escape = easy.escape?
+        # Ethon escapes PUT bodies regardless of the escape option.
+        form.escape = options.fetch(:method, :get).to_sym == :put || easy.escape?
         form.to_s
       ensure
         Typhoeus::Pool.release(easy) if easy
