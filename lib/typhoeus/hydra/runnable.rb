@@ -14,6 +14,10 @@ module Typhoeus
       # @return [ Symbol ] Return value from multi.perform.
       def run
         dequeue_many
+        # Nothing reached the multi (all requests were answered by a before
+        # callback, a stub, or the cache), so do not initialize libcurl.
+        return if !defined?(@multi) || @multi.nil?
+
         multi.perform
       rescue Exception => error
         begin

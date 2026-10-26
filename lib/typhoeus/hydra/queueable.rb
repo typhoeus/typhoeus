@@ -81,12 +81,27 @@ module Typhoeus
 
         begin
           @dequeuing_many = true
-          until multi.easy_handles.count >= max_concurrency || queued_requests.empty?
+          until queued_requests.empty?
+            break if easy_handle_count >= max_concurrency
+
             add(queued_requests.shift)
           end
         ensure
           @dequeuing_many = false
         end
+      end
+
+      private
+
+      # Count the attached easies without creating the native multi handle.
+      # Requests that a before callback, a stub, or the cache answers never
+      # need a multi, and Ethon 0.19 rejects a handle created before a fork.
+      #
+      # @return [ Integer ] The number of running easy handles.
+      def easy_handle_count
+        return 0 unless defined?(@multi) && @multi
+
+        multi.easy_handles.count
       end
     end
   end

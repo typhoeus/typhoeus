@@ -216,6 +216,7 @@ describe Typhoeus::Hydra::Memoizable do
 
     it "clears memory when the run raises" do
       hydra.memory[request] = Typhoeus::Response.new
+      hydra.queue(request)
       allow(hydra).to receive(:multi).and_raise("boom")
 
       expect { hydra.run }.to raise_error("boom")
