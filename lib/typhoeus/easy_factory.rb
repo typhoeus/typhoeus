@@ -195,6 +195,13 @@ module Typhoeus
         end
         options[timeout] = value.ceil
       end
+
+      # CURLOPT_TIMEOUT and CURLOPT_TIMEOUT_MS set the same value, so libcurl
+      # uses the one that is applied last. Keep the millisecond option last:
+      # an explicit timeout_ms must also win over a timeout added from Config.
+      if options.key?(timeout_ms)
+        options[timeout_ms] = options.delete(timeout_ms)
+      end
       options
     end
 
