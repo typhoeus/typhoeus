@@ -46,10 +46,14 @@ module Typhoeus
       def clear
         __getobj__.clear
         @sanitized.clear
+        self
       end
 
       def update(other)
-        other.each_pair { |key, value| self[key] = value }
+        other.each_pair do |key, value|
+          value = yield(key, self[key], value) if block_given? && include?(key)
+          self[key] = value
+        end
         self
       end
       alias_method :merge!, :update
@@ -57,6 +61,67 @@ module Typhoeus
       def replace(other)
         clear
         update(other)
+      end
+
+      def delete_if(&block)
+        return enum_for(:delete_if) unless block
+
+        super
+        rebuild_sanitized
+        self
+      end
+
+      def keep_if(&block)
+        return enum_for(:keep_if) unless block
+
+        super
+        rebuild_sanitized
+        self
+      end
+
+      def select!(&block)
+        return enum_for(:select!) unless block
+
+        super
+        rebuild_sanitized
+        self
+      end
+      alias_method :filter!, :select!
+
+      def reject!(&block)
+        return enum_for(:reject!) unless block
+
+        result = super
+        rebuild_sanitized
+        result ? self : nil
+      end
+
+      def shift
+        result = super
+        rebuild_sanitized
+        result
+      end
+
+      def compact!
+        result = super
+        rebuild_sanitized
+        result ? self : nil
+      end
+
+      def transform_keys!(&block)
+        return enum_for(:transform_keys!) unless block
+
+        super
+        rebuild_sanitized
+        self
+      end
+
+      def transform_values!(&block)
+        return enum_for(:transform_values!) unless block
+
+        super
+        rebuild_sanitized
+        self
       end
 
       def include?(key)
@@ -160,6 +225,23 @@ module Typhoeus
         converted = convert_key(key)
         __getobj__.keys.each do |existing_key|
           __getobj__.delete(existing_key) if convert_key(existing_key) == converted
+        end
+      end
+
+      # Rebuild the case-insensitive index after a Hash mutator that cannot be
+      # expressed through #[]=.
+      def rebuild_sanitized
+        @sanitized = {}
+        __getobj__.each do |key, value|
+          converted = convert_key(key)
+          if @sanitized.key?(converted)
+            existing = @sanitized[converted]
+            existing = [existing] unless existing.is_a?(Array)
+            existing.concat(value.is_a?(Array) ? value : [value])
+            @sanitized[converted] = existing
+          else
+            @sanitized[converted] = value
+          end
         end
       end
     end

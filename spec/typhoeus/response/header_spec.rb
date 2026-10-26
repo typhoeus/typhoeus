@@ -263,6 +263,78 @@ describe Typhoeus::Response::Header do
       expect(header.to_hash).to be_empty
     end
 
+    it "returns self from clear" do
+      expect(header.clear).to be(header)
+    end
+
+    it "deletes with a block and keeps lookups in sync" do
+      expect(header.delete_if { |key, _| key == "A" }).to be(header)
+
+      expect(header["A"]).to be_nil
+      expect(header.key?("a")).to be(false)
+    end
+
+    it "keeps with a block and keeps lookups in sync" do
+      header.keep_if { |key, _| key == "A" }
+
+      expect(header["A"]).to eq("1")
+      expect(header.key?("B")).to be(false)
+    end
+
+    it "rejects with a block and keeps lookups in sync" do
+      header.reject! { |key, _| key == "A" }
+
+      expect(header.key?("a")).to be(false)
+    end
+
+    it "selects with a block and keeps lookups in sync" do
+      header.select! { |key, _| key == "A" }
+
+      expect(header["A"]).to eq("1")
+    end
+
+    it "filters with a block and keeps lookups in sync" do
+      header.filter! { |key, _| key != "A" }
+
+      expect(header.key?("a")).to be(false)
+    end
+
+    it "shifts and keeps lookups in sync" do
+      expect(header.shift).to eq(["A", "1"])
+
+      expect(header.key?("A")).to be(false)
+    end
+
+    it "compacts and keeps lookups in sync" do
+      header["B"] = nil
+
+      expect(header.compact!).to be(header)
+      expect(header.key?("B")).to be(false)
+    end
+
+    it "transforms keys and keeps lookups in sync" do
+      header.transform_keys! { |key| key.downcase }
+
+      expect(header["a"]).to eq("1")
+      expect(header.key?("A")).to be(true)
+    end
+
+    it "transforms values and keeps lookups in sync" do
+      header.transform_values! { |value| "#{value}!" }
+
+      expect(header["a"]).to eq("1!")
+      expect(header["A"]).to eq("1!")
+    end
+
+    it "returns an enumerator for delete_if without a block" do
+      expect(header.delete_if).to be_a(Enumerator)
+    end
+
+    it "uses the update block for conflicting keys" do
+      expect(header.merge!("A" => "2") { |_, old, new| "#{old}-#{new}" }).to be(header)
+      expect(header["A"]).to eq("1-2")
+    end
+
     it "updates from a hash" do
       header.update("B" => "2", "C" => "3")
 
