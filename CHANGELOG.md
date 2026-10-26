@@ -140,6 +140,9 @@
 * Honor Faraday's `read_timeout` in the Typhoeus adapter, falling back to the
   general `timeout` when it is not set.
   ([#798](https://github.com/typhoeus/typhoeus/pull/798))
+* Add integration coverage for Faraday adapter timeouts, including
+  `read_timeout` precedence.
+  ([#811](https://github.com/typhoeus/typhoeus/pull/811))
 * Exclude the response from `Request#marshal_dump`. Completed requests whose
   callbacks return non-marshalable values can be dumped again.
   ([#799](https://github.com/typhoeus/typhoeus/pull/799))
