@@ -183,6 +183,37 @@ describe Typhoeus::Hydra::Memoizable do
       expect(follower.response.request).to equal(follower)
     end
 
+    it "finishes waiting requests when the leader changes its options" do
+      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      leader = Typhoeus::Request.new(url)
+      follower = Typhoeus::Request.new(url)
+      leader.on_complete { leader.options[:changed] = true }
+      hydra.queue(leader)
+      hydra.queue(follower)
+      hydra.run
+
+      expect(follower.response).not_to be_nil
+      expect(follower.response.body).to eq("1")
+      expect(hydra.pending).to be_empty
+    end
+
+    it "finishes waiting requests when the leader's callback changes options and raises" do
+      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      leader = Typhoeus::Request.new(url)
+      follower = Typhoeus::Request.new(url)
+      leader.on_complete do
+        leader.options[:changed] = true
+        raise "boom"
+      end
+      hydra.queue(leader)
+      hydra.queue(follower)
+
+      expect { hydra.run }.to raise_error("boom")
+
+      expect(follower.response).not_to be_nil
+      expect(follower.response.body).to eq("1")
+    end
+
     it "clears memory when the run raises" do
       hydra.memory[request] = Typhoeus::Response.new
       allow(hydra).to receive(:multi).and_raise("boom")
