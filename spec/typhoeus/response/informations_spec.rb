@@ -47,7 +47,7 @@ describe Typhoeus::Response::Informations do
     end
 
     context "when performing a request", :if => Ethon::Easy.method_defined?(:error_message) do
-      let(:response) { Typhoeus.get("localhost:3001/bad_redirect", :followlocation => true, :maxredirs => 1, :errorbuffer => errorbuffer) }
+      let(:response) { Typhoeus.get("#{TestServer.host}/bad_redirect", :followlocation => true, :maxredirs => 1, :errorbuffer => errorbuffer) }
 
       context "with errorbuffer" do
         let(:errorbuffer) { true }
@@ -391,7 +391,7 @@ describe Typhoeus::Response::Informations do
     end
 
     context "when requesting" do
-      let(:response) { Typhoeus.get("localhost:3001") }
+      let(:response) { Typhoeus.get(TestServer.host) }
 
       it "returns headers" do
         expect(response.headers).to_not be_empty

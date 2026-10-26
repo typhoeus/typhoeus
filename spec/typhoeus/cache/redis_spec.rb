@@ -8,7 +8,7 @@ describe Typhoeus::Cache::Redis do
   let(:redis) { instance_double(Redis) }
   let(:cache) { Typhoeus::Cache::Redis.new(redis) }
 
-  let(:base_url) { "localhost:3001" }
+  let(:base_url) { TestServer.host }
   let(:request) { Typhoeus::Request.new(base_url, {:method => :get}) }
   let(:response) { Typhoeus::Response.new(:response_code => 0, :return_code => 0, :mock => true) }
   let(:serialized_response) { Marshal.dump(response) }

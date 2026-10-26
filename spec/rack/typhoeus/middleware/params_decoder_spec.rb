@@ -78,7 +78,7 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder" do
   end
 
   context "when requesting" do
-    let(:response) { Typhoeus.get("localhost:3001", :params => {:x => [:a]}) }
+    let(:response) { Typhoeus.get(TestServer.host, :params => {:x => [:a]}) }
 
     it "transforms parameters" do
       expect(response.body).to include("query_hash\":{\"x\":[\"a\"]}")

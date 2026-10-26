@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Typhoeus::Request do
-  let(:base_url) { "localhost:3001" }
+  let(:base_url) { TestServer.host }
   let(:options) do
     {
       verbose: true,
@@ -421,7 +421,7 @@ describe Typhoeus::Request do
 
     it "matches the body sent for a PUT without escaping" do
       request = Typhoeus::Request.new(
-        "http://localhost:3001/encoded-body",
+        "#{TestServer.url}/encoded-body",
         :method => :put,
         :body => { "a" => "a b" },
         :escape => false
@@ -441,7 +441,7 @@ describe Typhoeus::Request do
 
       cases.each do |params_encoding, body|
         request = Typhoeus::Request.new(
-          "http://localhost:3001/encoded-body",
+          "#{TestServer.url}/encoded-body",
           :method => :post,
           :body => body,
           :params_encoding => params_encoding

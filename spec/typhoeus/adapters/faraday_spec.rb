@@ -7,7 +7,7 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
   require 'socket'
 
   describe Faraday::Adapter::Typhoeus do
-    let(:base_url) { "http://localhost:3001" }
+    let(:base_url) { TestServer.url }
     let(:adapter) { described_class.new(nil) }
     let(:request) { Typhoeus::Request.new(base_url) }
     let(:conn) do
@@ -255,10 +255,10 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
       before { adapter.method(:configure_proxy).call(request, env) }
 
       context "when proxy" do
-        let(:env) { { :request => { :proxy => { :uri => double(:scheme => 'http', :host => "localhost", :port => "3001") } } } }
+        let(:env) { { :request => { :proxy => { :uri => double(:scheme => 'http', :host => "localhost", :port => "8080") } } } }
 
         it "sets proxy" do
-          expect(request.options[:proxy]).to eq("http://localhost:3001")
+          expect(request.options[:proxy]).to eq("http://localhost:8080")
         end
 
         context "when username and password" do

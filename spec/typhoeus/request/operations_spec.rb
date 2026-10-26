@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Typhoeus::Request::Operations do
-  let(:base_url) { "localhost:3001" }
+  let(:base_url) { TestServer.host }
   let(:options) { {} }
   let(:request) { Typhoeus::Request.new(base_url, options) }
 

@@ -14,7 +14,7 @@ RSpec.configure do |config|
   config.order = :rand
 
   config.before(:suite) do
-    LocalhostServer.new(TESTSERVER.new, 3001)
+    TestServer.port = LocalhostServer.new(TESTSERVER.new).port
   end
 
   config.after do
