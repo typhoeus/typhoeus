@@ -40,6 +40,7 @@ module Typhoeus
 
     SANITIZE_IGNORE  = Set.new([:method, :cache_ttl, :cache, :set_read_callback])
     SANITIZE_TIMEOUT = Set.new([:timeout_ms, :connecttimeout_ms])
+    URL_OPTIONS      = Set.new([:params, :params_encoding, :escape])
 
     # Returns the request provided.
     #
@@ -113,6 +114,28 @@ module Typhoeus
         raise
       end
       easy
+    end
+
+    # Returns the full request URL without applying unrelated request options.
+    # This keeps introspection such as Request#url and the NoStub error working
+    # even when another option would be rejected by Ethon.
+    #
+    # @return [ String ] The URL including params.
+    def url
+      @released = false
+      easy = self.easy
+      begin
+        url = request.base_url.to_s
+        options = sanitize(
+          request.options.select { |key, _| URL_OPTIONS.include?(key.to_sym) }
+        )
+        options.delete(:params) if url.empty?
+
+        easy.http_request(url, :get, options)
+        easy.url
+      ensure
+        release_easy(easy)
+      end
     end
 
     private

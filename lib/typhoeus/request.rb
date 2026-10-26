@@ -129,11 +129,7 @@ module Typhoeus
     #
     # @since 0.5.5
     def url
-      easy_factory = EasyFactory.new(self)
-      easy = easy_factory.get
-      url = easy.url
-      easy_factory.release_easy(easy)
-      url
+      EasyFactory.new(self).url
     end
 
     # Returns whether other is equal to self.
