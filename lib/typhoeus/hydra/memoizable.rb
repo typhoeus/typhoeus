@@ -83,7 +83,7 @@ module Typhoeus
       #
       # @return [ Object ] The response's handled response.
       def finish_pending(request, response)
-        requests = pending.delete(request)
+        requests = delete_pending(request)
         return response.handled_response unless requests
 
         error = nil
@@ -119,8 +119,8 @@ module Typhoeus
       #
       # @return [ void ]
       def finish_pending_after_error
-        pending.each do |request, requests|
-          response = memory[request]
+        pending.to_a.each do |request, requests|
+          response = memoized_response_for(request)
           next unless response
 
           requests.each do |pending_request|
@@ -133,6 +133,37 @@ module Typhoeus
             end
           end
         end
+      end
+
+      # Remove the waiting requests without hashing the leader again.
+      # Request#hash includes the request options, which a callback may have
+      # changed after the entry was added.
+      #
+      # @param [ Typhoeus::Request ] request The leader request.
+      #
+      # @return [ Array<Typhoeus::Request>, nil ] The waiting requests.
+      def delete_pending(request)
+        requests = nil
+        pending.delete_if do |pending_request, waiting_requests|
+          next false unless pending_request.equal?(request)
+
+          requests = waiting_requests
+          true
+        end
+        requests
+      end
+
+      # Find the leader's response by identity for the same reason. A changed
+      # option makes the request unusable as a hash key.
+      #
+      # @param [ Typhoeus::Request ] request The leader request.
+      #
+      # @return [ Typhoeus::Response, nil ] The memoized response.
+      def memoized_response_for(request)
+        memory.each_pair do |memoized_request, response|
+          return response if memoized_request.equal?(request)
+        end
+        nil
       end
     end
   end
