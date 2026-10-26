@@ -62,13 +62,15 @@ module Typhoeus
         end
       end
 
-      # Run the hydra and clear the memoization state afterwards.
+      # Run the hydra and memoize requests for the duration of the run.
       #
       # @example Run hydra.
       #   hydra.run
       def run
+        memory.clear
         super
       ensure
+        finish_pending_after_error
         memory.clear
         pending.clear
       end
@@ -80,12 +82,43 @@ module Typhoeus
       # @param [ Typhoeus::Request ] request
       # @param [ Typhoeus::Response ] response
       #
-      # @return [ void ]
+      # @return [ Object ] The response's handled response.
       def finish_pending(request, response)
         requests = pending.delete(request)
-        return unless requests
+        return response.handled_response unless requests
 
-        requests.each { |pending_request| pending_request.finish(response, true) }
+        error = nil
+        requests.each do |pending_request|
+          begin
+            pending_request.finish(response.dup, true)
+          rescue StandardError => e
+            error ||= e
+          end
+        end
+        raise error if error
+
+        response.handled_response
+      end
+
+      # Finish followers whose leader produced a response but whose callbacks
+      # raised before finish_pending could run.
+      #
+      # @return [ void ]
+      def finish_pending_after_error
+        pending.each do |request, requests|
+          response = memory[request]
+          next unless response
+
+          requests.each do |pending_request|
+            next if pending_request.response
+
+            begin
+              pending_request.finish(response.dup, true)
+            rescue StandardError
+              # Preserve the original run error.
+            end
+          end
+        end
       end
     end
   end
