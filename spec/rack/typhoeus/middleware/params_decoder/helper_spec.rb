@@ -85,6 +85,22 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder::Helper" do
   describe "#decode!" do
     let(:decoded) { klass.decode!(params) }
 
+    context "when frozen" do
+      let(:params) { { "a" => "b" }.freeze }
+
+      it "returns the params unchanged" do
+        expect(decoded).to be(params)
+      end
+    end
+
+    context "when a frozen array" do
+      let(:params) { ["a"].freeze }
+
+      it "returns the array unchanged" do
+        expect(decoded).to be(params)
+      end
+    end
+
     context "when hash" do
       context "when encoded" do
         context "when simple" do

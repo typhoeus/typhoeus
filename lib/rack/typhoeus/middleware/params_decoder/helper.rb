@@ -21,10 +21,11 @@ module Rack
 
           # Recursively decodes Typhoeus encoded arrays in given Hash.
           #
-          # @param hash [Hash]. This Hash will be modified!
+          # @param hash [Hash, Array]. A frozen hash or array is returned as is.
           #
           # @return [Hash] Hash with properly decoded nested arrays.
           def decode!(hash)
+            return hash if hash.frozen?
             return hash unless hash.respond_to?(:each_pair) || hash.is_a?(Array)
 
             if hash.is_a?(Array)
