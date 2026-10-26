@@ -129,6 +129,36 @@
   hydra during boot no longer initializes libcurl, which Ethon 0.19 rejects in
   a forked child.
   ([#790](https://github.com/typhoeus/typhoeus/pull/790))
+* Store a snapshot of a response before caching it or using it as the
+  memoization leader. Mutating a response after a request no longer changes
+  later cache hits, and a leader's callbacks no longer change a follower's
+  response.
+  ([#797](https://github.com/typhoeus/typhoeus/pull/797))
+* Honor Faraday's `read_timeout` in the Typhoeus adapter, falling back to the
+  general `timeout` when it is not set.
+  ([#798](https://github.com/typhoeus/typhoeus/pull/798))
+* Exclude the response from `Request#marshal_dump`. Completed requests whose
+  callbacks return non-marshalable values can be dumped again.
+  ([#799](https://github.com/typhoeus/typhoeus/pull/799))
+* Make `Response::Header#merge`, `#fetch`, and `#fetch_values` follow the
+  same case-insensitive, string-key semantics as the rest of the header API.
+  ([#800](https://github.com/typhoeus/typhoeus/pull/800))
+* Copy string and array header values when a `Response::Header` is built from
+  a hash, so mutating the response cannot change the caller's hash.
+  ([#801](https://github.com/typhoeus/typhoeus/pull/801))
+* Do not create a Hydra's native multi handle when every queued request is
+  answered by a `before` callback, a stub, or the cache.
+  ([#802](https://github.com/typhoeus/typhoeus/pull/802))
+* Decode query and form parameters independently in the Rack middleware. A
+  form value no longer overwrites the query value for the same key.
+  ([#803](https://github.com/typhoeus/typhoeus/pull/803))
+* Rewind seekable upload bodies before measuring them, so an IO that was
+  already read from no longer fails with `:read_error`.
+  ([#804](https://github.com/typhoeus/typhoeus/pull/804))
+* Parse `Response#response_code` from the status line when a response was
+  built from raw headers, such as the responses returned by
+  `Response#redirections`.
+  ([#805](https://github.com/typhoeus/typhoeus/pull/805))
 
 ## 1.6.0
 
