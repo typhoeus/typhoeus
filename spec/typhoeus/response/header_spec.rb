@@ -112,7 +112,8 @@ describe Typhoeus::Response::Header do
     end
   end
 
-  describe "#parse" do    context "when no header" do
+  describe "#parse" do
+    context "when no header" do
       it "returns nil" do
         expect(header).to be_empty
       end
