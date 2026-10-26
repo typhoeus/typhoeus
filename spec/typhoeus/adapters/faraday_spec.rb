@@ -262,6 +262,22 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
           expect(request.options[:connecttimeout_ms]).to eq(1000)
         end
       end
+
+      context "when read_timeout" do
+        let(:env) { { :request => { :read_timeout => 1 } } }
+
+        it "sets timeout_ms" do
+          expect(request.options[:timeout_ms]).to eq(1000)
+        end
+      end
+
+      context "when read_timeout and timeout are set" do
+        let(:env) { { :request => { :read_timeout => 1, :timeout => 5 } } }
+
+        it "prefers read_timeout" do
+          expect(request.options[:timeout_ms]).to eq(1000)
+        end
+      end
     end
 
     describe "#configure_proxy" do

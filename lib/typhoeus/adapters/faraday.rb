@@ -211,7 +211,10 @@ module Faraday # :nodoc:
 
       def configure_timeout(req, env)
         env_req = env[:request]
-        req.options[:timeout_ms] = (env_req[:timeout] * 1000).to_i             if env_req[:timeout]
+        # Faraday exposes the read timeout separately. It falls back to the
+        # general timeout, like Faraday's built-in adapters do.
+        read_timeout = env_req[:read_timeout] || env_req[:timeout]
+        req.options[:timeout_ms] = (read_timeout * 1000).to_i             if read_timeout
         req.options[:connecttimeout_ms] = (env_req[:open_timeout] * 1000).to_i if env_req[:open_timeout]
       end
 
