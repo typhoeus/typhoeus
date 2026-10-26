@@ -23,6 +23,24 @@ describe Typhoeus::Request::Cacheable do
           request.response = response
           expect(request.response.cached?).to be_falsey
         end
+
+        it "doesn't cache a streaming response" do
+          request.on_body { |_, _| true }
+          request.response = response
+          expect(cache.memory[request]).to be_nil
+        end
+
+        it "doesn't cache a mock response" do
+          response.mock = true
+          request.response = response
+          expect(cache.memory[request]).to be_nil
+        end
+
+        it "doesn't cache a transport failure" do
+          response = Typhoeus::Response.new(:return_code => :operation_timedout)
+          request.response = response
+          expect(cache.memory).to be_empty
+        end
       end
 
       context "when request in memory" do
@@ -36,6 +54,24 @@ describe Typhoeus::Request::Cacheable do
         it "sets cached to true for response" do
           request.run
           expect(request.response.cached?).to be_truthy
+        end
+
+        it "runs on_headers callbacks" do
+          called = false
+          request.on_headers { |_| called = true }
+          request.run
+
+          expect(called).to be(true)
+        end
+
+        it "passes the cached body to on_body callbacks" do
+          response = Typhoeus::Response.new(:body => "cached body")
+          Typhoeus::Config.cache.memory[request] = response
+          chunks = []
+          request.on_body { |chunk, _| chunks << chunk }
+          request.run
+
+          expect(chunks).to eq(["cached body"])
         end
       end
     end
