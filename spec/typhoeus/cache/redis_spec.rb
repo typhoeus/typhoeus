@@ -20,6 +20,28 @@ describe Typhoeus::Cache::Redis do
 
       cache.set(request, response)
     end
+
+    context "when the request has a cache_ttl" do
+      let(:request) { Typhoeus::Request.new(base_url, :cache_ttl => 5) }
+
+      it "expires the key" do
+        expect(redis).to receive(:set).with(request.cache_key, serialized_response)
+        expect(redis).to receive(:expire).with(request.cache_key, 5)
+
+        cache.set(request, response)
+      end
+    end
+
+    context "when a default_ttl is configured" do
+      let(:cache) { Typhoeus::Cache::Redis.new(redis, :default_ttl => 60) }
+
+      it "expires the key" do
+        expect(redis).to receive(:set).with(request.cache_key, serialized_response)
+        expect(redis).to receive(:expire).with(request.cache_key, 60)
+
+        cache.set(request, response)
+      end
+    end
   end
 
   describe "#get" do

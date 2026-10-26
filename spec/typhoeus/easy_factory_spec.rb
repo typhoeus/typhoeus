@@ -80,6 +80,21 @@ describe Typhoeus::EasyFactory do
 
     end
 
+    context "when timeout_ms is not an integer" do
+      let(:options) { { :timeout_ms => 1.5 } }
+
+      it "warns and ceils the value" do
+        expect(easy_factory).to receive(:warn).with(
+          "Value '1.5' for option 'timeout_ms' must be integer."
+        )
+        expect(easy_factory.easy).to receive(:http_request).with(
+          anything, anything, hash_including(:timeout_ms => 2)
+        )
+
+        easy_factory.get
+      end
+    end
+
     context "when timeouts are not numeric" do
       let(:options) { { :timeout => "1" } }
 

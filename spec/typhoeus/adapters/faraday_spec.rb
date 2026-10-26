@@ -207,6 +207,31 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
       end
     end
 
+    context "when the request times out" do
+      before do
+        stub = Typhoeus::Response.new \
+          :return_code => :operation_timedout,
+          :mock        => true
+
+        Typhoeus.stub(base_url + '/').and_return(stub)
+      end
+
+      context "when parallel" do
+        it "marks the env as timed out" do
+          response = nil
+          conn.in_parallel { response = conn.get("/") }
+
+          expect(response.env[:typhoeus_timed_out]).to be(true)
+        end
+      end
+
+      context "when not parallel" do
+        it "raises a timeout error" do
+          expect { conn.get("/") }.to raise_error(Faraday::TimeoutError)
+        end
+      end
+    end
+
     describe "#configure_socket" do
       let(:env) { { :request => { :bind => { :host => "interface" } } } }
 
@@ -473,6 +498,23 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
 
         expect { adapter.method(:configure_ssl).call(request, env) }.
           to raise_error(ArgumentError, /min_version/)
+      end
+
+      it "raises when min_version and max_version differ" do
+        env = { :ssl => { :min_version => :TLSv1_2, :max_version => :TLSv1_3 } }
+
+        expect { adapter.method(:configure_ssl).call(request, env) }.
+          to raise_error(ArgumentError, /min_version/)
+      end
+    end
+
+    describe "#configure_ssl with sslv23" do
+      it "maps sslv23 to the default version" do
+        env = { :ssl => { :version => :sslv23 } }
+
+        adapter.method(:configure_ssl).call(request, env)
+
+        expect(request.options[:sslversion]).to eq(:default)
       end
     end
 
