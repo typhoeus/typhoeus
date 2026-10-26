@@ -240,8 +240,17 @@ module Typhoeus
     def set_defaults
       default_user_agent = Config.user_agent || Typhoeus::USER_AGENT
 
-      options[:headers] = {'User-Agent' => default_user_agent}.merge(options[:headers] || {})
-      options[:headers]['Expect'] ||= ''
+      headers = (options[:headers] || {}).dup
+      unless header_key?(headers, "User-Agent")
+        headers = {"User-Agent" => default_user_agent}.merge(headers)
+      end
+      expect_key = headers.keys.find { |key| key.to_s.casecmp?("Expect") }
+      if expect_key
+        headers[expect_key] ||= ""
+      else
+        headers["Expect"] = ""
+      end
+      options[:headers] = headers
       options[:verbose] = Typhoeus::Config.verbose if options[:verbose].nil? && !Typhoeus::Config.verbose.nil?
       options[:timeout] = Typhoeus::Config.timeout if options[:timeout].nil? && !Typhoeus::Config.timeout.nil?
       options[:connecttimeout] = Typhoeus::Config.connecttimeout if options[:connecttimeout].nil? && !Typhoeus::Config.connecttimeout.nil?
@@ -249,6 +258,18 @@ module Typhoeus
       options[:proxy] = Typhoeus::Config.proxy unless options.has_key?(:proxy) || Typhoeus::Config.proxy.nil?
       options[:cainfo] = ENV["SSL_CERT_FILE"] if options[:cainfo].nil? && ENV["SSL_CERT_FILE"]
       options[:capath] = ENV["SSL_CERT_DIR"] if options[:capath].nil? && ENV["SSL_CERT_DIR"]
+    end
+
+    # Check the headers for a name without relying on its casing. Header names
+    # are case-insensitive and libcurl sends every spelling it is given, so a
+    # second default header would be added to the caller's value.
+    #
+    # @param [ Hash ] headers The request headers.
+    # @param [ String ] name The header name to look for.
+    #
+    # @return [ Boolean ] Whether the header is already present.
+    def header_key?(headers, name)
+      headers.keys.any? { |key| key.to_s.casecmp?(name) }
     end
   end
 end

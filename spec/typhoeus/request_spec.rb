@@ -101,6 +101,57 @@ describe Typhoeus::Request do
       end
     end
 
+    context "when header with lowercase user agent" do
+      let(:options) { {:headers => {'user-agent' => "Custom"} } }
+
+      it "doesn't add the default user agent" do
+        expect(request.options[:headers]).to eq(
+          'user-agent' => "Custom",
+          'Expect' => ""
+        )
+      end
+
+      it "sends the custom user agent without a duplicate" do
+        response = Typhoeus.get(
+          "http://localhost:3001/",
+          :headers => {'user-agent' => "Custom"}
+        )
+
+        expect(JSON.parse(response.body)["HTTP_USER_AGENT"]).to eq("Custom")
+      end
+    end
+
+    context "when header with lowercase expect" do
+      let(:options) { {:headers => {'expect' => "100-continue"} } }
+
+      it "doesn't add the default Expect header" do
+        expect(request.options[:headers]).to eq(
+          'User-Agent' => Typhoeus::USER_AGENT,
+          'expect' => "100-continue"
+        )
+      end
+
+      it "sends the caller's Expect header" do
+        response = Typhoeus.get(
+          "http://localhost:3001/",
+          :headers => {'expect' => "100-continue"}
+        )
+
+        expect(JSON.parse(response.body)["HTTP_EXPECT"]).to eq("100-continue")
+      end
+
+      context "when the value is nil" do
+        let(:options) { {:headers => {'expect' => nil} } }
+
+        it "uses the default empty value" do
+          expect(request.options[:headers]).to eq(
+            'User-Agent' => Typhoeus::USER_AGENT,
+            'expect' => ""
+          )
+        end
+      end
+    end
+
     context "when header without user agent" do
       let(:options) { {:headers => {} } }
 
