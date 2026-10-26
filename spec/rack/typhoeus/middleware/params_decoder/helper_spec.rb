@@ -133,6 +133,14 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder::Helper" do
       end
     end
 
+    context "when the params themselves are hash-like" do
+      let(:params) { FakeParams.new("a" => { "0" => "x", "1" => "y" }) }
+
+      it "decodes" do
+        expect(decoded["a"]).to eq(["x", "y"])
+      end
+    end
+
     context "when symbol keys" do
       let(:params) { { "a" => { :"0" => "x", :"1" => "y" } } }
 
