@@ -19,7 +19,7 @@ module Typhoeus
       end
 
       def get(request)
-        @cache.read(request)
+        @cache.read(request.cache_key)
       end
 
       def set(request, response)

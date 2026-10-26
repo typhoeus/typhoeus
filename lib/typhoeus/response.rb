@@ -49,6 +49,20 @@ module Typhoeus
       @headers = Header.new(options[:headers]) if options[:headers]
     end
 
+    # Keep duplicated responses independent. Memoization hands a copy of the
+    # leader's response to every follower, so shared options, headers, bodies,
+    # or callback results would let one request change another one's response.
+    def initialize_copy(other)
+      super
+      @options = duplicate_value(other.options)
+      @handled_response = nil
+      if other.instance_variable_defined?(:@headers)
+        headers = other.instance_variable_get(:@headers)
+        @headers = headers.dup if headers
+      end
+    end
+    private :initialize_copy
+
     # Returns whether this request is mocked
     # or not.
     #
@@ -65,6 +79,25 @@ module Typhoeus
     #   done on the response or the original response.
     def handled_response
       @handled_response || self
+    end
+
+    private
+
+    # Duplicate the mutable containers a response may share with its copy.
+    # Other option values are opaque and are left alone.
+    def duplicate_value(value)
+      case value
+      when Hash
+        value.each_with_object({}) do |(key, nested), copy|
+          copy[duplicate_value(key)] = duplicate_value(nested)
+        end
+      when Array
+        value.map { |nested| duplicate_value(nested) }
+      when String
+        value.dup
+      else
+        value
+      end
     end
   end
 end

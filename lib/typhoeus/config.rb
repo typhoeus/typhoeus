@@ -92,7 +92,15 @@ module Typhoeus
     # @return [ Integer, nil ]
     #
     # @see Typhoeus::Pool
-    attr_accessor :max_idle_easies
+    attr_reader :max_idle_easies
+
+    def max_idle_easies=(value)
+      if !value.nil? && (!value.is_a?(Integer) || value < 0)
+        raise ArgumentError, "max_idle_easies must be nil or a non-negative Integer"
+      end
+
+      @max_idle_easies = value
+    end
 
     @max_idle_easies = 20
   end

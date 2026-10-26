@@ -42,8 +42,23 @@ describe Typhoeus::Hydra::Memoizable do
         before { hydra.memory[request] = response }
 
         it "finishes request" do
-          expect(request).to receive(:finish).with(response, true)
+          expect(request).to receive(:finish).with(an_instance_of(Typhoeus::Response), true)
           hydra.add(request)
+        end
+
+        it "finishes request with a copy" do
+          hydra.add(request)
+
+          expect(request.response).not_to be(response)
+          expect(request.response.request).to be(request)
+        end
+
+        it "runs headers callbacks" do
+          called = false
+          request.on_headers { |_| called = true }
+          hydra.add(request)
+
+          expect(called).to be(true)
         end
 
         context "when queued request" do
@@ -51,8 +66,8 @@ describe Typhoeus::Hydra::Memoizable do
 
           it "dequeues" do
             hydra.queue(queued_request)
-            expect(request).to receive(:finish).with(response, true)
-            expect(queued_request).to receive(:finish).with(response, true)
+            expect(request).to receive(:finish).with(an_instance_of(Typhoeus::Response), true)
+            expect(queued_request).to receive(:finish).with(an_instance_of(Typhoeus::Response), true)
             hydra.add(request)
           end
         end
@@ -92,6 +107,36 @@ describe Typhoeus::Hydra::Memoizable do
       expect(second.response.request).to equal(second)
       expect(first.response.handled_response).to eq(:first)
       expect(second.response.handled_response).to eq(:second)
+    end
+
+    it "does not let a follower change the leader's response" do
+      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      leader = Typhoeus::Request.new(url)
+      follower = Typhoeus::Request.new(url)
+      follower.on_complete do |response|
+        response.options[:follower] = true
+        response.headers["X-Follower"] = "1"
+        response.body << "!"
+      end
+      hydra.queue(leader)
+      hydra.queue(follower)
+      hydra.run
+
+      expect(leader.response.options).not_to have_key(:follower)
+      expect(leader.response.headers["X-Follower"]).to be_nil
+      expect(leader.response.body).to eq("1")
+    end
+
+    it "does not copy the leader's handled response to a follower" do
+      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      leader = Typhoeus::Request.new(url)
+      follower = Typhoeus::Request.new(url)
+      leader.on_complete { |_| :leader }
+      hydra.queue(leader)
+      hydra.queue(follower)
+      hydra.run
+
+      expect(follower.response.handled_response).to equal(follower.response)
     end
 
     it "does not serve responses memoized by a direct run between runs" do

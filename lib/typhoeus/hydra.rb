@@ -96,6 +96,17 @@ module Typhoeus
       @multi = build_multi
     end
 
+    # Add a request directly to the multi. Queueing sets the hydra on the
+    # request as well, so memoization works for both entry points.
+    #
+    # @param [ Typhoeus::Request ] request The request to add.
+    #
+    # @return [ Object ] The result of the add chain.
+    def add(request)
+      request.hydra = self
+      super
+    end
+
     # Set the maximum number of concurrent requests.
     #
     # @example Set max_concurrency.

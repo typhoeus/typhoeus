@@ -110,6 +110,58 @@ describe Typhoeus::Response::Header do
         expect(header['DaTe']).to eq(raw[:Date])
       end
     end
+
+    context "when another header" do
+      let(:raw) { Typhoeus::Response::Header.new("A: 1\r\nA: 2") }
+
+      it "copies the values" do
+        expect(header["A"]).to eq(["1", "2"])
+      end
+    end
+  end
+
+  describe "#dup" do
+    let(:raw) { "A: 1\r\nA: 2" }
+
+    it "does not share the delegated hash" do
+      copy = header.dup
+      copy["B"] = "3"
+
+      expect(header["B"]).to be_nil
+      expect(copy["B"]).to eq("3")
+    end
+
+    it "does not share header value arrays" do
+      copy = header.dup
+      copy["A"] << "3"
+
+      expect(header["A"]).to eq(["1", "2"])
+      expect(copy["A"]).to eq(["1", "2", "3"])
+    end
+
+    it "keeps the copied hash in sync with the copied index" do
+      copy = header.dup
+      copy["A"] << "3"
+
+      expect(copy.to_hash["A"]).to eq(["1", "2", "3"])
+    end
+
+    it "does not share header value strings" do
+      header["C"] = "3"
+      copy = header.dup
+      copy["C"] << "!"
+
+      expect(header["C"]).to eq("3")
+      expect(copy["C"]).to eq("3!")
+      expect(copy.to_hash["C"]).to eq("3!")
+    end
+
+    it "does not share the delegated hash with clone" do
+      copy = header.clone
+      copy["B"] = "3"
+
+      expect(header["B"]).to be_nil
+    end
   end
 
   describe "#parse" do
@@ -261,6 +313,98 @@ describe Typhoeus::Response::Header do
 
       expect(header["A"]).to be_nil
       expect(header.to_hash).to be_empty
+    end
+
+    it "returns self from clear" do
+      expect(header.clear).to be(header)
+    end
+
+    it "deletes with a block and keeps lookups in sync" do
+      expect(header.delete_if { |key, _| key == "A" }).to be(header)
+
+      expect(header["A"]).to be_nil
+      expect(header.key?("a")).to be(false)
+    end
+
+    it "keeps with a block and keeps lookups in sync" do
+      header.keep_if { |key, _| key == "A" }
+
+      expect(header["A"]).to eq("1")
+      expect(header.key?("B")).to be(false)
+    end
+
+    it "rejects with a block and keeps lookups in sync" do
+      header.reject! { |key, _| key == "A" }
+
+      expect(header.key?("a")).to be(false)
+    end
+
+    it "selects with a block and keeps lookups in sync" do
+      header["B"] = "2"
+
+      expect(header.select! { |key, _| key == "A" }).to be(header)
+
+      expect(header["A"]).to eq("1")
+      expect(header.key?("B")).to be(false)
+    end
+
+    it "returns nil from select! when nothing is removed" do
+      expect(header.select! { |_, _| true }).to be_nil
+    end
+
+    it "filters with a block and keeps lookups in sync" do
+      header.filter! { |key, _| key != "A" }
+
+      expect(header.key?("a")).to be(false)
+    end
+
+    it "shifts and keeps lookups in sync" do
+      expect(header.shift).to eq(["A", "1"])
+
+      expect(header.key?("A")).to be(false)
+    end
+
+    it "compacts and keeps lookups in sync" do
+      header["B"] = nil
+
+      expect(header.compact!).to be(header)
+      expect(header.key?("B")).to be(false)
+    end
+
+    it "transforms keys and keeps lookups in sync" do
+      header.transform_keys! { |key| key.downcase }
+
+      expect(header["a"]).to eq("1")
+      expect(header.key?("A")).to be(true)
+    end
+
+    it "transforms keys with a mapping and keeps lookups in sync" do
+      skip if RUBY_VERSION < "3.0"
+
+      expect(header.transform_keys!("A" => "C")).to be(header)
+
+      expect(header["C"]).to eq("1")
+      expect(header.key?("A")).to be(false)
+    end
+
+    it "returns an enumerator for transform_keys! without a block" do
+      expect(header.transform_keys!).to be_a(Enumerator)
+    end
+
+    it "transforms values and keeps lookups in sync" do
+      header.transform_values! { |value| "#{value}!" }
+
+      expect(header["a"]).to eq("1!")
+      expect(header["A"]).to eq("1!")
+    end
+
+    it "returns an enumerator for delete_if without a block" do
+      expect(header.delete_if).to be_a(Enumerator)
+    end
+
+    it "uses the update block for conflicting keys" do
+      expect(header.merge!("A" => "2") { |_, old, new| "#{old}-#{new}" }).to be(header)
+      expect(header["A"]).to eq("1-2")
     end
 
     it "updates from a hash" do

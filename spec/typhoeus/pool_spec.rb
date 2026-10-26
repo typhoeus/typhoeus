@@ -106,6 +106,22 @@ describe Typhoeus::Pool do
       end
     end
 
+    context "when libcurl does not support cookies" do
+      before do
+        skip unless defined?(Ethon::Errors::UnsupportedOption)
+        allow(easy).to receive(:cookielist=).and_raise(
+          Ethon::Errors::UnsupportedOption.new(:cookielist)
+        )
+      end
+
+      it "still resets and pools the easy" do
+        expect(easy).to receive(:reset).and_call_original
+
+        expect { Typhoeus::Pool.release(easy) }.not_to raise_error
+        expect(Typhoeus::Pool.send(:easies)).to include(easy)
+      end
+    end
+
     context "when threaded access" do
       it "releases correct number of easies" do
         (0..9).map do |n|

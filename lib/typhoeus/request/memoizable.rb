@@ -27,12 +27,16 @@ module Typhoeus
 
       # Return whether a request is memoizable.
       #
+      # Streaming requests are not memoized because their body is not retained
+      # and every caller has to receive its own chunks.
+      #
       # @example Is request memoizable?
       #   request.memoizable?
       #
       # @return [ Boolean ] Return true if memoizable, false else.
       def memoizable?
         Typhoeus::Config.memoize &&
+          !streaming? &&
           (options[:method].nil? || options[:method] == :get)
       end
     end

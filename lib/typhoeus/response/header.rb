@@ -25,6 +25,22 @@ module Typhoeus
         parse
       end
 
+      def initialize_dup(other)
+        super
+        copy_delegate(other)
+      end
+      private :initialize_dup
+
+      def initialize_clone(other, freeze: nil)
+        if freeze.nil?
+          super(other)
+        else
+          super(other, freeze: freeze)
+        end
+        copy_delegate(other)
+      end
+      private :initialize_clone
+
       def [](key)
         @sanitized[convert_key(key)]
       end
@@ -46,10 +62,14 @@ module Typhoeus
       def clear
         __getobj__.clear
         @sanitized.clear
+        self
       end
 
       def update(other)
-        other.each_pair { |key, value| self[key] = value }
+        other.each_pair do |key, value|
+          value = yield(key, self[key], value) if block_given? && include?(key)
+          self[key] = value
+        end
         self
       end
       alias_method :merge!, :update
@@ -57,6 +77,67 @@ module Typhoeus
       def replace(other)
         clear
         update(other)
+      end
+
+      def delete_if(&block)
+        return enum_for(:delete_if) unless block
+
+        super
+        rebuild_sanitized
+        self
+      end
+
+      def keep_if(&block)
+        return enum_for(:keep_if) unless block
+
+        super
+        rebuild_sanitized
+        self
+      end
+
+      def select!(&block)
+        return enum_for(:select!) unless block
+
+        result = super
+        rebuild_sanitized
+        result ? self : nil
+      end
+      alias_method :filter!, :select!
+
+      def reject!(&block)
+        return enum_for(:reject!) unless block
+
+        result = super
+        rebuild_sanitized
+        result ? self : nil
+      end
+
+      def shift
+        result = super
+        rebuild_sanitized
+        result
+      end
+
+      def compact!
+        result = super
+        rebuild_sanitized
+        result ? self : nil
+      end
+
+      def transform_keys!(*args, &block)
+        return enum_for(:transform_keys!, *args) if !block && args.empty?
+
+        super
+        rebuild_sanitized
+        self
+      end
+
+      def transform_values!(&block)
+        return enum_for(:transform_values!) unless block
+
+        super
+        rebuild_sanitized
+        self
       end
 
       def include?(key)
@@ -93,12 +174,11 @@ module Typhoeus
       # @example Parse header.
       #   header.parse
       def parse
-        case @raw
-        when Hash
-          raw.each do |k, v|
+        if raw.respond_to?(:each_pair)
+          raw.each_pair do |k, v|
             process_pair(k, v)
           end
-        when String
+        elsif raw.is_a?(String)
           raw.split(/\r?\n(?!\s)/).each do |header|
             header.strip!
             next if header.empty? || header.start_with?( 'HTTP/' )
@@ -156,10 +236,63 @@ module Typhoeus
         key.to_s.downcase
       end
 
+      def duplicate_value(value)
+        case value
+        when Array
+          value.map { |nested| duplicate_value(nested) }
+        when String
+          value.dup
+        else
+          value
+        end
+      end
+
+      # DelegateClass copies only the delegated hash itself. Rebuild both
+      # hashes so later mutations cannot reach the original header. The
+      # sanitized index is built from the copied hash so both stores keep
+      # referring to the same values, as they do on the original.
+      def copy_delegate(other)
+        copy = {}
+        other.__getobj__.each do |key, value|
+          copy[key] = duplicate_value(value)
+        end
+        __setobj__(copy)
+
+        @sanitized = {}
+        copy.each do |key, value|
+          converted = convert_key(key)
+          if @sanitized.key?(converted)
+            existing = @sanitized[converted]
+            existing = [existing] unless existing.is_a?(Array)
+            existing.concat(value.is_a?(Array) ? value : [value])
+            @sanitized[converted] = existing
+          else
+            @sanitized[converted] = value
+          end
+        end
+      end
+
       def delete_underlying_key(key)
         converted = convert_key(key)
         __getobj__.keys.each do |existing_key|
           __getobj__.delete(existing_key) if convert_key(existing_key) == converted
+        end
+      end
+
+      # Rebuild the case-insensitive index after a Hash mutator that cannot be
+      # expressed through #[]=.
+      def rebuild_sanitized
+        @sanitized = {}
+        __getobj__.each do |key, value|
+          converted = convert_key(key)
+          if @sanitized.key?(converted)
+            existing = @sanitized[converted]
+            existing = [existing] unless existing.is_a?(Array)
+            existing.concat(value.is_a?(Array) ? value : [value])
+            @sanitized[converted] = existing
+          else
+            @sanitized[converted] = value
+          end
         end
       end
     end
