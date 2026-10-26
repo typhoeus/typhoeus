@@ -286,6 +286,27 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
         end
       end
 
+      context "when using Faraday's default SSL options" do
+        let(:env) { { :ssl => Faraday::SSLOptions.new } }
+
+        it "keeps peer verification enabled" do
+          expect(request.options[:ssl_verifypeer]).to be(true)
+        end
+
+        it "keeps hostname verification enabled" do
+          expect(request.options[:ssl_verifyhost]).to eq(2)
+        end
+      end
+
+      context "when verify is false on Faraday's SSL options" do
+        let(:env) { { :ssl => Faraday::SSLOptions.from(:verify => false) } }
+
+        it "disables peer and hostname verification" do
+          expect(request.options[:ssl_verifypeer]).to be(false)
+          expect(request.options[:ssl_verifyhost]).to eq(0)
+        end
+      end
+
       context "when min_version and max_version match" do
         let(:env) { { :ssl => { :min_version => :TLSv1_2, :max_version => :TLSv1_2 } } }
 

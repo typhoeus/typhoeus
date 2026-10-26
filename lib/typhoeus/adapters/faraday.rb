@@ -153,13 +153,21 @@ module Faraday # :nodoc:
       end
 
       # Return an SSL option from a Faraday SSLOptions struct or a Hash.
+      # Faraday leaves unset options nil and treats nil as the default, for
+      # example `verify_hostname?` is true unless the value is false.
       #
       # @return [ Object ] The option value or the default.
       def ssl_option(ssl, name, default = nil)
         return default unless ssl
-        return ssl.fetch(name, default) if ssl.is_a?(Hash)
-        return ssl.public_send(name) if ssl.respond_to?(name)
-        default
+
+        value =
+          if ssl.is_a?(Hash)
+            ssl.fetch(name, default)
+          elsif ssl.respond_to?(name)
+            ssl.public_send(name)
+          end
+
+        value.nil? ? default : value
       end
 
       # Translate an OpenSSL/Faraday SSL version to Ethon's spelling.
