@@ -44,7 +44,7 @@ module Typhoeus
           if memory.key?(request)
             response = memory[request]
             request.finish(response, true)
-            dequeue
+            dequeue_many
           elsif pending.key?(request)
             pending[request] << request
           else

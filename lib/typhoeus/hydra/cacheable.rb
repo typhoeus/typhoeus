@@ -7,7 +7,7 @@ module Typhoeus
         if request.cacheable? && response = request.cached_response
           response.cached = true
           request.finish(response)
-          dequeue
+          dequeue_many
         else
           super
         end
