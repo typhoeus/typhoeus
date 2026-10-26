@@ -31,7 +31,7 @@ describe Typhoeus::Hydra::Cacheable do
 
         it "returns response with cached status" do
           hydra.add(request)
-          expect(response.cached?).to be_truthy
+          expect(request.response.cached?).to be_truthy
         end
 
         it "passes the cached response body to on_body callbacks" do
@@ -47,9 +47,11 @@ describe Typhoeus::Hydra::Cacheable do
 
         context "when no queued requests" do
           it "finishes request" do
-            expect(request).to receive(:finish).with(response)
+            expect(request).to receive(:finish).with(an_instance_of(Typhoeus::Response)) do |finished|
+              expect(finished.cached?).to be_truthy
+            end
+
             hydra.add(request)
-            expect(response.cached?).to be_truthy
           end
         end
 
@@ -60,8 +62,8 @@ describe Typhoeus::Hydra::Cacheable do
 
           it "finishes both requests" do
             hydra.queue(queued_request)
-            expect(request).to receive(:finish).with(response)
-            expect(queued_request).to receive(:finish).with(response)
+            expect(request).to receive(:finish).with(an_instance_of(Typhoeus::Response))
+            expect(queued_request).to receive(:finish).with(an_instance_of(Typhoeus::Response))
             hydra.add(request)
           end
         end
@@ -91,7 +93,7 @@ describe Typhoeus::Hydra::Cacheable do
             hydra.add(cached_request)
 
             expect(cached_request.response).to be_cached
-            expect(cached_request.response).to eq(response)
+            expect(cached_request.response).to_not be(response)
           end
         end
       end
