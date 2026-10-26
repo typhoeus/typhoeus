@@ -22,6 +22,8 @@ describe Typhoeus::Errors::InvalidOption do
   end
 
   it "includes the help when raised without an explicit message" do
-    expect { raise error }.to raise_error(described_class, /was removed/)
+    expect { raise error }.to raise_error(described_class) do |raised|
+      expect(raised.to_s).to include("was removed")
+    end
   end
 end
