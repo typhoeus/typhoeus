@@ -57,10 +57,30 @@ module Typhoeus
       @mutex.synchronize { easies.pop } || Ethon::Easy.new
     end
 
-    # Clear the pool
+    # Clear the pool and release the native easy handles it owns.
+    #
+    # @example Clear the pool.
+    #   Typhoeus::Pool.clear
+    #
+    # @return [ Array<Ethon::Easy> ] The now empty pool.
     def self.clear
       reset_after_fork
-      @mutex.synchronize { easies.clear }
+      cleared = @mutex.synchronize do
+        current = easies.dup
+        easies.clear
+        current
+      end
+
+      cleared.each do |easy|
+        begin
+          easy.cleanup
+        rescue StandardError
+          # Clearing the pool is best effort. A handle that cannot be freed
+          # must not keep the other pooled handles alive.
+        end
+      end
+
+      easies
     end
 
     # Use yielded easy, will be released automatically afterwards.

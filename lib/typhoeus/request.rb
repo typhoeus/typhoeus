@@ -144,8 +144,8 @@ module Typhoeus
     # @api private
     def eql?(other)
       self.class == other.class &&
-        self.base_url == other.base_url &&
-        fuzzy_hash_eql?(self.options, other.options)
+        base_url.to_s == other.base_url.to_s &&
+        fuzzy_hash_eql?(normalized_options, other.normalized_options)
     end
 
     # Overrides Object#hash.
@@ -165,7 +165,7 @@ module Typhoeus
       # The cache store and the TTL only affect where and how long a response
       # is stored, not what the response is. Leaving them in the key would
       # silently miss the cache whenever the TTL changes.
-      hashable_options = options.dup.tap do |dup_opts|
+      hashable_options = normalized_options.tap do |dup_opts|
         dup_opts.delete(:cache)
         dup_opts.delete(:cache_ttl)
       end
@@ -188,17 +188,55 @@ module Typhoeus
     def encoded_body
       easy = Typhoeus::Pool.get
       begin
-        form = Ethon::Easy::Form.new(easy, options[:body])
-        if options.key?(:params_encoding)
-          form.params_encoding = options[:params_encoding]
+        body_options = { :body => options[:body] }
+        [:params_encoding, :escape].each do |option|
+          body_options[option] = options[option] if options.key?(option)
         end
-        easy.escape = options[:escape] if options.key?(:escape)
-        # Ethon escapes PUT bodies regardless of the escape option.
-        form.escape = options.fetch(:method, :get).to_sym == :put || easy.escape?
+
+        # Let Ethon apply its escape rule for this method and version. Ethon
+        # 0.18 always escapes PUT bodies; 0.19 respects the escape option like
+        # POST does. The form must stay non-multipart: encoded_body returns a
+        # single string, and Ethon 0.18 mistakes plain array values for files
+        # when it builds a multipart form.
+        form = Ethon::Easy::Form.new(easy, options[:body])
+        form.define_singleton_method(:multipart?) { false }
+
+        action = if options.fetch(:method, :get).to_s.downcase == "put"
+          Ethon::Easy::Http::Put.new("http://localhost/", body_options)
+        else
+          Ethon::Easy::Http::Post.new("http://localhost/", body_options)
+        end
+        action.instance_variable_set(:@form, form)
+        action.setup(easy)
         form.to_s
       ensure
         Typhoeus::Pool.release(easy) if easy
       end
+    end
+
+    # Return the request method with the same defaults and spelling Ethon
+    # uses. Cache keys, memoization, and equality must not depend on whether
+    # the caller wrote :get, "GET", or omitted the default method.
+    #
+    # @return [ Symbol ] The normalized method.
+    #
+    # @api private
+    def request_method
+      (options[:method] || :get).to_s.downcase.to_sym
+    end
+
+    # Return the options with their implicit defaults filled in for comparison.
+    #
+    # @return [ Hash ] The normalized options.
+    #
+    # @api private
+    def normalized_options
+      normalized = options.merge(:method => request_method)
+      normalized.delete("method")
+      # GET is the default. Leaving it out keeps the cache key of an implicit
+      # GET stable across the normalization change.
+      normalized.delete(:method) if normalized[:method] == :get
+      normalized
     end
 
     private
@@ -240,8 +278,17 @@ module Typhoeus
     def set_defaults
       default_user_agent = Config.user_agent || Typhoeus::USER_AGENT
 
-      options[:headers] = {'User-Agent' => default_user_agent}.merge(options[:headers] || {})
-      options[:headers]['Expect'] ||= ''
+      headers = (options[:headers] || {}).dup
+      unless header_key?(headers, "User-Agent")
+        headers = {"User-Agent" => default_user_agent}.merge(headers)
+      end
+      expect_key = headers.keys.find { |key| key.to_s.casecmp?("Expect") }
+      if expect_key
+        headers[expect_key] ||= ""
+      else
+        headers["Expect"] = ""
+      end
+      options[:headers] = headers
       options[:verbose] = Typhoeus::Config.verbose if options[:verbose].nil? && !Typhoeus::Config.verbose.nil?
       options[:timeout] = Typhoeus::Config.timeout if options[:timeout].nil? && !Typhoeus::Config.timeout.nil?
       options[:connecttimeout] = Typhoeus::Config.connecttimeout if options[:connecttimeout].nil? && !Typhoeus::Config.connecttimeout.nil?
@@ -249,6 +296,18 @@ module Typhoeus
       options[:proxy] = Typhoeus::Config.proxy unless options.has_key?(:proxy) || Typhoeus::Config.proxy.nil?
       options[:cainfo] = ENV["SSL_CERT_FILE"] if options[:cainfo].nil? && ENV["SSL_CERT_FILE"]
       options[:capath] = ENV["SSL_CERT_DIR"] if options[:capath].nil? && ENV["SSL_CERT_DIR"]
+    end
+
+    # Check the headers for a name without relying on its casing. Header names
+    # are case-insensitive and libcurl sends every spelling it is given, so a
+    # second default header would be added to the caller's value.
+    #
+    # @param [ Hash ] headers The request headers.
+    # @param [ String ] name The header name to look for.
+    #
+    # @return [ Boolean ] Whether the header is already present.
+    def header_key?(headers, name)
+      headers.keys.any? { |key| key.to_s.casecmp?(name) }
     end
   end
 end

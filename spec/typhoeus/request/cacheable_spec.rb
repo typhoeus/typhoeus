@@ -51,6 +51,23 @@ describe Typhoeus::Request::Cacheable do
           request.run
         end
 
+        context "when the cached request omitted the default method" do
+          let(:request) do
+            Typhoeus::Request.new(TestServer.url, :method => :get)
+          end
+
+          before do
+            cache.memory[Typhoeus::Request.new(TestServer.url)] = response
+          end
+
+          it "hits the cache" do
+            request.run
+
+            expect(request.response.cached?).to be(true)
+            expect(request.response).not_to be(response)
+          end
+        end
+
         it "sets cached to true for response" do
           request.run
           expect(request.response.cached?).to be_truthy

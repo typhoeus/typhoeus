@@ -20,8 +20,7 @@ describe Typhoeus::Errors::NoStub do
   end
 
   it "falls back to the base url when the full url cannot be built" do
-    skip unless defined?(Ethon::Errors::ForkSafety)
-    allow(request).to receive(:url).and_raise(Ethon::Errors::ForkSafety.new)
+    allow(request).to receive(:url).and_raise("cannot build url")
 
     expect { raise subject.new(request) }.to raise_error(subject, message + base_url)
   end

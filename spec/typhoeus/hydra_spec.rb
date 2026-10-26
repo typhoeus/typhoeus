@@ -8,11 +8,32 @@ describe Typhoeus::Hydra do
   let(:hydra) { Typhoeus::Hydra.new(options) }
 
   describe "#new" do
-    let(:options) { {:pipeling => true} }
+    let(:options) { {:pipelining => true} }
+
+    it "does not create a multi until it is needed" do
+      expect(Ethon::Multi).not_to receive(:new)
+      hydra
+    end
 
     it "passes options to multi" do
       expect(Ethon::Multi).to receive(:new).with(options)
-      hydra
+      hydra.multi
+    end
+
+    it "does not take later changes to the options" do
+      options = {}
+      hydra = Typhoeus::Hydra.new(options)
+      options[:pipelining] = true
+
+      expect(Ethon::Multi).to receive(:new).with({})
+      hydra.multi
+    end
+
+    it "creates a multi on first use" do
+      hydra = Typhoeus::Hydra.new
+
+      expect(hydra.multi).to be_a(Ethon::Multi)
+      expect(hydra.multi).to be(hydra.multi)
     end
 
     context "when max_concurrency is zero" do

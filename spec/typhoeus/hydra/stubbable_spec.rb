@@ -11,8 +11,11 @@ describe Typhoeus::Hydra::Stubbable do
   before { Typhoeus.stub(base_url).and_return(response) }
 
   describe "#add" do
-    it "checks expectations" do
+    it "does not add a stubbed request to the multi" do
       hydra.add(request)
+
+      expect(hydra.multi.easy_handles).to be_empty
+      expect(request.response).to be(response)
     end
 
     context "when expectation found" do

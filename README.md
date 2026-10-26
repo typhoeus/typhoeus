@@ -506,9 +506,11 @@ The default `timeout` is 0 (zero) which means curl never times out during transf
 Typhoeus delegates handle management to Ethon. Ethon 0.19 and later reject
 `Ethon::Easy` and `Ethon::Multi` handles inherited across `fork`, and raise
 `Ethon::Errors::ForkSafety`. Typhoeus clears its easy pool in the child process,
-but it cannot reset libcurl's process-global state. If your application
-initializes libcurl before forking, for example by making a request during
-boot, use `fork` followed by `exec` or fork before the first request.
+and creates a hydra's native multi handle lazily, so creating or memoizing a
+hydra during boot does not initialize libcurl. Typhoeus cannot reset libcurl's
+process-global state. If your application initializes libcurl before forking,
+for example by making a request during boot, use `fork` followed by `exec` or
+fork before the first request.
 
 Typhoeus keeps at most `Typhoeus::Config.max_idle_easies` idle easy handles in
 the pool (20 by default). Handles beyond that limit are cleaned up instead of

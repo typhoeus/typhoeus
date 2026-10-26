@@ -40,6 +40,27 @@ describe Typhoeus::EasyFactory do
         end
       end
 
+      context "when timeout_ms is given before timeout" do
+        let(:options) { {:timeout_ms => 100, :timeout => 5} }
+
+        it "applies timeout_ms last" do
+          sanitized = easy_factory.send(:sanitize, options)
+
+          expect(sanitized.keys.index(:timeout_ms)).to be > sanitized.keys.index(:timeout)
+        end
+      end
+
+      context "when connecttimeout_ms is given before connecttimeout" do
+        let(:options) { {:connecttimeout_ms => 100, :connecttimeout => 5} }
+
+        it "applies connecttimeout_ms last" do
+          sanitized = easy_factory.send(:sanitize, options)
+
+          expect(sanitized.keys.index(:connecttimeout_ms)).
+            to be > sanitized.keys.index(:connecttimeout)
+        end
+      end
+
       context "when connecttimeout is not a whole number and connecttimeout_ms is not set" do
         let(:options) { {:connecttimeout => 0.1} }
         it "ceils connecttimeout and sets connecttimeout_ms" do

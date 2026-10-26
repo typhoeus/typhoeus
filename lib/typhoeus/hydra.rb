@@ -56,9 +56,6 @@ module Typhoeus
     # @return [ Integer ] The maximum number of concurrent requests.
     attr_reader :max_concurrency
 
-    # @api private
-    attr_reader :multi
-
     class << self
 
       # Returns a memoized hydra instance.
@@ -91,9 +88,20 @@ module Typhoeus
     # @see http://rubydoc.info/github/typhoeus/ethon/Ethon/Multi#initialize-instance_method
     #   Ethon::Multi#initialize
     def initialize(options = {})
-      @options = options
+      @options = options.dup
       self.max_concurrency = @options.fetch(:max_concurrency, 200)
-      @multi = build_multi
+    end
+
+    # Return the Ethon multi, creating it on first use. Constructing a Multi
+    # initializes libcurl, which Ethon 0.19 refuses to do in a process that
+    # forked after the parent initialized it. Creating or memoizing a Hydra
+    # during boot must therefore not create the native handle yet.
+    #
+    # @return [ Ethon::Multi ] The multi handle.
+    #
+    # @api private
+    def multi
+      @multi ||= build_multi
     end
 
     # Add a request directly to the multi. Queueing sets the hydra on the

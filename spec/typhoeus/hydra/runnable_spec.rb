@@ -47,6 +47,16 @@ describe Typhoeus::Hydra::Runnable do
       end
     end
 
+    context "when the multi cannot be initialized" do
+      let(:hydra) { Typhoeus::Hydra.new(:invalid_option => true) }
+      let(:requests) { [Typhoeus::Request.new("#{TestServer.host}/first")] }
+
+      it "clears the queued requests" do
+        expect { hydra.run }.to raise_error(Ethon::Errors::InvalidOption)
+        expect(hydra.queued_requests).to be_empty
+      end
+    end
+
     context "when the multi raises a fatal error" do
       let(:multi_error) do
         Class.new(StandardError) do
@@ -93,6 +103,7 @@ describe Typhoeus::Hydra::Runnable do
     end
 
     context "when three request queued" do
+      let(:options) { { :max_concurrency => 1 } }
       let(:first) { Typhoeus::Request.new("#{TestServer.host}/first") }
       let(:second) { Typhoeus::Request.new("#{TestServer.host}/second") }
       let(:third) { Typhoeus::Request.new("#{TestServer.host}/third") }
@@ -113,25 +124,31 @@ describe Typhoeus::Hydra::Runnable do
         expect(third.response).to be
       end
 
-      it "sends first first" do
+      it "completes first before second and third" do
         first.on_complete do
           expect(second.response).to be_nil
           expect(third.response).to be_nil
         end
+
+        hydra.run
       end
 
-      it "sends second second" do
-        first.on_complete do
+      it "completes second before third" do
+        second.on_complete do
           expect(first.response).to be
           expect(third.response).to be_nil
         end
+
+        hydra.run
       end
 
-      it "sends thirds last" do
-        first.on_complete do
+      it "completes third last" do
+        third.on_complete do
+          expect(first.response).to be
           expect(second.response).to be
-          expect(third.response).to be
         end
+
+        hydra.run
       end
     end
 

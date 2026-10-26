@@ -98,6 +98,37 @@
 * Deliver an independent response for cache hits so `on_headers` callbacks and
   `handled_response` from an earlier request do not leak into the cached object.
   ([#781](https://github.com/typhoeus/typhoeus/pull/781))
+* Merge the default `User-Agent` and `Expect` headers case-insensitively. A
+  caller using a lowercase header name no longer sends a duplicate value.
+  ([#784](https://github.com/typhoeus/typhoeus/pull/784))
+* Normalize the request method and URL for cache keys, equality, and
+  memoization. `Typhoeus.get`, an implicit GET, `method: "GET"`, and a URI base
+  URL now refer to the same request.
+  ([#789](https://github.com/typhoeus/typhoeus/pull/789))
+* Apply `timeout_ms` and `connecttimeout_ms` after their second-based options,
+  so an explicit millisecond timeout is no longer overridden by `timeout` or
+  `Typhoeus::Config.timeout`.
+  ([#788](https://github.com/typhoeus/typhoeus/pull/788))
+* Finish memoized followers when a completion callback changes the leader's
+  options before the memoization bookkeeping runs.
+  ([#782](https://github.com/typhoeus/typhoeus/pull/782))
+* Clean up the native easy handles when `Typhoeus::Pool.clear` empties the pool
+  instead of leaking them.
+  ([#783](https://github.com/typhoeus/typhoeus/pull/783))
+* Include the replacement or removal hint in every rendering of
+  `Typhoeus::Errors::InvalidOption`, not only in `#message`.
+  ([#785](https://github.com/typhoeus/typhoeus/pull/785))
+* Copy arrays in the Rack params decoder and decode encoded hashes nested in
+  arrays.
+  ([#786](https://github.com/typhoeus/typhoeus/pull/786))
+* Build `Request#encoded_body` with Ethon's request action so PUT escaping
+  matches both Ethon 0.18 and the 0.19 behavior. The full suite now passes
+  against Ethon master.
+  ([#787](https://github.com/typhoeus/typhoeus/pull/787))
+* Create a Hydra's native multi handle on first use. Creating or memoizing a
+  hydra during boot no longer initializes libcurl, which Ethon 0.19 rejects in
+  a forked child.
+  ([#790](https://github.com/typhoeus/typhoeus/pull/790))
 
 ## 1.6.0
 
