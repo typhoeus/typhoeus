@@ -220,6 +220,9 @@ module Typhoeus
     def normalized_options
       normalized = options.merge(:method => request_method)
       normalized.delete("method")
+      # GET is the default. Leaving it out keeps the cache key of an implicit
+      # GET stable across the normalization change.
+      normalized.delete(:method) if normalized[:method] == :get
       normalized
     end
 
