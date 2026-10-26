@@ -19,7 +19,12 @@ module Typhoeus
       #
       # @return [ Response ] The response.
       def run
+        return super if Typhoeus.stubs_disabled?
+
         if response = Expectation.response_for(self)
+          # The stub block already ran the request for real.
+          return response if response.request
+
           execute_headers_callbacks(response)
           self.on_body.each{ |callback| callback.call(response.body, response) }
           finish(response)

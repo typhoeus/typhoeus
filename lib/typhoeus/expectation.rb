@@ -213,7 +213,9 @@ module Typhoeus
       end
 
       @response_counter += 1
-      response.mock = @from || true
+      # A stub block can return the response of a real request, which must keep
+      # its real mock state and must not be finished a second time.
+      response.mock = @from || true unless response.request
       response
     end
 

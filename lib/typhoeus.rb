@@ -110,7 +110,9 @@ module Typhoeus
   end
 
   # Execute given block as if block connection is turned off.
-  # The old block connection state is restored afterwards.
+  # The old block connection state is restored afterwards. Stubs are bypassed
+  # inside the block, so a stub can forward to the real service without
+  # recursing into itself.
   #
   # @example Make a real request, no matter if it's blocked.
   #   Typhoeus::Config.block_connection = true
@@ -122,6 +124,11 @@ module Typhoeus
   #     #=> :ok
   #   end
   #
+  # @example Let one stubbed URL reach the real service.
+  #   Typhoeus.stub("http://elastic:9200") do |request|
+  #     Typhoeus.with_connection { request.run }
+  #   end
+  #
   # @yield Yields control to the block after disabling block_connection.
   #        Afterwards, the block_connection is set to its original
   #        value.
@@ -129,10 +136,23 @@ module Typhoeus
   #
   # @see Typhoeus::Config.block_connection
   def self.with_connection
-    old = Config.block_connection
+    old_block_connection = Config.block_connection
+    old_stubs_disabled = Thread.current[:typhoeus_stubs_disabled]
     Config.block_connection = false
+    Thread.current[:typhoeus_stubs_disabled] = true
     yield if block_given?
   ensure
-    Config.block_connection = old
+    Config.block_connection = old_block_connection
+    Thread.current[:typhoeus_stubs_disabled] = old_stubs_disabled
+  end
+
+  # Whether the current thread is inside {with_connection} and therefore
+  # bypasses stubs.
+  #
+  # @api private
+  #
+  # @return [ Boolean ] True when stubs should be skipped.
+  def self.stubs_disabled?
+    Thread.current[:typhoeus_stubs_disabled]
   end
 end

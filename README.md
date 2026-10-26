@@ -467,6 +467,17 @@ Typhoeus.get('www.example.com') == response1 #=> true
 Typhoeus.get('www.example.com') == response2 #=> true
 ```
 
+To make a real request while `Typhoeus::Config.block_connection` is on, wrap
+it in `Typhoeus.with_connection`. Stubs are bypassed inside the block, which
+makes it possible to forward a stubbed URL to a local service:
+
+```ruby
+Typhoeus::Config.block_connection = true
+Typhoeus.stub("http://elastic:9200") do |request|
+  Typhoeus.with_connection { request.run }
+end
+```
+
 When testing make sure to clear your expectations or the stubs will persist between tests. The following can be included in your spec_helper.rb file to do this automatically.
 
 ```ruby

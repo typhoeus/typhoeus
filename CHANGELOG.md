@@ -152,6 +152,10 @@
 * Do not create a Hydra's native multi handle when every queued request is
   answered by a `before` callback, a stub, or the cache.
   ([#802](https://github.com/typhoeus/typhoeus/pull/802))
+* Bypass stubs inside `Typhoeus.with_connection`. A stub can now forward its
+  request to the real service without matching itself in an endless loop, and
+  the real response is not finished a second time.
+  ([#809](https://github.com/typhoeus/typhoeus/pull/809))
 * Decode query and form parameters independently in the Rack middleware. A
   form value no longer overwrites the query value for the same key.
   ([#803](https://github.com/typhoeus/typhoeus/pull/803))
