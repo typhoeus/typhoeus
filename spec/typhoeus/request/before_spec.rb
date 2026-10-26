@@ -72,6 +72,21 @@ describe Typhoeus::Request::Before do
             Typhoeus.before { response }
             expect(request.run).to be(response)
           end
+
+          it "assigns the callback's response to the request" do
+            response = Typhoeus::Response.new
+            Typhoeus.before { response }
+            request.run
+            expect(request.response).to be(response)
+          end
+
+          it "runs the completion callbacks" do
+            response = Typhoeus::Response.new
+            Typhoeus.before { response }
+            expect(receive_counter).to receive(:mark)
+            request.on_complete { |_| receive_counter.mark }
+            request.run
+          end
         end
       end
 

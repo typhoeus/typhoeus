@@ -21,8 +21,16 @@ module Typhoeus
       def add(request)
         (Typhoeus.before + request.before).each do |callback|
           value = callback.call(request)
-          if value.nil? || value == false || value.is_a?(Response)
-            dequeue
+          if value.is_a?(Response)
+            unless request.response
+              request.execute_headers_callbacks(value)
+              request.on_body.each { |body_callback| body_callback.call(value.body, value) }
+              request.finish(value)
+            end
+            dequeue_many
+            return value
+          elsif value.nil? || value == false
+            dequeue_many
             return value
           end
         end
