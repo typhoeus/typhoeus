@@ -188,14 +188,21 @@ module Typhoeus
     def encoded_body
       easy = Typhoeus::Pool.get
       begin
-        form = Ethon::Easy::Form.new(easy, options[:body])
-        if options.key?(:params_encoding)
-          form.params_encoding = options[:params_encoding]
+        body_options = { :body => options[:body] }
+        [:params_encoding, :escape, :multipart].each do |option|
+          body_options[option] = options[option] if options.key?(option)
         end
-        easy.escape = options[:escape] if options.key?(:escape)
-        # Ethon escapes PUT bodies regardless of the escape option.
-        form.escape = options.fetch(:method, :get).to_sym == :put || easy.escape?
-        form.to_s
+
+        # Let Ethon build the form so the escaping matches the installed
+        # version. Ethon 0.18 always escaped PUT bodies; 0.19 respects the
+        # escape option like POST does.
+        action = if options.fetch(:method, :get).to_s.downcase == "put"
+          Ethon::Easy::Http::Put.new("http://localhost/", body_options)
+        else
+          Ethon::Easy::Http::Post.new("http://localhost/", body_options)
+        end
+        action.setup(easy)
+        action.form.to_s
       ensure
         Typhoeus::Pool.release(easy) if easy
       end
