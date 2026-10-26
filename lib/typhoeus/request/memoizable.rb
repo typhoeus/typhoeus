@@ -21,7 +21,10 @@ module Typhoeus
       # @example Set response.
       #   request.response = response
       def response=(response)
-        hydra.memory[self] = response if memoizable? && hydra
+        # Followers receive a copy of the stored response, and the leader's
+        # callbacks must not change what they see. Store a snapshot instead of
+        # the response the leader exposes to its own callbacks.
+        hydra.memory[self] = response.dup if memoizable? && hydra
         super
       end
 

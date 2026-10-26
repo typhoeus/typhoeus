@@ -48,7 +48,15 @@ module Typhoeus
             pending[request] << request
           else
             pending[request] = []
-            request.on_complete { |response| finish_pending(request, response) }
+            request.on_complete do |response|
+              # Finish from the snapshot taken before the leader's callbacks
+              # ran. A callback that changes the leader's response must not
+              # change the copy its followers receive. Keep the leader's own
+              # callback result as this callback's return value.
+              snapshot = memoized_response_for(request) || response
+              finish_pending(request, snapshot)
+              response.handled_response
+            end
             begin
               super
             rescue Exception
