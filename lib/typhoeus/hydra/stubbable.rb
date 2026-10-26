@@ -17,7 +17,12 @@ module Typhoeus
       # @example Add the request.
       #   hydra.add(request)
       def add(request)
+        return super if Typhoeus.stubs_disabled?
+
         if response = Expectation.response_for(request)
+          # The stub block already ran the request for real.
+          return if response.request
+
           request.execute_headers_callbacks(response)
           request.on_body.each{ |callback| callback.call(response.body, response) }
           request.finish(response)
