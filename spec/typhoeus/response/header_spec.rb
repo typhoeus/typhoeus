@@ -123,6 +123,23 @@ describe Typhoeus::Response::Header do
       end
     end
 
+    context "when hash values are mutable" do
+      let(:value) { +"value" }
+      let(:raw) { { "X-Test" => [value] } }
+
+      it "does not share array values with the input hash" do
+        header["X-Test"] << "!"
+
+        expect(raw["X-Test"]).to eq(["value"])
+      end
+
+      it "does not share string values with the input hash" do
+        header["X-Test"].first << "!"
+
+        expect(value).to eq("value")
+      end
+    end
+
     context "when another header" do
       let(:raw) { Typhoeus::Response::Header.new("A: 1\r\nA: 2") }
 
