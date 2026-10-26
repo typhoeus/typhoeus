@@ -139,6 +139,17 @@ describe Typhoeus::Request do
 
         expect(JSON.parse(response.body)["HTTP_EXPECT"]).to eq("100-continue")
       end
+
+      context "when the value is nil" do
+        let(:options) { {:headers => {'expect' => nil} } }
+
+        it "uses the default empty value" do
+          expect(request.options[:headers]).to eq(
+            'User-Agent' => Typhoeus::USER_AGENT,
+            'expect' => ""
+          )
+        end
+      end
     end
 
     context "when header without user agent" do

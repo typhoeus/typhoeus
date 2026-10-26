@@ -244,7 +244,12 @@ module Typhoeus
       unless header_key?(headers, "User-Agent")
         headers = {"User-Agent" => default_user_agent}.merge(headers)
       end
-      headers["Expect"] = "" unless header_key?(headers, "Expect")
+      expect_key = headers.keys.find { |key| key.to_s.casecmp?("Expect") }
+      if expect_key
+        headers[expect_key] ||= ""
+      else
+        headers["Expect"] = ""
+      end
       options[:headers] = headers
       options[:verbose] = Typhoeus::Config.verbose if options[:verbose].nil? && !Typhoeus::Config.verbose.nil?
       options[:timeout] = Typhoeus::Config.timeout if options[:timeout].nil? && !Typhoeus::Config.timeout.nil?
