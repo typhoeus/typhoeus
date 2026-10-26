@@ -35,6 +35,7 @@ RSpec.configure do |config|
     Typhoeus::Config.connecttimeout = nil
     Typhoeus::Config.proxy = nil
     Typhoeus::Config.max_idle_easies = 20
+    # Hydra.hydra memoizes a hydra on the current thread.
     Thread.current[:typhoeus_hydra] = nil
   end
 end
