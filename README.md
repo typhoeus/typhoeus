@@ -523,6 +523,20 @@ process-global state. If your application initializes libcurl before forking,
 for example by making a request during boot, use `fork` followed by `exec` or
 fork before the first request.
 
+On macOS, libcurl's global initialization can touch Objective-C and crash a
+forked child with `objc_initializeAfterForkError`. Initialize libcurl in the
+parent before the workers fork:
+
+```ruby
+# config/initializers/ethon.rb in Rails, or before_fork in Puma
+require "ethon"
+Ethon::Curl.init
+```
+
+If you cannot initialize libcurl before forking, set
+`OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES` in the environment. It skips the
+safety check in the child, so prefer initializing libcurl before the fork.
+
 Typhoeus keeps at most `Typhoeus::Config.max_idle_easies` idle easy handles in
 the pool (20 by default). Handles beyond that limit are cleaned up instead of
 pooled. Set it to `nil` to keep every handle or `0` to disable pooling.

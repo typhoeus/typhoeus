@@ -132,6 +132,9 @@
   hydra during boot no longer initializes libcurl, which Ethon 0.19 rejects in
   a forked child.
   ([#790](https://github.com/typhoeus/typhoeus/pull/790))
+* Document initializing libcurl before forking on macOS to avoid
+  `objc_initializeAfterForkError`.
+  ([#810](https://github.com/typhoeus/typhoeus/pull/810))
 * Store a snapshot of a response before caching it or using it as the
   memoization leader. Mutating a response after a request no longer changes
   later cache hits, and a leader's callbacks no longer change a follower's
