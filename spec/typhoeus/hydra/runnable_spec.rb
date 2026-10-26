@@ -47,6 +47,16 @@ describe Typhoeus::Hydra::Runnable do
       end
     end
 
+    context "when the multi cannot be initialized" do
+      let(:hydra) { Typhoeus::Hydra.new(:invalid_option => true) }
+      let(:requests) { [Typhoeus::Request.new("localhost:3001/first")] }
+
+      it "clears the queued requests" do
+        expect { hydra.run }.to raise_error(Ethon::Errors::InvalidOption)
+        expect(hydra.queued_requests).to be_empty
+      end
+    end
+
     context "when the multi raises a fatal error" do
       let(:multi_error) do
         Class.new(StandardError) do
