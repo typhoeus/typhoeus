@@ -203,6 +203,22 @@ describe Typhoeus::Response::Informations do
         expect(response.code).to eq(200)
       end
     end
+
+    context "when only raw headers are available" do
+      let(:options) { { :response_headers => "HTTP/1.1 302 Found\r\nLocation: /\r\n" } }
+
+      it "parses the status line" do
+        expect(response.code).to eq(302)
+      end
+    end
+
+    context "when the status line has no code" do
+      let(:options) { { :response_headers => "HTTP/1.1" } }
+
+      it "returns zero" do
+        expect(response.code).to eq(0)
+      end
+    end
   end
 
   describe "#httpauth_avail" do
@@ -419,6 +435,19 @@ describe Typhoeus::Response::Informations do
 
       it "returns response from all but last headers" do
         expect(response.redirections.size).to eq(1)
+      end
+    end
+
+    context "when the redirect has a status line" do
+      let(:options) do
+        {
+          :response_headers =>
+            "HTTP/1.1 302 Found\r\nLocation: /\r\n\r\nHTTP/1.1 200 OK\r\n"
+        }
+      end
+
+      it "parses the redirect status code" do
+        expect(response.redirections.first.code).to eq(302)
       end
     end
   end

@@ -81,7 +81,14 @@ module Typhoeus
       #
       # @return [ Integer ] The response_code.
       def response_code
-        (options[:response_code] || options[:code]).to_i
+        code = options[:response_code] || options[:code]
+        return code.to_i unless code.nil?
+
+        # A response built from raw headers, such as one returned by
+        # #redirections, has no option describing the status.
+        line = first_header_line
+        status = line && line[/\AHTTP\/\S+\s+(\d{3})/, 1]
+        status ? status.to_i : 0
       end
       alias :code :response_code
 
