@@ -172,11 +172,20 @@ module Typhoeus
       end
 
       def duplicate_value(value)
-        value.is_a?(Array) ? value.dup : value
+        case value
+        when Array
+          value.map { |nested| duplicate_value(nested) }
+        when String
+          value.dup
+        else
+          value
+        end
       end
 
       # DelegateClass copies only the delegated hash itself. Rebuild both
-      # hashes so later mutations cannot reach the original header.
+      # hashes so later mutations cannot reach the original header. The
+      # sanitized index is built from the copied hash so both stores keep
+      # referring to the same values, as they do on the original.
       def copy_delegate(other)
         copy = {}
         other.__getobj__.each do |key, value|
@@ -185,8 +194,16 @@ module Typhoeus
         __setobj__(copy)
 
         @sanitized = {}
-        other.instance_variable_get(:@sanitized).each do |key, value|
-          @sanitized[key] = duplicate_value(value)
+        copy.each do |key, value|
+          converted = convert_key(key)
+          if @sanitized.key?(converted)
+            existing = @sanitized[converted]
+            existing = [existing] unless existing.is_a?(Array)
+            existing.concat(value.is_a?(Array) ? value : [value])
+            @sanitized[converted] = existing
+          else
+            @sanitized[converted] = value
+          end
         end
       end
 

@@ -139,6 +139,23 @@ describe Typhoeus::Response::Header do
       expect(copy["A"]).to eq(["1", "2", "3"])
     end
 
+    it "keeps the copied hash in sync with the copied index" do
+      copy = header.dup
+      copy["A"] << "3"
+
+      expect(copy.to_hash["A"]).to eq(["1", "2", "3"])
+    end
+
+    it "does not share header value strings" do
+      header["C"] = "3"
+      copy = header.dup
+      copy["C"] << "!"
+
+      expect(header["C"]).to eq("3")
+      expect(copy["C"]).to eq("3!")
+      expect(copy.to_hash["C"]).to eq("3!")
+    end
+
     it "does not share the delegated hash with clone" do
       copy = header.clone
       copy["B"] = "3"
