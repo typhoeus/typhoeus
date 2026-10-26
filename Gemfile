@@ -9,16 +9,17 @@ gem "rake"
 group :development, :test do
   gem "rspec", "~> 3.0"
 
-  gem "sinatra", "~> 1.3"
+  gem "sinatra", "~> 3.0"
+  gem "rack", "~> 2.2"
 
   gem "faraday", ">= 1.0", "< 3.0"
-  gem "dalli", "~> 2.0"
+  gem "dalli", "~> 3.0"
 
   gem "webrick"
   gem "logger"
   gem "ostruct"
 
-  gem "redis", "~> 3.0"
+  gem "redis", "~> 5.0"
 
   if RUBY_PLATFORM == "java"
     gem "spoon"
