@@ -8,6 +8,7 @@ gem "rake"
 
 group :development, :test do
   gem "rspec", "~> 3.0"
+  gem "simplecov", "~> 0.22.0", :require => false
 
   gem "sinatra", "~> 3.0"
   gem "rack", "~> 2.2"
