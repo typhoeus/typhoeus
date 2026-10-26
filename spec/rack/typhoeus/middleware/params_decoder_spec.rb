@@ -44,6 +44,19 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder" do
       expect(request.POST["x"]).to eq(["a", "b"])
     end
 
+    it "keeps query and form values separate when both contain a key" do
+      request = call(
+        "/?x[0]=query",
+        :method => "POST",
+        :input => "x[0]=form",
+        "CONTENT_TYPE" => "application/x-www-form-urlencoded"
+      )
+
+      expect(request.GET["x"]).to eq(["query"])
+      expect(request.POST["x"]).to eq(["form"])
+      expect(request.params["x"]).to eq(["form"])
+    end
+
     it "passes the environment to the app" do
       env = Rack::MockRequest.env_for("/")
       seen = nil
