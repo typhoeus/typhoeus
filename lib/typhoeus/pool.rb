@@ -29,8 +29,7 @@ module Typhoeus
         return
       end
 
-      easy.cookielist = "flush" # dump all known cookies to 'cookiejar'
-      easy.cookielist = "all" # remove all cookies from memory for this handle
+      clear_cookies(easy)
       easy.reset
 
       discarded = nil
@@ -98,6 +97,17 @@ module Typhoeus
 
     def self.easies
       @easies ||= []
+    end
+
+    # Flush cookies to the configured jar and clear them from the handle.
+    # libcurl builds without cookie support reject CURLOPT_COOKIELIST; that
+    # must not prevent the handle from being recycled.
+    def self.clear_cookies(easy)
+      easy.cookielist = "flush"
+      easy.cookielist = "all"
+    rescue StandardError => e
+      raise unless defined?(Ethon::Errors::UnsupportedOption) &&
+        e.is_a?(Ethon::Errors::UnsupportedOption)
     end
   end
 end
