@@ -28,13 +28,4 @@ RSpec::Core::RakeTask.new(:spec) do |t|
   t.ruby_opts = "-W -I./spec -rspec_helper"
 end
 
-desc "Start up the test servers"
-task :start do
-  require_relative 'spec/support/boot'
-  begin
-    Boot.start_servers(:rake)
-  rescue Exception
-  end
-end
-
 task :default => :spec

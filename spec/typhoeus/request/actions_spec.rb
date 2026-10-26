@@ -5,7 +5,7 @@ require 'spec_helper'
 describe Typhoeus::Request::Actions do
   [:get, :post, :put, :delete, :head, :patch, :options].each do |name|
     describe ".#{name}" do
-      let(:response) { Typhoeus::Request.method(name).call("http://localhost:3001") }
+      let(:response) { Typhoeus::Request.method(name).call(TestServer.url) }
 
       it "returns ok" do
         expect(response.return_code).to eq(:ok)

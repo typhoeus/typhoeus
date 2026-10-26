@@ -5,6 +5,21 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 
 require "bundler"
 Bundler.setup
+
+if ENV["COVERAGE"] == "true"
+  require "simplecov"
+
+  SimpleCov.root(File.expand_path("..", __dir__))
+  SimpleCov.start do
+    add_filter "/spec/"
+    # Loaded before coverage starts, or only when Rails is present.
+    add_filter "lib/typhoeus/railtie.rb"
+    add_filter "lib/typhoeus/version.rb"
+    track_files "lib/**/*.rb"
+    enable_coverage :branch
+  end
+end
+
 require "typhoeus"
 require "rspec"
 
@@ -14,7 +29,7 @@ RSpec.configure do |config|
   config.order = :rand
 
   config.before(:suite) do
-    LocalhostServer.new(TESTSERVER.new, 3001)
+    TestServer.port = LocalhostServer.new(TESTSERVER.new).port
   end
 
   config.after do
@@ -29,6 +44,13 @@ RSpec.configure do |config|
     Typhoeus::Config.verbose = false
     Typhoeus::Config.block_connection = false
     Typhoeus::Config.memoize = false
+    Typhoeus::Config.cache = nil
+    Typhoeus::Config.user_agent = nil
+    Typhoeus::Config.timeout = nil
+    Typhoeus::Config.connecttimeout = nil
+    Typhoeus::Config.proxy = nil
     Typhoeus::Config.max_idle_easies = 20
+    # Hydra.hydra memoizes a hydra on the current thread.
+    Thread.current[:typhoeus_hydra] = nil
   end
 end

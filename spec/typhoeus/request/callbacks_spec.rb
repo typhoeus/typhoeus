@@ -37,19 +37,21 @@ describe Typhoeus::Request::Callbacks do
   describe "#execute_callbacks" do
     [:on_complete, :on_success, :on_failure].each do |callback|
       context "when #{callback}" do
+        let(:response_code) { callback == :on_failure ? 500 : 200 }
+        let(:response) do
+          Typhoeus::Response.new(:mock => true, :response_code => response_code)
+        end
+        let(:calls) { [] }
+
+        before { request.response = response }
+
         context "when local callback" do
-          before do
-            code = if callback == :on_failure
-              500
-            else
-              200
-            end
-            request.response = Typhoeus::Response.new(:mock => true, :response_code => code)
-            request.method(callback).call {|r| expect(r).to be_a(Typhoeus::Response) }
-          end
+          before { request.method(callback).call { |r| calls << r } }
 
           it "executes blocks and passes response" do
             request.execute_callbacks
+
+            expect(calls).to eq([response])
           end
 
           it "sets handled_response" do
@@ -60,25 +62,25 @@ describe Typhoeus::Request::Callbacks do
         end
 
         context "when global callback" do
-          before do
-            request.response = Typhoeus::Response.new
-            Typhoeus.method(callback).call {|r| expect(r).to be_a(Typhoeus::Response) }
-          end
+          before { Typhoeus.method(callback).call { |r| calls << r } }
 
           it "executes blocks and passes response" do
             request.execute_callbacks
+
+            expect(calls).to eq([response])
           end
         end
 
         context "when global and local callbacks" do
           before do
-            request.response = Typhoeus::Response.new
-            Typhoeus.method(callback).call {|r| r.instance_variable_set(:@fu, 1) }
-            request.method(callback).call {|r| expect(r.instance_variable_get(:@fu)).to eq(1) }
+            Typhoeus.method(callback).call { |r| calls << :global; r.instance_variable_set(:@fu, 1) }
+            request.method(callback).call { |r| calls << :local; expect(r.instance_variable_get(:@fu)).to eq(1) }
           end
 
           it "runs global first" do
             request.execute_callbacks
+
+            expect(calls).to eq([:global, :local])
           end
         end
       end
@@ -96,9 +98,20 @@ describe Typhoeus::Request::Callbacks do
       end
     end
 
-    context "when local on_complete and gobal on_success" do
-      it "runs all global callbacks first" do
-        skip
+    context "when local on_complete and global on_success" do
+      it "runs on_complete callbacks before on_success callbacks" do
+        request.response = Typhoeus::Response.new(:mock => true, :response_code => 200)
+        order = []
+        Typhoeus.on_complete { order << :global_complete }
+        request.on_complete { order << :local_complete }
+        Typhoeus.on_success { order << :global_success }
+        request.on_success { order << :local_success }
+
+        request.execute_callbacks
+
+        expect(order).to eq(
+          [:global_complete, :local_complete, :global_success, :local_success]
+        )
       end
     end
   end

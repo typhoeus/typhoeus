@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Typhoeus::Hydra::Runnable do
-  let(:base_url) { "localhost:3001" }
+  let(:base_url) { TestServer.host }
   let(:options) { {} }
   let(:hydra) { Typhoeus::Hydra.new(options) }
   let(:receive_counter) { double :mark => :twain }
@@ -26,7 +26,7 @@ describe Typhoeus::Hydra::Runnable do
     end
 
     context "when request queued" do
-      let(:first) { Typhoeus::Request.new("localhost:3001/first") }
+      let(:first) { Typhoeus::Request.new("#{TestServer.host}/first") }
       let(:requests) { [first] }
 
       it "sends" do
@@ -36,7 +36,7 @@ describe Typhoeus::Hydra::Runnable do
     end
 
     context "when a callback raises" do
-      let(:first) { Typhoeus::Request.new("localhost:3001/first") }
+      let(:first) { Typhoeus::Request.new("#{TestServer.host}/first") }
       let(:requests) { [first] }
 
       before { first.on_body { raise "boom" } }
@@ -49,7 +49,7 @@ describe Typhoeus::Hydra::Runnable do
 
     context "when the multi cannot be initialized" do
       let(:hydra) { Typhoeus::Hydra.new(:invalid_option => true) }
-      let(:requests) { [Typhoeus::Request.new("localhost:3001/first")] }
+      let(:requests) { [Typhoeus::Request.new("#{TestServer.host}/first")] }
 
       it "clears the queued requests" do
         expect { hydra.run }.to raise_error(Ethon::Errors::InvalidOption)
@@ -103,9 +103,10 @@ describe Typhoeus::Hydra::Runnable do
     end
 
     context "when three request queued" do
-      let(:first) { Typhoeus::Request.new("localhost:3001/first") }
-      let(:second) { Typhoeus::Request.new("localhost:3001/second") }
-      let(:third) { Typhoeus::Request.new("localhost:3001/third") }
+      let(:options) { { :max_concurrency => 1 } }
+      let(:first) { Typhoeus::Request.new("#{TestServer.host}/first") }
+      let(:second) { Typhoeus::Request.new("#{TestServer.host}/second") }
+      let(:third) { Typhoeus::Request.new("#{TestServer.host}/third") }
       let(:requests) { [first, second, third] }
 
       it "sends first" do
@@ -123,33 +124,39 @@ describe Typhoeus::Hydra::Runnable do
         expect(third.response).to be
       end
 
-      it "sends first first" do
+      it "completes first before second and third" do
         first.on_complete do
           expect(second.response).to be_nil
           expect(third.response).to be_nil
         end
+
+        hydra.run
       end
 
-      it "sends second second" do
-        first.on_complete do
+      it "completes second before third" do
+        second.on_complete do
           expect(first.response).to be
           expect(third.response).to be_nil
         end
+
+        hydra.run
       end
 
-      it "sends thirds last" do
-        first.on_complete do
+      it "completes third last" do
+        third.on_complete do
+          expect(first.response).to be
           expect(second.response).to be
-          expect(third.response).to be
         end
+
+        hydra.run
       end
     end
 
     context "when really queued request" do
       let(:options) { {:max_concurrency => 1} }
-      let(:first) { Typhoeus::Request.new("localhost:3001/first") }
-      let(:second) { Typhoeus::Request.new("localhost:3001/second") }
-      let(:third) { Typhoeus::Request.new("localhost:3001/third") }
+      let(:first) { Typhoeus::Request.new("#{TestServer.host}/first") }
+      let(:second) { Typhoeus::Request.new("#{TestServer.host}/second") }
+      let(:third) { Typhoeus::Request.new("#{TestServer.host}/third") }
       let(:requests) { [first, second, third] }
 
       it "sends first" do
@@ -170,11 +177,11 @@ describe Typhoeus::Hydra::Runnable do
 
     context "when request queued in callback" do
       let(:first) do
-        Typhoeus::Request.new("localhost:3001/first").tap do |r|
+        Typhoeus::Request.new("#{TestServer.host}/first").tap do |r|
           r.on_complete{ hydra.queue(second) }
         end
       end
-      let(:second) { Typhoeus::Request.new("localhost:3001/second") }
+      let(:second) { Typhoeus::Request.new("#{TestServer.host}/second") }
       let(:requests) { [first] }
 
       before { Typhoeus.on_complete { |r| receive_counter.mark } }

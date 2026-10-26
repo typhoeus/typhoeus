@@ -7,7 +7,7 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
   require 'socket'
 
   describe Faraday::Adapter::Typhoeus do
-    let(:base_url) { "http://localhost:3001" }
+    let(:base_url) { TestServer.url }
     let(:adapter) { described_class.new(nil) }
     let(:request) { Typhoeus::Request.new(base_url) }
     let(:conn) do
@@ -113,9 +113,22 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
 
       context "parallel_manager" do
         context "when given" do
-          let(:env) { { :parallel_manager => double(:queue => true), :ssl => {}, :request => {} } }
+          let(:parallel_manager) { double(:queue => true) }
+          let(:env) do
+            {
+              :parallel_manager => parallel_manager,
+              :url => "url",
+              :method => :get,
+              :body => nil,
+              :request_headers => {},
+              :ssl => {},
+              :request => {}
+            }
+          end
 
-          it "uses" do
+          it "queues the request on the parallel manager" do
+            expect(parallel_manager).to receive(:queue).with(instance_of(Typhoeus::Request))
+
             adapter.method(:perform_request).call(env)
           end
         end
@@ -194,6 +207,31 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
       end
     end
 
+    context "when the request times out" do
+      before do
+        stub = Typhoeus::Response.new \
+          :return_code => :operation_timedout,
+          :mock        => true
+
+        Typhoeus.stub(base_url + '/').and_return(stub)
+      end
+
+      context "when parallel" do
+        it "marks the env as timed out" do
+          response = nil
+          conn.in_parallel { response = conn.get("/") }
+
+          expect(response.env[:typhoeus_timed_out]).to be(true)
+        end
+      end
+
+      context "when not parallel" do
+        it "raises a timeout error" do
+          expect { conn.get("/") }.to raise_error(Faraday::TimeoutError)
+        end
+      end
+    end
+
     describe "#configure_socket" do
       let(:env) { { :request => { :bind => { :host => "interface" } } } }
 
@@ -230,10 +268,10 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
       before { adapter.method(:configure_proxy).call(request, env) }
 
       context "when proxy" do
-        let(:env) { { :request => { :proxy => { :uri => double(:scheme => 'http', :host => "localhost", :port => "3001") } } } }
+        let(:env) { { :request => { :proxy => { :uri => double(:scheme => 'http', :host => "localhost", :port => "8080") } } } }
 
         it "sets proxy" do
-          expect(request.options[:proxy]).to eq("http://localhost:3001")
+          expect(request.options[:proxy]).to eq("http://localhost:8080")
         end
 
         context "when username and password" do
@@ -460,6 +498,23 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
 
         expect { adapter.method(:configure_ssl).call(request, env) }.
           to raise_error(ArgumentError, /min_version/)
+      end
+
+      it "raises when min_version and max_version differ" do
+        env = { :ssl => { :min_version => :TLSv1_2, :max_version => :TLSv1_3 } }
+
+        expect { adapter.method(:configure_ssl).call(request, env) }.
+          to raise_error(ArgumentError, /min_version/)
+      end
+    end
+
+    describe "#configure_ssl with sslv23" do
+      it "maps sslv23 to the default version" do
+        env = { :ssl => { :version => :sslv23 } }
+
+        adapter.method(:configure_ssl).call(request, env)
+
+        expect(request.options[:sslversion]).to eq(:default)
       end
     end
 

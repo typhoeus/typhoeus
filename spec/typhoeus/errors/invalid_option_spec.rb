@@ -26,4 +26,14 @@ describe Typhoeus::Errors::InvalidOption do
       expect(raised.to_s).to include("was removed")
     end
   end
+
+  it "keeps Ethon's message without a hint" do
+    expect(described_class.new(:invalid).message).to eq(
+      Ethon::Errors::InvalidOption.new(:invalid).message
+    )
+  end
+
+  it "is an Ethon invalid option" do
+    expect(described_class.new(:invalid)).to be_a(Ethon::Errors::InvalidOption)
+  end
 end

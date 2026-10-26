@@ -8,7 +8,7 @@ describe Typhoeus::Cache::Redis do
   let(:redis) { instance_double(Redis) }
   let(:cache) { Typhoeus::Cache::Redis.new(redis) }
 
-  let(:base_url) { "localhost:3001" }
+  let(:base_url) { TestServer.host }
   let(:request) { Typhoeus::Request.new(base_url, {:method => :get}) }
   let(:response) { Typhoeus::Response.new(:response_code => 0, :return_code => 0, :mock => true) }
   let(:serialized_response) { Marshal.dump(response) }
@@ -19,6 +19,28 @@ describe Typhoeus::Cache::Redis do
       expect(redis).to_not receive(:expire).with(request.cache_key, request.cache_ttl)
 
       cache.set(request, response)
+    end
+
+    context "when the request has a cache_ttl" do
+      let(:request) { Typhoeus::Request.new(base_url, :cache_ttl => 5) }
+
+      it "expires the key" do
+        expect(redis).to receive(:set).with(request.cache_key, serialized_response)
+        expect(redis).to receive(:expire).with(request.cache_key, 5)
+
+        cache.set(request, response)
+      end
+    end
+
+    context "when a default_ttl is configured" do
+      let(:cache) { Typhoeus::Cache::Redis.new(redis, :default_ttl => 60) }
+
+      it "expires the key" do
+        expect(redis).to receive(:set).with(request.cache_key, serialized_response)
+        expect(redis).to receive(:expire).with(request.cache_key, 60)
+
+        cache.set(request, response)
+      end
     end
   end
 

@@ -9,7 +9,7 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
     let(:dalli) { instance_double(Dalli::Client) }
     let(:cache) { Typhoeus::Cache::Dalli.new(dalli) }
 
-    let(:base_url) { "localhost:3001" }
+    let(:base_url) { TestServer.host }
     let(:request) { Typhoeus::Request.new(base_url, {:method => :get}) }
     let(:response) { Typhoeus::Response.new(:response_code => 0, :return_code => 0, :mock => true) }
 
@@ -18,6 +18,26 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
         expect(dalli).to receive(:set).with(request.cache_key, response, nil)
 
         cache.set(request, response)
+      end
+
+      context "when the request has a cache_ttl" do
+        let(:request) { Typhoeus::Request.new(base_url, :cache_ttl => 5) }
+
+        it "passes the ttl to Dalli" do
+          expect(dalli).to receive(:set).with(request.cache_key, response, 5)
+
+          cache.set(request, response)
+        end
+      end
+
+      context "when a default_ttl is configured" do
+        let(:cache) { Typhoeus::Cache::Dalli.new(dalli, :default_ttl => 60) }
+
+        it "passes the default ttl to Dalli" do
+          expect(dalli).to receive(:set).with(request.cache_key, response, 60)
+
+          cache.set(request, response)
+        end
       end
     end
 

@@ -3,16 +3,12 @@
 require 'spec_helper'
 
 describe Typhoeus::Hydra::Queueable do
-  let(:base_url) { "localhost:3001" }
+  let(:base_url) { TestServer.host }
   let(:options) { {} }
   let(:hydra) { Typhoeus::Hydra.new(options) }
 
   describe "#queue" do
     let(:request) { Typhoeus::Request.new("") }
-
-    it "accepts requests" do
-      hydra.queue(request)
-    end
 
     it "sets hydra on request" do
       hydra.queue(request)
@@ -59,7 +55,7 @@ describe Typhoeus::Hydra::Queueable do
     end
 
     context "when request queued" do
-      let(:first) { Typhoeus::Request.new("localhost:3001/first") }
+      let(:first) { Typhoeus::Request.new("#{TestServer.host}/first") }
       let(:requests) { [first] }
 
       it "adds request from queue to multi" do
@@ -69,9 +65,9 @@ describe Typhoeus::Hydra::Queueable do
     end
 
     context "when three request queued" do
-      let(:first) { Typhoeus::Request.new("localhost:3001/first") }
-      let(:second) { Typhoeus::Request.new("localhost:3001/second") }
-      let(:third) { Typhoeus::Request.new("localhost:3001/third") }
+      let(:first) { Typhoeus::Request.new("#{TestServer.host}/first") }
+      let(:second) { Typhoeus::Request.new("#{TestServer.host}/second") }
+      let(:third) { Typhoeus::Request.new("#{TestServer.host}/third") }
       let(:requests) { [first, second, third] }
 
       it "adds requests from queue to multi" do

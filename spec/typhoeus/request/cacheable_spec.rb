@@ -5,7 +5,7 @@ require 'spec_helper'
 describe Typhoeus::Request::Cacheable do
   let(:cache) { MemoryCache.new }
   let(:options) { {} }
-  let(:request) { Typhoeus::Request.new("http://localhost:3001", options) }
+  let(:request) { Typhoeus::Request.new(TestServer.url, options) }
   let(:response) { Typhoeus::Response.new }
 
   before { Typhoeus::Config.cache = cache }
@@ -53,11 +53,11 @@ describe Typhoeus::Request::Cacheable do
 
         context "when the cached request omitted the default method" do
           let(:request) do
-            Typhoeus::Request.new("http://localhost:3001", :method => :get)
+            Typhoeus::Request.new(TestServer.url, :method => :get)
           end
 
           before do
-            cache.memory[Typhoeus::Request.new("http://localhost:3001")] = response
+            cache.memory[Typhoeus::Request.new(TestServer.url)] = response
           end
 
           it "hits the cache" do

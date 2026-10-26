@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Typhoeus::Hydra::Stubbable do
-  let(:base_url) { "localhost:3001" }
+  let(:base_url) { TestServer.host }
   let(:request) { Typhoeus::Request.new(base_url) }
   let(:response) { Typhoeus::Response.new }
   let(:hydra) { Typhoeus::Hydra.new }
@@ -11,8 +11,11 @@ describe Typhoeus::Hydra::Stubbable do
   before { Typhoeus.stub(base_url).and_return(response) }
 
   describe "#add" do
-    it "checks expectations" do
+    it "does not add a stubbed request to the multi" do
       hydra.add(request)
+
+      expect(hydra.multi.easy_handles).to be_empty
+      expect(request.response).to be(response)
     end
 
     context "when expectation found" do

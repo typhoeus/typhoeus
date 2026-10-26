@@ -92,11 +92,6 @@ module Typhoeus
       def has_good_response_code?
         response_code >= 200 && response_code < 300
       end
-
-      # :nodoc:
-      def has_bad_response_code?
-        !has_good_response_code?
-      end
     end
   end
 end

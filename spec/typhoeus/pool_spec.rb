@@ -38,7 +38,7 @@ describe Typhoeus::Pool do
       tempfile2 = Tempfile.new('cookies')
 
       easy.cookiejar = tempfile1.path
-      easy.url = "localhost:3001/cookies-test"
+      easy.url = "#{TestServer.host}/cookies-test"
       easy.perform
 
       Typhoeus::Pool.release(easy)
@@ -49,7 +49,7 @@ describe Typhoeus::Pool do
 
       # do it again - and check if tempfile1 wasn't change
       easy.cookiejar = tempfile2.path
-      easy.url = "localhost:3001/cookies-test2"
+      easy.url = "#{TestServer.host}/cookies-test2"
       easy.perform
 
       Typhoeus::Pool.release(easy)
@@ -84,6 +84,26 @@ describe Typhoeus::Pool do
       end
     end
 
+    context "when pooling is disabled" do
+      before { Typhoeus::Config.max_idle_easies = 0 }
+
+      it "cleans up instead of pooling" do
+        expect(easy).to receive(:cleanup)
+
+        Typhoeus::Pool.release(easy)
+
+        expect(Typhoeus::Pool.send(:easies)).to be_empty
+      end
+    end
+
+    context "when an unexpected error is raised" do
+      before { allow(easy).to receive(:cookielist=).and_raise("boom") }
+
+      it "re-raises instead of dropping the easy" do
+        expect { Typhoeus::Pool.release(easy) }.to raise_error("boom")
+      end
+    end
+
     context "when max_idle_easies is nil" do
       before { Typhoeus::Config.max_idle_easies = nil }
 
@@ -95,9 +115,11 @@ describe Typhoeus::Pool do
     end
 
     context "when easy was created before a fork" do
+      let(:fork_safety) { Class.new(StandardError) }
+
       before do
-        skip unless defined?(Ethon::Errors::ForkSafety)
-        allow(easy).to receive(:cookielist=).and_raise(Ethon::Errors::ForkSafety.new)
+        stub_const("Ethon::Errors::ForkSafety", fork_safety)
+        allow(easy).to receive(:cookielist=).and_raise(fork_safety.new)
       end
 
       it "drops the easy instead of raising" do
@@ -107,10 +129,12 @@ describe Typhoeus::Pool do
     end
 
     context "when libcurl does not support cookies" do
+      let(:unsupported_option) { Class.new(StandardError) }
+
       before do
-        skip unless defined?(Ethon::Errors::UnsupportedOption)
+        stub_const("Ethon::Errors::UnsupportedOption", unsupported_option)
         allow(easy).to receive(:cookielist=).and_raise(
-          Ethon::Errors::UnsupportedOption.new(:cookielist)
+          unsupported_option.new(:cookielist)
         )
       end
 
@@ -259,6 +283,14 @@ describe Typhoeus::Pool do
         end
       end
       expect(array.uniq.size).to eq(3)
+    end
+
+    it "releases the easy when the block raises" do
+      easy = Ethon::Easy.new
+      allow(Typhoeus::Pool).to receive(:get).and_return(easy)
+      expect(Typhoeus::Pool).to receive(:release).with(easy)
+
+      expect { Typhoeus::Pool.with_easy { raise "boom" } }.to raise_error("boom")
     end
   end
 end

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Typhoeus::EasyFactory do
-  let(:base_url) { "http://localhost:3001" }
+  let(:base_url) { TestServer.url }
   let(:hydra) { Typhoeus::Hydra.new(:max_concurrency => 1) }
   let(:options) { {} }
   let(:request) { Typhoeus::Request.new(base_url, options) }
@@ -78,6 +78,21 @@ describe Typhoeus::EasyFactory do
       end
 
 
+    end
+
+    context "when timeout_ms is not an integer" do
+      let(:options) { { :timeout_ms => 1.5 } }
+
+      it "warns and ceils the value" do
+        expect(easy_factory).to receive(:warn).with(
+          "Value '1.5' for option 'timeout_ms' must be integer."
+        )
+        expect(easy_factory.easy).to receive(:http_request).with(
+          anything, anything, hash_including(:timeout_ms => 2)
+        )
+
+        easy_factory.get
+      end
     end
 
     context "when timeouts are not numeric" do
