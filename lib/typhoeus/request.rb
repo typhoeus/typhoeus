@@ -183,15 +183,25 @@ module Typhoeus
       Digest::SHA1.hexdigest(cache_key_components.join)
     end
 
-    # Mimics libcurls POST body generation. This is not accurate, but good
+    # Mimics libcurl's POST body generation. This is not accurate, but good
     # enough for VCR.
     #
     # @return [ String ] The encoded body.
-    #   otherwise.
     #
     # @api private
     def encoded_body
-      Ethon::Easy::Form.new(nil, options[:body]).to_s
+      easy = Typhoeus::Pool.get
+      begin
+        form = Ethon::Easy::Form.new(easy, options[:body])
+        if options.key?(:params_encoding)
+          form.params_encoding = options[:params_encoding]
+        end
+        easy.escape = options[:escape] if options.key?(:escape)
+        form.escape = easy.escape?
+        form.to_s
+      ensure
+        Typhoeus::Pool.release(easy) if easy
+      end
     end
 
     private
