@@ -30,7 +30,7 @@ module Rack
             hash.each_pair do |key, value|
               if value.respond_to?(:each_pair)
                 decode!(value)
-                hash[key] = convert(value.is_a?(Hash) ? value : value.to_h)
+                hash[key] = convert(hash_like_to_hash(value))
               end
             end
             hash
@@ -52,6 +52,20 @@ module Rack
 
             copy = {}
             value.each_pair { |key, nested| copy[key] = deep_dup(nested) }
+            copy
+          end
+
+          # Copy a hash-like object without calling conversion methods such as
+          # Parameters#to_h, which raise for unpermitted Rails parameters.
+          #
+          # @param [ Object ] value The value to copy.
+          #
+          # @return [ Hash ] The copied hash.
+          def hash_like_to_hash(value)
+            return value if value.is_a?(Hash)
+
+            copy = {}
+            value.each_pair { |key, nested| copy[key] = nested }
             copy
           end
 

@@ -20,8 +20,9 @@ class FakeParams
     @hash[key] = value
   end
 
+  # ActionController::Parameters#to_h raises for unpermitted parameters.
   def to_h
-    @hash
+    raise "UnfilteredParameters"
   end
 end
 
