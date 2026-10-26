@@ -139,17 +139,22 @@ describe Typhoeus::EasyFactory do
         expect{ easy_factory.get }.to raise_error(Ethon::Errors::InvalidOption)
       end
 
+      it "keeps the error message unchanged" do
+        expect { easy_factory.get }.to raise_error(Ethon::Errors::InvalidOption) do |error|
+          expect(error.message).to eq(Ethon::Errors::InvalidOption.new(:invalid).message)
+        end
+      end
+
       it "releases easy" do
         expect { easy_factory.get }.to raise_error(Ethon::Errors::InvalidOption)
         expect(Typhoeus::Pool.send(:easies)).to include(easy_factory.easy)
       end
 
-      it "keeps the original error when the message cannot be parsed" do
-        error = Ethon::Errors::InvalidOption.new("x")
-        allow(error).to receive(:message).and_return("invalid option")
-        expect(easy_factory.easy).to receive(:http_request).and_raise(error)
+      it "keeps an InvalidOption raised by Ethon" do
+        error = Ethon::Errors::InvalidOption.new(:invalid)
+        allow(easy_factory.easy).to receive(:http_request).and_raise(error)
 
-        expect { easy_factory.get }.to raise_error(Ethon::Errors::InvalidOption)
+        expect { easy_factory.get }.to raise_error(error)
       end
     end
 
@@ -161,6 +166,15 @@ describe Typhoeus::EasyFactory do
           Ethon::Errors::InvalidOption, /The option cache_timeout was removed/
         )
       end
+
+      it "raises a clean message" do
+        expect { easy_factory.get }.to raise_error(Typhoeus::Errors::InvalidOption) do |error|
+          expect(error.message).to eq(
+            "#{Ethon::Errors::InvalidOption.new(:cache_timeout).message}\n" \
+            "The option cache_timeout was removed."
+          )
+        end
+      end
     end
 
     context "when changed option" do
@@ -170,6 +184,15 @@ describe Typhoeus::EasyFactory do
         expect{ easy_factory.get }.to raise_error(
           Ethon::Errors::InvalidOption, /Please try proxyauth instead of proxy_auth_method/
         )
+      end
+
+      it "raises a clean message" do
+        expect { easy_factory.get }.to raise_error(Typhoeus::Errors::InvalidOption) do |error|
+          expect(error.message).to eq(
+            "#{Ethon::Errors::InvalidOption.new(:proxy_auth_method).message}\n" \
+            "Please try proxyauth instead of proxy_auth_method."
+          )
+        end
       end
     end
 

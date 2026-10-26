@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'set'
+require 'typhoeus/errors/invalid_option'
 
 module Typhoeus
 
@@ -107,10 +108,6 @@ module Typhoeus
         # ethon will set infilesize to zero if form.empty?
         set_read_callback(read_callback_body) if !read_callback_body.nil?
         set_callback
-      rescue Ethon::Errors::InvalidOption => e
-        release_easy(@easy) if @easy
-        help = provide_help($1) if e.message =~ /:\s:?(\w+)/
-        raise e.class, "#{e.message}#{help}", e.backtrace
       rescue Exception
         release_easy(@easy) if @easy
         raise
@@ -130,6 +127,13 @@ module Typhoeus
         if new_option = RENAMED_OPTIONS[k.to_sym]
           warn("Deprecated option #{k}. Please use #{new_option} instead.")
           sanitized[new_option] = v
+        elsif new_option = CHANGED_OPTIONS[s]
+          raise Errors::InvalidOption.new(
+            s,
+            "\nPlease try #{new_option} instead of #{s}."
+          )
+        elsif REMOVED_OPTIONS.include?(s)
+          raise Errors::InvalidOption.new(s, "\nThe option #{s} was removed.")
         # sanitize timeouts
         elsif SANITIZE_TIMEOUT.include?(s)
           # An unset value means "no timeout" and never reaches Ethon.
@@ -253,14 +257,6 @@ module Typhoeus
       easy.set_read_callback(body)
 
       easy
-    end
-
-    def provide_help(option)
-      if new_option = CHANGED_OPTIONS[option.to_sym]
-        "\nPlease try #{new_option} instead of #{option}." if new_option
-      elsif REMOVED_OPTIONS.include?(option.to_sym)
-        "\nThe option #{option} was removed."
-      end
     end
   end
 end
