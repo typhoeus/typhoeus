@@ -8,10 +8,6 @@ describe "Rack::Typhoeus::Middleware::ParamsDecoder" do
   let(:app) { lambda { |env| [200, {}, ["ok"]] } }
   let(:middleware) { klass.new(app) }
 
-  before(:all) do
-    require "rack/typhoeus"
-  end
-
   def call(path, options = {})
     env = Rack::MockRequest.env_for(path, options)
     middleware.call(env)
