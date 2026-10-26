@@ -87,7 +87,16 @@ module Typhoeus
         requests = pending.delete(request)
         return response.handled_response unless requests
 
-        requests.each { |pending_request| pending_request.finish(response.dup, true) }
+        error = nil
+        requests.each do |pending_request|
+          begin
+            pending_request.finish(response.dup, true)
+          rescue StandardError => e
+            error ||= e
+          end
+        end
+        raise error if error
+
         response.handled_response
       end
 

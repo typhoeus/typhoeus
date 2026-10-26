@@ -122,6 +122,22 @@ describe Typhoeus::Hydra::Memoizable do
       expect(follower.response.request).to equal(follower)
     end
 
+    it "finishes the remaining followers when a follower's callback raises" do
+      url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+      leader = Typhoeus::Request.new(url)
+      failing = Typhoeus::Request.new(url)
+      follower = Typhoeus::Request.new(url)
+      failing.on_complete { |_| raise "follower boom" }
+      hydra.queue(leader)
+      hydra.queue(failing)
+      hydra.queue(follower)
+
+      expect { hydra.run }.to raise_error("follower boom")
+
+      expect(follower.response).not_to be_nil
+      expect(follower.response.request).to equal(follower)
+    end
+
     it "clears memory when the run raises" do
       hydra.memory[request] = Typhoeus::Response.new
       allow(hydra).to receive(:multi).and_raise("boom")
