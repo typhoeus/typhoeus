@@ -232,6 +232,36 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
       end
     end
 
+    describe "real timeouts" do
+      it "raises a timeout error for a slow response" do
+        connection = Faraday.new(:url => base_url) do |faraday|
+          faraday.options.timeout = 0.05
+          faraday.adapter :typhoeus
+        end
+
+        expect { connection.get("/slow") }.to raise_error(Faraday::TimeoutError)
+      end
+
+      it "returns a response that fits in the timeout" do
+        connection = Faraday.new(:url => base_url) do |faraday|
+          faraday.options.timeout = 5
+          faraday.adapter :typhoeus
+        end
+
+        expect(connection.get("/slow").status).to eq(200)
+      end
+
+      it "prefers read_timeout over timeout" do
+        connection = Faraday.new(:url => base_url) do |faraday|
+          faraday.options.timeout = 5
+          faraday.options.read_timeout = 0.05
+          faraday.adapter :typhoeus
+        end
+
+        expect { connection.get("/slow") }.to raise_error(Faraday::TimeoutError)
+      end
+    end
+
     describe "#configure_socket" do
       let(:env) { { :request => { :bind => { :host => "interface" } } } }
 
