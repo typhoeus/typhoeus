@@ -25,21 +25,49 @@ module Rack
           #
           # @return [Hash] Hash with properly decoded nested arrays.
           def decode!(hash)
-            return hash unless hash.is_a?(Hash)
-            hash.each_pair do |key,value|
-              if value.is_a?(Hash)
+            return hash unless hash.respond_to?(:each_pair)
+
+            hash.each_pair do |key, value|
+              if value.respond_to?(:each_pair)
                 decode!(value)
-                hash[key] = convert(value)
+                hash[key] = convert(hash_like_to_hash(value))
               end
             end
             hash
           end
 
           def decode(hash)
-            decode!(hash.dup)
+            decode!(deep_dup(hash))
           end
 
           private
+
+          # Copy nested hashes so decoding cannot mutate the caller's params.
+          #
+          # @param [ Object ] value The value to copy.
+          #
+          # @return [ Object ] The copied value.
+          def deep_dup(value)
+            return value unless value.respond_to?(:each_pair)
+
+            copy = {}
+            value.each_pair { |key, nested| copy[key] = deep_dup(nested) }
+            copy
+          end
+
+          # Copy a hash-like object without calling conversion methods such as
+          # Parameters#to_h, which raise for unpermitted Rails parameters.
+          #
+          # @param [ Object ] value The value to copy.
+          #
+          # @return [ Hash ] The copied hash.
+          def hash_like_to_hash(value)
+            return value if value.is_a?(Hash)
+
+            copy = {}
+            value.each_pair { |key, nested| copy[key] = nested }
+            copy
+          end
 
           # Checks if Hash is an Array encoded as a Hash.
           # Specifically will check for the Hash to have this
@@ -66,7 +94,7 @@ module Rack
           # @return [Arraya/Hash]
           def convert(hash)
             if encoded?(hash)
-              hash.sort{ |a, b| a[0].to_i <=> b[0].to_i }.map{ |key, value| value }
+              hash.sort { |a, b| a[0].to_s.to_i <=> b[0].to_s.to_i }.map { |_, value| value }
             else
               hash
             end
