@@ -134,6 +134,39 @@ describe Typhoeus::Pool do
     end
   end
 
+  describe "#clear" do
+    it "cleans up every pooled easy" do
+      first = double("first easy")
+      second = double("second easy")
+      Typhoeus::Pool.send(:easies).push(first, second)
+
+      expect(first).to receive(:cleanup)
+      expect(second).to receive(:cleanup)
+
+      Typhoeus::Pool.clear
+
+      expect(Typhoeus::Pool.send(:easies)).to be_empty
+    end
+
+    it "keeps cleaning the remaining easies when one cannot be cleaned up" do
+      failing = double("failing easy")
+      working = double("working easy")
+      Typhoeus::Pool.send(:easies).push(failing, working)
+
+      allow(failing).to receive(:cleanup).and_raise("already cleaned up")
+      expect(working).to receive(:cleanup)
+
+      expect { Typhoeus::Pool.clear }.not_to raise_error
+      expect(Typhoeus::Pool.send(:easies)).to be_empty
+    end
+
+    it "returns the empty pool" do
+      Typhoeus::Pool.send(:easies) << double("easy", :cleanup => nil)
+
+      expect(Typhoeus::Pool.clear).to be(Typhoeus::Pool.send(:easies))
+    end
+  end
+
   describe "#get" do
     context "when easy in pool" do
       before { Typhoeus::Pool.send(:easies) << easy }
