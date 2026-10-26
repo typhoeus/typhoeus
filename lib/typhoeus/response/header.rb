@@ -82,9 +82,9 @@ module Typhoeus
       def select!(&block)
         return enum_for(:select!) unless block
 
-        super
+        result = super
         rebuild_sanitized
-        self
+        result ? self : nil
       end
       alias_method :filter!, :select!
 
@@ -108,8 +108,8 @@ module Typhoeus
         result ? self : nil
       end
 
-      def transform_keys!(&block)
-        return enum_for(:transform_keys!) unless block
+      def transform_keys!(*args, &block)
+        return enum_for(:transform_keys!, *args) if !block && args.empty?
 
         super
         rebuild_sanitized
