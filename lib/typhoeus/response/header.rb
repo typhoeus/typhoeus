@@ -46,11 +46,22 @@ module Typhoeus
       end
 
       def []=(key, value)
+        # Store string keys so the delegated Hash and the case-insensitive
+        # index describe the same header set even when a caller used a symbol.
+        key = key.to_s
         delete_underlying_key(key)
         __getobj__[key] = value
         @sanitized[convert_key(key)] = value
       end
       alias_method :store, :[]=
+
+      def merge(other)
+        merged = dup
+        merged.update(other) do |key, old, new|
+          block_given? ? yield(key, old, new) : new
+        end
+        merged
+      end
 
       def delete(key)
         value = self[key]
@@ -148,7 +159,13 @@ module Typhoeus
       alias_method :member?, :include?
 
       def fetch(key, *extras, &block)
-        @sanitized.fetch(convert_key(key), *extras, &block)
+        if block
+          # Hash#fetch yields the key the caller asked for, not a normalized
+          # one. Keep that behavior while looking up case-insensitively.
+          @sanitized.fetch(convert_key(key), *extras) { block.call(key) }
+        else
+          @sanitized.fetch(convert_key(key), *extras)
+        end
       end
 
       def dig(key, *identifiers)
@@ -165,8 +182,16 @@ module Typhoeus
       end
 
       def fetch_values(*indices, &block)
-        indices.map! { |key| convert_key(key) }
-        @sanitized.fetch_values(*indices, &block)
+        indices.map do |key|
+          converted = convert_key(key)
+          if @sanitized.key?(converted)
+            @sanitized[converted]
+          elsif block
+            block.call(key)
+          else
+            @sanitized.fetch(converted)
+          end
+        end
       end
 
       # Parses the raw header.

@@ -45,7 +45,11 @@ describe Typhoeus::Response::Header do
       it "provides symbol fetch" do
         expect(header.fetch(:date)).to eq('Fri, 29 Jun 2012 10:09:23 GMT')
         expect(header.fetch(:foo, 'default')).to eq('default')
-        expect(header.fetch(:foo) { |key| key }).to eq('foo')
+        expect(header.fetch(:foo) { |key| key }).to eq(:foo)
+      end
+
+      it "yields the requested key to fetch's block" do
+        expect(header.fetch('Missing') { |key| key }).to eq('Missing')
       end
 
       it "provides case insensitive dig" do
@@ -83,7 +87,11 @@ describe Typhoeus::Response::Header do
 
       it "provides symbol fetch_values" do
         expect(header.fetch_values(:date)).to eq(['Fri, 29 Jun 2012 10:09:23 GMT'])
-        expect(header.fetch_values(:date, :foo) { |key| key }).to eq(['Fri, 29 Jun 2012 10:09:23 GMT', 'foo'])
+        expect(header.fetch_values(:date, :foo) { |key| key }).to eq(['Fri, 29 Jun 2012 10:09:23 GMT', :foo])
+      end
+
+      it "yields the requested keys to fetch_values' block" do
+        expect(header.fetch_values('Missing', :also_missing) { |key| key }).to eq(['Missing', :also_missing])
       end
     end
 
@@ -108,6 +116,10 @@ describe Typhoeus::Response::Header do
 
       it "provides case insensitive access" do
         expect(header['DaTe']).to eq(raw[:Date])
+      end
+
+      it "stores symbol keys as strings" do
+        expect(header.to_hash).to eq("Date" => raw[:Date])
       end
     end
 
@@ -307,6 +319,30 @@ describe Typhoeus::Response::Header do
       header["a"] = "2"
 
       expect(header.to_hash.keys).to eq(["a"])
+    end
+
+    it "stores symbol keys as strings" do
+      header[:B] = "2"
+
+      expect(header.to_hash.keys).to include("B")
+      expect(header.to_hash.keys).not_to include(:B)
+      expect(header["b"]).to eq("2")
+    end
+
+    it "merges case-insensitive keys into a Header" do
+      merged = header.merge("a" => "2")
+
+      expect(merged).to be_a(Typhoeus::Response::Header)
+      expect(merged["A"]).to eq("2")
+      expect(merged.to_hash.keys).to eq(["a"])
+      expect(header["A"]).to eq("1")
+    end
+
+    it "uses the merge block for case-insensitive conflicts" do
+      merged = header.merge("a" => "2") { |_, old, new| "#{old}-#{new}" }
+
+      expect(merged["A"]).to eq("1-2")
+      expect(header["A"]).to eq("1")
     end
 
     it "deletes from both stores" do
