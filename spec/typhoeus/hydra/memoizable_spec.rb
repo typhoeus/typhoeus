@@ -188,13 +188,13 @@ describe Typhoeus::Hydra::Memoizable do
       leader = Typhoeus::Request.new(url)
       follower = Typhoeus::Request.new(url)
       leader.on_complete { leader.options[:changed] = true }
+      follower.on_complete { expect(hydra.pending).to be_empty }
       hydra.queue(leader)
       hydra.queue(follower)
       hydra.run
 
       expect(follower.response).not_to be_nil
       expect(follower.response.body).to eq("1")
-      expect(hydra.pending).to be_empty
     end
 
     it "finishes waiting requests when the leader's callback changes options and raises" do
