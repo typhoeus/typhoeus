@@ -5,7 +5,10 @@ module Typhoeus
     module Cacheable
       def response=(response)
         if cacheable? && cacheable_response?(response)
-          cache.set(self, response)
+          # The request exposes this response to its callbacks and the caller.
+          # Store a snapshot so later mutation cannot change what a cache hit
+          # returns.
+          cache.set(self, response.dup)
         end
         super
       end

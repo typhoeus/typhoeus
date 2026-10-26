@@ -109,6 +109,24 @@ describe Typhoeus::Hydra::Memoizable do
       expect(second.response.handled_response).to eq(:second)
     end
 
+    it "does not let the leader change a follower's response" do
+      url = "#{TestServer.url}/count/memo-#{rand(1_000_000)}"
+      leader = Typhoeus::Request.new(url)
+      follower = Typhoeus::Request.new(url)
+      leader.on_complete do |response|
+        response.options[:leader] = true
+        response.headers["X-Leader"] = "1"
+        response.body << "!"
+      end
+      hydra.queue(leader)
+      hydra.queue(follower)
+      hydra.run
+
+      expect(follower.response.options).not_to have_key(:leader)
+      expect(follower.response.headers["X-Leader"]).to be_nil
+      expect(follower.response.body).to eq("1")
+    end
+
     it "does not let a follower change the leader's response" do
       url = "#{TestServer.url}/count/memo-#{TestServer.next_id}"
       leader = Typhoeus::Request.new(url)

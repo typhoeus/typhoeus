@@ -36,6 +36,22 @@ describe Typhoeus::Request::Cacheable do
           expect(cache.memory[request]).to be_nil
         end
 
+        it "stores a snapshot that later response changes cannot alter" do
+          response = Typhoeus::Response.new(
+            :body => +"body",
+            :headers => { "X-Test" => "original" }
+          )
+          request.response = response
+
+          response.body << " changed"
+          response.headers["X-Test"] = "changed"
+
+          cached = cache.memory[request]
+          expect(cached).not_to be(response)
+          expect(cached.body).to eq("body")
+          expect(cached.headers["X-Test"]).to eq("original")
+        end
+
         it "doesn't cache a transport failure" do
           response = Typhoeus::Response.new(:return_code => :operation_timedout)
           request.response = response
