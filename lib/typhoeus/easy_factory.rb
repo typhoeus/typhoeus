@@ -92,11 +92,15 @@ module Typhoeus
       @released = false
       begin
         read_callback_body = request.options[:set_read_callback]
+        easy = self.easy
+        url = request.base_url.to_s
+        options = sanitize(request.options)
+        options.delete(:params) if url.empty?
 
         easy.http_request(
-          request.base_url.to_s,
+          url,
           request.options.fetch(:method, :get),
-          sanitize(request.options)
+          options
         )
 
         # this needs to happen after http_request because

@@ -318,6 +318,33 @@ describe Typhoeus::Request do
         expect(request_1.cache_key).to_not eq(request_2.cache_key)
       end
     end
+
+    context 'with values that stringify the same' do
+      let(:request_1) { described_class.new(base_url, :params => { :filter => ["b", "c"] }) }
+      let(:request_2) { described_class.new(base_url, :params => { :filter => '["b", "c"]' }) }
+
+      it 'returns different cache keys' do
+        expect(request_1.cache_key).to_not eq(request_2.cache_key)
+      end
+    end
+
+    context 'with an array and a hash' do
+      let(:request_1) { described_class.new(base_url, :body => { :a => [] }) }
+      let(:request_2) { described_class.new(base_url, :body => { :a => {} }) }
+
+      it 'returns different cache keys' do
+        expect(request_1.cache_key).to_not eq(request_2.cache_key)
+      end
+    end
+
+    context 'with keys that stringify the same' do
+      let(:request_1) { described_class.new(base_url, :params => { :a => 1, 'a' => 2 }) }
+      let(:request_2) { described_class.new(base_url, :params => { 'a' => 2, :a => 1 }) }
+
+      it 'returns the same cache key' do
+        expect(request_1.cache_key).to eq(request_2.cache_key)
+      end
+    end
   end
 
   describe "#encoded_body" do
