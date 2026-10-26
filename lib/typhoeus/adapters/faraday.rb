@@ -96,7 +96,7 @@ module Faraday # :nodoc:
             end
           end
 
-          save_response(env, resp.code, resp.body) do |response_headers|
+          save_response(env, resp.code, resp.body, nil, resp.status_message) do |response_headers|
             response_headers.parse resp.response_headers
           end
           # in async mode, :response is initialized at this point
@@ -123,9 +123,10 @@ module Faraday # :nodoc:
       def configure_ssl(req, env)
         ssl = env[:ssl]
 
-        verify_p = (ssl && ssl.fetch(:verify, true))
+        verify_p = ssl_option(ssl, :verify, true)
+        verify_host = ssl_option(ssl, :verify_hostname, true)
 
-        if verify_p
+        if verify_p && verify_host
           ssl_verifyhost = req.options.fetch(:ssl_verifyhost, 2)
         else
           ssl_verifyhost = 0
@@ -133,13 +134,67 @@ module Faraday # :nodoc:
 
         req.options[:ssl_verifyhost] = ssl_verifyhost
         req.options[:ssl_verifypeer] = verify_p
-        req.options[:sslversion] = ssl[:version]     if ssl[:version]
-        req.options[:sslcert]    = path_for(ssl[:client_cert], :client_cert) if ssl[:client_cert]
-        req.options[:sslkey]     = path_for(ssl[:client_key], :client_key)   if ssl[:client_key]
-        req.options[:cainfo]     = ssl[:ca_file]     if ssl[:ca_file]
-        req.options[:capath]     = ssl[:ca_path]     if ssl[:ca_path]
-        client_cert_passwd_key   = [:client_cert_passwd, :client_certificate_password].detect { |name| ssl.key?(name) }
-        req.options[:keypasswd]  = ssl[client_cert_passwd_key] if client_cert_passwd_key
+        ssl_version = ssl_version_for(ssl)
+        req.options[:sslversion] = ssl_version if ssl_version
+
+        client_cert = ssl_option(ssl, :client_cert)
+        req.options[:sslcert] = path_for(client_cert, :client_cert) if client_cert
+        client_key = ssl_option(ssl, :client_key)
+        req.options[:sslkey] = path_for(client_key, :client_key) if client_key
+        ca_file = ssl_option(ssl, :ca_file)
+        req.options[:cainfo] = ca_file if ca_file
+        ca_path = ssl_option(ssl, :ca_path)
+        req.options[:capath] = ca_path if ca_path
+
+        client_cert_passwd_key = [:client_cert_passwd, :client_certificate_password].detect do |name|
+          !ssl_option(ssl, name).nil?
+        end
+        req.options[:keypasswd] = ssl_option(ssl, client_cert_passwd_key) if client_cert_passwd_key
+      end
+
+      # Return an SSL option from a Faraday SSLOptions struct or a Hash.
+      # Faraday leaves unset options nil and treats nil as the default, for
+      # example `verify_hostname?` is true unless the value is false.
+      #
+      # @return [ Object ] The option value or the default.
+      def ssl_option(ssl, name, default = nil)
+        return default unless ssl
+
+        value =
+          if ssl.is_a?(Hash)
+            ssl.fetch(name, default)
+          elsif ssl.respond_to?(name)
+            ssl.public_send(name)
+          end
+
+        value.nil? ? default : value
+      end
+
+      # Translate an OpenSSL/Faraday SSL version to Ethon's spelling.
+      #
+      # @return [ Symbol, nil ] The Ethon SSL version.
+      def ssl_version_for(ssl)
+        version = ssl_option(ssl, :version)
+        min_version = ssl_option(ssl, :min_version)
+        max_version = ssl_option(ssl, :max_version)
+
+        if version.nil? && min_version && min_version == max_version
+          version = min_version
+        elsif version.nil? && (min_version || max_version)
+          raise ArgumentError, "Typhoeus does not support ssl.min_version/max_version"
+        end
+
+        return nil unless version
+
+        normalized = version.to_s.downcase.to_sym
+        normalized = :default if normalized == :sslv23
+
+        supported = Ethon::Curl.easy_options(nil)[:sslversion][:opts]
+        unless supported.key?(normalized)
+          raise ArgumentError, "Unknown SSL version #{version.inspect}"
+        end
+
+        normalized
       end
 
       def configure_proxy(req, env)
