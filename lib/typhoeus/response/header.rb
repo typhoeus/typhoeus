@@ -25,6 +25,22 @@ module Typhoeus
         parse
       end
 
+      def initialize_dup(other)
+        super
+        copy_delegate(other)
+      end
+      private :initialize_dup
+
+      def initialize_clone(other, freeze: nil)
+        if freeze.nil?
+          super(other)
+        else
+          super(other, freeze: freeze)
+        end
+        copy_delegate(other)
+      end
+      private :initialize_clone
+
       def [](key)
         @sanitized[convert_key(key)]
       end
@@ -93,12 +109,11 @@ module Typhoeus
       # @example Parse header.
       #   header.parse
       def parse
-        case @raw
-        when Hash
-          raw.each do |k, v|
+        if raw.respond_to?(:each_pair)
+          raw.each_pair do |k, v|
             process_pair(k, v)
           end
-        when String
+        elsif raw.is_a?(String)
           raw.split(/\r?\n(?!\s)/).each do |header|
             header.strip!
             next if header.empty? || header.start_with?( 'HTTP/' )
@@ -154,6 +169,25 @@ module Typhoeus
 
       def convert_key(key)
         key.to_s.downcase
+      end
+
+      def duplicate_value(value)
+        value.is_a?(Array) ? value.dup : value
+      end
+
+      # DelegateClass copies only the delegated hash itself. Rebuild both
+      # hashes so later mutations cannot reach the original header.
+      def copy_delegate(other)
+        copy = {}
+        other.__getobj__.each do |key, value|
+          copy[key] = duplicate_value(value)
+        end
+        __setobj__(copy)
+
+        @sanitized = {}
+        other.instance_variable_get(:@sanitized).each do |key, value|
+          @sanitized[key] = duplicate_value(value)
+        end
       end
 
       def delete_underlying_key(key)

@@ -31,6 +31,15 @@ describe Typhoeus::Response do
           expect(response.headers['A']).to eq('B')
         end
       end
+
+      context "when headers is a Header" do
+        let(:headers) { Typhoeus::Response::Header.new("A: B") }
+        let(:options) { { :headers => headers } }
+
+        it "keeps the headers" do
+          expect(response.headers["A"]).to eq("B")
+        end
+      end
     end
   end
 
@@ -98,5 +107,46 @@ describe Typhoeus::Response do
       end
     end
 
+  end
+
+  describe "#dup" do
+    let(:options) do
+      {
+        :response_body => +"body",
+        :response_headers => "A: 1\r\nA: 2",
+        :return_code => :ok
+      }
+    end
+
+    it "copies the options container" do
+      copy = response.dup
+      copy.options[:extra] = true
+
+      expect(response.options).not_to have_key(:extra)
+    end
+
+    it "copies mutable option values" do
+      copy = response.dup
+      copy.options[:response_body] << "!"
+
+      expect(response.body).to eq("body")
+    end
+
+    it "copies headers" do
+      response.headers
+      copy = response.dup
+      copy.headers["A"] << "3"
+      copy.headers["B"] = "4"
+
+      expect(response.headers["A"]).to eq(["1", "2"])
+      expect(response.headers["B"]).to be_nil
+    end
+
+    it "does not copy a callback result" do
+      response.handled_response = :handled
+      copy = response.dup
+
+      expect(copy.handled_response).to equal(copy)
+    end
   end
 end
