@@ -93,6 +93,7 @@ describe Typhoeus::Hydra::Runnable do
     end
 
     context "when three request queued" do
+      let(:options) { { :max_concurrency => 1 } }
       let(:first) { Typhoeus::Request.new("localhost:3001/first") }
       let(:second) { Typhoeus::Request.new("localhost:3001/second") }
       let(:third) { Typhoeus::Request.new("localhost:3001/third") }
@@ -113,25 +114,31 @@ describe Typhoeus::Hydra::Runnable do
         expect(third.response).to be
       end
 
-      it "sends first first" do
+      it "completes first before second and third" do
         first.on_complete do
           expect(second.response).to be_nil
           expect(third.response).to be_nil
         end
+
+        hydra.run
       end
 
-      it "sends second second" do
-        first.on_complete do
+      it "completes second before third" do
+        second.on_complete do
           expect(first.response).to be
           expect(third.response).to be_nil
         end
+
+        hydra.run
       end
 
-      it "sends thirds last" do
-        first.on_complete do
+      it "completes third last" do
+        third.on_complete do
+          expect(first.response).to be
           expect(second.response).to be
-          expect(third.response).to be
         end
+
+        hydra.run
       end
     end
 

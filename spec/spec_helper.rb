@@ -29,6 +29,12 @@ RSpec.configure do |config|
     Typhoeus::Config.verbose = false
     Typhoeus::Config.block_connection = false
     Typhoeus::Config.memoize = false
+    Typhoeus::Config.cache = nil
+    Typhoeus::Config.user_agent = nil
+    Typhoeus::Config.timeout = nil
+    Typhoeus::Config.connecttimeout = nil
+    Typhoeus::Config.proxy = nil
     Typhoeus::Config.max_idle_easies = 20
+    Thread.current[:typhoeus_hydra] = nil
   end
 end

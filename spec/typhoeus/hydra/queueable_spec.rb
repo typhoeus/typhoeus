@@ -10,10 +10,6 @@ describe Typhoeus::Hydra::Queueable do
   describe "#queue" do
     let(:request) { Typhoeus::Request.new("") }
 
-    it "accepts requests" do
-      hydra.queue(request)
-    end
-
     it "sets hydra on request" do
       hydra.queue(request)
       expect(request.hydra).to eq(hydra)

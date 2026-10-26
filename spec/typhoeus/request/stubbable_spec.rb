@@ -10,8 +10,8 @@ describe Typhoeus::Request::Stubbable do
   before { Typhoeus.stub(base_url).and_return(response) }
 
   describe "#run" do
-    it "checks expectations" do
-      request.run
+    it "returns the stubbed response" do
+      expect(request.run).to be(response)
     end
 
     context "when expectation found" do
