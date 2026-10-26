@@ -188,13 +188,26 @@ module Typhoeus
     def encoded_body
       easy = Typhoeus::Pool.get
       begin
-        form = Ethon::Easy::Form.new(easy, options[:body])
-        if options.key?(:params_encoding)
-          form.params_encoding = options[:params_encoding]
+        body_options = { :body => options[:body] }
+        [:params_encoding, :escape].each do |option|
+          body_options[option] = options[option] if options.key?(option)
         end
-        easy.escape = options[:escape] if options.key?(:escape)
-        # Ethon escapes PUT bodies regardless of the escape option.
-        form.escape = options.fetch(:method, :get).to_sym == :put || easy.escape?
+
+        # Let Ethon apply its escape rule for this method and version. Ethon
+        # 0.18 always escapes PUT bodies; 0.19 respects the escape option like
+        # POST does. The form must stay non-multipart: encoded_body returns a
+        # single string, and Ethon 0.18 mistakes plain array values for files
+        # when it builds a multipart form.
+        form = Ethon::Easy::Form.new(easy, options[:body])
+        form.define_singleton_method(:multipart?) { false }
+
+        action = if options.fetch(:method, :get).to_s.downcase == "put"
+          Ethon::Easy::Http::Put.new("http://localhost/", body_options)
+        else
+          Ethon::Easy::Http::Post.new("http://localhost/", body_options)
+        end
+        action.instance_variable_set(:@form, form)
+        action.setup(easy)
         form.to_s
       ensure
         Typhoeus::Pool.release(easy) if easy

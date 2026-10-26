@@ -448,6 +448,17 @@ describe Typhoeus::Request do
       expect(request.encoded_body).to eq("a%5B%5D=1&a%5B%5D=2")
     end
 
+    it "keeps arrays intact with params_encoding :none" do
+      request = Typhoeus::Request.new(
+        "www.example.com",
+        :method => :post,
+        :body => { "a" => [1, 2] },
+        :params_encoding => :none
+      )
+
+      expect(request.encoded_body).to eq("a=%5B1%2C%202%5D")
+    end
+
     it "uses the request's escaping" do
       request = Typhoeus::Request.new(
         "www.example.com",
@@ -459,12 +470,12 @@ describe Typhoeus::Request do
       expect(request.encoded_body).to eq("a=a b")
     end
 
-    it "escapes PUT bodies like Ethon does" do
+    it "escapes PUT bodies when escaping is enabled" do
       request = Typhoeus::Request.new(
         "www.example.com",
         :method => :put,
         :body => { "a" => "a b" },
-        :escape => false
+        :escape => true
       )
 
       expect(request.encoded_body).to eq("a=a%20b")
@@ -476,6 +487,18 @@ describe Typhoeus::Request do
         :method => :put,
         :body => { "a" => "a b" },
         :escape => false
+      )
+      response = request.run
+
+      expect(JSON.parse(response.body)["body"]).to eq(request.encoded_body)
+    end
+
+    it "matches the body sent for a PUT with escaping" do
+      request = Typhoeus::Request.new(
+        "http://localhost:3001/encoded-body",
+        :method => :put,
+        :body => { "a" => "a b" },
+        :escape => true
       )
       response = request.run
 
