@@ -21,6 +21,19 @@ describe Typhoeus::Hydra::Memoizable do
     expect(codes).to eq([200])
   end
 
+  it "sets the follower on the response for header callbacks" do
+    url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
+    leader = Typhoeus::Request.new(url)
+    follower = Typhoeus::Request.new(url)
+    seen_request = nil
+    follower.on_headers { |response| seen_request = response.request }
+    hydra.queue(leader)
+    hydra.queue(follower)
+    hydra.run
+
+    expect(seen_request).to be(follower)
+  end
+
   it "does not memoize streaming requests" do
     url = "http://localhost:3001/count/memo-#{rand(1_000_000)}"
     requests = 2.times.map { Typhoeus::Request.new(url) }

@@ -109,6 +109,7 @@ module Typhoeus
       # @return [ Object ] The response's handled response.
       def finish_request(request, response)
         copy = response.dup
+        copy.request = request
         request.execute_headers_callbacks(copy)
         request.finish(copy, true)
       end
