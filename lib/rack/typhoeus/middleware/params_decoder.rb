@@ -31,27 +31,14 @@ module Rack
 
         def call(env)
           req = Rack::Request.new(env)
-          decode(req.params).each_pair { |k, v| update_params req, k, v }
+
+          # Query and form parameters are separate sources. Decoding the
+          # merged Rack::Request#params and writing the result to both would
+          # let a form value overwrite the query value for the same key.
+          decode(req.GET).each_pair { |k, v| req.GET[k] = v }
+          decode(req.POST).each_pair { |k, v| req.POST[k] = v }
+
           @app.call(env)
-        end
-
-        private
-
-        # Persist params change in environment. Extracted from:
-        # https://github.com/rack/rack/blob/master/lib/rack/request.rb#L243
-        def update_params(req, k, v)
-          found = false
-          if req.GET.has_key?(k)
-            found = true
-            req.GET[k] = v
-          end
-          if req.POST.has_key?(k)
-            found = true
-            req.POST[k] = v
-          end
-          unless found
-            req.GET[k] = v
-          end
         end
       end
     end
