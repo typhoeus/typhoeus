@@ -59,7 +59,6 @@ TESTSERVER = Sinatra.new do
   counts = Hash.new(0)
 
   get '/count/:key' do
-    sleep 0.2
     counts[params[:key]] += 1
     counts[params[:key]].to_s
   end

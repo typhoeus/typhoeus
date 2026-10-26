@@ -19,6 +19,26 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
 
         cache.set(request, response)
       end
+
+      context "when the request has a cache_ttl" do
+        let(:request) { Typhoeus::Request.new(base_url, :cache_ttl => 5) }
+
+        it "passes the ttl to Dalli" do
+          expect(dalli).to receive(:set).with(request.cache_key, response, 5)
+
+          cache.set(request, response)
+        end
+      end
+
+      context "when a default_ttl is configured" do
+        let(:cache) { Typhoeus::Cache::Dalli.new(dalli, :default_ttl => 60) }
+
+        it "passes the default ttl to Dalli" do
+          expect(dalli).to receive(:set).with(request.cache_key, response, 60)
+
+          cache.set(request, response)
+        end
+      end
     end
 
     describe "#get" do

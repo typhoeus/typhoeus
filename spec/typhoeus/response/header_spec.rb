@@ -162,6 +162,15 @@ describe Typhoeus::Response::Header do
 
       expect(header["B"]).to be_nil
     end
+
+    it "keeps the copy independent when cloning with a freeze" do
+      skip if RUBY_VERSION < "3.1"
+
+      copy = header.clone(freeze: true)
+
+      expect(copy).to be_frozen
+      expect(copy["A"]).to eq(["1", "2"])
+    end
   end
 
   describe "#parse" do
@@ -421,6 +430,33 @@ describe Typhoeus::Response::Header do
       expect(header["A"]).to be_nil
       expect(header["B"]).to eq("2")
       expect(header.to_hash).to eq("B" => "2")
+    end
+
+    it "updates a key with a different casing" do
+      header.update("a" => "2")
+
+      expect(header["A"]).to eq("2")
+      expect(header.to_hash).to eq("a" => "2")
+    end
+
+    it "returns nil when deleting a missing key" do
+      expect(header.delete("Missing")).to be_nil
+    end
+
+    it "returns nil from reject! when nothing is removed" do
+      expect(header.reject! { |_, _| false }).to be_nil
+    end
+
+    it "returns nil from compact! when there is nothing to remove" do
+      expect(header.compact!).to be_nil
+    end
+
+    it "returns an enumerator for keep_if without a block" do
+      expect(header.keep_if).to be_a(Enumerator)
+    end
+
+    it "returns an enumerator for transform_values! without a block" do
+      expect(header.transform_values!).to be_a(Enumerator)
     end
   end
 end

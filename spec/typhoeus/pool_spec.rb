@@ -84,6 +84,26 @@ describe Typhoeus::Pool do
       end
     end
 
+    context "when pooling is disabled" do
+      before { Typhoeus::Config.max_idle_easies = 0 }
+
+      it "cleans up instead of pooling" do
+        expect(easy).to receive(:cleanup)
+
+        Typhoeus::Pool.release(easy)
+
+        expect(Typhoeus::Pool.send(:easies)).to be_empty
+      end
+    end
+
+    context "when an unexpected error is raised" do
+      before { allow(easy).to receive(:cookielist=).and_raise("boom") }
+
+      it "re-raises instead of dropping the easy" do
+        expect { Typhoeus::Pool.release(easy) }.to raise_error("boom")
+      end
+    end
+
     context "when max_idle_easies is nil" do
       before { Typhoeus::Config.max_idle_easies = nil }
 
@@ -226,6 +246,14 @@ describe Typhoeus::Pool do
         end
       end
       expect(array.uniq.size).to eq(3)
+    end
+
+    it "releases the easy when the block raises" do
+      easy = Ethon::Easy.new
+      allow(Typhoeus::Pool).to receive(:get).and_return(easy)
+      expect(Typhoeus::Pool).to receive(:release).with(easy)
+
+      expect { Typhoeus::Pool.with_easy { raise "boom" } }.to raise_error("boom")
     end
   end
 end

@@ -132,6 +132,14 @@ describe Typhoeus::Response do
       expect(response.body).to eq("body")
     end
 
+    it "copies nested option values" do
+      response = Typhoeus::Response.new(:params => [{ :a => +"b" }])
+      copy = response.dup
+      copy.options[:params][0][:a] << "!"
+
+      expect(response.options[:params][0][:a]).to eq("b")
+    end
+
     it "copies headers" do
       response.headers
       copy = response.dup
