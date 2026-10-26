@@ -29,6 +29,36 @@ module Typhoeus
         @sanitized[convert_key(key)]
       end
 
+      def []=(key, value)
+        delete_underlying_key(key)
+        __getobj__[key] = value
+        @sanitized[convert_key(key)] = value
+      end
+      alias_method :store, :[]=
+
+      def delete(key)
+        value = self[key]
+        delete_underlying_key(key)
+        @sanitized.delete(convert_key(key))
+        value
+      end
+
+      def clear
+        __getobj__.clear
+        @sanitized.clear
+      end
+
+      def update(other)
+        other.each_pair { |key, value| self[key] = value }
+        self
+      end
+      alias_method :merge!, :update
+
+      def replace(other)
+        clear
+        update(other)
+      end
+
       def include?(key)
         @sanitized.include?(convert_key(key))
       end
@@ -124,6 +154,13 @@ module Typhoeus
 
       def convert_key(key)
         key.to_s.downcase
+      end
+
+      def delete_underlying_key(key)
+        converted = convert_key(key)
+        __getobj__.keys.each do |existing_key|
+          __getobj__.delete(existing_key) if convert_key(existing_key) == converted
+        end
       end
     end
   end

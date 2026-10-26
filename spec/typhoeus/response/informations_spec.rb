@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'socket'
 
 describe Typhoeus::Response::Informations do
   let(:options) { {} }
@@ -382,6 +383,10 @@ describe Typhoeus::Response::Informations do
         it "returns headers" do
           expect(response.headers.to_hash).to include("Length" => "1")
         end
+
+        it "returns the same header object on every call" do
+          expect(response.headers).to equal(response.headers)
+        end
       end
     end
 
@@ -415,6 +420,31 @@ describe Typhoeus::Response::Informations do
       it "returns response from all but last headers" do
         expect(response.redirections.size).to eq(1)
       end
+    end
+  end
+
+  describe "chunked trailers" do
+    it "ignores the trailer block when reading headers and status" do
+      server = TCPServer.new("127.0.0.1", 0)
+      port = server.addr[1]
+      raw = "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\nContent-Type: text/plain\r\n" \
+            "Trailer: X-Checksum\r\n\r\n5\r\nhello\r\n0\r\nX-Checksum: abc\r\n\r\n"
+      thread = Thread.new do
+        client = server.accept
+        client.readpartial(4096) rescue nil
+        client.write(raw)
+        client.close
+      end
+
+      response = Typhoeus.get("http://127.0.0.1:#{port}/")
+
+      expect(response.headers["Content-Type"]).to eq("text/plain")
+      expect(response.status_message).to eq("OK")
+      expect(response.http_version).to eq("1.1")
+      expect(response.redirections).to be_empty
+    ensure
+      thread&.join(1)
+      server&.close
     end
   end
 end
