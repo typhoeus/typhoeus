@@ -1,6 +1,13 @@
 # Typhoeus [![Gem Version](https://badge.fury.io/rb/typhoeus.svg)](https://badge.fury.io/rb/typhoeus) [![CI](https://github.com/typhoeus/typhoeus/actions/workflows/ci.yml/badge.svg)](https://github.com/typhoeus/typhoeus/actions/workflows/ci.yml) [![Experimental](https://github.com/typhoeus/typhoeus/actions/workflows/experimental.yml/badge.svg)](https://github.com/typhoeus/typhoeus/actions/workflows/experimental.yml)
 
-Like a modern code version of the mythical beast with 100 serpent heads, Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling logic.
+Typhoeus is a Ruby HTTP client built on [libcurl](https://curl.se/libcurl/).
+Run individual requests, or queue many on `Typhoeus::Hydra` to execute them in
+parallel. It supports redirects, timeouts, streaming, caching, memoization,
+stubbing, and callbacks while still exposing libcurl's options.
+
+- `Typhoeus::Request` and `Typhoeus::Response` model a single transfer.
+- `Typhoeus::Hydra` queues requests and runs them concurrently.
+- `Typhoeus.get`, `.post`, and the other shortcuts cover common cases.
 
 ## Example
 
@@ -14,31 +21,38 @@ Parallel requests:
 
 ```ruby
 hydra = Typhoeus::Hydra.new
-10.times.map{ hydra.queue(Typhoeus::Request.new("www.example.com", followlocation: true)) }
+10.times do
+  hydra.queue(Typhoeus::Request.new("www.example.com", followlocation: true))
+end
 hydra.run
 ```
 
 ## Installation
-Run:
-```
+
+Add the gem to your bundle:
+
+```sh
 bundle add typhoeus
 ```
 
-Or install it yourself as:
+Or install it directly:
 
-```
+```sh
 gem install typhoeus
 ```
 
-## Project Tracking
+## Documentation
 
-* [API Documentation](https://rubydoc.info/github/typhoeus/typhoeus) (GitHub master)
+- [API documentation](https://rubydoc.info/github/typhoeus/typhoeus) (master)
+- [Changelog](https://github.com/typhoeus/typhoeus/blob/master/CHANGELOG.md)
 
 ## Usage
 
 ### Introduction
 
-The primary interface for Typhoeus is comprised of three classes: Request, Response, and Hydra. Request represents an HTTP request object, response represents an HTTP response, and Hydra manages making parallel HTTP connections.
+Typhoeus's primary interface consists of three classes: `Request`, `Response`,
+and `Hydra`. A request describes an HTTP call, a response exposes its result,
+and a hydra runs requests in parallel.
 
 ```ruby
 request = Typhoeus::Request.new(
@@ -50,36 +64,32 @@ request = Typhoeus::Request.new(
 )
 ```
 
-We can see from this that the first argument is the url. The second is a set of options.
-The options are all optional. The default for `:method` is `:get`.
+The first argument is the URL and the second is an options hash. All options
+are optional, and the method defaults to `:get`.
 
-When you want to send URL parameters, use the `:params` hash. When you need to
-send `application/x-www-form-urlencoded` parameters in the request body, use the
-`:body` hash instead. `:params` are for URL parameters and `:body` is for the
-request body.
+URL parameters go in `:params`. Form-encoded body parameters go in `:body`.
+`:params` are appended to the URL; `:body` becomes the request body.
 
 #### Sending requests through the proxy
 
-Add a proxy url to the list of options:
+Add `proxy` to the options:
 
 ```ruby
-options = {proxy: 'http://myproxy.org'}
-req = Typhoeus::Request.new(url, options)
+options = { proxy: "http://myproxy.org" }
+request = Typhoeus::Request.new(url, options)
 ```
 
-If your proxy requires authentication, add it with `proxyuserpwd` option key:
+If the proxy requires authentication, set `proxyuserpwd` to `user:password`,
+just like the basic-auth `userpwd` option:
 
 ```ruby
-options = {proxy: 'http://proxyurl.com', proxyuserpwd: 'user:password'}
-req = Typhoeus::Request.new(url, options)
+options = { proxy: "http://proxyurl.com", proxyuserpwd: "user:password" }
+request = Typhoeus::Request.new(url, options)
 ```
 
-Note that `proxyuserpwd` is a colon-separated username and password, in the vein of basic auth `userpwd` option.
+Run the request directly or queue it on a hydra:
 
-
-You can run the query either on its own or through the hydra:
-
-``` ruby
+```ruby
 request.run
 #=> <Typhoeus::Response ... >
 ```
@@ -90,7 +100,7 @@ hydra.queue(request)
 hydra.run
 ```
 
-The response object will be set after the request is run.
+After the request finishes, read the response:
 
 ```ruby
 response = request.response
@@ -102,33 +112,40 @@ response.body
 
 ### Making Quick Requests
 
-Typhoeus has some convenience methods for performing single HTTP requests. The arguments are the same as those you pass into the request constructor.
+Typhoeus provides convenience methods for single requests. They take the same
+URL and options as `Request.new`.
 
 ```ruby
 Typhoeus.get("www.example.com")
 Typhoeus.head("www.example.com")
-Typhoeus.put("www.example.com/posts/1", body: "whoo, a body")
+Typhoeus.put("www.example.com/posts/1", body: "a body")
 Typhoeus.patch("www.example.com/posts/1", body: "a new body")
-Typhoeus.post("www.example.com/posts", body: { title: "test post", content: "this is my test"})
+Typhoeus.post("www.example.com/posts", body: { title: "test post", content: "this is my test" })
 Typhoeus.delete("www.example.com/posts/1")
 Typhoeus.options("www.example.com")
 ```
+
 #### Sending params in the body with PUT
-When using POST the content-type is set automatically to 'application/x-www-form-urlencoded'. That's not the case for any other method like PUT, PATCH, HEAD and so on,  irrespective of whether you are using body or not. To get the same result as POST, i.e. a hash in the body coming through as params in the receiver, you need to set the content-type as shown below:
+
+POST sets `Content-Type` to `application/x-www-form-urlencoded` when the body
+is a hash. Other methods, including PUT, PATCH, and HEAD, do not. To receive a
+PUT hash as form parameters, set the header yourself:
+
 ```ruby
-Typhoeus.put("www.example.com/posts/1",
-        headers: {'Content-Type'=> "application/x-www-form-urlencoded"},
-        body: {title:"test post updated title", content: "this is my updated content"}
-    )
+Typhoeus.put(
+  "www.example.com/posts/1",
+  headers: { "Content-Type" => "application/x-www-form-urlencoded" },
+  body: { title: "test post updated title", content: "this is my updated content" }
+)
 ```
 
 ### Before callbacks
 
-Use `Typhoeus.before` to register a callback for every request, or
-`request.before` to register a callback for a single request. Callbacks receive
-the request, run before it is performed, and can modify it. Returning `nil` or
-`false` skips the request and returns the request's assigned response. Returning
-a `Typhoeus::Response` skips the request and returns that response.
+Use `Typhoeus.before` for every request, or `request.before` for a single
+request. Callbacks receive the request, run before it is performed, and can
+modify it. Returning `nil` or `false` skips the request and returns its current
+response; returning a `Typhoeus::Response` skips the request and returns that
+response.
 
 ```ruby
 Typhoeus.before { |request| request.options[:timeout] ||= 5 }
@@ -137,7 +154,8 @@ request = Typhoeus::Request.new("www.example.com")
 request.before { |request| request.options[:headers] ||= {} }
 ```
 
-If you do not use `before` callbacks, you can skip them for every request:
+To skip before callbacks globally, for example when your application does not
+use them:
 
 ```ruby
 Typhoeus::Config.exclude_features = [:before]
@@ -145,41 +163,37 @@ Typhoeus::Config.exclude_features = [:before]
 
 ### Handling HTTP errors
 
-You can query the response object to figure out if you had a successful
-request or not. Here’s some example code that you might use to handle errors.
-The callbacks are executed right after the request is finished, make sure to define
-them before running the request.
+After the request completes, inspect the response. `success?` covers both
+transport and HTTP failures, `timed_out?` identifies timeouts, and a zero code
+means no HTTP response was received. Define callbacks before running the
+request.
 
 ```ruby
 request = Typhoeus::Request.new("www.example.com", followlocation: true)
 
 request.on_complete do |response|
   if response.success?
-    # hell yeah
+    # Request succeeded
   elsif response.timed_out?
-    # aw hell no
-    log("got a time out")
+    log("request timed out")
   elsif response.code == 0
-    # Could not get an http response, something's wrong.
     log(response.return_message)
   else
-    # Received a non-successful http response.
-    log("HTTP request failed: " + response.code.to_s)
+    log("HTTP request failed: #{response.code}")
   end
 end
 
 request.run
 ```
 
-This also works with serial (blocking) requests in the same fashion. Both
-serial and parallel requests return a Response object.
+This works for blocking and parallel requests; both return a `Response`.
 
 ### Handling file uploads
 
-A File object can be passed as a param for a POST request to handle uploading
-files to the server. Typhoeus uploads the file with its original file name.
-The content type is detected with Mime::Types when the optional `mime-types`
-gem is installed, and otherwise falls back to `application/octet-stream`.
+Pass a `File` in the body to upload a file with a POST request. Typhoeus sends
+the original file name and detects the content type with Mime::Types when the
+optional `mime-types` gem is installed. Without that gem, it uses
+`application/octet-stream`.
 
 ```ruby
 Typhoeus.post(
@@ -187,38 +201,33 @@ Typhoeus.post(
   body: {
     title: "test post",
     content: "this is my test",
-    file: File.open("thesis.txt","r")
+    file: File.open("thesis.txt", "r")
   }
 )
 ```
 
 ### Streaming the response body
 
-Typhoeus can stream responses. When you're expecting a large response,
-set the `on_body` callback on a request. Typhoeus will yield to the callback
-with chunks of the response, as they're read. When you set an `on_body` callback,
-Typhoeus will not store the complete response.
+Set `on_body` to receive response chunks as they arrive. This is useful for
+large responses, and Typhoeus does not retain the complete body.
 
 ```ruby
-downloaded_file = File.open 'huge.iso', 'wb'
+downloaded_file = File.open("huge.iso", "wb")
 request = Typhoeus::Request.new("www.example.com/huge.iso")
 request.on_headers do |response|
-  if response.code != 200
-    raise "Request failed"
-  end
+  raise "Request failed" if response.code != 200
 end
 request.on_body do |chunk|
   downloaded_file.write(chunk)
 end
 request.on_complete do |response|
   downloaded_file.close
-  # Note that response.body is ""
+  # response.body is empty
 end
 request.run
 ```
 
-If you need to interrupt the stream halfway,
-you can return the `:abort` symbol from the `on_body` block, example:
+Return `:abort` from the `on_body` block to stop the transfer cleanly:
 
 ```ruby
 request.on_body do |chunk|
@@ -227,13 +236,14 @@ request.on_body do |chunk|
 end
 ```
 
-This will properly stop the stream internally and avoid any memory leak which
-may happen if you interrupt with something like a `return`, `throw` or `raise`.
+Returning `:abort` stops the transfer without buffering the rest of the
+response. Leaving the block with `return`, `throw`, or `raise` can leave the
+transfer in an inconsistent state.
 
 ### Progress callbacks
 
-Set `on_progress` to observe the transfer while it is running. The callback
-receives the total and current number of downloaded and uploaded bytes:
+Set `on_progress` to observe the transfer. The callback receives the total and
+current number of downloaded and uploaded bytes:
 
 ```ruby
 request = Typhoeus::Request.new("www.example.com/huge.iso")
@@ -243,54 +253,54 @@ end
 request.run
 ```
 
-Progress callbacks run while libcurl transfers data. They are not called when
-the request finishes, use `on_complete` for that.
+Progress callbacks run during the transfer. Use `on_complete` for completion.
 
 ### Making Parallel Requests
 
-Generally, you should be running requests through hydra. Here is how that looks:
+Use `Hydra` to run requests in parallel. `hydra.run` blocks until all queued
+requests finish.
 
 ```ruby
 hydra = Typhoeus::Hydra.hydra
 
 first_request = Typhoeus::Request.new("http://example.com/posts/1")
 first_request.on_complete do |response|
-  third_url = response.body
-  third_request = Typhoeus::Request.new(third_url)
-  hydra.queue third_request
+  third_request = Typhoeus::Request.new(response.body)
+  hydra.queue(third_request)
 end
 second_request = Typhoeus::Request.new("http://example.com/posts/2")
 
-hydra.queue first_request
-hydra.queue second_request
-hydra.run # this is a blocking call that returns once all requests are complete
+hydra.queue(first_request)
+hydra.queue(second_request)
+hydra.run # blocks until all requests are complete
 ```
 
-The execution of that code goes something like this. The first and second requests are built and queued. When hydra is run the first and second requests run in parallel. When the first request completes, the third request is then built and queued, in this example based on the result of the first request. The moment it is queued Hydra starts executing it.  Meanwhile the second request would continue to run (or it could have completed before the first). Once the third request is done, `hydra.run` returns.
+`hydra.run` starts the first two requests. When the first completes, its
+`on_complete` callback queues a third request, which starts immediately while
+the second request continues. `hydra.run` returns when all three finish.
 
-How to get an array of response bodies back after executing a queue:
+Collect responses from the requests after the run:
 
 ```ruby
 hydra = Typhoeus::Hydra.new
-requests = 10.times.map {
+requests = 10.times.map do
   request = Typhoeus::Request.new("www.example.com", followlocation: true)
   hydra.queue(request)
   request
-}
+end
 hydra.run
 
-responses = requests.map { |request|
-  request.response.body
-}
+responses = requests.map { |request| request.response.body }
 ```
-`hydra.run` is a blocking request. You can also use the `on_complete` callback to handle each request as it completes:
+
+To handle responses as they complete, use `on_complete` instead:
 
 ```ruby
 hydra = Typhoeus::Hydra.new
 10.times do
   request = Typhoeus::Request.new("www.example.com", followlocation: true)
   request.on_complete do |response|
-    #do_something_with response
+    # handle response
   end
   hydra.queue(request)
 end
@@ -299,36 +309,36 @@ hydra.run
 
 ### Making Parallel Requests with Faraday + Typhoeus
 
-The built-in adapter supports Faraday 1.x and 2.x.
+Typhoeus ships a Faraday adapter that supports Faraday 1.x and 2.x.
 
 ```ruby
-require 'faraday'
+require "faraday"
 
-conn = Faraday.new(:url => 'http://httppage.com') do |builder|
+conn = Faraday.new(url: "http://httppage.com") do |builder|
   builder.request  :url_encoded
   builder.response :logger
   builder.adapter  :typhoeus
 end
 
 conn.in_parallel do
-  response1 = conn.get('/first')
-  response2 = conn.get('/second')
+  response1 = conn.get("/first")
+  response2 = conn.get("/second")
 
-  # these will return nil here since the
-  # requests have not been completed
+  # Inside in_parallel, the responses are not complete yet.
   response1.body
   response2.body
 end
 
-# after it has been completed the response information is fully available
-# response1.status, etc
+# After in_parallel returns, the responses are populated.
 response1.body
 response2.body
 ```
 
 ### Specifying Max Concurrency
 
-Hydra will also handle how many requests you can make in parallel. Things will get flakey if you try to make too many requests at the same time. The built in limit is 200. When more requests than that are queued up, hydra will save them for later and start the requests as others are finished. You can raise or lower the concurrency limit through the Hydra constructor.
+Hydra runs at most 200 requests concurrently by default. Additional queued
+requests wait until a running request finishes. Set a lower or higher limit on
+the constructor:
 
 ```ruby
 Typhoeus::Hydra.new(max_concurrency: 20)
@@ -336,34 +346,37 @@ Typhoeus::Hydra.new(max_concurrency: 20)
 
 ### Memoization
 
-Hydra memoizes requests within a single run call. You have to enable memoization.
-This will result in a single request being issued. However, the on_complete handlers of both will be called.
+With memoization enabled, Hydra sends a single request for identical GET
+requests in a run and executes each request's `on_complete` callback.
+Memoization is disabled by default:
 
 ```ruby
 Typhoeus::Config.memoize = true
 
 hydra = Typhoeus::Hydra.new(max_concurrency: 1)
 2.times do
-  hydra.queue Typhoeus::Request.new("www.example.com")
+  hydra.queue(Typhoeus::Request.new("www.example.com"))
 end
 hydra.run
 ```
 
-This will result in two requests.
+With memoization disabled, Hydra sends both requests:
 
 ```ruby
 Typhoeus::Config.memoize = false
 
 hydra = Typhoeus::Hydra.new(max_concurrency: 1)
 2.times do
-  hydra.queue Typhoeus::Request.new("www.example.com")
+  hydra.queue(Typhoeus::Request.new("www.example.com"))
 end
 hydra.run
 ```
 
 ### Caching
 
-Typhoeus includes built in support for caching. In the following example, if there is a cache hit, the cached object is passed to the on_complete handler of the request object.
+Typhoeus can cache responses. A cache store implements `get(request)` and
+`set(request, response)`, and a cache hit is delivered through the request's
+`on_complete` callback.
 
 ```ruby
 class Cache
@@ -388,7 +401,8 @@ Typhoeus.get("www.example.com").cached?
 #=> true
 ```
 
-For use with [Dalli](https://github.com/mperham/dalli):
+Typhoeus ships adapters for [Dalli](https://github.com/mperham/dalli), Rails,
+and [Redis](https://github.com/redis/redis-rb):
 
 ```ruby
 require "typhoeus/cache/dalli"
@@ -397,15 +411,11 @@ dalli = Dalli::Client.new(...)
 Typhoeus::Config.cache = Typhoeus::Cache::Dalli.new(dalli)
 ```
 
-For use with Rails:
-
 ```ruby
 require "typhoeus/cache/rails"
 
 Typhoeus::Config.cache = Typhoeus::Cache::Rails.new
 ```
-
-For use with [Redis](https://github.com/redis/redis-rb):
 
 ```ruby
 require "typhoeus/cache/redis"
@@ -414,51 +424,38 @@ redis = Redis.new(...)
 Typhoeus::Config.cache = Typhoeus::Cache::Redis.new(redis)
 ```
 
-All three of these adapters take an optional keyword argument `default_ttl`, which sets a default
-TTL on cached responses (in seconds), for requests which do not have a cache TTL set. 
-
-You can use `default_ttl` with Dalli as:
+Each adapter accepts a `default_ttl` in seconds for requests without a
+`cache_ttl`:
 
 ```ruby
-dalli = Dalli::Client.new(...)
 Typhoeus::Config.cache = Typhoeus::Cache::Dalli.new(dalli, default_ttl: 3600)
 ```
 
-Or with Redis:
+Disable caching for one request with `cache: false`, or pass a different store:
 
 ```ruby
-redis = Redis.new(...)
-Typhoeus::Config.cache = Typhoeus::Cache::Redis.new(redis, default_ttl: 3600)
+Typhoeus.get("www.example.com", cache: false)
+Typhoeus.get("www.example.com", cache: Cache.new)
 ```
 
-You may also selectively choose not to cache by setting `cache` to `false` on a request or to use
-a different adapter.
+The cache key includes the URL and all request options except the cache store
+and `cache_ttl`. The store decides where a response is cached and the TTL
+decides how long it is cached; neither changes which response is cached.
 
-```ruby
-cache = Cache.new
-Typhoeus.get("www.example.com", cache: cache)
-```
+### Stubbing
 
-The cache key is derived from the request URL and every request option except
-the cache store and `cache_ttl`. The store decides where a response is cached
-and the TTL decides how long it is cached; neither changes which response is
-cached. Changing the TTL therefore still reads responses cached by an
-equivalent request with a different TTL.
-
-### Direct Stubbing
-
-Hydra allows you to stub out specific urls and patterns to avoid hitting
-remote servers while testing.
+Stub URLs or patterns to keep tests off the network. A stub matches the
+request's base URL.
 
 ```ruby
 response = Typhoeus::Response.new(code: 200, body: "{'name' : 'paul'}")
-Typhoeus.stub('www.example.com').and_return(response)
+Typhoeus.stub("www.example.com").and_return(response)
 
 Typhoeus.get("www.example.com") == response
 #=> true
 ```
 
-The queued request will hit the stub. You can also specify a regex to match urls.
+Pass a regexp to match multiple URLs:
 
 ```ruby
 response = Typhoeus::Response.new(code: 200, body: "{'name' : 'paul'}")
@@ -468,18 +465,18 @@ Typhoeus.get("www.example.com") == response
 #=> true
 ```
 
-You may also specify an array for the stub to return sequentially.
+Pass an array to return responses in sequence:
 
 ```ruby
-Typhoeus.stub('www.example.com').and_return([response1, response2])
+Typhoeus.stub("www.example.com").and_return([response1, response2])
 
-Typhoeus.get('www.example.com') == response1 #=> true
-Typhoeus.get('www.example.com') == response2 #=> true
+Typhoeus.get("www.example.com") == response1 #=> true
+Typhoeus.get("www.example.com") == response2 #=> true
 ```
 
-To make a real request while `Typhoeus::Config.block_connection` is on, wrap
-it in `Typhoeus.with_connection`. Stubs are bypassed inside the block, which
-makes it possible to forward a stubbed URL to a local service:
+To make a real request while `Typhoeus::Config.block_connection` is enabled,
+wrap it in `Typhoeus.with_connection`. Stubs are bypassed inside the block,
+which lets a stub forward to a real service:
 
 ```ruby
 Typhoeus::Config.block_connection = true
@@ -488,7 +485,7 @@ Typhoeus.stub("http://elastic:9200") do |request|
 end
 ```
 
-When testing make sure to clear your expectations or the stubs will persist between tests. The following can be included in your spec_helper.rb file to do this automatically.
+Clear expectations between tests, or stubs will leak into later examples:
 
 ```ruby
 RSpec.configure do |config|
@@ -500,38 +497,40 @@ end
 
 ### Timeouts
 
-No exceptions are raised on HTTP timeouts. You can check whether a request timed out with the following method:
+Typhoeus does not raise on HTTP timeouts. Check the response instead:
 
 ```ruby
-Typhoeus.get("www.example.com", timeout: 1).timed_out?
+response = Typhoeus.get("www.example.com", timeout: 1)
+response.timed_out? #=> true
+response.success?   #=> false
 ```
 
-Timed out responses also have their success? method return false.
-
-There are two different timeouts available: [`timeout`](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTTIMEOUT)
+Two timeouts are available: [`timeout`](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTTIMEOUT)
 and [`connecttimeout`](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUT).
-`timeout` is the time limit for the entire request in seconds.
-`connecttimeout` is the time limit for just the connection phase, again in seconds.
+`timeout` limits the entire request, while `connecttimeout` limits only the
+connection phase. Both are in seconds.
 
-There are two additional more fine grained options `timeout_ms` and
-`connecttimeout_ms`. These options offer millisecond precision but are not always available (for instance on linux if `nosignal` is not set to true).
+`timeout_ms` and `connecttimeout_ms` offer millisecond precision, but are not
+available on every platform (for example, Linux without `nosignal: true`).
+When a timeout is a float, Typhoeus also sets the corresponding `*_ms` option
+and rounds the seconds value up.
 
-When you pass a floating point `timeout` (or `connecttimeout`) Typhoeus will set `timeout_ms` for you if it has not been defined. The actual timeout values passed to curl will always be rounded up.
+DNS timeouts under one second require libcurl built with an asynchronous
+resolver.
 
-DNS timeouts of less than one second are not supported unless curl is compiled with an asynchronous resolver.
-
-The default `timeout` is 0 (zero) which means curl never times out during transfer. The default `connecttimeout` is 300 seconds. A `connecttimeout` of 0 will also result in the default `connecttimeout` of 300 seconds.
+`timeout` defaults to 0, which means no transfer timeout. `connecttimeout`
+defaults to 300 seconds; passing 0 also uses 300 seconds.
 
 ### Threads and forking
 
-Typhoeus delegates handle management to Ethon. Ethon 0.19 and later reject
-`Ethon::Easy` and `Ethon::Multi` handles inherited across `fork`, and raise
-`Ethon::Errors::ForkSafety`. Typhoeus clears its easy pool in the child process,
-and creates a hydra's native multi handle lazily, so creating or memoizing a
-hydra during boot does not initialize libcurl. Typhoeus cannot reset libcurl's
-process-global state. If your application initializes libcurl before forking,
-for example by making a request during boot, use `fork` followed by `exec` or
-fork before the first request.
+Typhoeus delegates handle management to Ethon. Ethon 0.19 and later raise
+`Ethon::Errors::ForkSafety` for `Ethon::Easy` and `Ethon::Multi` handles
+inherited across `fork`. Typhoeus clears its easy pool in the child process and
+creates a hydra's native multi handle lazily, so creating or memoizing a hydra
+during boot does not initialize libcurl. Typhoeus cannot reset libcurl's
+process-global state. If libcurl is initialized before forking, for example by
+making a request during boot, use `fork` followed by `exec`, or fork before the
+first request.
 
 On macOS, libcurl's global initialization can touch Objective-C and crash a
 forked child with `objc_initializeAfterForkError`. Initialize libcurl in the
@@ -557,8 +556,8 @@ re-raising.
 
 ### Ethon 0.19
 
-Typhoeus supports Ethon 0.18 and later. Ethon 0.19 makes several errors visible
-that earlier releases ignored:
+Typhoeus supports Ethon 0.18 and later. Ethon 0.19 makes several previously
+silent errors visible:
 
 - Unknown enum and bitmask option values raise `Ethon::Errors::InvalidValue`,
   and options the loaded libcurl does not know raise
@@ -572,7 +571,7 @@ that earlier releases ignored:
 
 ### Following Redirections
 
-Use `followlocation: true`, eg:
+Enable redirects with `followlocation: true`:
 
 ```ruby
 Typhoeus.get("www.example.com", followlocation: true)
@@ -580,42 +579,52 @@ Typhoeus.get("www.example.com", followlocation: true)
 
 ### Basic Authentication
 
+Pass `userpwd` as `username:password`:
+
 ```ruby
 Typhoeus::Request.get("www.example.com", userpwd: "user:password")
 ```
 
 ### Compression
 
+Use `accept_encoding` to request and decompress a compressed response:
+
 ```ruby
 Typhoeus.get("www.example.com", accept_encoding: "gzip")
 ```
 
-The above has a different behavior than setting the header directly in the header hash, eg:
+Setting the `Accept-Encoding` header directly does not add libcurl's automatic
+decompression, so the response stays compressed:
+
 ```ruby
-Typhoeus.get("www.example.com", headers: {"Accept-Encoding" => "gzip"})
+Typhoeus.get("www.example.com", headers: { "Accept-Encoding" => "gzip" })
 ```
-
-Setting the header hash directly will not include the `--compressed` flag in the libcurl command and therefore libcurl will not decompress the response.  If you want the `--compressed` flag to be added automatically, set `:accept_encoding` Typhoeus option.
-
 
 ### Cookies
 
+Pass a file to read cookies from and a file to write them to:
+
 ```ruby
-Typhoeus::Request.get("www.example.com", cookiefile: "/path/to/file", cookiejar: "/path/to/file")
+Typhoeus::Request.get(
+  "www.example.com",
+  cookiefile: "/path/to/file",
+  cookiejar: "/path/to/file"
+)
 ```
 
-Here, `cookiefile` is a file to read cookies from, and `cookiejar` is a file to write received cookies to.
-If you just want cookies enabled, you need to pass the same filename for both options.
+`cookiefile` is read before the request and `cookiejar` is written after it.
+Use the same path for both if you want one file for reading and writing.
 
-### Other CURL options
+### Other curl options
 
-Are available and documented [here](http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy/Options)
+Any libcurl option can be passed as a request option. See the
+[Ethon option documentation](http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy/Options).
 
 With Ethon 0.19 and later, an empty header value suppresses libcurl's default
 header. To send a header with an empty value, end the key with a semicolon:
 
 ```ruby
-Typhoeus.get("www.example.com", headers: {"X-Empty;" => ""})
+Typhoeus.get("www.example.com", headers: { "X-Empty;" => "" })
 ```
 
 Typhoeus sends an empty `Expect` header by default to suppress the
@@ -623,52 +632,47 @@ Typhoeus sends an empty `Expect` header by default to suppress the
 adds the header for uploads with an unknown size and for multipart bodies:
 
 ```ruby
-Typhoeus.post("www.example.com", headers: {"Expect" => nil}, body: data)
+Typhoeus.post("www.example.com", headers: { "Expect" => nil }, body: data)
 ```
 
 ### SSL
 
-SSL comes built in to libcurl so it’s in Typhoeus as well. If you pass in a
-url with "https" it should just work assuming that you have your [cert
-bundle](http://curl.haxx.se/docs/caextract.html) in order and the server is
-verifiable. If `SSL_CERT_FILE` or `SSL_CERT_DIR` is set, Typhoeus uses it as
-the default CA bundle or path; explicit `:cainfo` and `:capath` options take
-precedence. You must also have libcurl built with SSL support enabled. You can
-check that by doing this:
+SSL is handled by libcurl. HTTPS URLs work when libcurl was built with SSL
+support and the [CA bundle](http://curl.haxx.se/docs/caextract.html) is valid.
+If `SSL_CERT_FILE` or `SSL_CERT_DIR` is set, Typhoeus uses it as the default CA
+bundle or directory; explicit `:cainfo` and `:capath` options take precedence.
+Check libcurl's build with:
 
-```
+```sh
 curl --version
 ```
 
-Now, even if you have libcurl built with OpenSSL you may still have a messed
-up cert bundle or if you’re hitting a non-verifiable SSL server then you’ll
-have to disable peer verification to make SSL work. Like this:
+If a certificate cannot be verified, disable peer verification:
 
 ```ruby
 Typhoeus.get("https://www.example.com", ssl_verifypeer: false)
 ```
 
-If you are getting "SSL: certificate subject name does not match target host
-name" from curl (ex:- you are trying to access to b.c.host.com when the
-certificate subject is \*.host.com). You can disable host verification. Like
-this:
+If the certificate does not match the host, disable host verification:
 
 ```ruby
-# host checking enabled
+# Verify the host name (default)
 Typhoeus.get("https://www.example.com", ssl_verifyhost: 2)
-# host checking disabled
+# Do not verify the host name
 Typhoeus.get("https://www.example.com", ssl_verifyhost: 0)
 ```
 
+Only disable these checks in controlled environments.
+
 ### Verbose debug output
 
-It’s sometimes useful to see verbose output from curl. You can enable it on a per-request basis:
+Enable verbose output per request:
 
 ```ruby
 Typhoeus.get("http://example.com", verbose: true)
 ```
 
-or globally:
+Or globally:
 
 ```ruby
 Typhoeus::Config.verbose = true
@@ -697,8 +701,8 @@ hydras per thread. `Typhoeus::Hydra.hydra` is memoized per thread.
 These are process-wide and should be configured during boot rather than while
 requests are running:
 
-- `Typhoeus::Config` (`block_connection`, `cache`, `exclude_features`, `max_idle_easies`,
-  `memoize`, timeouts, `proxy`, `user_agent`, `verbose`)
+- `Typhoeus::Config` (`block_connection`, `cache`, `exclude_features`,
+  `max_idle_easies`, `memoize`, timeouts, `proxy`, `user_agent`, `verbose`)
 - `Typhoeus.before`, `Typhoeus.on_complete`, `Typhoeus.on_success`,
   `Typhoeus.on_failure`, `Typhoeus.on_progress`, and `Typhoeus.on_headers`
 - `Typhoeus.stub` and `Typhoeus::Expectation.all`
@@ -710,8 +714,7 @@ after `fork`.
 
 ### Default User Agent Header
 
-In many cases, all HTTP requests made by an application require the same User-Agent header set. Instead of supplying it on a per-request basis by supplying a custom header, it is possible to override it for all requests using:
-
+Set a User-Agent for every request:
 
 ```ruby
 Typhoeus::Config.user_agent = "custom user agent"
@@ -719,9 +722,9 @@ Typhoeus::Config.user_agent = "custom user agent"
 
 ### Running the specs
 
-Running the specs should be as easy as:
+Install dependencies and run the suite:
 
-```
+```sh
 bundle install
 bundle exec rake
 ```
@@ -736,7 +739,7 @@ and performing requests.
 
 This project conforms to [semver](http://semver.org/).
 
-## LICENSE
+## License
 
 (The MIT License)
 
