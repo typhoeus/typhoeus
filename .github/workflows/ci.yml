@@ -42,9 +42,11 @@ jobs:
         $archive = Join-Path $env:RUNNER_TEMP "curl.zip"
         Invoke-WebRequest -Uri "https://curl.se/windows/latest.cgi?p=win64-mingw.zip" -OutFile $archive
         Expand-Archive -Path $archive -DestinationPath "$env:RUNNER_TEMP\curl"
-        $bin = Get-ChildItem "$env:RUNNER_TEMP\curl" -Recurse -Filter libcurl-x64.dll |
-          Select-Object -First 1 -ExpandProperty DirectoryName
-        $bin | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        $lib = Get-ChildItem "$env:RUNNER_TEMP\curl" -Recurse -Filter libcurl-x64.dll |
+          Select-Object -First 1
+        # Ethon 0.18 only looks for libcurl.dll on Windows.
+        Copy-Item $lib.FullName (Join-Path $lib.DirectoryName "libcurl.dll")
+        $lib.DirectoryName | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
