@@ -58,12 +58,6 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true
-    - name: Diagnose libcurl
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run: |
-        where.exe libcurl.dll
-        bundle exec ruby -e 'require "ffi"; p FFI::DynamicLibrary.open("libcurl.dll", FFI::DynamicLibrary::RTLD_LAZY)'
     - name: Run tests
       shell: bash
       run: |
