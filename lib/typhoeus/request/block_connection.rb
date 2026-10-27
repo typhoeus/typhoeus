@@ -44,7 +44,7 @@ module Typhoeus
       # @return [ Boolean ] True if blocked, false else.
       def blocked?
         if block_connection.nil?
-          Typhoeus::Config.block_connection
+          Typhoeus.connection_blocked?
         else
           block_connection
         end

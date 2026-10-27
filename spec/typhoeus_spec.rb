@@ -99,6 +99,14 @@ describe Typhoeus do
       Typhoeus.with_connection { expect(Typhoeus::Config.block_connection).to be(false) }
     end
 
+    it "unblocks the current thread" do
+      Typhoeus::Config.block_connection = true
+
+      Typhoeus.with_connection do
+        expect(Typhoeus::Request.new("www.example.com").blocked?).to be(false)
+      end
+    end
+
     it "sets block connection back to previous value" do
       Typhoeus::Config.block_connection = true
       Typhoeus.with_connection {}
@@ -115,6 +123,26 @@ describe Typhoeus do
         Typhoeus.with_connection { raise "boom" }
       }.to raise_error("boom")
       expect(Typhoeus::Config.block_connection).to be(true)
+    end
+
+    it "does not unblock other threads" do
+      Typhoeus::Config.block_connection = true
+      entered = Queue.new
+      release = Queue.new
+      thread = Thread.new do
+        Typhoeus.with_connection do
+          entered << true
+          release.pop
+        end
+      end
+
+      begin
+        entered.pop
+        expect(Typhoeus::Request.new("www.example.com").blocked?).to be_truthy
+      ensure
+        release << true
+        thread.join
+      end
     end
   end
 
