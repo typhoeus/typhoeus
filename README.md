@@ -53,7 +53,10 @@ request = Typhoeus::Request.new(
 We can see from this that the first argument is the url. The second is a set of options.
 The options are all optional. The default for `:method` is `:get`.
 
-When you want to send URL parameters, you can use `:params` hash to do so. Please note that in case of you should send a request via `x-www-form-urlencoded` parameters, you need to use `:body` hash instead. `params` are for URL parameters and `:body` is for the request body.
+When you want to send URL parameters, use the `:params` hash. When you need to
+send `application/x-www-form-urlencoded` parameters in the request body, use the
+`:body` hash instead. `:params` are for URL parameters and `:body` is for the
+request body.
 
 #### Sending requests through the proxy
 
@@ -174,8 +177,9 @@ serial and parallel requests return a Response object.
 ### Handling file uploads
 
 A File object can be passed as a param for a POST request to handle uploading
-files to the server. Typhoeus will upload the file as the original file name
-and use Mime::Types to set the content type.
+files to the server. Typhoeus uploads the file with its original file name.
+The content type is detected with Mime::Types when the optional `mime-types`
+gem is installed, and otherwise falls back to `application/octet-stream`.
 
 ```ruby
 Typhoeus.post(
@@ -693,7 +697,8 @@ hydras per thread. `Typhoeus::Hydra.hydra` is memoized per thread.
 These are process-wide and should be configured during boot rather than while
 requests are running:
 
-- `Typhoeus::Config` (`cache`, `memoize`, `verbose`, timeouts, proxy, user agent)
+- `Typhoeus::Config` (`block_connection`, `cache`, `exclude_features`, `max_idle_easies`,
+  `memoize`, timeouts, `proxy`, `user_agent`, `verbose`)
 - `Typhoeus.before`, `Typhoeus.on_complete`, `Typhoeus.on_success`,
   `Typhoeus.on_failure`, `Typhoeus.on_progress`, and `Typhoeus.on_headers`
 - `Typhoeus.stub` and `Typhoeus::Expectation.all`
