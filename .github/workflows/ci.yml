@@ -39,20 +39,13 @@ jobs:
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
-        $archive = Join-Path $env:RUNNER_TEMP "curl.zip"
-        Invoke-WebRequest -Uri "https://curl.se/windows/latest.cgi?p=win64-mingw.zip" -OutFile $archive
-        Expand-Archive -Path $archive -DestinationPath "$env:RUNNER_TEMP\curl"
-        $lib = Get-ChildItem "$env:RUNNER_TEMP\curl" -Recurse -Filter libcurl-x64.dll |
-          Select-Object -First 1
-        # Ethon 0.18 only looks for libcurl.dll on Windows. Keep a copy next
-        # to the checkout and in Ruby's own directory because FFI does not
-        # always search PATH.
-        Unblock-File $lib.FullName
-        Copy-Item $lib.FullName (Join-Path $lib.DirectoryName "libcurl.dll")
-        Copy-Item $lib.FullName (Join-Path $env:GITHUB_WORKSPACE "libcurl.dll")
-        $ruby_bin = & ruby -e 'puts RbConfig::CONFIG["bindir"]'
-        Copy-Item $lib.FullName (Join-Path $ruby_bin "libcurl.dll")
-        $lib.DirectoryName | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        & "$env:RI_DEVKIT\usr\bin\bash.exe" -lc "pacman -S --noconfirm mingw-w64-ucrt-x86_64-curl"
+        $bin = Join-Path $env:RI_DEVKIT "ucrt64\bin"
+        # Ethon 0.18 only looks for libcurl.dll on Windows. Keep the copy next
+        # to the dependency DLLs so Windows can resolve them.
+        Copy-Item (Join-Path $bin "libcurl-4.dll") (Join-Path $bin "libcurl.dll")
+        Copy-Item (Join-Path $bin "libcurl-4.dll") (Join-Path $env:GITHUB_WORKSPACE "libcurl.dll")
+        $bin | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
