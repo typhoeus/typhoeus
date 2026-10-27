@@ -25,7 +25,7 @@ module Typhoeus
     # @return [ Boolean ]
     #
     # @see Typhoeus::Request::BlockConnection
-    # @see Typhoeus::Hydra::BlockConnection
+    # @see Typhoeus::Hydra
     # @see Typhoeus#with_connection
     # @see Typhoeus::Errors::NoStub
     attr_accessor :block_connection
@@ -35,7 +35,7 @@ module Typhoeus
     # @return [ Boolean ]
     #
     # @see Typhoeus::Hydra
-    # @see Typhoeus::Hydra::Memoizable
+    # @see Typhoeus::Request::Memoizable
     attr_accessor :memoize
 
     # Defines whether curls debug output is shown.
@@ -67,9 +67,21 @@ module Typhoeus
     #
     # @return [ Object ]
     #
-    # @see Typhoeus::Hydra::Cacheable
+    # @see Typhoeus::Hydra
     # @see Typhoeus::Request::Cacheable
     attr_accessor :cache
+
+    # Defines optional hydra features that should be skipped. Currently
+    # `:before` is supported. Skipping {Typhoeus.before} saves a callback
+    # lookup and invocation for every request that is added to a hydra.
+    #
+    # @example Skip before callbacks.
+    #   Typhoeus::Config.exclude_features = [:before]
+    #
+    # @return [ Array<Symbol>, nil ]
+    #
+    # @see Typhoeus::Hydra#add
+    attr_accessor :exclude_features
 
     # Defines whether to use a default user agent.
     #

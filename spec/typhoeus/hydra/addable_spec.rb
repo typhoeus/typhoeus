@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Typhoeus::Hydra::Addable do
+describe Typhoeus::Hydra do
   let(:hydra) { Typhoeus::Hydra.new() }
   let(:request) { Typhoeus::Request.new(TestServer.host, {:method => :get}) }
 

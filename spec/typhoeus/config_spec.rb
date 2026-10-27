@@ -5,7 +5,7 @@ require 'spec_helper'
 describe Typhoeus::Config do
   let(:config) { Typhoeus::Config }
 
-  [:block_connection, :memoize, :verbose, :cache, :user_agent, :proxy, :max_idle_easies].each do |name|
+  [:block_connection, :memoize, :verbose, :cache, :exclude_features, :user_agent, :proxy, :max_idle_easies].each do |name|
     it "responds to #{name}" do
       expect(config).to respond_to(name)
     end

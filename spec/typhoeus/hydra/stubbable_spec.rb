@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Typhoeus::Hydra::Stubbable do
+describe Typhoeus::Hydra do
   let(:base_url) { TestServer.host }
   let(:request) { Typhoeus::Request.new(base_url) }
   let(:response) { Typhoeus::Response.new }

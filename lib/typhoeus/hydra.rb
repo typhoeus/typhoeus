@@ -1,13 +1,6 @@
 # frozen_string_literal: true
 
-require 'typhoeus/hydra/addable'
-require 'typhoeus/hydra/before'
-require 'typhoeus/hydra/cacheable'
-require 'typhoeus/hydra/block_connection'
-require 'typhoeus/hydra/memoizable'
 require 'typhoeus/hydra/queueable'
-require 'typhoeus/hydra/runnable'
-require 'typhoeus/hydra/stubbable'
 
 module Typhoeus
 
@@ -41,13 +34,6 @@ module Typhoeus
   # @note Callbacks are going to delay the request
   #   execution.
   class Hydra
-    include Hydra::Addable
-    include Hydra::Runnable
-    include Hydra::Memoizable
-    include Hydra::Cacheable
-    include Hydra::BlockConnection
-    include Hydra::Stubbable
-    include Hydra::Before
     include Hydra::Queueable
 
     # @example Set max_concurrency.
@@ -104,15 +90,110 @@ module Typhoeus
       @multi ||= build_multi
     end
 
-    # Add a request directly to the multi. Queueing sets the hydra on the
-    # request as well, so memoization works for both entry points.
+    # Add a request to the hydra.
+    #
+    # This is the hot path for every request. The checks are unrolled instead
+    # of spread over a chain of included modules so a request that uses no
+    # optional features takes the shortest route to the multi.
+    #
+    # @example Add request.
+    #   hydra.add(request)
     #
     # @param [ Typhoeus::Request ] request The request to add.
     #
-    # @return [ Object ] The result of the add chain.
+    # @return [ Object ] The result of the handling callback or the multi add.
     def add(request)
       request.hydra = self
-      super
+
+      before_callbacks = before_callbacks_for(request)
+      if before_callbacks
+        before_callbacks.each do |callback|
+          value = callback.call(request)
+          if value.is_a?(Response)
+            unless request.response
+              request.execute_headers_callbacks(value)
+              request.on_body.each { |body_callback| body_callback.call(value.body, value) }
+              request.finish(value)
+            end
+            dequeue_many
+            return value
+          elsif value.nil? || value == false
+            dequeue_many
+            return value
+          end
+        end
+      end
+
+      unless Typhoeus.stubs_disabled?
+        if response = Expectation.response_for(request)
+          # The stub block already ran the request for real.
+          return if response.request
+
+          request.execute_headers_callbacks(response)
+          request.on_body.each { |callback| callback.call(response.body, response) }
+          return request.finish(response)
+        end
+      end
+
+      raise Typhoeus::Errors::NoStub.new(request) if request.blocked?
+
+      if request.cacheable? && response = request.cached_response
+        request.finish_cached_response(response)
+        return dequeue_many
+      end
+
+      if request.memoizable?
+        add_memoized(request)
+      else
+        add_to_multi(request)
+      end
+    end
+
+    # Return the memory.
+    #
+    # @example Get memory.
+    #   hydra.memory
+    #
+    # @return [ Hash ] The memory.
+    def memory
+      @memory ||= {}
+    end
+
+    # Requests that are waiting for an identical request to finish.
+    #
+    # @return [ Hash ]
+    #
+    # @api private
+    def pending
+      @pending ||= {}
+    end
+
+    # Start the hydra run.
+    #
+    # @example Start hydra run.
+    #   hydra.run
+    #
+    # @return [ Symbol ] Return value from multi.perform.
+    def run
+      memory.clear
+      dequeue_many
+      # Nothing reached the multi (all requests were answered by a before
+      # callback, a stub, or the cache), so do not initialize libcurl.
+      return if !defined?(@multi) || @multi.nil?
+
+      multi.perform
+    rescue Exception => error
+      begin
+        cleanup_after_error
+        reset_multi if multi_handle_unusable?(error)
+      rescue StandardError
+        # Preserve the original error.
+      end
+      raise
+    ensure
+      finish_pending_after_error
+      memory.clear
+      pending.clear
     end
 
     # Set the maximum number of concurrent requests.
@@ -135,6 +216,209 @@ module Typhoeus
     end
 
     private
+
+    # The callbacks that run before a request is added to the multi.
+    #
+    # Returns nil when there is nothing to run, which keeps the common case
+    # allocation free.
+    #
+    # @param [ Typhoeus::Request ] request The request to add.
+    #
+    # @return [ Array<Proc>, nil ] The callbacks or nil.
+    def before_callbacks_for(request)
+      features = Config.exclude_features
+      return if features && features.include?(:before)
+
+      global = Typhoeus.before
+      local = request.before
+      return if global.empty? && local.empty?
+
+      global + local
+    end
+
+    # Add the easy handle for a request to the multi.
+    #
+    # @param [ Typhoeus::Request ] request The request to add.
+    #
+    # @return [ Object ] The result of the multi add.
+    def add_to_multi(request)
+      easy_factory = EasyFactory.new(request, self)
+      easy = easy_factory.get
+      begin
+        multi.add(easy)
+      rescue Exception
+        easy_factory.release_easy(easy) unless easy_factory.released?
+        raise
+      end
+    end
+
+    # Answer a memoized request from memory or attach it to the request that
+    # is already in flight.
+    #
+    # @param [ Typhoeus::Request ] request The request to add.
+    #
+    # @return [ Object ]
+    def add_memoized(request)
+      if memory.key?(request)
+        finish_request(request, memory[request])
+        dequeue_many
+      elsif pending.key?(request)
+        pending[request] << request
+      else
+        pending[request] = []
+        request.on_complete do |response|
+          # Finish from the snapshot taken before the leader's callbacks
+          # ran. A callback that changes the leader's response must not
+          # change the copy its followers receive. Keep the leader's own
+          # callback result as this callback's return value.
+          snapshot = memoized_response_for(request) || response
+          finish_pending(request, snapshot)
+          response.handled_response
+        end
+        begin
+          add_to_multi(request)
+        rescue Exception
+          pending.delete(request)
+          raise
+        end
+      end
+    end
+
+    # Finish all requests that waited for the given request.
+    #
+    # @param [ Typhoeus::Request ] request
+    # @param [ Typhoeus::Response ] response
+    #
+    # @return [ Object ] The response's handled response.
+    def finish_pending(request, response)
+      requests = delete_pending(request)
+      return response.handled_response unless requests
+
+      error = nil
+      requests.each do |pending_request|
+        begin
+          finish_request(pending_request, response)
+        rescue StandardError => e
+          error ||= e
+        end
+      end
+      raise error if error
+
+      response.handled_response
+    end
+
+    # Finish a request whose response is already available. Every request gets
+    # its own response object and the same header callbacks it would see for
+    # a stub or a cache hit.
+    #
+    # @param [ Typhoeus::Request ] request The waiting request.
+    # @param [ Typhoeus::Response ] response The response to copy.
+    #
+    # @return [ Object ] The response's handled response.
+    def finish_request(request, response)
+      copy = response.dup
+      copy.request = request
+      request.execute_headers_callbacks(copy)
+      request.finish(copy, true)
+    end
+
+    # Finish followers whose leader produced a response but whose callbacks
+    # raised before finish_pending could run.
+    #
+    # @return [ void ]
+    def finish_pending_after_error
+      pending.to_a.each do |request, requests|
+        response = memoized_response_for(request)
+        next unless response
+
+        requests.each do |pending_request|
+          next if pending_request.response
+
+          begin
+            finish_request(pending_request, response)
+          rescue StandardError
+            # Preserve the original run error.
+          end
+        end
+      end
+    end
+
+    # Remove the waiting requests without hashing the leader again.
+    # Request#hash includes the request options, which a callback may have
+    # changed after the entry was added.
+    #
+    # @param [ Typhoeus::Request ] request The leader request.
+    #
+    # @return [ Array<Typhoeus::Request>, nil ] The waiting requests.
+    def delete_pending(request)
+      requests = nil
+      pending.delete_if do |pending_request, waiting_requests|
+        next false unless pending_request.equal?(request)
+
+        requests = waiting_requests
+        true
+      end
+      requests
+    end
+
+    # Find the leader's response by identity for the same reason. A changed
+    # option makes the request unusable as a hash key.
+    #
+    # @param [ Typhoeus::Request ] request The leader request.
+    #
+    # @return [ Typhoeus::Response, nil ] The memoized response.
+    def memoized_response_for(request)
+      memory.each_pair do |memoized_request, response|
+        return response if memoized_request.equal?(request)
+      end
+      nil
+    end
+
+    # Clean up the easies and requests a failed run left behind.
+    #
+    # @return [ void ]
+    def cleanup_after_error
+      multi.easy_handles.dup.each do |easy|
+        begin
+          multi.delete(easy)
+        rescue StandardError
+          # The handle may already be unusable.
+        end
+        begin
+          Typhoeus::Pool.release(easy, :cleanup => true)
+        rescue StandardError
+          # Keep cleaning up the remaining handles.
+        end
+      end
+    ensure
+      # A hydra that cannot create its multi has not dequeued anything, so
+      # clear the queue even when the handles cannot be inspected.
+      queued_requests.clear
+    end
+
+    # A fatal multi_perform error leaves the native multi handle in an
+    # unknown state. Replace it so the hydra can run requests again.
+    #
+    # @return [ void ]
+    def reset_multi
+      begin
+        multi.cleanup if multi.respond_to?(:cleanup)
+      rescue StandardError
+        # Freeing the old handle is best effort; it is unusable anyway.
+      end
+      @multi = build_multi
+    end
+
+    # Ethon 0.19 raises MultiPerform when libcurl reports a fatal error from
+    # curl_multi_perform. Earlier versions do not have the class.
+    #
+    # @param [ Exception ] error The error raised by the run.
+    #
+    # @return [ Boolean ] Whether the multi handle has to be replaced.
+    def multi_handle_unusable?(error)
+      defined?(Ethon::Errors::MultiPerform) &&
+        error.is_a?(Ethon::Errors::MultiPerform)
+    end
 
     # Build the multi handle from the options the hydra was created with.
     #

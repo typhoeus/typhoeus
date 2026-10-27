@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Typhoeus::Hydra::Memoizable do
+describe Typhoeus::Hydra do
   let(:hydra) { Typhoeus::Hydra.new }
 
   before { Typhoeus::Config.memoize = true }
