@@ -45,9 +45,13 @@ jobs:
         $lib = Get-ChildItem "$env:RUNNER_TEMP\curl" -Recurse -Filter libcurl-x64.dll |
           Select-Object -First 1
         # Ethon 0.18 only looks for libcurl.dll on Windows. Keep a copy next
-        # to the checkout because FFI does not always search PATH.
+        # to the checkout and in Ruby's own directory because FFI does not
+        # always search PATH.
+        Unblock-File $lib.FullName
         Copy-Item $lib.FullName (Join-Path $lib.DirectoryName "libcurl.dll")
         Copy-Item $lib.FullName (Join-Path $env:GITHUB_WORKSPACE "libcurl.dll")
+        $ruby_bin = & ruby -e 'puts RbConfig::CONFIG["bindir"]'
+        Copy-Item $lib.FullName (Join-Path $ruby_bin "libcurl.dll")
         $lib.DirectoryName | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
@@ -58,9 +62,8 @@ jobs:
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
-        Get-ChildItem libcurl*.dll
         where.exe libcurl.dll
-        ruby -e 'require "ffi"; p File.expand_path("libcurl.dll"); p File.exist?("libcurl.dll"); begin; FFI::DynamicLibrary.open("libcurl.dll", FFI::DynamicLibrary::RTLD_LAZY); puts "loaded"; rescue => e; warn e.full_message; end'
+        bundle exec ruby -e 'require "ffi"; p FFI::DynamicLibrary.open("libcurl.dll", FFI::DynamicLibrary::RTLD_LAZY)'
     - name: Run tests
       shell: bash
       run: |
