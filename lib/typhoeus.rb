@@ -129,21 +129,32 @@ module Typhoeus
   #     Typhoeus.with_connection { request.run }
   #   end
   #
-  # @yield Yields control to the block after disabling block_connection.
-  #        Afterwards, the block_connection is set to its original
-  #        value.
+  # @yield Yields control to the block after disabling block_connection for
+  #        the current thread. Other threads keep their block_connection
+  #        setting.
   # @return [ Object ] Returns the return value of the block.
   #
   # @see Typhoeus::Config.block_connection
   def self.with_connection
-    old_block_connection = Config.block_connection
+    old_block_connection = Thread.current[:typhoeus_block_connection]
     old_stubs_disabled = Thread.current[:typhoeus_stubs_disabled]
-    Config.block_connection = false
+    Thread.current[:typhoeus_block_connection] = false
     Thread.current[:typhoeus_stubs_disabled] = true
     yield if block_given?
   ensure
-    Config.block_connection = old_block_connection
+    Thread.current[:typhoeus_block_connection] = old_block_connection
     Thread.current[:typhoeus_stubs_disabled] = old_stubs_disabled
+  end
+
+  # Whether connections are blocked for the current thread. The override is
+  # thread-local so {with_connection} cannot unblock another thread.
+  #
+  # @api private
+  #
+  # @return [ Boolean, nil ] The configured value, or the thread override.
+  def self.connection_blocked?
+    override = Thread.current[:typhoeus_block_connection]
+    override.nil? ? Config.block_connection : override
   end
 
   # Whether the current thread is inside {with_connection} and therefore

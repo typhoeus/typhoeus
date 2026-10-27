@@ -682,6 +682,7 @@ With Ethon 0.18 the output goes to STDERR.
 `Ethon::Easy` handle is checked out of the process-wide pool for the duration
 of a request and checked back in when it completes, so create requests and
 hydras per thread. `Typhoeus::Hydra.hydra` is memoized per thread.
+`Typhoeus.with_connection` only changes the setting for the current thread.
 
 These are process-wide and should be configured during boot rather than while
 requests are running:

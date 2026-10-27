@@ -4,6 +4,9 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.6.0...master)
 
+* Make `Typhoeus.with_connection` thread-local so it no longer unblocks
+  requests in other threads.
+  ([#813](https://github.com/typhoeus/typhoeus/pull/813))
 * Prepare for Ethon 0.19: release easy handles when callbacks raise, clean up
   failed hydra runs, drop inherited handles after fork, document fork and
   empty-header behavior, and test against Ethon master.
