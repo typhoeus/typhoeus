@@ -28,4 +28,9 @@ RSpec::Core::RakeTask.new(:spec) do |t|
   t.ruby_opts = "-W -I./spec -rspec_helper"
 end
 
+desc "Run the request hot path benchmarks"
+task :perf do
+  ruby "perf/hot_path.rb"
+end
+
 task :default => :spec

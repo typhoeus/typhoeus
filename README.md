@@ -134,6 +134,12 @@ request = Typhoeus::Request.new("www.example.com")
 request.before { |request| request.options[:headers] ||= {} }
 ```
 
+If you do not use `before` callbacks, you can skip them for every request:
+
+```ruby
+Typhoeus::Config.exclude_features = [:before]
+```
+
 ### Handling HTTP errors
 
 You can query the response object to figure out if you had a successful
@@ -716,6 +722,10 @@ bundle exec rake
 ```
 
 Run `COVERAGE=true bundle exec rake` to write an HTML report to `coverage/`.
+
+Run `bundle exec rake perf` to benchmark the request hot path. It reports
+throughput, allocations, and retained memory for building, queueing, adding,
+and performing requests.
 
 ## Semantic Versioning
 

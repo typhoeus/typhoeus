@@ -3,16 +3,9 @@
 require 'zlib'
 require 'digest/sha1'
 require 'typhoeus/request/actions'
-require 'typhoeus/request/before'
-require 'typhoeus/request/block_connection'
-require 'typhoeus/request/cacheable'
 require 'typhoeus/request/callbacks'
 require 'typhoeus/request/marshal'
-require 'typhoeus/request/memoizable'
-require 'typhoeus/request/operations'
-require 'typhoeus/request/responseable'
 require 'typhoeus/request/streamable'
-require 'typhoeus/request/stubbable'
 
 module Typhoeus
 
@@ -25,18 +18,11 @@ module Typhoeus
   #
   # @see (see #initialize)
   class Request
-    extend  Request::Actions
+    extend Request::Actions
     include Request::Callbacks::Types
     include Request::Callbacks
     include Request::Streamable
     include Request::Marshal
-    include Request::Operations
-    include Request::Responseable
-    include Request::Memoizable
-    include Request::Cacheable
-    include Request::BlockConnection
-    include Request::Stubbable
-    include Request::Before
 
     # Returns the provided base url.
     #
@@ -118,6 +104,181 @@ module Typhoeus
       @options = options.dup
 
       set_defaults
+    end
+
+    # Run the request.
+    #
+    # The before, stub, block connection, and cache checks run here explicitly
+    # instead of relying on the order of included modules.
+    #
+    # @example Make a request.
+    #   Typhoeus::Request.new("www.example.com").run
+    #
+    # @return [ Response ] The response.
+    def run
+      callbacks = Typhoeus.before_callbacks_for(self)
+      if callbacks
+        callbacks.each do |callback|
+          value = callback.call(self)
+          if value.is_a?(Response)
+            unless response
+              execute_headers_callbacks(value)
+              on_body.each { |body_callback| body_callback.call(value.body, value) }
+              finish(value)
+            end
+            return value
+          end
+          return response if value.nil? || value == false
+        end
+      end
+
+      unless Typhoeus.stubs_disabled?
+        if stub_response = Expectation.response_for(self)
+          # The stub block already ran the request for real.
+          return stub_response if stub_response.request
+
+          execute_headers_callbacks(stub_response)
+          on_body.each { |callback| callback.call(stub_response.body, stub_response) }
+          return finish(stub_response)
+        end
+      end
+
+      raise Typhoeus::Errors::NoStub.new(self) if blocked?
+
+      if cached = cached_response
+        return finish_cached_response(cached)
+      end
+
+      perform
+    end
+
+    # Add a callback that runs before the request.
+    #
+    # @example Add a callback.
+    #   request.before { |request| request.options[:timeout] = 5 }
+    #
+    # @param [ Proc ] block The callback to run.
+    #
+    # @yield [ Typhoeus::Request ]
+    #
+    # @return [ Array<Proc> ] The callbacks.
+    def before(&block)
+      @before ||= []
+      @before << block if block_given?
+      @before
+    end
+
+    # Returns whether a request is blocked. Takes request.block_connection and
+    # the connection state of the current thread into consideration.
+    #
+    # @example Blocked?
+    #   request.blocked?
+    #
+    # @return [ Boolean ] True if blocked, false else.
+    def blocked?
+      if block_connection.nil?
+        Typhoeus.connection_blocked?
+      else
+        block_connection
+      end
+    end
+
+    # Return whether a request is memoizable.
+    #
+    # Streaming requests are not memoized because their body is not retained
+    # and every caller has to receive its own chunks.
+    #
+    # @example Is request memoizable?
+    #   request.memoizable?
+    #
+    # @return [ Boolean ] Return true if memoizable, false else.
+    def memoizable?
+      Typhoeus::Config.memoize &&
+        !streaming? &&
+        request_method == :get
+    end
+
+    # Return whether a request is cacheable.
+    #
+    # @return [ Boolean ]
+    def cacheable?
+      cache
+    end
+
+    # Return the cached response for the request, if there is one.
+    #
+    # @return [ Typhoeus::Response, nil ]
+    #
+    # @api private
+    def cached_response
+      cacheable? && cache.get(self)
+    end
+
+    # Finish a response that came from the cache and deliver it through the
+    # same callbacks a stubbed response uses.
+    #
+    # @param [ Typhoeus::Response ] response The cached response.
+    #
+    # @return [ Typhoeus::Response ] The response.
+    #
+    # @api private
+    def finish_cached_response(response)
+      copy = response.dup
+      copy.cached = true
+      copy.request = self
+      execute_headers_callbacks(copy)
+      on_body.each { |callback| callback.call(copy.body, copy) }
+      finish(copy)
+    end
+
+    # Return the cache TTL for the request.
+    #
+    # @return [ Integer, nil ]
+    def cache_ttl
+      options[:cache_ttl]
+    end
+
+    # Set the response and execute the callbacks.
+    #
+    # @param [ Typhoeus::Response ] response The response.
+    # @param [ Boolean ] bypass_memoization Whether to bypass memoization.
+    #
+    # @return [ Typhoeus::Response ] The response.
+    def finish(response, bypass_memoization = nil)
+      if bypass_memoization
+        @response = response
+      else
+        self.response = response
+      end
+      self.response.request = self
+      execute_callbacks
+      response
+    end
+
+    # Return the response.
+    #
+    # @return [ Typhoeus::Response, nil ]
+    def response
+      @response ||= nil
+    end
+
+    # Set the response. Cache and memoization hooks run explicitly before the
+    # response is assigned, instead of relying on the order modules were
+    # included in.
+    #
+    # @param [ Typhoeus::Response ] value The response to set.
+    def response=(value)
+      if cacheable? && cacheable_response?(value)
+        # The request exposes this response to its callbacks and the caller.
+        # Store a snapshot so later mutation cannot change what a cache hit
+        # returns.
+        cache.set(self, value.dup)
+      end
+      # Followers receive a copy of the stored response, and the leader's
+      # callbacks must not change what they see. Store a snapshot instead of
+      # the response the leader exposes to its own callbacks.
+      hydra.memory[self] = value.dup if memoizable? && hydra
+      @response = value
     end
 
     # Return the url.
@@ -240,6 +401,42 @@ module Typhoeus
     end
 
     private
+
+    # Perform the actual request.
+    #
+    # @return [ Typhoeus::Response ] The response.
+    def perform
+      easy_factory = EasyFactory.new(self)
+      easy = easy_factory.get
+      begin
+        easy.perform
+      rescue Exception
+        easy_factory.release_easy(easy) unless easy_factory.released?
+        raise
+      end
+      response
+    end
+
+    # Return the cache for the request, falling back to the global cache.
+    #
+    # @return [ Object, nil ]
+    def cache
+      return nil if options[:cache] === false
+      options[:cache] || Typhoeus::Config.cache
+    end
+
+    # A streaming response has no buffered body, and a transport failure or a
+    # stub is not a representation of the resource.
+    #
+    # @param [ Typhoeus::Response ] response The response to cache.
+    #
+    # @return [ Boolean ] Whether the response should be cached.
+    def cacheable_response?(response)
+      !response.cached? &&
+        !streaming? &&
+        !response.mock? &&
+        (response.return_code.nil? || response.return_code == :ok)
+    end
 
     # Checks if two hashes are equal or not, discarding
     # first-level hash order.

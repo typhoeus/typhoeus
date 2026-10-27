@@ -45,6 +45,7 @@ RSpec.configure do |config|
     Typhoeus::Config.block_connection = false
     Typhoeus::Config.memoize = false
     Typhoeus::Config.cache = nil
+    Typhoeus::Config.exclude_features = nil
     Typhoeus::Config.user_agent = nil
     Typhoeus::Config.timeout = nil
     Typhoeus::Config.connecttimeout = nil

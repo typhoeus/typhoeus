@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Typhoeus::Request::BlockConnection do
+describe Typhoeus::Request do
   let(:base_url) { TestServer.host }
   let(:request) { Typhoeus::Request.new(base_url, {:method => :get}) }
 

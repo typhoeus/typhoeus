@@ -7,6 +7,12 @@
 * Make `Typhoeus.with_connection` thread-local so it no longer unblocks
   requests in other threads.
   ([#813](https://github.com/typhoeus/typhoeus/pull/813))
+* Unroll the include chains in `Hydra#add`/`Hydra#run` and
+  `Request#run`/`Request#response=`. The ordering of the before, stub, block
+  connection, cache, memoization, and transfer checks is now explicit.
+  `Typhoeus::Config.exclude_features = [:before]` skips before callbacks for
+  every request, and `bundle exec rake perf` benchmarks the request hot path.
+  ([#815](https://github.com/typhoeus/typhoeus/pull/815))
 * Prepare for Ethon 0.19: release easy handles when callbacks raise, clean up
   failed hydra runs, drop inherited handles after fork, document fork and
   empty-header behavior, and test against Ethon master.

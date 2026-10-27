@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Typhoeus::Hydra::Runnable do
+describe Typhoeus::Hydra do
   let(:base_url) { TestServer.host }
   let(:options) { {} }
   let(:hydra) { Typhoeus::Hydra.new(options) }

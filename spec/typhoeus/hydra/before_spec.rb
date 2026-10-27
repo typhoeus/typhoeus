@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Typhoeus::Hydra::Before do
+describe Typhoeus::Hydra do
   let(:request) { Typhoeus::Request.new("") }
   let(:hydra) { Typhoeus::Hydra.new }
   let(:receive_counter) { double :mark => :twain }
@@ -141,6 +141,32 @@ describe Typhoeus::Hydra::Before do
     context "when no before" do
       it "calls super" do
         expect(Typhoeus::Expectation).to receive(:response_for)
+        hydra.add(request)
+      end
+    end
+
+    context "when before is excluded" do
+      before { Typhoeus::Config.exclude_features = [:before] }
+
+      it "does not run global callbacks" do
+        Typhoeus.before { |request| request.finish(Typhoeus::Response.new) }
+
+        hydra.add(request)
+
+        expect(request.response).to be_nil
+      end
+
+      it "does not run request callbacks" do
+        request.before { |request| request.finish(Typhoeus::Response.new) }
+
+        hydra.add(request)
+
+        expect(request.response).to be_nil
+      end
+
+      it "still adds the request to the multi" do
+        expect(Typhoeus::EasyFactory).to receive(:new).and_call_original
+
         hydra.add(request)
       end
     end

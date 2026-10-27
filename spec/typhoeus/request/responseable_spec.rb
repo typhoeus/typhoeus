@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Typhoeus::Request::Responseable do
+describe Typhoeus::Request do
   let(:request) { Typhoeus::Request.new("base_url", {}) }
   let(:response) { Typhoeus::Response.new }
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Typhoeus::Request::Cacheable do
+describe Typhoeus::Request do
   let(:cache) { MemoryCache.new }
   let(:options) { {} }
   let(:request) { Typhoeus::Request.new(TestServer.url, options) }
