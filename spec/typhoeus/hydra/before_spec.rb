@@ -172,4 +172,3 @@ describe Typhoeus::Hydra do
     end
   end
 end
-
