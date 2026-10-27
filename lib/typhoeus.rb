@@ -109,6 +109,25 @@ module Typhoeus
     @before
   end
 
+  # Returns the callbacks that run before a request. Returns nil when before
+  # callbacks are skipped or when there are none, so the common path does not
+  # allocate a callback array.
+  #
+  # @param [ Typhoeus::Request ] request The request that is about to run.
+  #
+  # @return [ Array<Proc>, nil ] The callbacks or nil.
+  #
+  # @api private
+  def self.before_callbacks_for(request)
+    return unless Config.feature_enabled?(:before)
+
+    global = before
+    local = request.before
+    return if global.empty? && local.empty?
+
+    global + local
+  end
+
   # Execute given block as if block connection is turned off.
   # The old block connection state is restored afterwards. Stubs are bypassed
   # inside the block, so a stub can forward to the real service without

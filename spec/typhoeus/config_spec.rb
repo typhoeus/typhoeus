@@ -19,6 +19,24 @@ describe Typhoeus::Config do
     expect(config.max_idle_easies).to eq(20)
   end
 
+  describe ".feature_enabled?" do
+    it "is true without excluded features" do
+      expect(config.feature_enabled?(:before)).to be(true)
+    end
+
+    it "is false for an excluded feature" do
+      config.exclude_features = [:before]
+
+      expect(config.feature_enabled?(:before)).to be(false)
+    end
+
+    it "is true for another feature" do
+      config.exclude_features = [:before]
+
+      expect(config.feature_enabled?(:cache)).to be(true)
+    end
+  end
+
   describe ".max_idle_easies=" do
     it "accepts nil" do
       config.max_idle_easies = nil

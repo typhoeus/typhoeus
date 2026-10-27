@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Typhoeus::Request::Operations do
+describe Typhoeus::Request do
   let(:base_url) { TestServer.host }
   let(:options) { {} }
   let(:request) { Typhoeus::Request.new(base_url, options) }

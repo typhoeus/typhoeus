@@ -24,7 +24,7 @@ module Typhoeus
     #
     # @return [ Boolean ]
     #
-    # @see Typhoeus::Request::BlockConnection
+    # @see Typhoeus::Request#run
     # @see Typhoeus::Hydra
     # @see Typhoeus#with_connection
     # @see Typhoeus::Errors::NoStub
@@ -35,7 +35,7 @@ module Typhoeus
     # @return [ Boolean ]
     #
     # @see Typhoeus::Hydra
-    # @see Typhoeus::Request::Memoizable
+    # @see Typhoeus::Request#run
     attr_accessor :memoize
 
     # Defines whether curls debug output is shown.
@@ -68,7 +68,7 @@ module Typhoeus
     # @return [ Object ]
     #
     # @see Typhoeus::Hydra
-    # @see Typhoeus::Request::Cacheable
+    # @see Typhoeus::Request#run
     attr_accessor :cache
 
     # Defines optional hydra features that should be skipped. Currently
@@ -82,6 +82,17 @@ module Typhoeus
     #
     # @see Typhoeus::Hydra#add
     attr_accessor :exclude_features
+
+    # Returns whether an optional feature is enabled.
+    #
+    # @param [ Symbol ] feature The feature name.
+    #
+    # @return [ Boolean ] Whether the feature is enabled.
+    #
+    # @api private
+    def feature_enabled?(feature)
+      exclude_features.nil? || !exclude_features.include?(feature)
+    end
 
     # Defines whether to use a default user agent.
     #

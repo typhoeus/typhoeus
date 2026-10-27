@@ -105,7 +105,7 @@ module Typhoeus
     def add(request)
       request.hydra = self
 
-      before_callbacks = before_callbacks_for(request)
+      before_callbacks = Typhoeus.before_callbacks_for(request)
       if before_callbacks
         before_callbacks.each do |callback|
           value = callback.call(request)
@@ -216,25 +216,6 @@ module Typhoeus
     end
 
     private
-
-    # The callbacks that run before a request is added to the multi.
-    #
-    # Returns nil when there is nothing to run, which keeps the common case
-    # allocation free.
-    #
-    # @param [ Typhoeus::Request ] request The request to add.
-    #
-    # @return [ Array<Proc>, nil ] The callbacks or nil.
-    def before_callbacks_for(request)
-      features = Config.exclude_features
-      return if features && features.include?(:before)
-
-      global = Typhoeus.before
-      local = request.before
-      return if global.empty? && local.empty?
-
-      global + local
-    end
 
     # Add the easy handle for a request to the multi.
     #

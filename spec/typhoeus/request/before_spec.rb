@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Typhoeus::Request::Before do
+describe Typhoeus::Request do
   let(:request) { Typhoeus::Request.new("") }
   let(:receive_counter) { double :mark => :twain }
 
@@ -158,6 +158,24 @@ describe Typhoeus::Request::Before do
     context "when no before" do
       it "calls super" do
         expect(Typhoeus::Expectation).to receive(:response_for)
+        request.run
+      end
+    end
+
+    context "when before is excluded" do
+      before { Typhoeus::Config.exclude_features = [:before] }
+
+      it "does not run global callbacks" do
+        Typhoeus.before { raise "should not be called" }
+
+        expect(Typhoeus::Expectation).to receive(:response_for).and_return(nil)
+        request.run
+      end
+
+      it "does not run request callbacks" do
+        request.before { raise "should not be called" }
+
+        expect(Typhoeus::Expectation).to receive(:response_for).and_return(nil)
         request.run
       end
     end

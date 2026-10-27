@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Typhoeus::Request::Memoizable do
+describe Typhoeus::Request do
   let(:options) { {} }
   let(:request) { Typhoeus::Request.new("fu", options) }
   let(:response) { Typhoeus::Response.new }
