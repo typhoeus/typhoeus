@@ -36,6 +36,9 @@ describe Typhoeus::Pool do
     it "writes cookies to disk" do
       tempfile1 = Tempfile.new('cookies')
       tempfile2 = Tempfile.new('cookies')
+      # Windows keeps the file locked while Tempfile still has it open.
+      tempfile1.close
+      tempfile2.close
 
       easy.cookiejar = tempfile1.path
       easy.url = "#{TestServer.host}/cookies-test"
