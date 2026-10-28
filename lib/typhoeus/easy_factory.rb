@@ -252,10 +252,9 @@ module Typhoeus
           request.execute_headers_callbacks(Response.new(Ethon::Easy::Mirror.from_easy(easy).options))
         end
       end
+      # Ethon calls progress callbacks with the four transfer counters.
       (Typhoeus.on_progress + request.on_progress).each do |callback|
-        easy.on_progress do |dltotal, dlnow, ultotal, ulnow, _easy|
-          callback.call(dltotal, dlnow, ultotal, ulnow)
-        end
+        easy.on_progress(&callback)
       end
       easy.on_complete do |easy|
         begin
