@@ -87,6 +87,24 @@ describe Typhoeus::Request do
             request.on_complete { |_| receive_counter.mark }
             request.run
           end
+
+          it "treats a synthetic response as a mock" do
+            response = Typhoeus::Response.new(:code => 200)
+            Typhoeus.before { response }
+            request.run
+
+            expect(response.mock).to be(true)
+            expect(response.success?).to be(true)
+          end
+
+          it "doesn't cache a synthetic response" do
+            cache = double("cache", :get => nil)
+            expect(cache).not_to receive(:set)
+            Typhoeus::Config.cache = cache
+            Typhoeus.before { Typhoeus::Response.new(:code => 200) }
+
+            request.run
+          end
         end
       end
 

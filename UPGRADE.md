@@ -1,5 +1,32 @@
 # Upgrade guide
 
+## 1.7
+
+### Ethon 0.19
+
+Typhoeus 1.7 requires Ethon 0.19 or later. Several conditions that earlier
+versions ignored now surface:
+
+- Exceptions raised by `on_body` and `on_complete` callbacks are re-raised.
+- `Ethon::Easy` and `Ethon::Multi` handles cannot be inherited across `fork`.
+- Unknown enum options and options the loaded libcurl does not support raise
+  `Ethon::Errors::InvalidValue` and `Ethon::Errors::UnsupportedOption`.
+- Multipart PUT requests are sent as `multipart/form-data`.
+- An empty header value suppresses libcurl's default. End the key with a
+  semicolon to send an empty value, for example `"X-Empty;" => ""`.
+- Verbose output is written through `Ethon.logger` instead of STDERR.
+
+### Progress callbacks
+
+`on_progress` callbacks run only while data is transferred. They are no longer
+called with a `Response` when the request completes.
+
+### Before callbacks
+
+A `before` callback that returns a `Typhoeus::Response` short-circuits the
+request. The response is treated as a mock, so it is not cached and `success?`
+works for it.
+
 ## 0.5
 
 ### Options

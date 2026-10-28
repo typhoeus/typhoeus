@@ -145,7 +145,7 @@ Use `Typhoeus.before` for every request, or `request.before` for a single
 request. Callbacks receive the request, run before it is performed, and can
 modify it. Returning `nil` or `false` skips the request and returns its current
 response; returning a `Typhoeus::Response` skips the request and returns that
-response.
+response. The returned response is treated as a mock, so it is not cached.
 
 ```ruby
 Typhoeus.before { |request| request.options[:timeout] ||= 5 }

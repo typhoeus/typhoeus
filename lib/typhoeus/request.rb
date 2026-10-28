@@ -122,6 +122,9 @@ module Typhoeus
           value = callback.call(self)
           if value.is_a?(Response)
             unless response
+              # A synthetic response is a short circuit like a stub. Mark it
+              # so success? works and it is not written to the cache.
+              value.mock = true unless value.request
               execute_headers_callbacks(value)
               on_body.each { |body_callback| body_callback.call(value.body, value) }
               finish(value)
@@ -134,8 +137,8 @@ module Typhoeus
 
       unless Typhoeus.stubs_disabled?
         if stub_response = Expectation.response_for(self)
-          # The stub block already ran the request for real.
-          return stub_response if stub_response.request
+          # The stub block already ran this request for real.
+          return stub_response if stub_response.request.equal?(self)
 
           execute_headers_callbacks(stub_response)
           on_body.each { |callback| callback.call(stub_response.body, stub_response) }

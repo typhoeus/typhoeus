@@ -75,6 +75,7 @@ module Typhoeus
     #   Ethon::Multi#initialize
     def initialize(options = {})
       @options = options.dup
+      @multi_creation_failed = false
       self.max_concurrency = @options.fetch(:max_concurrency, 200)
     end
 
@@ -111,6 +112,9 @@ module Typhoeus
           value = callback.call(request)
           if value.is_a?(Response)
             unless request.response
+              # A synthetic response is a short circuit like a stub. Mark it
+              # so success? works and it is not written to the cache.
+              value.mock = true unless value.request
               request.execute_headers_callbacks(value)
               request.on_body.each { |body_callback| body_callback.call(value.body, value) }
               request.finish(value)
@@ -126,8 +130,8 @@ module Typhoeus
 
       unless Typhoeus.stubs_disabled?
         if response = Expectation.response_for(request)
-          # The stub block already ran the request for real.
-          return if response.request
+          # The stub block already ran this request for real.
+          return if response.request.equal?(request)
 
           request.execute_headers_callbacks(response)
           request.on_body.each { |callback| callback.call(response.body, response) }
@@ -355,26 +359,28 @@ module Typhoeus
       nil
     end
 
-    # Clean up the easies and requests a failed run left behind.
+    # Clean up the easies a failed run left behind. Requests that never reached
+    # the multi stay queued, so a caller can retry after handling the error.
     #
     # @return [ void ]
     def cleanup_after_error
-      multi.easy_handles.dup.each do |easy|
-        begin
-          multi.delete(easy)
-        rescue StandardError
-          # The handle may already be unusable.
-        end
-        begin
-          Typhoeus::Pool.release(easy, :cleanup => true)
-        rescue StandardError
-          # Keep cleaning up the remaining handles.
+      if defined?(@multi) && @multi
+        multi.easy_handles.dup.each do |easy|
+          begin
+            multi.delete(easy)
+          rescue StandardError
+            # The handle may already be unusable.
+          end
+          begin
+            Typhoeus::Pool.release(easy, :cleanup => true)
+          rescue StandardError
+            # Keep cleaning up the remaining handles.
+          end
         end
       end
     ensure
-      # A hydra that cannot create its multi has not dequeued anything, so
-      # clear the queue even when the handles cannot be inspected.
-      queued_requests.clear
+      # Invalid multi options make every queued request fail the same way.
+      queued_requests.clear if @multi_creation_failed
     end
 
     # A fatal multi_perform error leaves the native multi handle in an
@@ -407,7 +413,11 @@ module Typhoeus
     #
     # @api private
     def build_multi
+      @multi_creation_failed = false
       Ethon::Multi.new(@options.reject { |key, _| key == :max_concurrency })
+    rescue StandardError
+      @multi_creation_failed = true
+      raise
     end
   end
 end

@@ -16,9 +16,19 @@
   with four parameters no longer raises `ArgumentError`.
 * Make `Typhoeus.with_connection` apply across fibers in the current thread
   by using thread variables instead of fiber-local storage.
-* Require Ethon >= 0.19.0. Ethon 0.19 propagates callback exceptions, rejects
-  handles inherited across `fork`, validates enum and bitmask options, and
-  fixes multipart PUT requests.
+* Require Ethon >= 0.19.0. Release easy handles when callbacks raise, clean up
+  failed hydra runs without dropping queued requests, drop inherited handles
+  after fork, and document fork and empty-header behavior. Ethon 0.19 also
+  propagates callback exceptions, rejects handles inherited across `fork`,
+  validates enum and bitmask options, and fixes multipart PUT requests.
+* Finish every request that reuses a stubbed `Response` instead of treating the
+  response as already handled.
+* Keep queued requests when a hydra run fails after reaching the multi, so a
+  caller can retry them after handling the error.
+* Mark responses returned by `before` callbacks as mock responses. They are no
+  longer cached, and `success?` works for them.
+* Use `SSL_CERT_FILE` and `SSL_CERT_DIR` as the default `cainfo` and `capath`
+  when the request does not set them.
 * Make `Typhoeus.with_connection` thread-local so it no longer unblocks
   requests in other threads.
   ([#813](https://github.com/typhoeus/typhoeus/pull/813))
@@ -28,9 +38,6 @@
   `Typhoeus::Config.exclude_features = [:before]` skips before callbacks for
   every request, and `bundle exec rake perf` benchmarks the request hot path.
   ([#815](https://github.com/typhoeus/typhoeus/pull/815))
-* Prepare for Ethon 0.19: release easy handles when callbacks raise, clean up
-  failed hydra runs, drop inherited handles after fork, document fork and
-  empty-header behavior, and test against Ethon master.
 * Return the response from a `before` callback that short-circuits a request
   instead of returning `nil`.
   ([#748](https://github.com/typhoeus/typhoeus/pull/748))
@@ -149,8 +156,7 @@
   arrays.
   ([#786](https://github.com/typhoeus/typhoeus/pull/786))
 * Build `Request#encoded_body` with Ethon's request action so PUT escaping
-  matches both Ethon 0.18 and the 0.19 behavior. The full suite now passes
-  against Ethon master.
+  matches POST.
   ([#787](https://github.com/typhoeus/typhoeus/pull/787))
 * Create a Hydra's native multi handle on first use. Creating or memoizing a
   hydra during boot no longer initializes libcurl, which Ethon 0.19 rejects in
