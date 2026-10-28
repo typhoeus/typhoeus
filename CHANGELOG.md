@@ -4,6 +4,8 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.6.0...master)
 
+* Make `Typhoeus.with_connection` apply across fibers in the current thread
+  by using thread variables instead of fiber-local storage.
 * Make `Typhoeus.with_connection` thread-local so it no longer unblocks
   requests in other threads.
   ([#813](https://github.com/typhoeus/typhoeus/pull/813))
