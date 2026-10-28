@@ -48,6 +48,14 @@ describe Typhoeus::Hydra do
         hydra.add(request)
         expect(request.response.mock).to be(true)
       end
+
+      it "finishes every request that reuses a stubbed response" do
+        requests = 2.times.map { Typhoeus::Request.new(base_url) }
+        requests.each { |queued_request| hydra.queue(queued_request) }
+        hydra.run
+
+        expect(requests.map(&:response)).to eq([response, response])
+      end
     end
   end
 end

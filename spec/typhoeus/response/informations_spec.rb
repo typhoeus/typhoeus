@@ -46,7 +46,7 @@ describe Typhoeus::Response::Informations do
       expect(response.error_message).to eq("Maximum (1) redirects followed")
     end
 
-    context "when performing a request", :if => Ethon::Easy.method_defined?(:error_message) do
+    context "when performing a request" do
       let(:response) { Typhoeus.get("#{TestServer.host}/bad_redirect", :followlocation => true, :maxredirs => 1, :errorbuffer => errorbuffer) }
 
       context "with errorbuffer" do

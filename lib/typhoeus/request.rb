@@ -122,6 +122,9 @@ module Typhoeus
           value = callback.call(self)
           if value.is_a?(Response)
             unless response
+              # A synthetic response is a short circuit like a stub. Mark it
+              # so success? works and it is not written to the cache.
+              value.mock = true
               execute_headers_callbacks(value)
               on_body.each { |body_callback| body_callback.call(value.body, value) }
               finish(value)
@@ -134,8 +137,8 @@ module Typhoeus
 
       unless Typhoeus.stubs_disabled?
         if stub_response = Expectation.response_for(self)
-          # The stub block already ran the request for real.
-          return stub_response if stub_response.request
+          # The stub block already ran this request for real.
+          return stub_response if stub_response.request.equal?(self)
 
           execute_headers_callbacks(stub_response)
           on_body.each { |callback| callback.call(stub_response.body, stub_response) }
@@ -354,11 +357,8 @@ module Typhoeus
           body_options[option] = options[option] if options.key?(option)
         end
 
-        # Let Ethon apply its escape rule for this method and version. Ethon
-        # 0.18 always escapes PUT bodies; 0.19 respects the escape option like
-        # POST does. The form must stay non-multipart: encoded_body returns a
-        # single string, and Ethon 0.18 mistakes plain array values for files
-        # when it builds a multipart form.
+        # Let Ethon apply its escape rule for this method. The form must stay
+        # non-multipart because encoded_body returns a single string.
         form = Ethon::Easy::Form.new(easy, options[:body])
         form.define_singleton_method(:multipart?) { false }
 

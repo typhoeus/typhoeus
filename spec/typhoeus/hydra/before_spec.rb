@@ -65,6 +65,15 @@ describe Typhoeus::Hydra do
               request.on_complete { |_| receive_counter.mark }
               hydra.add(request)
             end
+
+            it "treats the response as a mock" do
+              response = Typhoeus::Response.new(:code => 200)
+              Typhoeus.before { response }
+              hydra.add(request)
+
+              expect(response.mock).to be(true)
+              expect(response.success?).to be(true)
+            end
           end
         end
       end

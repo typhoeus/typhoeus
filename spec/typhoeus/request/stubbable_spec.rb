@@ -95,6 +95,18 @@ describe Typhoeus::Request do
         request.run
         expect(request.response.mock).to be(true)
       end
+
+      it "finishes a request that reuses a stubbed response" do
+        Typhoeus::Request.new(base_url).run
+
+        reusing_request = Typhoeus::Request.new(base_url)
+        callback_calls = 0
+        reusing_request.on_complete { callback_calls += 1 }
+        reusing_request.run
+
+        expect(reusing_request.response).to be(response)
+        expect(callback_calls).to eq(1)
+      end
     end
   end
 end

@@ -46,8 +46,9 @@ jobs:
       run: |
         & "$env:RI_DEVKIT\usr\bin\bash.exe" -lc "pacman -S --noconfirm mingw-w64-ucrt-x86_64-curl"
         $bin = Join-Path $env:RI_DEVKIT "ucrt64\bin"
-        # Ethon 0.18 only looks for libcurl.dll on Windows. Keep the copy next
-        # to the dependency DLLs so Windows can resolve them.
+        # FFI does not always search PATH on Windows. Keep copies named
+        # libcurl.dll, which Ethon tries first, next to the dependency DLLs
+        # and in the workspace.
         Copy-Item (Join-Path $bin "libcurl-4.dll") (Join-Path $bin "libcurl.dll")
         Copy-Item (Join-Path $bin "libcurl-4.dll") (Join-Path $env:GITHUB_WORKSPACE "libcurl.dll")
         $bin | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append

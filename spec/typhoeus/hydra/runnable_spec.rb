@@ -67,6 +67,37 @@ describe Typhoeus::Hydra do
       end
     end
 
+    context "when a callback raises with requests still queued" do
+      let(:options) { { :max_concurrency => 1 } }
+      let(:first) { Typhoeus::Request.new("http://localhost:3001/stubbed") }
+      let(:second) { Typhoeus::Request.new("http://localhost:3001/stubbed") }
+      let(:third) { Typhoeus::Request.new("http://localhost:3001/stubbed") }
+      let(:requests) { [first, second, third] }
+
+      before do
+        Typhoeus.stub("http://localhost:3001/stubbed").and_return(
+          Typhoeus::Response.new(:code => 200)
+        )
+        first.on_complete { raise "boom" }
+      end
+
+      it "keeps the queued requests" do
+        expect { hydra.run }.to raise_error("boom")
+        expect(hydra.queued_requests).to eq([second, third])
+      end
+    end
+
+    context "when a request is blocked" do
+      let(:requests) { [Typhoeus::Request.new("http://localhost:3001/blocked")] }
+
+      before { Typhoeus::Config.block_connection = true }
+
+      it "does not create the multi" do
+        expect(Ethon::Multi).not_to receive(:new)
+        expect { hydra.run }.to raise_error(Typhoeus::Errors::NoStub)
+      end
+    end
+
     context "when the multi cannot be initialized" do
       let(:hydra) { Typhoeus::Hydra.new(:invalid_option => true) }
       let(:requests) { [Typhoeus::Request.new("#{TestServer.host}/first")] }
