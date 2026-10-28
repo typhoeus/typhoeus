@@ -4,6 +4,8 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.6.0...master)
 
+* Build the gem from a source tarball or a working tree without git instead
+  of producing an empty package.
 * Call `on_progress` callbacks with the documented four arguments. A lambda
   with four parameters no longer raises `ArgumentError`.
 * Make `Typhoeus.with_connection` apply across fibers in the current thread
