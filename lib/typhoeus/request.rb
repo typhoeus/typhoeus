@@ -354,11 +354,8 @@ module Typhoeus
           body_options[option] = options[option] if options.key?(option)
         end
 
-        # Let Ethon apply its escape rule for this method and version. Ethon
-        # 0.18 always escapes PUT bodies; 0.19 respects the escape option like
-        # POST does. The form must stay non-multipart: encoded_body returns a
-        # single string, and Ethon 0.18 mistakes plain array values for files
-        # when it builds a multipart form.
+        # Let Ethon apply its escape rule for this method. The form must stay
+        # non-multipart because encoded_body returns a single string.
         form = Ethon::Easy::Form.new(easy, options[:body])
         form.define_singleton_method(:multipart?) { false }
 

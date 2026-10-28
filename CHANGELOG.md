@@ -2,7 +2,11 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.6.0...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.7.0...master)
+
+## 1.7.0
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.6.0...v1.7.0)
 
 * Constrain the Ethon dependency to `< 0.20` so a future pre-1.0 minor
   release cannot introduce breaking changes unnoticed.
@@ -12,6 +16,9 @@
   with four parameters no longer raises `ArgumentError`.
 * Make `Typhoeus.with_connection` apply across fibers in the current thread
   by using thread variables instead of fiber-local storage.
+* Require Ethon >= 0.19.0. Ethon 0.19 propagates callback exceptions, rejects
+  handles inherited across `fork`, validates enum and bitmask options, and
+  fixes multipart PUT requests.
 * Make `Typhoeus.with_connection` thread-local so it no longer unblocks
   requests in other threads.
   ([#813](https://github.com/typhoeus/typhoeus/pull/813))

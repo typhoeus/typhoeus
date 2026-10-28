@@ -1,6 +1,6 @@
 name: Ethon master
 
-# Run against Ethon master weekly until the next Ethon release.
+# Run against Ethon master weekly to catch regressions before the next release.
 on:
   schedule:
     - cron: '0 6 * * 1'

@@ -523,7 +523,7 @@ defaults to 300 seconds; passing 0 also uses 300 seconds.
 
 ### Threads and forking
 
-Typhoeus delegates handle management to Ethon. Ethon 0.19 and later raise
+Typhoeus delegates handle management to Ethon. Ethon raises
 `Ethon::Errors::ForkSafety` for `Ethon::Easy` and `Ethon::Multi` handles
 inherited across `fork`. Typhoeus clears its easy pool in the child process and
 creates a hydra's native multi handle lazily, so creating or memoizing a hydra
@@ -551,12 +551,11 @@ the pool (20 by default). Handles beyond that limit are cleaned up instead of
 pooled. Set it to `nil` to keep every handle or `0` to disable pooling.
 
 Exceptions raised by `on_body` and `on_complete` callbacks are propagated by
-Ethon 0.19 and later. Typhoeus releases the underlying easy handle before
-re-raising.
+Ethon. Typhoeus releases the underlying easy handle before re-raising.
 
 ### Ethon 0.19
 
-Typhoeus supports Ethon 0.18 and later. Ethon 0.19 makes several previously
+Typhoeus requires Ethon 0.19 or later. Ethon 0.19 makes several previously
 silent errors visible:
 
 - Unknown enum and bitmask option values raise `Ethon::Errors::InvalidValue`,
@@ -564,8 +563,7 @@ silent errors visible:
   `Ethon::Errors::UnsupportedOption`. Guard optional options with
   `Ethon::Curl.supports_option?` when you need to support older libcurl builds.
 - Exceptions raised by `on_body` and `on_complete` callbacks are re-raised.
-- Multipart PUT requests are sent as `multipart/form-data`. With Ethon 0.18 the
-  body was URL-encoded instead.
+- Multipart PUT requests are sent as `multipart/form-data`.
 - Pass `errorbuffer: true` to expose libcurl's detailed error as
   `response.error_message`.
 
@@ -620,8 +618,8 @@ Use the same path for both if you want one file for reading and writing.
 Any libcurl option can be passed as a request option. See the
 [Ethon option documentation](http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy/Options).
 
-With Ethon 0.19 and later, an empty header value suppresses libcurl's default
-header. To send a header with an empty value, end the key with a semicolon:
+An empty header value suppresses libcurl's default header. To send a header
+with an empty value, end the key with a semicolon:
 
 ```ruby
 Typhoeus.get("www.example.com", headers: { "X-Empty;" => "" })
@@ -678,17 +676,15 @@ Or globally:
 Typhoeus::Config.verbose = true
 ```
 
-Ethon 0.19 and later route libcurl's verbose output through `Ethon.logger` at
-the debug level, so no longer prints it to STDERR directly. Enable debug
-logging to see it:
+Ethon routes libcurl's verbose output through `Ethon.logger` at the debug
+level, so it no longer prints to STDERR directly. Enable debug logging to see
+it:
 
 ```ruby
 require "logger"
 Ethon.logger = Logger.new(STDERR)
 Ethon.logger.level = Logger::DEBUG
 ```
-
-With Ethon 0.18 the output goes to STDERR.
 
 ### Thread safety
 
