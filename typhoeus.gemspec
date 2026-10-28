@@ -28,7 +28,18 @@ Gem::Specification.new do |s|
   s.add_dependency('ethon', [">= 0.18.0"])
 
   s.files = Dir.chdir(__dir__) do
-    `git ls-files -z`.split("\x0").reject do |file|
+    files = begin
+      IO.popen(["git", "ls-files", "-z"], :err => File::NULL, &:read).split("\x0")
+    rescue SystemCallError
+      []
+    end
+    # Building from a source tarball or a container without git must still
+    # produce a working gem.
+    if files.empty?
+      files = Dir["lib/**/*", "*.md", "LICENSE", "typhoeus.gemspec"].
+        select { |file| File.file?(file) }
+    end
+    files.reject do |file|
       file.start_with?(*%w[. Gemfile Guardfile Rakefile perf spec])
     end
   end
