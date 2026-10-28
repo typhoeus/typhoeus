@@ -8,92 +8,139 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.6.0...v1.7.0)
 
-* Constrain the Ethon dependency to `< 0.20` so a future pre-1.0 minor
-  release cannot introduce breaking changes unnoticed.
-* Build the gem from a source tarball or a working tree without git instead
-  of producing an empty package.
-* Call `on_progress` callbacks with the documented four arguments. A lambda
-  with four parameters no longer raises `ArgumentError`.
-* Make `Typhoeus.with_connection` apply across fibers in the current thread
-  by using thread variables instead of fiber-local storage.
+This release requires Ethon 0.19 and changes several public behaviors.
+Review the breaking changes and `UPGRADE.md` before upgrading.
+
+### Breaking changes
+
 * Require Ethon >= 0.19.0. Release easy handles when callbacks raise, clean up
   failed hydra runs without dropping queued requests, drop inherited handles
   after fork, and document fork and empty-header behavior. Ethon 0.19 also
   propagates callback exceptions, rejects handles inherited across `fork`,
   validates enum and bitmask options, and fixes multipart PUT requests.
+* Constrain the Ethon dependency to `< 0.20` so a future pre-1.0 minor
+  release cannot introduce breaking changes unnoticed.
+* Call `on_progress` callbacks with the documented four arguments. A lambda
+  with four parameters no longer raises `ArgumentError`.
+* Raise `ArgumentError` for a non-positive `Hydra` `max_concurrency`, including
+  when it is assigned after the hydra is created, instead of leaving every
+  queued request unperformed.
+  ([#753](https://github.com/typhoeus/typhoeus/pull/753))
+* Raise `ArgumentError` with the option name for non-numeric timeout options
+  instead of failing with `NoMethodError` inside option sanitization.
+  ([#758](https://github.com/typhoeus/typhoeus/pull/758))
+* Raise `Typhoeus::Errors::NoResponse` when a stub has no response or its
+  response block returns `nil` or a non-`Response` object.
+  ([#776](https://github.com/typhoeus/typhoeus/pull/776))
+
+### Behavior changes
+
+* Make `Typhoeus.with_connection` thread-local so it no longer unblocks
+  requests in other threads.
+  ([#813](https://github.com/typhoeus/typhoeus/pull/813))
+* Make `Typhoeus.with_connection` apply across fibers in the current thread
+  by using thread variables instead of fiber-local storage.
+* Bypass stubs inside `Typhoeus.with_connection`. A stub can now forward its
+  request to the real service without matching itself in an endless loop, and
+  the real response is not finished a second time.
+  ([#809](https://github.com/typhoeus/typhoeus/pull/809))
+* Return the response from a `before` callback that short-circuits a request
+  instead of returning `nil`.
+  ([#748](https://github.com/typhoeus/typhoeus/pull/748))
+* Mark responses returned by `before` callbacks as mock responses. They are no
+  longer cached, and `success?` works for them.
 * Finish every request that reuses a stubbed `Response` instead of treating the
   response as already handled.
 * Keep queued requests when a hydra run fails after reaching the multi, so a
   caller can retry them after handling the error.
-* Mark responses returned by `before` callbacks as mock responses. They are no
-  longer cached, and `success?` works for them.
+* Create a Hydra's native multi handle on first use. Creating or memoizing a
+  hydra during boot no longer initializes libcurl, which Ethon 0.19 rejects in
+  a forked child.
+  ([#790](https://github.com/typhoeus/typhoeus/pull/790))
+* Do not create a Hydra's native multi handle when every queued request is
+  answered by a `before` callback, a stub, or the cache.
+  ([#802](https://github.com/typhoeus/typhoeus/pull/802))
+* Only invoke `on_progress` callbacks while libcurl transfers data. They are no
+  longer called with a `Response` when the request completes, and global
+  `Typhoeus.on_progress` callbacks now run during the transfer as well.
+  ([#750](https://github.com/typhoeus/typhoeus/pull/750))
+* Only cache complete, successful, non-mock responses and replay `on_headers`
+  and `on_body` callbacks for cache hits.
+  ([#763](https://github.com/typhoeus/typhoeus/pull/763))
+* Exclude `cache_ttl` from `Request#cache_key`. Changing the TTL no longer
+  misses responses cached by an equivalent request with a different TTL.
+  ([#751](https://github.com/typhoeus/typhoeus/pull/751))
+* Make `Request#cache_key` unambiguous for values that stringify the same, and
+  return a libcurl error instead of raising for an empty URL with params.
+  ([#768](https://github.com/typhoeus/typhoeus/pull/768))
+* Normalize the request method and URL for cache keys, equality, and
+  memoization. `Typhoeus.get`, an implicit GET, `method: "GET"`, and a URI base
+  URL now refer to the same request.
+  ([#789](https://github.com/typhoeus/typhoeus/pull/789))
+* Apply `timeout_ms` and `connecttimeout_ms` after their second-based options,
+  so an explicit millisecond timeout is no longer overridden by `timeout` or
+  `Typhoeus::Config.timeout`.
+  ([#788](https://github.com/typhoeus/typhoeus/pull/788))
+* Merge the default `User-Agent` and `Expect` headers case-insensitively. A
+  caller using a lowercase header name no longer sends a duplicate value.
+  ([#784](https://github.com/typhoeus/typhoeus/pull/784))
+* Run `on_headers` callbacks for memoized followers, disable memoization for
+  streaming requests whose body is not retained, and set `request.hydra` when a
+  request is added directly.
+  ([#774](https://github.com/typhoeus/typhoeus/pull/774))
+
+### Enhancements
+
 * Use `SSL_CERT_FILE` and `SSL_CERT_DIR` as the default `cainfo` and `capath`
   when the request does not set them.
-* Make `Typhoeus.with_connection` thread-local so it no longer unblocks
-  requests in other threads.
-  ([#813](https://github.com/typhoeus/typhoeus/pull/813))
 * Unroll the include chains in `Hydra#add`/`Hydra#run` and
   `Request#run`/`Request#response=`. The ordering of the before, stub, block
   connection, cache, memoization, and transfer checks is now explicit.
   `Typhoeus::Config.exclude_features = [:before]` skips before callbacks for
   every request, and `bundle exec rake perf` benchmarks the request hot path.
   ([#815](https://github.com/typhoeus/typhoeus/pull/815))
-* Return the response from a `before` callback that short-circuits a request
-  instead of returning `nil`.
-  ([#748](https://github.com/typhoeus/typhoeus/pull/748))
+* Bound the easy pool with `Typhoeus::Config.max_idle_easies` (20 by default)
+  and replace the pool mutex after a fork instead of deadlocking on the
+  inherited lock.
+  ([#761](https://github.com/typhoeus/typhoeus/pull/761))
+* Honor Faraday `verify_hostname` and SSL version options, and preserve the
+  response reason phrase.
+  ([#766](https://github.com/typhoeus/typhoeus/pull/766))
+* Honor Faraday's `read_timeout` in the Typhoeus adapter, falling back to the
+  general `timeout` when it is not set.
+  ([#798](https://github.com/typhoeus/typhoeus/pull/798))
+* Let `Expect: nil` opt out of Typhoeus's empty `Expect` header, so libcurl
+  decides when to send `100-continue`.
+  ([#808](https://github.com/typhoeus/typhoeus/pull/808))
+
+### Fixes and hardening
+
 * Don't marshal per-request `before` callbacks. Requests with a `before`
   callback can be dumped again.
   ([#749](https://github.com/typhoeus/typhoeus/pull/749))
-* Only invoke `on_progress` callbacks while libcurl transfers data. They are no
-  longer called with a `Response` when the request completes, and global
-  `Typhoeus.on_progress` callbacks now run during the transfer as well.
-  ([#750](https://github.com/typhoeus/typhoeus/pull/750))
-* Exclude `cache_ttl` from `Request#cache_key`. Changing the TTL no longer
-  misses responses cached by an equivalent request with a different TTL.
-  ([#751](https://github.com/typhoeus/typhoeus/pull/751))
 * Release the easy handle when installing response callbacks fails.
   ([#752](https://github.com/typhoeus/typhoeus/pull/752))
-* Raise `ArgumentError` for a non-positive `Hydra` `max_concurrency`, including
-  when it is assigned after the hydra is created, instead of leaving every
-  queued request unperformed.
-  ([#753](https://github.com/typhoeus/typhoeus/pull/753))
 * Build the synthetic status line for mocked responses from `response_code`/
   `code`. It previously used the libcurl `return_code` symbol.
   ([#754](https://github.com/typhoeus/typhoeus/pull/754))
-* Raise `ArgumentError` with the option name for non-numeric timeout options
-  instead of failing with `NoMethodError` inside option sanitization.
-  ([#758](https://github.com/typhoeus/typhoeus/pull/758))
 * Replace the hydra's multi handle after a fatal `curl_multi_perform` error so
   the hydra can run requests again.
   ([#759](https://github.com/typhoeus/typhoeus/pull/759))
 * Load the Rack middleware and the cache adapters independent of require order.
   ([#760](https://github.com/typhoeus/typhoeus/pull/760))
-* Bound the easy pool with `Typhoeus::Config.max_idle_easies` (20 by default)
-  and replace the pool mutex after a fork instead of deadlocking on the
-  inherited lock.
-  ([#761](https://github.com/typhoeus/typhoeus/pull/761))
 * Drain short-circuited hydra requests iteratively and finish the request when
   a `before` callback returns a `Response`.
   ([#762](https://github.com/typhoeus/typhoeus/pull/762))
-* Only cache complete, successful, non-mock responses and replay `on_headers`
-  and `on_body` callbacks for cache hits.
-  ([#763](https://github.com/typhoeus/typhoeus/pull/763))
 * Keep callback results and per-request response objects intact when requests
   are memoized, and clear stale memoization between runs.
   ([#764](https://github.com/typhoeus/typhoeus/pull/764))
 * Ignore HTTP/1.1 trailer blocks when parsing response headers and keep
   `Response::Header` mutations in sync with case-insensitive reads.
   ([#765](https://github.com/typhoeus/typhoeus/pull/765))
-* Honor Faraday `verify_hostname` and SSL version options, and preserve the
-  response reason phrase.
-  ([#766](https://github.com/typhoeus/typhoeus/pull/766))
 * Decode parameters for hash-like objects such as
   `ActionController::Parameters`, deep-copy in `decode`, and register the Rack
   middleware class in the Railtie.
   ([#767](https://github.com/typhoeus/typhoeus/pull/767))
-* Make `Request#cache_key` unambiguous for values that stringify the same, and
-  return a libcurl error instead of raising for an empty URL with params.
-  ([#768](https://github.com/typhoeus/typhoeus/pull/768))
 * Raise `Ethon::Errors::InvalidOption` with a clean message for removed and
   replaced options instead of wrapping the error message as the option name.
   ([#770](https://github.com/typhoeus/typhoeus/pull/770))
@@ -108,41 +155,17 @@
 * Keep `Response::Header` case-insensitive lookups in sync after `delete_if`,
   `select!`, `keep_if`, `reject!`, `shift`, `compact!`, and `transform_*!`.
   ([#773](https://github.com/typhoeus/typhoeus/pull/773))
-* Run `on_headers` callbacks for memoized followers, disable memoization for
-  streaming requests whose body is not retained, and set `request.hydra` when a
-  request is added directly.
-  ([#774](https://github.com/typhoeus/typhoeus/pull/774))
 * Make `Request#encoded_body` match the form sent on the wire, including
   `params_encoding` and escaping.
   ([#775](https://github.com/typhoeus/typhoeus/pull/775))
-* Raise `Typhoeus::Errors::NoResponse` when a stub has no response or its
-  response block returns `nil` or a non-`Response` object.
-  ([#776](https://github.com/typhoeus/typhoeus/pull/776))
 * Keep pooling easy handles when libcurl was built without cookie support, and
   validate `Typhoeus::Config.max_idle_easies` when it is assigned.
   ([#777](https://github.com/typhoeus/typhoeus/pull/777))
 * Read Rails cache entries with the same cache key that was written.
   ([#778](https://github.com/typhoeus/typhoeus/pull/778))
-* Move the test dependencies to Sinatra 3, Rack 2.2, Dalli 3, and Redis 5.
-  This also makes the Ethon master workflow pass with frozen string literals.
-  ([#779](https://github.com/typhoeus/typhoeus/pull/779))
 * Deliver an independent response for cache hits so `on_headers` callbacks and
   `handled_response` from an earlier request do not leak into the cached object.
   ([#781](https://github.com/typhoeus/typhoeus/pull/781))
-* Merge the default `User-Agent` and `Expect` headers case-insensitively. A
-  caller using a lowercase header name no longer sends a duplicate value.
-  ([#784](https://github.com/typhoeus/typhoeus/pull/784))
-* Let `Expect: nil` opt out of Typhoeus's empty `Expect` header, so libcurl
-  decides when to send `100-continue`.
-  ([#808](https://github.com/typhoeus/typhoeus/pull/808))
-* Normalize the request method and URL for cache keys, equality, and
-  memoization. `Typhoeus.get`, an implicit GET, `method: "GET"`, and a URI base
-  URL now refer to the same request.
-  ([#789](https://github.com/typhoeus/typhoeus/pull/789))
-* Apply `timeout_ms` and `connecttimeout_ms` after their second-based options,
-  so an explicit millisecond timeout is no longer overridden by `timeout` or
-  `Typhoeus::Config.timeout`.
-  ([#788](https://github.com/typhoeus/typhoeus/pull/788))
 * Finish memoized followers when a completion callback changes the leader's
   options before the memoization bookkeeping runs.
   ([#782](https://github.com/typhoeus/typhoeus/pull/782))
@@ -158,24 +181,11 @@
 * Build `Request#encoded_body` with Ethon's request action so PUT escaping
   matches POST.
   ([#787](https://github.com/typhoeus/typhoeus/pull/787))
-* Create a Hydra's native multi handle on first use. Creating or memoizing a
-  hydra during boot no longer initializes libcurl, which Ethon 0.19 rejects in
-  a forked child.
-  ([#790](https://github.com/typhoeus/typhoeus/pull/790))
-* Document initializing libcurl before forking on macOS to avoid
-  `objc_initializeAfterForkError`.
-  ([#810](https://github.com/typhoeus/typhoeus/pull/810))
 * Store a snapshot of a response before caching it or using it as the
   memoization leader. Mutating a response after a request no longer changes
   later cache hits, and a leader's callbacks no longer change a follower's
   response.
   ([#797](https://github.com/typhoeus/typhoeus/pull/797))
-* Honor Faraday's `read_timeout` in the Typhoeus adapter, falling back to the
-  general `timeout` when it is not set.
-  ([#798](https://github.com/typhoeus/typhoeus/pull/798))
-* Add integration coverage for Faraday adapter timeouts, including
-  `read_timeout` precedence.
-  ([#811](https://github.com/typhoeus/typhoeus/pull/811))
 * Exclude the response from `Request#marshal_dump`. Completed requests whose
   callbacks return non-marshalable values can be dumped again.
   ([#799](https://github.com/typhoeus/typhoeus/pull/799))
@@ -185,13 +195,6 @@
 * Copy string and array header values when a `Response::Header` is built from
   a hash, so mutating the response cannot change the caller's hash.
   ([#801](https://github.com/typhoeus/typhoeus/pull/801))
-* Do not create a Hydra's native multi handle when every queued request is
-  answered by a `before` callback, a stub, or the cache.
-  ([#802](https://github.com/typhoeus/typhoeus/pull/802))
-* Bypass stubs inside `Typhoeus.with_connection`. A stub can now forward its
-  request to the real service without matching itself in an endless loop, and
-  the real response is not finished a second time.
-  ([#809](https://github.com/typhoeus/typhoeus/pull/809))
 * Decode query and form parameters independently in the Rack middleware. A
   form value no longer overwrites the query value for the same key.
   ([#803](https://github.com/typhoeus/typhoeus/pull/803))
@@ -202,6 +205,20 @@
   built from raw headers, such as the responses returned by
   `Response#redirections`.
   ([#805](https://github.com/typhoeus/typhoeus/pull/805))
+
+### Documentation and maintenance
+
+* Build the gem from a source tarball or a working tree without git instead
+  of producing an empty package.
+* Move the test dependencies to Sinatra 3, Rack 2.2, Dalli 3, and Redis 5.
+  This also makes the Ethon master workflow pass with frozen string literals.
+  ([#779](https://github.com/typhoeus/typhoeus/pull/779))
+* Document initializing libcurl before forking on macOS to avoid
+  `objc_initializeAfterForkError`.
+  ([#810](https://github.com/typhoeus/typhoeus/pull/810))
+* Add integration coverage for Faraday adapter timeouts, including
+  `read_timeout` precedence.
+  ([#811](https://github.com/typhoeus/typhoeus/pull/811))
 
 ## 1.6.0
 
