@@ -144,6 +144,19 @@ describe Typhoeus do
         thread.join
       end
     end
+
+    it "applies to fibers in the current thread" do
+      Typhoeus::Config.block_connection = true
+
+      blocked, stubs_disabled = Typhoeus.with_connection do
+        Fiber.new do
+          [Typhoeus.connection_blocked?, Typhoeus.stubs_disabled?]
+        end.resume
+      end
+
+      expect(blocked).to be(false)
+      expect(stubs_disabled).to be(true)
+    end
   end
 
   describe "timeouts" do

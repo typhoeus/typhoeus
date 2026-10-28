@@ -155,14 +155,14 @@ module Typhoeus
   #
   # @see Typhoeus::Config.block_connection
   def self.with_connection
-    old_block_connection = Thread.current[:typhoeus_block_connection]
-    old_stubs_disabled = Thread.current[:typhoeus_stubs_disabled]
-    Thread.current[:typhoeus_block_connection] = false
-    Thread.current[:typhoeus_stubs_disabled] = true
+    old_block_connection = Thread.current.thread_variable_get(:typhoeus_block_connection)
+    old_stubs_disabled = Thread.current.thread_variable_get(:typhoeus_stubs_disabled)
+    Thread.current.thread_variable_set(:typhoeus_block_connection, false)
+    Thread.current.thread_variable_set(:typhoeus_stubs_disabled, true)
     yield if block_given?
   ensure
-    Thread.current[:typhoeus_block_connection] = old_block_connection
-    Thread.current[:typhoeus_stubs_disabled] = old_stubs_disabled
+    Thread.current.thread_variable_set(:typhoeus_block_connection, old_block_connection)
+    Thread.current.thread_variable_set(:typhoeus_stubs_disabled, old_stubs_disabled)
   end
 
   # Whether connections are blocked for the current thread. The override is
@@ -172,7 +172,7 @@ module Typhoeus
   #
   # @return [ Boolean, nil ] The configured value, or the thread override.
   def self.connection_blocked?
-    override = Thread.current[:typhoeus_block_connection]
+    override = Thread.current.thread_variable_get(:typhoeus_block_connection)
     override.nil? ? Config.block_connection : override
   end
 
@@ -183,6 +183,6 @@ module Typhoeus
   #
   # @return [ Boolean ] True when stubs should be skipped.
   def self.stubs_disabled?
-    Thread.current[:typhoeus_stubs_disabled]
+    Thread.current.thread_variable_get(:typhoeus_stubs_disabled)
   end
 end
