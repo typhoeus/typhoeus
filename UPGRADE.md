@@ -4,8 +4,8 @@
 
 ### Ethon 0.19
 
-Typhoeus 1.7 requires Ethon 0.19 or later. Several conditions that earlier
-versions ignored now surface:
+Typhoeus 1.7 requires Ethon 0.19 (`>= 0.19.0`, `< 0.20.0`). Several conditions
+that earlier versions ignored now surface:
 
 - Exceptions raised by `on_body` and `on_complete` callbacks are re-raised.
 - `Ethon::Easy` and `Ethon::Multi` handles cannot be inherited across `fork`.
@@ -19,7 +19,9 @@ versions ignored now surface:
 ### Progress callbacks
 
 `on_progress` callbacks run only while data is transferred. They are no longer
-called with a `Response` when the request completes.
+called with a `Response` when the request completes, and they receive only the
+four transfer counters. A block written for five parameters now gets `nil` as
+the fifth value.
 
 ### Before callbacks
 
