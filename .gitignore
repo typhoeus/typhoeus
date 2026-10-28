@@ -6,3 +6,4 @@ doc/
 coverage
 check.sh
 tags
+.bundle/
