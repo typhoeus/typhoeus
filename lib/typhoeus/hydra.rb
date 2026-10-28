@@ -114,7 +114,7 @@ module Typhoeus
             unless request.response
               # A synthetic response is a short circuit like a stub. Mark it
               # so success? works and it is not written to the cache.
-              value.mock = true unless value.request
+              value.mock = true
               request.execute_headers_callbacks(value)
               request.on_body.each { |body_callback| body_callback.call(value.body, value) }
               request.finish(value)

@@ -105,6 +105,17 @@ describe Typhoeus::Request do
 
             request.run
           end
+
+          it "treats a reused response as a mock" do
+            response = Typhoeus::Response.new(:code => 200)
+            response.request = Typhoeus::Request.new("www.example.com")
+            Typhoeus.before { response }
+
+            request.run
+
+            expect(response.mock).to be(true)
+            expect(response.success?).to be(true)
+          end
         end
       end
 
