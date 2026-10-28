@@ -4,7 +4,7 @@
 
 ### Ethon 0.19
 
-Typhoeus 1.7 requires Ethon 0.19 (`>= 0.19.0`, `< 0.20.0`). Several conditions
+Typhoeus 1.7 requires Ethon 0.19 (`>= 0.19.1`, `< 0.20.0`). Several conditions
 that earlier versions ignored now surface:
 
 - Exceptions raised by `on_body` and `on_complete` callbacks are re-raised.
