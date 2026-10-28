@@ -157,6 +157,46 @@ describe Typhoeus do
       expect(blocked).to be(false)
       expect(stubs_disabled).to be(true)
     end
+
+    it "keeps the override when fibers leave out of order" do
+      Typhoeus::Config.block_connection = true
+
+      first = Fiber.new do
+        Typhoeus.with_connection { Fiber.yield }
+      end
+      first.resume
+
+      second = Fiber.new do
+        Typhoeus.with_connection do
+          Fiber.yield
+          [Typhoeus.connection_blocked?, Typhoeus.stubs_disabled?]
+        end
+      end
+      second.resume
+
+      # The first fiber finishes while the second is still inside the block.
+      first.resume
+
+      expect(second.resume).to eq([false, true])
+      expect(Typhoeus.connection_blocked?).to be(true)
+      expect(Typhoeus.stubs_disabled?).to be_nil
+    end
+
+    it "restores the override only when nested calls finish" do
+      Typhoeus::Config.block_connection = true
+
+      Typhoeus.with_connection do
+        Typhoeus.with_connection do
+          expect(Typhoeus.stubs_disabled?).to be(true)
+        end
+
+        expect(Typhoeus.connection_blocked?).to be(false)
+        expect(Typhoeus.stubs_disabled?).to be(true)
+      end
+
+      expect(Typhoeus.connection_blocked?).to be(true)
+      expect(Typhoeus.stubs_disabled?).to be_nil
+    end
   end
 
   describe "timeouts" do
