@@ -38,9 +38,8 @@ module Typhoeus
     # @see Typhoeus::Request#run
     attr_accessor :memoize
 
-    # Defines whether curls debug output is shown.
-    # With Ethon 0.19 the output is written through Ethon.logger at the
-    # debug level; older versions print it to stderr.
+    # Defines whether curl's debug output is shown. The output is written
+    # through Ethon.logger at the debug level.
     #
     # @return [ Boolean ]
     #

@@ -41,6 +41,8 @@ Or install it directly:
 gem install typhoeus
 ```
 
+Typhoeus requires Ruby 2.6 or later and Ethon 0.19 or later.
+
 ## Documentation
 
 - [API documentation](https://rubydoc.info/github/typhoeus/typhoeus) (master)
