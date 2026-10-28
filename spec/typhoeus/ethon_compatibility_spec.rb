@@ -62,6 +62,25 @@ describe "Ethon 0.19 compatibility" do
     end
   end
 
+  describe "resolve lists" do
+    # Typhoeus cleans up easies that used a resolve list instead of pooling
+    # them, which Ethon 0.19.0 rejected from on_complete.
+    it "performs a request through a custom resolve list" do
+      port = TestServer.port
+      resolve = Ethon::Curl::Slist.new(
+        Ethon::Curl::Slist.build(["typhoeus-resolve.invalid:#{port}:127.0.0.1"])
+      )
+
+      response = Typhoeus.get(
+        "http://typhoeus-resolve.invalid:#{port}/",
+        :resolve => resolve
+      )
+
+      expect(response.code).to eq(200)
+      expect(response.return_code).to eq(:ok)
+    end
+  end
+
   describe "Multi connection options" do
     it "accepts max_total_connections" do
       hydra = Typhoeus::Hydra.new(:max_total_connections => 1)
