@@ -4,6 +4,8 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.6.0...master)
 
+* Constrain the Ethon dependency to `< 0.20` so a future pre-1.0 minor
+  release cannot introduce breaking changes unnoticed.
 * Build the gem from a source tarball or a working tree without git instead
   of producing an empty package.
 * Call `on_progress` callbacks with the documented four arguments. A lambda
