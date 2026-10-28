@@ -2,7 +2,18 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.7.0...master)
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.7.1...master)
+
+## 1.7.1
+
+[Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.7.0...v1.7.1)
+
+* Require Ethon >= 0.19.1. Ethon 0.19.0 rejects `Easy#cleanup` from an
+  `on_complete` callback, which broke every request with `:resolve` because
+  Typhoeus cleans up resolve-list easies instead of pooling them. The
+  compatibility specs now cover a `:resolve` request.
+  ([#824](https://github.com/typhoeus/typhoeus/issues/824),
+  [ethon#456](https://github.com/typhoeus/ethon/pull/456))
 
 ## 1.7.0
 
