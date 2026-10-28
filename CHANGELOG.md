@@ -4,6 +4,8 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.6.0...master)
 
+* Call `on_progress` callbacks with the documented four arguments. A lambda
+  with four parameters no longer raises `ArgumentError`.
 * Make `Typhoeus.with_connection` apply across fibers in the current thread
   by using thread variables instead of fiber-local storage.
 * Make `Typhoeus.with_connection` thread-local so it no longer unblocks

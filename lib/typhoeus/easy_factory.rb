@@ -253,8 +253,8 @@ module Typhoeus
         end
       end
       (Typhoeus.on_progress + request.on_progress).each do |callback|
-        easy.on_progress do |dltotal, dlnow, ultotal, ulnow, easy|
-          callback.call(dltotal, dlnow, ultotal, ulnow, response)
+        easy.on_progress do |dltotal, dlnow, ultotal, ulnow, _easy|
+          callback.call(dltotal, dlnow, ultotal, ulnow)
         end
       end
       easy.on_complete do |easy|

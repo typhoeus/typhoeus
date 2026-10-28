@@ -103,6 +103,16 @@ describe Typhoeus::Request do
       expect(progress.flatten).to all(be_a(Numeric))
     end
 
+    it "calls a four-argument on_progress lambda" do
+      progress = []
+      request.on_progress(&lambda { |dltotal, dlnow, ultotal, ulnow|
+        progress << [dltotal, dlnow, ultotal, ulnow]
+      })
+
+      expect { request.run }.not_to raise_error
+      expect(progress).not_to be_empty
+    end
+
     it "calls on_complete" do
       callback = double(:call)
       expect(callback).to receive(:call)
