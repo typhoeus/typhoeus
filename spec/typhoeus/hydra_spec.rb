@@ -128,4 +128,21 @@ describe Typhoeus::Hydra do
       expect(request.hydra).to be(hydra)
     end
   end
+
+  describe "#run" do
+    it "finishes when a discarded easy cannot be cleaned up" do
+      Typhoeus::Config.max_idle_easies = 0
+      easy = Ethon::Easy.new
+      allow(Typhoeus::Pool).to receive(:get).and_return(easy)
+      allow(easy).to receive(:cleanup).and_raise(
+        Ethon::Errors::EthonError.new("Easy is currently completing")
+      )
+      request = Typhoeus::Request.new(TestServer.url)
+      hydra.queue(request)
+
+      expect { hydra.run }.not_to raise_error
+
+      expect(request.response.code).to eq(200)
+    end
+  end
 end

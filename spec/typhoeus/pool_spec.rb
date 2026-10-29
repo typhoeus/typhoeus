@@ -85,6 +85,18 @@ describe Typhoeus::Pool do
 
         expect(Typhoeus::Pool.send(:easies)).to eq([easy])
       end
+
+      it "keeps the extra easy pooled when cleanup is rejected" do
+        other = Ethon::Easy.new
+        Typhoeus::Pool.release(easy)
+        allow(other).to receive(:cleanup).and_raise(
+          Ethon::Errors::EthonError.new("Easy is currently completing")
+        )
+
+        expect { Typhoeus::Pool.release(other) }.not_to raise_error
+
+        expect(Typhoeus::Pool.send(:easies)).to contain_exactly(easy, other)
+      end
     end
 
     context "when pooling is disabled" do

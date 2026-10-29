@@ -4,6 +4,12 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.7.1...master)
 
+* Keep a discarded easy in the pool when its cleanup fails. A cleanup error
+  raised from an `on_complete` callback aborted the hydra run and left the
+  remaining requests without a response, which made CocoaPods' CDN source wait
+  forever.
+  ([#825](https://github.com/typhoeus/typhoeus/issues/825))
+
 ## 1.7.1
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.7.0...v1.7.1)
