@@ -40,7 +40,7 @@ module Typhoeus
           easies << easy
         end
       end
-      discarded.cleanup if discarded
+      cleanup_discarded(discarded) if discarded
     rescue StandardError => e
       # Ethon 0.19+ refuses to reset handles created before a fork.
       raise unless defined?(Ethon::Errors::ForkSafety) && e.is_a?(Ethon::Errors::ForkSafety)
@@ -113,6 +113,18 @@ module Typhoeus
 
     def self.max_size
       Typhoeus::Config.max_idle_easies if defined?(Typhoeus::Config)
+    end
+
+    # Free an easy that does not fit into the pool. Some Ethon versions reject
+    # cleanup from an on_complete callback, which is where Typhoeus releases
+    # the easy. Raising there aborts the hydra run and leaves every other
+    # request without a response, so keep the reset handle pooled instead. The
+    # pool may temporarily exceed max_idle_easies; a later release or
+    # Pool.clear frees the handle.
+    def self.cleanup_discarded(easy)
+      easy.cleanup
+    rescue Ethon::Errors::EthonError
+      @mutex.synchronize { easies << easy }
     end
 
     def self.easies
