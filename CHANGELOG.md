@@ -4,6 +4,14 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.7.1...master)
 
+* Add `Typhoeus::Multipart::Part` for setting the content type and, optionally,
+  the filename of a single `multipart/form-data` part. This makes it possible
+  to send a JSON field with `Content-Type: application/json` or to override the
+  detected content type and filename of an uploaded file.
+  ([#494](https://github.com/typhoeus/typhoeus/issues/494))
+
+* Require Ethon >= 0.19.2 for `Ethon::Multipart::Part`.
+
 * Keep a discarded easy in the pool when its cleanup fails. A cleanup error
   raised from an `on_complete` callback aborted the hydra run and left the
   remaining requests without a response, which made CocoaPods' CDN source wait

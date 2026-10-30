@@ -3,6 +3,11 @@
 source "https://rubygems.org"
 gemspec
 
+# Temporary: take the Ethon branch that adds Multipart::Part. Remove this
+# once Ethon 0.19.2 is available from RubyGems.
+gem "ethon", :git => "https://github.com/typhoeus/ethon.git",
+  :branch => "feature/multipart-part-content-type"
+
 gem "json"
 gem "rake"
 
