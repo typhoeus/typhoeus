@@ -465,6 +465,12 @@ module Typhoeus
       when Array
         values = obj.map { |value| hashable_string_for(value) }
         "array:#{obj.size}:#{values.join}"
+      when Ethon::Multipart::Part
+        # A part's metadata changes what is sent, so it belongs in the key
+        # even though the value alone would be enough for a regular field.
+        "part:#{hashable_string_for(obj.content_type)}:" \
+          "#{hashable_string_for(obj.filename)}:" \
+          "#{hashable_string_for(obj.value)}"
       else
         value = obj.to_s
         "#{obj.class}:#{value.bytesize}:#{value}"
