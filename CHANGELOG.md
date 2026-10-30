@@ -4,6 +4,11 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.7.1...master)
 
+* Add `Response#certinfo`, the server's certificate chain when the request is
+  made with `certinfo: true`. Needs an Ethon that mirrors it
+  (typhoeus/ethon#459).
+  ([#427](https://github.com/typhoeus/typhoeus/issues/427))
+
 * Keep a discarded easy in the pool when its cleanup fails. A cleanup error
   raised from an `on_complete` callback aborted the hydra run and left the
   remaining requests without a response, which made CocoaPods' CDN source wait

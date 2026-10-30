@@ -241,6 +241,18 @@ module Typhoeus
         options[:redirect_url]
       end
 
+      # Return the server's certificate chain, when the request was made with
+      # `certinfo: true` over TLS. Each certificate is an Array of
+      # "Name:value" Strings, as libcurl reports them.
+      #
+      # @example Get certinfo.
+      #   response.certinfo
+      #
+      # @return [ Array<Array<String>>, nil ] The certificate chain.
+      def certinfo
+        options[:certinfo]
+      end
+
       def request_size
         options[:request_size]
       end
