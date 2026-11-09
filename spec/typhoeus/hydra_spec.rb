@@ -100,6 +100,103 @@ describe Typhoeus::Hydra do
 
       expect(other).not_to be(current)
     end
+
+    it "returns a hydra stored in a new thread" do
+      stored = Typhoeus::Hydra.new
+      returned = Thread.new do
+        Thread.current[:typhoeus_hydra] = stored
+        Typhoeus::Hydra.hydra
+      end.value
+
+      expect(returned).to be(stored)
+    end
+
+    it "returns a new hydra in a forked child" do
+      skip "fork is not available on this platform" unless Process.respond_to?(:fork)
+      parent_hydra = Typhoeus::Hydra.hydra
+      parent_hydra.max_concurrency = 3
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          child_hydra = Typhoeus::Hydra.hydra
+          writer.write([
+            child_hydra.equal?(parent_hydra) ? "inherited" : "new",
+            child_hydra.equal?(Typhoeus::Hydra.hydra) ? "memoized" : "not memoized",
+            child_hydra.max_concurrency
+          ].join(", "))
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("new, memoized, 3")
+      Process.wait(pid)
+      pid = nil
+      expect($?).to be_success
+      expect(Typhoeus::Hydra.hydra).to be(parent_hydra)
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
+
+    it "returns a new hydra in a process forked from a forked child" do
+      skip "fork is not available on this platform" unless Process.respond_to?(:fork)
+      Typhoeus::Hydra.hydra
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          child_hydra = Typhoeus::Hydra.hydra
+          grandchild = fork do
+            writer.write(Typhoeus::Hydra.hydra.equal?(child_hydra) ? "inherited" : "new")
+            writer.close
+          end
+          Process.wait(grandchild)
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("new")
+      Process.wait(pid)
+      pid = nil
+      expect($?).to be_success
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
+
+    it "returns a hydra stored in a forked child" do
+      skip "fork is not available on this platform" unless Process.respond_to?(:fork)
+      parent_hydra = Typhoeus::Hydra.hydra
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          stored = Typhoeus::Hydra.new
+          Thread.current[:typhoeus_hydra] = stored
+          writer.write(Typhoeus::Hydra.hydra.equal?(stored) ? "stored" : "replaced")
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("stored")
+      Process.wait(pid)
+      pid = nil
+      expect($?).to be_success
+      expect(Typhoeus::Hydra.hydra).to be(parent_hydra)
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
   end
 
   describe "#dequeue" do

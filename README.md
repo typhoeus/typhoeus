@@ -527,9 +527,10 @@ defaults to 300 seconds; passing 0 also uses 300 seconds.
 
 Typhoeus delegates handle management to Ethon. Ethon raises
 `Ethon::Errors::ForkSafety` for `Ethon::Easy` and `Ethon::Multi` handles
-inherited across `fork`. Typhoeus clears its easy pool in the child process and
-creates a hydra's native multi handle lazily, so creating or memoizing a hydra
-during boot does not initialize libcurl. Typhoeus cannot reset libcurl's
+inherited across `fork`. Typhoeus clears its easy pool in the child process,
+and `Typhoeus::Hydra.hydra` replaces the hydra it memoized in the parent.
+A hydra creates its native multi handle lazily, so creating or memoizing a
+hydra during boot does not initialize libcurl. Typhoeus cannot reset libcurl's
 process-global state. If libcurl is initialized before forking, for example by
 making a request during boot, use `fork` followed by `exec`, or fork before the
 first request.
