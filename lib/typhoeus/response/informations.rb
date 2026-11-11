@@ -243,12 +243,16 @@ module Typhoeus
 
       # Return the server's certificate chain, when the request was made with
       # `certinfo: true` over TLS. Each certificate is an Array of
-      # "Name:value" Strings, as libcurl reports them.
+      # "Name:value" Strings, as libcurl reports them. libcurl only collects
+      # the chain during a TLS handshake, so a request that reuses a
+      # connection gets an empty Array unless it also sets `fresh_connect`.
       #
       # @example Get certinfo.
       #   response.certinfo
       #
-      # @return [ Array<Array<String>>, nil ] The certificate chain.
+      # @return [ Array<Array<String>>, nil ] The certificate chain, empty
+      #   when none was collected, nil for a stubbed response or with an
+      #   Ethon that doesn't mirror it.
       def certinfo
         options[:certinfo]
       end
