@@ -114,6 +114,18 @@ describe "multipart parts" do
     it "includes the part metadata" do
       expect(cache_key("application/json")).not_to eq(cache_key("text/plain"))
     end
+
+    it "keys a file part by path, not by object" do
+      file = Tempfile.new(["typhoeus", ".txt"])
+      file.write("file contents")
+
+      first = Typhoeus::Request.new("www.example.com", :body => { :file => part.new(File.new(file.path)) })
+      second = Typhoeus::Request.new("www.example.com", :body => { :file => part.new(File.new(file.path)) })
+
+      expect(first.cache_key).to eq(second.cache_key)
+    ensure
+      file.close!
+    end
   end
 
   describe "#encoded_body" do
