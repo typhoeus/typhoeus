@@ -91,6 +91,33 @@ module Typhoeus
       @multi ||= build_multi
     end
 
+    # Return the native multi handle and its connection cache to the pool, so
+    # a later hydra can reuse both. The hydra creates a new handle on next
+    # use. Does nothing while requests are still queued.
+    #
+    # @example Release the handle after a run.
+    #   hydra.run
+    #   hydra.release
+    #
+    # @return [ nil ]
+    def release
+      return nil if queued_requests.any?
+      return nil unless defined?(@multi) && @multi
+
+      multi_handle = @multi
+      @multi = nil
+      if multi_options.empty?
+        Pool.release_multi(multi_handle)
+      else
+        begin
+          multi_handle.cleanup
+        rescue StandardError
+          # A handle that cannot be freed must not raise from a cleanup path.
+        end
+      end
+      nil
+    end
+
     # Add a request to the hydra.
     #
     # This is the hot path for every request. The checks are unrolled instead
@@ -414,10 +441,24 @@ module Typhoeus
     # @api private
     def build_multi
       @multi_creation_failed = false
-      Ethon::Multi.new(@options.reject { |key, _| key == :max_concurrency })
+      if multi_options.empty?
+        # A hydra without multi options can take a pooled handle and reuse its
+        # connection cache. Handles created with options are not pooled,
+        # because a later hydra with different options cannot change them.
+        Pool.get_multi(multi_options)
+      else
+        Ethon::Multi.new(multi_options)
+      end
     rescue StandardError
       @multi_creation_failed = true
       raise
+    end
+
+    # Options that belong to the Ethon multi rather than to the hydra.
+    #
+    # @return [ Hash ] The multi options.
+    def multi_options
+      @options.reject { |key, _| key == :max_concurrency }
     end
   end
 end

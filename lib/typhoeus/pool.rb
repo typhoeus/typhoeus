@@ -80,7 +80,64 @@ module Typhoeus
         end
       end
 
+      cleared_multis = @mutex.synchronize do
+        current = multis.dup
+        multis.clear
+        current
+      end
+
+      cleared_multis.each { |multi| cleanup_multi(multi) }
+
       easies
+    end
+
+    # Pop a multi handle from the pool, or create one when the pool is empty.
+    #
+    # A pooled handle keeps the connection cache of the hydra that released
+    # it, so the next hydra reuses TLS connections instead of opening new
+    # ones.
+    #
+    # @example Get a multi.
+    #   Typhoeus::Pool.get_multi
+    #
+    # @param [ Hash ] options Ethon::Multi options used when a new handle is
+    #   created. Ignored for a pooled handle, which keeps its own options.
+    #
+    # @return [ Ethon::Multi ] The multi handle.
+    def self.get_multi(options = {})
+      reset_after_fork
+      @mutex.synchronize { multis.pop } || Ethon::Multi.new(options)
+    end
+
+    # Release a multi handle into the pool, or free it when the pool is full
+    # or disabled.
+    #
+    # @example Release a multi.
+    #   Typhoeus::Pool.release_multi(multi)
+    #
+    # @param [ Ethon::Multi ] multi The multi handle.
+    #
+    # @return [ Ethon::Multi ] The released handle.
+    def self.release_multi(multi)
+      reset_after_fork
+
+      limit = max_multi_size
+      if limit == 0
+        cleanup_multi(multi)
+        return multi
+      end
+
+      discarded = nil
+      @mutex.synchronize do
+        if limit && multis.size >= limit
+          discarded = multi
+        else
+          multis << multi
+        end
+      end
+
+      cleanup_multi(discarded) if discarded
+      multi
     end
 
     # Use yielded easy, will be released automatically afterwards.
@@ -108,6 +165,7 @@ module Typhoeus
       # the new pid cannot pick up the inherited lock.
       @mutex = Mutex.new
       @easies = []
+      @multis = []
       @pid = Process.pid
     end
 
@@ -129,6 +187,21 @@ module Typhoeus
 
     def self.easies
       @easies ||= []
+    end
+
+    def self.multis
+      @multis ||= []
+    end
+
+    def self.max_multi_size
+      Typhoeus::Config.max_idle_multis if defined?(Typhoeus::Config)
+    end
+
+    def self.cleanup_multi(multi)
+      multi.cleanup
+    rescue StandardError
+      # Freeing a handle is best effort. A handle inherited across a fork is
+      # dropped instead of freed.
     end
 
     # Flush cookies to the configured jar and clear them from the handle.
