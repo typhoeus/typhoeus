@@ -608,7 +608,7 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
           end
         end
 
-        expect(streamed_result).to eq([['', 0]])
+        expect(streamed_result.map { |args| args.first(2) }).to eq([['', 0]])
       end
 
       it "streams the content in chunks" do
@@ -619,10 +619,149 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
         end
 
         expect(res.body).to eq('')
-        expect(streamed_result.length).to eq(4)
-        total_size = streamed_result.last[1]
-        expect(total_size).not_to be_zero
-        expect(total_size).to eq(res['X-Expected-Size'].to_i)
+        expect(streamed_result.length).to be > 1
+        expect(streamed_result.sum { |args| args[0].bytesize }).to eq(res['X-Expected-Size'].to_i)
+        expect(streamed_result.last[1]).to eq(res['X-Expected-Size'].to_i)
+      end
+
+      it "ignores the callback's return value" do
+        streamed = +''
+        conn.get('/big') do |req|
+          req.options.on_data = proc do |chunk, _size|
+            streamed << chunk
+            :abort
+          end
+        end
+
+        expect(streamed.bytesize).to eq(50 * 1024)
+      end
+
+      it "raises the callback's error" do
+        expect do
+          conn.get('/big') do |req|
+            req.options.on_data = proc { |_chunk, _size| raise ArgumentError, "disk full" }
+          end
+        end.to raise_error(ArgumentError, "disk full")
+      end
+
+      it "streams nothing when the connection fails" do
+        failing_conn = Faraday.new(:url => "http://127.0.0.1:1") { |faraday| faraday.adapter :typhoeus }
+        response = nil
+
+        failing_conn.in_parallel do
+          response = failing_conn.get('/') do |req|
+            req.options.on_data = proc { |*args| streamed_result << args }
+          end
+        end
+
+        expect(response.env[:typhoeus_connection_failed]).to be(true)
+        expect(streamed_result).to be_empty
+      end
+
+      it "streams nothing when the request times out" do
+        response = nil
+
+        conn.in_parallel do
+          response = conn.get('/?delay=1') do |req|
+            req.options.timeout = 0.1
+            req.options.on_data = proc { |*args| streamed_result << args }
+          end
+        end
+
+        expect(response.env[:typhoeus_timed_out]).to be(true)
+        expect(streamed_result).to be_empty
+      end
+
+      it "reports the callback's error in parallel mode without failing the other requests" do
+        responses = {}
+
+        conn.in_parallel do
+          responses[:failing] = conn.get('/big') do |req|
+            req.options.on_data = proc { |_chunk, _size| raise ArgumentError, "disk full" }
+          end
+          responses[:streamed] = conn.get('/big?second') do |req|
+            req.options.on_data = proc { |chunk, _size| streamed_result << chunk }
+          end
+        end
+
+        expect(responses[:failing].env[:typhoeus_connection_failed]).to be(true)
+        expect(responses[:streamed]).to be_finished
+        expect(streamed_result.join.bytesize).to eq(50 * 1024)
+      end
+
+      it "raises the callback's error on an empty response in parallel mode" do
+        expect do
+          conn.in_parallel do
+            conn.get('/empty') do |req|
+              req.options.on_data = proc { |_chunk, _size| raise ArgumentError, "disk full" }
+            end
+          end
+        end.to raise_error(ArgumentError, "disk full")
+      end
+
+      it "streams a single empty chunk for a stubbed response without a body" do
+        Typhoeus.stub(%r{/no_content}).and_return(Typhoeus::Response.new(:code => 204))
+
+        conn.get('/no_content') do |req|
+          req.options.on_data = proc { |*args| streamed_result << args.first(2) }
+        end
+
+        expect(streamed_result).to eq([['', 0]])
+      ensure
+        Typhoeus::Expectation.clear
+      end
+
+      it "leaves the body empty for a stubbed response" do
+        Typhoeus.stub(%r{/stubbed}).and_return(Typhoeus::Response.new(:code => 200, :body => "stubbed body"))
+
+        response = conn.get('/stubbed') do |req|
+          req.options.on_data = proc { |chunk, _size| streamed_result << chunk }
+        end
+
+        expect(streamed_result.join).to eq("stubbed body")
+        expect(response.body).to eq('')
+      ensure
+        Typhoeus::Expectation.clear
+      end
+
+      if Faraday::Env.method_defined?(:stream_response)
+        it "passes the env with its status along with the empty chunk" do
+          conn.get('/empty') do |req|
+            req.options.on_data = lambda do |chunk, size, env|
+              streamed_result << [chunk, size, env.status]
+            end
+          end
+
+          expect(streamed_result).to eq([['', 0, 200]])
+        end
+
+        it "passes the env with status and headers to a three-argument callback" do
+          conn.get('/big') do |req|
+            req.options.on_data = lambda do |chunk, size, env|
+              streamed_result << [env.status, env.response_headers['X-Expected-Size'], size]
+            end
+          end
+
+          expect(streamed_result).not_to be_empty
+          expect(streamed_result.map(&:first).uniq).to eq([200])
+          expect(streamed_result.last).to eq([200, (50 * 1024).to_s, 50 * 1024])
+        end
+      end
+
+      it "streams each parallel response to its own callback" do
+        bodies = Hash.new { |hash, path| hash[path] = +'' }
+
+        conn.in_parallel do
+          %w[/big /empty /big?second].each do |path|
+            conn.get(path) do |req|
+              req.options.on_data = proc { |chunk, _size| bodies[path] << chunk }
+            end
+          end
+        end
+
+        expect(bodies['/big'].bytesize).to eq(50 * 1024)
+        expect(bodies['/big?second'].bytesize).to eq(50 * 1024)
+        expect(bodies['/empty']).to eq('')
       end
     end
   end
