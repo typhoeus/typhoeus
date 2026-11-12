@@ -12,6 +12,11 @@
 
 * Require Ethon >= 0.19.2 for `Ethon::Multipart::Part`.
 
+* Add `Response#certinfo`, the server's certificate chain when the request is
+  made with `certinfo: true`. Needs an Ethon that mirrors it
+  (typhoeus/ethon#459).
+  ([#427](https://github.com/typhoeus/typhoeus/issues/427))
+
 * Keep a discarded easy in the pool when its cleanup fails. A cleanup error
   raised from an `on_complete` callback aborted the hydra run and left the
   remaining requests without a response, which made CocoaPods' CDN source wait

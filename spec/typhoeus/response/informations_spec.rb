@@ -317,6 +317,14 @@ describe Typhoeus::Response::Informations do
     end
   end
 
+  describe "#certinfo" do
+    let(:options) { { :certinfo => [["Subject:CN = example.com"]] } }
+
+    it "returns certinfo from options" do
+      expect(response.certinfo).to eq([["Subject:CN = example.com"]])
+    end
+  end
+
   describe "#request_size" do
     let(:options) { { :request_size => 2 } }
 
