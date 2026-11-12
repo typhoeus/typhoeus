@@ -111,6 +111,16 @@ describe Typhoeus::Hydra do
       expect(returned).to be(stored)
     end
 
+    it "does not warn when returning a hydra that other code stored" do
+      Thread.current[:typhoeus_hydra] = Typhoeus::Hydra.new
+      verbose = $VERBOSE
+      $VERBOSE = true
+
+      expect { Typhoeus::Hydra.hydra }.not_to output.to_stderr
+    ensure
+      $VERBOSE = verbose
+    end
+
     it "returns a new hydra in a forked child" do
       skip "fork is not available on this platform" unless Process.respond_to?(:fork)
       parent_hydra = Typhoeus::Hydra.hydra
@@ -192,6 +202,31 @@ describe Typhoeus::Hydra do
       pid = nil
       expect($?).to be_success
       expect(Typhoeus::Hydra.hydra).to be(parent_hydra)
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
+
+    it "returns a hydra stored before a fork in the forked child" do
+      skip "fork is not available on this platform" unless Process.respond_to?(:fork)
+      stored = Typhoeus::Hydra.new
+      Thread.current[:typhoeus_hydra] = stored
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          writer.write(Typhoeus::Hydra.hydra.equal?(stored) ? "stored" : "replaced")
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("stored")
+      Process.wait(pid)
+      pid = nil
+      expect($?).to be_success
     ensure
       reader.close if reader && !reader.closed?
       writer.close if writer && !writer.closed?

@@ -10,10 +10,11 @@
   forever.
   ([#825](https://github.com/typhoeus/typhoeus/issues/825))
 * Return a new hydra from `Typhoeus::Hydra.hydra` in a forked child instead of
-  the one it memoized in the parent, whose multi handle Ethon 0.19 rejects in
-  the child. This matters once Ethon lets a child create new handles after its
-  parent has used libcurl, which Ethon 0.19.1 does not. A child no longer
-  inherits requests queued on that hydra.
+  the one it memoized in the parent. The child no longer inherits requests
+  queued on that hydra, so the parent and child no longer both send them. It
+  also no longer uses the parent's multi handle, which Ethon 0.19 rejects in
+  the child. That helps once Ethon lets a child create new handles after its
+  parent has used libcurl, which Ethon 0.19.1 does not.
   ([ethon#462](https://github.com/typhoeus/ethon/issues/462))
 
 ## 1.7.1
