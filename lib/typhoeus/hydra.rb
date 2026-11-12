@@ -44,14 +44,29 @@ module Typhoeus
 
     class << self
 
-      # Returns a memoized hydra instance.
+      # Returns a hydra memoized in Thread.current[:typhoeus_hydra], which is
+      # local to the current fiber. A forked child gets a new one, since
+      # Ethon 0.19 rejects the parent's multi handle.
       #
       # @example Get a hydra.
       #   Typhoeus::Hydra.hydra
       #
-      # @return [Typhoeus::Hydra] A new hydra.
+      # @return [Typhoeus::Hydra] The memoized hydra.
       def hydra
-        Thread.current[:typhoeus_hydra] ||= new
+        hydra = Thread.current[:typhoeus_hydra]
+        # Only replace a hydra memoized here, not one that other code stored.
+        # Ruby < 3.0 warns under -w when reading an ivar that was never set.
+        if hydra && hydra.instance_variable_defined?(:@memoized_pid)
+          pid = hydra.instance_variable_get(:@memoized_pid)
+        end
+        if !hydra || (pid && pid != Process.pid)
+          # Keep max_concurrency, which callers can change. This method sets
+          # no other option.
+          options = hydra ? { max_concurrency: hydra.max_concurrency } : {}
+          hydra = Thread.current[:typhoeus_hydra] = new(options)
+          hydra.instance_variable_set(:@memoized_pid, Process.pid)
+        end
+        hydra
       end
     end
 
