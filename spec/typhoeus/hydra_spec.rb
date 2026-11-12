@@ -7,6 +7,52 @@ describe Typhoeus::Hydra do
   let(:options) { {} }
   let(:hydra) { Typhoeus::Hydra.new(options) }
 
+  describe "#release" do
+    after { Typhoeus::Pool.clear }
+
+    it "returns the multi to the pool for a later hydra" do
+      hydra.queue(Typhoeus::Request.new(base_url))
+      hydra.run
+      multi = hydra.multi
+
+      hydra.release
+
+      expect(Typhoeus::Hydra.new.multi).to be(multi)
+    end
+
+    it "runs a request on a handle taken from the pool" do
+      hydra.queue(Typhoeus::Request.new(base_url))
+      hydra.run
+      hydra.release
+
+      second = Typhoeus::Hydra.new
+      request = Typhoeus::Request.new(base_url)
+      second.queue(request)
+      second.run
+
+      expect(request.response.code).to eq(200)
+    end
+
+    it "does nothing while requests are still queued" do
+      hydra.queue(Typhoeus::Request.new(base_url))
+      hydra.multi
+
+      hydra.release
+
+      expect(Typhoeus::Pool.send(:multis)).to be_empty
+    end
+
+    it "frees a handle created with multi options instead of pooling it" do
+      hydra = Typhoeus::Hydra.new(:maxconnects => 2)
+      multi = hydra.multi
+      expect(multi).to receive(:cleanup)
+
+      hydra.release
+
+      expect(Typhoeus::Pool.send(:multis)).to be_empty
+    end
+  end
+
   describe "#new" do
     let(:options) { {:pipelining => true} }
 
