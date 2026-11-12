@@ -4,6 +4,14 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.7.1...master)
 
+* Add `Typhoeus::Multipart::Part` for setting the content type and, optionally,
+  the filename of a single `multipart/form-data` part. This makes it possible
+  to send a JSON field with `Content-Type: application/json` or to override the
+  detected content type and filename of an uploaded file.
+  ([#494](https://github.com/typhoeus/typhoeus/issues/494))
+
+* Require Ethon >= 0.19.2 for `Ethon::Multipart::Part`.
+
 * Add `Hydra#release`, which returns the native multi handle to a pool so the
   next hydra reuses its connection cache instead of paying for a new TLS
   handshake. `Typhoeus::Config.max_idle_multis` controls the pool (default 5,

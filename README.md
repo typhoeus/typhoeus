@@ -208,6 +208,42 @@ Typhoeus.post(
 )
 ```
 
+Set the content type of a part, or override the filename and content type of a
+file, with `Typhoeus::Multipart::Part`:
+
+```ruby
+Typhoeus.post(
+  "http://localhost:3000/posts",
+  body: {
+    metadata: Typhoeus::Multipart::Part.new(
+      JSON.generate(title: "test post"),
+      content_type: "application/json"
+    ),
+    file: Typhoeus::Multipart::Part.new(
+      File.open("thesis.txt", "r"),
+      filename: "paper.txt",
+      content_type: "text/plain"
+    )
+  }
+)
+```
+
+A string part with a filename is sent as an in-memory upload, so the data does
+not need a file on disk:
+
+```ruby
+Typhoeus.post(
+  "http://localhost:3000/posts",
+  body: {
+    file: Typhoeus::Multipart::Part.new(
+      "file contents",
+      filename: "notes.txt",
+      content_type: "text/plain"
+    )
+  }
+)
+```
+
 ### Streaming the response body
 
 Set `on_body` to receive response chunks as they arrive. This is useful for

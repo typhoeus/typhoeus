@@ -465,6 +465,15 @@ module Typhoeus
       when Array
         values = obj.map { |value| hashable_string_for(value) }
         "array:#{obj.size}:#{values.join}"
+      when Ethon::Multipart::Part
+        # A part's metadata changes what is sent, so it belongs in the key
+        # even though the value alone would be enough for a regular field.
+        # Files are keyed by path because File#to_s contains the object
+        # address, which would give every upload its own cache entry.
+        value = obj.file? ? obj.value.path : obj.value
+        "part:#{hashable_string_for(obj.content_type)}:" \
+          "#{hashable_string_for(obj.filename)}:" \
+          "#{hashable_string_for(value)}"
       else
         value = obj.to_s
         "#{obj.class}:#{value.bytesize}:#{value}"
