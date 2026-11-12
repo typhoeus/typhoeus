@@ -4,6 +4,13 @@
 
 [Full Changelog](http://github.com/typhoeus/typhoeus/compare/v1.7.1...master)
 
+* Stream response bodies through Faraday's `on_data` callback. On Faraday
+  2.5+, the callback receives `env` as a third argument with the status and
+  headers already set, like with Faraday's `net_http` adapter. A request with
+  `on_data` set now gets an empty `response.body`; it used to get the full
+  body, the callback being ignored.
+  ([#688](https://github.com/typhoeus/typhoeus/pull/688))
+
 * Add `Response#certinfo`, the server's certificate chain when the request is
   made with `certinfo: true`. Needs an Ethon that mirrors it
   (typhoeus/ethon#459).

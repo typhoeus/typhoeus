@@ -82,7 +82,54 @@ module Faraday # :nodoc:
         configure_timeout req, env
         configure_socket  req, env
 
+        on_data = env[:request][:on_data]
+        on_data = nil unless on_data.is_a?(Proc)
+        # Faraday 2.5+ passes env, with status and headers set, as a third argument.
+        on_data_args = env.respond_to?(:stream_response) ? [env] : []
+        streamed_size = 0
+        streaming_error = nil
+
+        # Ethon aborts the transfer when a callback returns :abort, and turns an
+        # error raised in it into a write failure, which would be reported as
+        # Faraday::ConnectionFailed: keep the error to raise it as is.
+        stream_chunk = lambda do |chunk, size|
+          on_data.call(chunk, size, *on_data_args)
+          nil
+        rescue Exception => exception
+          streaming_error ||= exception
+          :abort
+        end
+
+        if on_data
+          unless on_data_args.empty?
+            req.on_headers do |resp|
+              env.status = resp.code
+              env.reason_phrase = resp.status_message
+              env.response_headers = Faraday::Utils::Headers.new.tap do |headers|
+                headers.parse(resp.response_headers)
+              end
+            end
+          end
+
+          req.on_body do |chunk|
+            # A stubbed response without a body passes nil.
+            chunk = chunk.to_s
+            next if chunk.empty? && streamed_size.zero?
+
+            streamed_size += chunk.bytesize
+            stream_chunk.call(chunk, streamed_size)
+          end
+        end
+
         req.on_complete do |resp|
+          failed = resp.timed_out? || (resp.response_code == 0) || ((resp.return_code != :ok) && !resp.mock?)
+          stream_chunk.call(+'', 0) if on_data && streamed_size.zero? && !failed
+
+          # In parallel mode, raising would leave the other requests unfinished:
+          # the write failure it caused is reported below like any other failure.
+          reported_as_failure = parallel?(env) && failed && streaming_error.is_a?(StandardError)
+          raise streaming_error if streaming_error && !reported_as_failure
+
           if resp.timed_out?
             env[:typhoeus_timed_out] = true
             unless parallel?(env)
@@ -96,7 +143,9 @@ module Faraday # :nodoc:
             end
           end
 
-          save_response(env, resp.code, resp.body, nil, resp.status_message) do |response_headers|
+          # A stubbed response hands its whole body to on_body and keeps it.
+          body = on_data ? +'' : resp.body
+          save_response(env, resp.code, body, nil, resp.status_message) do |response_headers|
             response_headers.parse resp.response_headers
           end
           # in async mode, :response is initialized at this point
