@@ -12,6 +12,12 @@
 
 * Require Ethon >= 0.19.2 for `Ethon::Multipart::Part`.
 
+* Add `Hydra#release`, which returns the native multi handle to a pool so the
+  next hydra reuses its connection cache instead of paying for a new TLS
+  handshake. `Typhoeus::Config.max_idle_multis` controls the pool (default 5,
+  `0` disables it).
+  ([#832](https://github.com/typhoeus/typhoeus/issues/832))
+
 * Add `Response#certinfo`, the server's certificate chain when the request is
   made with `certinfo: true`. Needs an Ethon that mirrors it
   (typhoeus/ethon#459).

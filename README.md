@@ -345,6 +345,28 @@ end
 hydra.run
 ```
 
+#### Reusing connections between hydras
+
+A hydra keeps libcurl's connection cache for as long as its native multi
+handle lives, so a new `Hydra` starts with no open connections and pays for a
+fresh TLS handshake. Returning the handle to the pool lets the next hydra
+reuse it:
+
+```ruby
+hydra = Typhoeus::Hydra.new
+hydra.queue(Typhoeus::Request.new("https://example.com"))
+hydra.run
+hydra.release # keeps the connection cache for the next hydra
+
+# Takes the released handle, so the TLS connection is still there.
+hydra = Typhoeus::Hydra.new
+```
+
+`release` does nothing while requests are still queued. A hydra created with
+multi options, such as `maxconnects:`, is not pooled, because a later hydra
+with different options cannot reconfigure the handle. `Typhoeus::Config.max_idle_multis`
+(default 5) limits the pool; set it to `0` to disable multi pooling.
+
 ### Making Parallel Requests with Faraday + Typhoeus
 
 Typhoeus ships a Faraday adapter that supports Faraday 1.x and 2.x.

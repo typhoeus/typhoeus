@@ -173,7 +173,81 @@ describe Typhoeus::Pool do
     end
   end
 
+  describe "#get_multi" do
+    it "returns a multi when the pool is empty" do
+      expect(Typhoeus::Pool.get_multi).to be_a(Ethon::Multi)
+    end
+
+    it "returns a released multi" do
+      multi = Ethon::Multi.new
+      Typhoeus::Pool.release_multi(multi)
+
+      expect(Typhoeus::Pool.get_multi).to be(multi)
+    end
+  end
+
+  describe "#release_multi" do
+    it "puts the multi back into the pool" do
+      multi = Ethon::Multi.new
+
+      Typhoeus::Pool.release_multi(multi)
+
+      expect(Typhoeus::Pool.send(:multis)).to eq([multi])
+    end
+
+    context "when the pool is full" do
+      before { Typhoeus::Config.max_idle_multis = 1 }
+      after { Typhoeus::Config.max_idle_multis = 5 }
+
+      it "cleans up the extra multi instead of pooling it" do
+        first = Ethon::Multi.new
+        extra = Ethon::Multi.new
+        Typhoeus::Pool.release_multi(first)
+        expect(extra).to receive(:cleanup)
+
+        Typhoeus::Pool.release_multi(extra)
+
+        expect(Typhoeus::Pool.send(:multis)).to eq([first])
+      end
+    end
+
+    context "when pooling is disabled" do
+      before { Typhoeus::Config.max_idle_multis = 0 }
+      after { Typhoeus::Config.max_idle_multis = 5 }
+
+      it "cleans up instead of pooling" do
+        multi = Ethon::Multi.new
+        expect(multi).to receive(:cleanup)
+
+        Typhoeus::Pool.release_multi(multi)
+
+        expect(Typhoeus::Pool.send(:multis)).to be_empty
+      end
+    end
+
+    context "when the pool holds handles from a parent process" do
+      it "drops them instead of reusing them" do
+        multi = Ethon::Multi.new
+        Typhoeus::Pool.release_multi(multi)
+        Typhoeus::Pool.instance_variable_set(:@pid, Process.pid - 1)
+
+        expect(Typhoeus::Pool.get_multi).not_to be(multi)
+        expect(Typhoeus::Pool.send(:multis)).to be_empty
+      end
+    end
+  end
+
   describe "#clear" do
+    it "cleans up every pooled multi" do
+      multi = Ethon::Multi.new
+      Typhoeus::Pool.release_multi(multi)
+      expect(multi).to receive(:cleanup)
+
+      Typhoeus::Pool.clear
+
+      expect(Typhoeus::Pool.send(:multis)).to be_empty
+    end
+
     it "cleans up every pooled easy" do
       first = double("first easy")
       second = double("second easy")
