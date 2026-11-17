@@ -765,6 +765,17 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
           expect(streamed_result.map(&:first).uniq).to eq([200])
           expect(streamed_result.last).to eq([200, (50 * 1024).to_s, 50 * 1024])
         end
+      else
+        it "passes only the chunk and the size before Faraday 2.5" do
+          conn.get('/big') do |req|
+            req.options.on_data = lambda do |chunk, size|
+              streamed_result << [chunk.bytesize, size]
+            end
+          end
+
+          expect(streamed_result.sum(&:first)).to eq(50 * 1024)
+          expect(streamed_result.last.last).to eq(50 * 1024)
+        end
       end
 
       it "streams each parallel response to its own callback" do
