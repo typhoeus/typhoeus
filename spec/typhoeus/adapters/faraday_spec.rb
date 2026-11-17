@@ -655,6 +655,14 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
         end.to raise_error(ArgumentError, "disk full")
       end
 
+      it "raises an Interrupt from the callback as is, not as a connection failure" do
+        expect do
+          conn.get('/big') do |req|
+            req.options.on_data = proc { |_chunk, _size| raise Interrupt }
+          end
+        end.to raise_error(Interrupt)
+      end
+
       it "streams nothing when the connection fails" do
         failing_conn = Faraday.new(:url => "http://127.0.0.1:1") { |faraday| faraday.adapter :typhoeus }
         response = nil

@@ -91,7 +91,9 @@ module Faraday # :nodoc:
 
         # Ethon aborts the transfer when a callback returns :abort, and turns an
         # error raised in it into a write failure, which would be reported as
-        # Faraday::ConnectionFailed: keep the error to raise it as is.
+        # Faraday::ConnectionFailed: keep the error to raise it as is. Ethon
+        # re-raises it only after on_complete, so this also rescues Interrupt
+        # and SystemExit, which would otherwise come out as a connection failure.
         stream_chunk = lambda do |chunk, size|
           on_data.call(chunk, size, *on_data_args)
           nil
