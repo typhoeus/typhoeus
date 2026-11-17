@@ -624,6 +624,17 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9.0")
         expect(streamed_result.last[1]).to eq(res['X-Expected-Size'].to_i)
       end
 
+      it "streams to any callable, not only a proc" do
+        chunks = streamed_result
+        callable = Object.new
+        callable.define_singleton_method(:call) { |chunk, *| chunks << chunk }
+
+        res = conn.get('/big') { |req| req.options.on_data = callable }
+
+        expect(res.body).to eq('')
+        expect(chunks.join.bytesize).to eq(50 * 1024)
+      end
+
       it "ignores the callback's return value" do
         streamed = +''
         conn.get('/big') do |req|

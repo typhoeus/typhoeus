@@ -83,7 +83,7 @@ module Faraday # :nodoc:
         configure_socket  req, env
 
         on_data = env[:request][:on_data]
-        on_data = nil unless on_data.is_a?(Proc)
+        on_data = nil unless on_data.respond_to?(:call)
         # Faraday 2.5+ passes env, with status and headers set, as a third argument.
         on_data_args = env.respond_to?(:stream_response) ? [env] : []
         streamed_size = 0
