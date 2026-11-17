@@ -394,6 +394,9 @@ response1.body
 response2.body
 ```
 
+A request with an `on_data` callback streams the body to it in chunks, and its
+`response.body` is then empty.
+
 ### Specifying Max Concurrency
 
 Hydra runs at most 200 requests concurrently by default. Additional queued
