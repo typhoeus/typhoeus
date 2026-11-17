@@ -7,6 +7,52 @@ describe Typhoeus::Hydra do
   let(:options) { {} }
   let(:hydra) { Typhoeus::Hydra.new(options) }
 
+  describe "#release" do
+    after { Typhoeus::Pool.clear }
+
+    it "returns the multi to the pool for a later hydra" do
+      hydra.queue(Typhoeus::Request.new(base_url))
+      hydra.run
+      multi = hydra.multi
+
+      hydra.release
+
+      expect(Typhoeus::Hydra.new.multi).to be(multi)
+    end
+
+    it "runs a request on a handle taken from the pool" do
+      hydra.queue(Typhoeus::Request.new(base_url))
+      hydra.run
+      hydra.release
+
+      second = Typhoeus::Hydra.new
+      request = Typhoeus::Request.new(base_url)
+      second.queue(request)
+      second.run
+
+      expect(request.response.code).to eq(200)
+    end
+
+    it "does nothing while requests are still queued" do
+      hydra.queue(Typhoeus::Request.new(base_url))
+      hydra.multi
+
+      hydra.release
+
+      expect(Typhoeus::Pool.send(:multis)).to be_empty
+    end
+
+    it "frees a handle created with multi options instead of pooling it" do
+      hydra = Typhoeus::Hydra.new(:maxconnects => 2)
+      multi = hydra.multi
+      expect(multi).to receive(:cleanup)
+
+      hydra.release
+
+      expect(Typhoeus::Pool.send(:multis)).to be_empty
+    end
+  end
+
   describe "#new" do
     let(:options) { {:pipelining => true} }
 
@@ -99,6 +145,138 @@ describe Typhoeus::Hydra do
       other = Thread.new { Typhoeus::Hydra.hydra }.value
 
       expect(other).not_to be(current)
+    end
+
+    it "returns a hydra stored in a new thread" do
+      stored = Typhoeus::Hydra.new
+      returned = Thread.new do
+        Thread.current[:typhoeus_hydra] = stored
+        Typhoeus::Hydra.hydra
+      end.value
+
+      expect(returned).to be(stored)
+    end
+
+    it "does not warn when returning a hydra that other code stored" do
+      Thread.current[:typhoeus_hydra] = Typhoeus::Hydra.new
+      verbose = $VERBOSE
+      $VERBOSE = true
+
+      expect { Typhoeus::Hydra.hydra }.not_to output.to_stderr
+    ensure
+      $VERBOSE = verbose
+    end
+
+    it "returns a new hydra in a forked child" do
+      skip "fork is not available on this platform" unless Process.respond_to?(:fork)
+      parent_hydra = Typhoeus::Hydra.hydra
+      parent_hydra.max_concurrency = 3
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          child_hydra = Typhoeus::Hydra.hydra
+          writer.write([
+            child_hydra.equal?(parent_hydra) ? "inherited" : "new",
+            child_hydra.equal?(Typhoeus::Hydra.hydra) ? "memoized" : "not memoized",
+            child_hydra.max_concurrency
+          ].join(", "))
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("new, memoized, 3")
+      Process.wait(pid)
+      pid = nil
+      expect($?).to be_success
+      expect(Typhoeus::Hydra.hydra).to be(parent_hydra)
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
+
+    it "returns a new hydra in a process forked from a forked child" do
+      skip "fork is not available on this platform" unless Process.respond_to?(:fork)
+      Typhoeus::Hydra.hydra
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          child_hydra = Typhoeus::Hydra.hydra
+          grandchild = fork do
+            writer.write(Typhoeus::Hydra.hydra.equal?(child_hydra) ? "inherited" : "new")
+            writer.close
+          end
+          Process.wait(grandchild)
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("new")
+      Process.wait(pid)
+      pid = nil
+      expect($?).to be_success
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
+
+    it "returns a hydra stored in a forked child" do
+      skip "fork is not available on this platform" unless Process.respond_to?(:fork)
+      parent_hydra = Typhoeus::Hydra.hydra
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          stored = Typhoeus::Hydra.new
+          Thread.current[:typhoeus_hydra] = stored
+          writer.write(Typhoeus::Hydra.hydra.equal?(stored) ? "stored" : "replaced")
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("stored")
+      Process.wait(pid)
+      pid = nil
+      expect($?).to be_success
+      expect(Typhoeus::Hydra.hydra).to be(parent_hydra)
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
+
+    it "returns a hydra stored before a fork in the forked child" do
+      skip "fork is not available on this platform" unless Process.respond_to?(:fork)
+      stored = Typhoeus::Hydra.new
+      Thread.current[:typhoeus_hydra] = stored
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          writer.write(Typhoeus::Hydra.hydra.equal?(stored) ? "stored" : "replaced")
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("stored")
+      Process.wait(pid)
+      pid = nil
+      expect($?).to be_success
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
     end
   end
 

@@ -125,5 +125,24 @@ module Typhoeus
     end
 
     @max_idle_easies = 20
+
+    # Defines the maximum number of idle multi handles kept in the
+    # process-wide pool. Defaults to 5. Set it to nil to keep every handle,
+    # or to 0 to disable multi pooling.
+    #
+    # @return [ Integer, nil ]
+    #
+    # @see Typhoeus::Pool
+    attr_reader :max_idle_multis
+
+    def max_idle_multis=(value)
+      if !value.nil? && (!value.is_a?(Integer) || value < 0)
+        raise ArgumentError, "max_idle_multis must be nil or a non-negative Integer"
+      end
+
+      @max_idle_multis = value
+    end
+
+    @max_idle_multis = 5
   end
 end

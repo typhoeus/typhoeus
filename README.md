@@ -208,6 +208,42 @@ Typhoeus.post(
 )
 ```
 
+Set the content type of a part, or override the filename and content type of a
+file, with `Typhoeus::Multipart::Part`:
+
+```ruby
+Typhoeus.post(
+  "http://localhost:3000/posts",
+  body: {
+    metadata: Typhoeus::Multipart::Part.new(
+      JSON.generate(title: "test post"),
+      content_type: "application/json"
+    ),
+    file: Typhoeus::Multipart::Part.new(
+      File.open("thesis.txt", "r"),
+      filename: "paper.txt",
+      content_type: "text/plain"
+    )
+  }
+)
+```
+
+A string part with a filename is sent as an in-memory upload, so the data does
+not need a file on disk:
+
+```ruby
+Typhoeus.post(
+  "http://localhost:3000/posts",
+  body: {
+    file: Typhoeus::Multipart::Part.new(
+      "file contents",
+      filename: "notes.txt",
+      content_type: "text/plain"
+    )
+  }
+)
+```
+
 ### Streaming the response body
 
 Set `on_body` to receive response chunks as they arrive. This is useful for
@@ -308,6 +344,28 @@ hydra = Typhoeus::Hydra.new
 end
 hydra.run
 ```
+
+#### Reusing connections between hydras
+
+A hydra keeps libcurl's connection cache for as long as its native multi
+handle lives, so a new `Hydra` starts with no open connections and pays for a
+fresh TLS handshake. Returning the handle to the pool lets the next hydra
+reuse it:
+
+```ruby
+hydra = Typhoeus::Hydra.new
+hydra.queue(Typhoeus::Request.new("https://example.com"))
+hydra.run
+hydra.release # keeps the connection cache for the next hydra
+
+# Takes the released handle, so the TLS connection is still there.
+hydra = Typhoeus::Hydra.new
+```
+
+`release` does nothing while requests are still queued. A hydra created with
+multi options, such as `maxconnects:`, is not pooled, because a later hydra
+with different options cannot reconfigure the handle. `Typhoeus::Config.max_idle_multis`
+(default 5) limits the pool; set it to `0` to disable multi pooling.
 
 ### Making Parallel Requests with Faraday + Typhoeus
 
@@ -527,9 +585,10 @@ defaults to 300 seconds; passing 0 also uses 300 seconds.
 
 Typhoeus delegates handle management to Ethon. Ethon raises
 `Ethon::Errors::ForkSafety` for `Ethon::Easy` and `Ethon::Multi` handles
-inherited across `fork`. Typhoeus clears its easy pool in the child process and
-creates a hydra's native multi handle lazily, so creating or memoizing a hydra
-during boot does not initialize libcurl. Typhoeus cannot reset libcurl's
+inherited across `fork`. Typhoeus clears its easy pool in the child process,
+and `Typhoeus::Hydra.hydra` replaces the hydra it memoized in the parent.
+A hydra creates its native multi handle lazily, so creating or memoizing a
+hydra during boot does not initialize libcurl. Typhoeus cannot reset libcurl's
 process-global state. If libcurl is initialized before forking, for example by
 making a request during boot, use `fork` followed by `exec`, or fork before the
 first request.

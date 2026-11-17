@@ -11,6 +11,20 @@
   body, the callback being ignored.
   ([#688](https://github.com/typhoeus/typhoeus/pull/688))
 
+* Add `Typhoeus::Multipart::Part` for setting the content type and, optionally,
+  the filename of a single `multipart/form-data` part. This makes it possible
+  to send a JSON field with `Content-Type: application/json` or to override the
+  detected content type and filename of an uploaded file.
+  ([#494](https://github.com/typhoeus/typhoeus/issues/494))
+
+* Require Ethon >= 0.19.2 for `Ethon::Multipart::Part`.
+
+* Add `Hydra#release`, which returns the native multi handle to a pool so the
+  next hydra reuses its connection cache instead of paying for a new TLS
+  handshake. `Typhoeus::Config.max_idle_multis` controls the pool (default 5,
+  `0` disables it).
+  ([#832](https://github.com/typhoeus/typhoeus/issues/832))
+
 * Add `Response#certinfo`, the server's certificate chain when the request is
   made with `certinfo: true`. Needs an Ethon that mirrors it
   (typhoeus/ethon#459).
@@ -21,6 +35,13 @@
   remaining requests without a response, which made CocoaPods' CDN source wait
   forever.
   ([#825](https://github.com/typhoeus/typhoeus/issues/825))
+* Return a new hydra from `Typhoeus::Hydra.hydra` in a forked child instead of
+  the one it memoized in the parent. The child no longer inherits requests
+  queued on that hydra, so the parent and child no longer both send them. It
+  also no longer uses the parent's multi handle, which Ethon 0.19 rejects in
+  the child. That helps once Ethon lets a child create new handles after its
+  parent has used libcurl, which Ethon 0.19.1 does not.
+  ([ethon#462](https://github.com/typhoeus/ethon/issues/462))
 
 ## 1.7.1
 

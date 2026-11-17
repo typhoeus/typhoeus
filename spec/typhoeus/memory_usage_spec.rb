@@ -6,6 +6,8 @@ require 'open3'
 
 describe "repeated Typhoeus transfers" do
   it "does not accumulate easy handles, responses, or file descriptors" do
+    skip "ObjectSpace.each_object is disabled on JRuby" if RUBY_ENGINE == "jruby"
+
     script = <<~'RUBY'
       require "typhoeus"
       require "objspace"

@@ -44,14 +44,29 @@ module Typhoeus
 
     class << self
 
-      # Returns a memoized hydra instance.
+      # Returns a hydra memoized in Thread.current[:typhoeus_hydra], which is
+      # local to the current fiber. A forked child gets a new one, since
+      # Ethon 0.19 rejects the parent's multi handle.
       #
       # @example Get a hydra.
       #   Typhoeus::Hydra.hydra
       #
-      # @return [Typhoeus::Hydra] A new hydra.
+      # @return [Typhoeus::Hydra] The memoized hydra.
       def hydra
-        Thread.current[:typhoeus_hydra] ||= new
+        hydra = Thread.current[:typhoeus_hydra]
+        # Only replace a hydra memoized here, not one that other code stored.
+        # Ruby < 3.0 warns under -w when reading an ivar that was never set.
+        if hydra && hydra.instance_variable_defined?(:@memoized_pid)
+          pid = hydra.instance_variable_get(:@memoized_pid)
+        end
+        if !hydra || (pid && pid != Process.pid)
+          # Keep max_concurrency, which callers can change. This method sets
+          # no other option.
+          options = hydra ? { max_concurrency: hydra.max_concurrency } : {}
+          hydra = Thread.current[:typhoeus_hydra] = new(options)
+          hydra.instance_variable_set(:@memoized_pid, Process.pid)
+        end
+        hydra
       end
     end
 
@@ -89,6 +104,33 @@ module Typhoeus
     # @api private
     def multi
       @multi ||= build_multi
+    end
+
+    # Return the native multi handle and its connection cache to the pool, so
+    # a later hydra can reuse both. The hydra creates a new handle on next
+    # use. Does nothing while requests are still queued.
+    #
+    # @example Release the handle after a run.
+    #   hydra.run
+    #   hydra.release
+    #
+    # @return [ nil ]
+    def release
+      return nil if queued_requests.any?
+      return nil unless defined?(@multi) && @multi
+
+      multi_handle = @multi
+      @multi = nil
+      if multi_options.empty?
+        Pool.release_multi(multi_handle)
+      else
+        begin
+          multi_handle.cleanup
+        rescue StandardError
+          # A handle that cannot be freed must not raise from a cleanup path.
+        end
+      end
+      nil
     end
 
     # Add a request to the hydra.
@@ -414,10 +456,24 @@ module Typhoeus
     # @api private
     def build_multi
       @multi_creation_failed = false
-      Ethon::Multi.new(@options.reject { |key, _| key == :max_concurrency })
+      if multi_options.empty?
+        # A hydra without multi options can take a pooled handle and reuse its
+        # connection cache. Handles created with options are not pooled,
+        # because a later hydra with different options cannot change them.
+        Pool.get_multi(multi_options)
+      else
+        Ethon::Multi.new(multi_options)
+      end
     rescue StandardError
       @multi_creation_failed = true
       raise
+    end
+
+    # Options that belong to the Ethon multi rather than to the hydra.
+    #
+    # @return [ Hash ] The multi options.
+    def multi_options
+      @options.reject { |key, _| key == :max_concurrency }
     end
   end
 end
