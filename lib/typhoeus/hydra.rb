@@ -108,7 +108,8 @@ module Typhoeus
 
     # Return the native multi handle and its connection cache to the pool, so
     # a later hydra can reuse both. The hydra creates a new handle on next
-    # use. Does nothing while requests are still queued.
+    # use. Does nothing while requests are still queued. In a forked child, a
+    # handle built before the fork is dropped instead.
     #
     # @example Release the handle after a run.
     #   hydra.run
@@ -121,6 +122,10 @@ module Typhoeus
 
       multi_handle = @multi
       @multi = nil
+      # The parent's handle would raise for whichever hydra took it from the
+      # pool, and freeing it here raises too.
+      return nil unless defined?(@multi_pid) && @multi_pid == Process.pid
+
       if multi_options.empty?
         Pool.release_multi(multi_handle)
       else
@@ -456,6 +461,7 @@ module Typhoeus
     # @api private
     def build_multi
       @multi_creation_failed = false
+      @multi_pid = Process.pid
       if multi_options.empty?
         # A hydra without multi options can take a pooled handle and reuse its
         # connection cache. Handles created with options are not pooled,
