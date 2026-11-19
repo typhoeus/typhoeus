@@ -591,21 +591,18 @@ A hydra creates its native multi handle lazily, so creating or memoizing a
 hydra during boot does not initialize libcurl. Typhoeus cannot reset libcurl's
 process-global state. If libcurl is initialized before forking, for example by
 making a request during boot, use `fork` followed by `exec`, or fork before the
-first request.
+first request. A server that forks workers from a process that has already
+made requests, such as Pitchfork with reforking or Puma with `fork_worker`, can
+instead call `Ethon::Curl.allow_handles_after_fork!` in each worker before its
+first request, except on macOS, as Ethon's README describes.
 
 On macOS, libcurl's global initialization can touch Objective-C and crash a
-forked child with `objc_initializeAfterForkError`. Initialize libcurl in the
-parent before the workers fork:
-
-```ruby
-# config/initializers/ethon.rb in Rails, or before_fork in Puma
-require "ethon"
-Ethon::Curl.init
-```
-
-If you cannot initialize libcurl before forking, set
-`OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES` in the environment. It skips the
-safety check in the child, so prefer initializing libcurl before the fork.
+forked child with `objc_initializeAfterForkError`. Initializing libcurl in the
+parent doesn't avoid that: the child then raises `Ethon::Errors::ForkSafety`,
+and `Ethon::Curl.allow_handles_after_fork!` raises there too. Create handles
+only after the fork, and if the child crashes, set
+`OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES` in the environment, which skips the
+Objective-C check, or use `fork` followed by `exec`.
 
 Typhoeus keeps at most `Typhoeus::Config.max_idle_easies` idle easy handles in
 the pool (20 by default). Handles beyond that limit are cleaned up instead of
