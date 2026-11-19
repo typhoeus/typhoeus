@@ -12,11 +12,12 @@ concurrency:
 
 jobs:
   test:
-    name: test (${{ matrix.os }}, ${{ matrix.ruby-version }})
+    name: test (${{ matrix.os }}, ${{ matrix.ruby-version }}${{ matrix.faraday && format(', faraday {0}', matrix.faraday) || '' }})
     runs-on: ${{ matrix.os }}-latest
     timeout-minutes: 10
     env:
       BUNDLE_GEMFILE: Gemfile
+      FARADAY_VERSION: ${{ matrix.faraday }}
     strategy:
       fail-fast: false
       matrix:
@@ -29,6 +30,7 @@ jobs:
         - { os: ubuntu, ruby-version: '3.3' }
         - { os: ubuntu, ruby-version: '3.4' }
         - { os: ubuntu, ruby-version: '4.0' }
+        - { os: ubuntu, ruby-version: '3.4', faraday: '~> 1.0' }
         - { os: macos, ruby-version: '2.6' }
         - { os: macos, ruby-version: '3.2' }
         - { os: macos, ruby-version: '4.0' }

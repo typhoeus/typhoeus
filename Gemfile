@@ -13,7 +13,9 @@ group :development, :test do
   gem "sinatra", "~> 3.0"
   gem "rack", "~> 2.2"
 
-  gem "faraday", ">= 1.0", "< 3.0"
+  # FARADAY_VERSION="~> 1.0" runs the suite against an older Faraday.
+  faraday_version = ENV["FARADAY_VERSION"].to_s
+  gem "faraday", *(faraday_version.empty? ? [">= 1.0", "< 3.0"] : [faraday_version])
   gem "dalli", "~> 3.0"
 
   gem "webrick"
