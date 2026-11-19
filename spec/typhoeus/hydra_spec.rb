@@ -51,6 +51,31 @@ describe Typhoeus::Hydra do
 
       expect(Typhoeus::Pool.send(:multis)).to be_empty
     end
+
+    it "drops a handle built before a fork instead of pooling it in the child" do
+      skip "fork is not available on this platform" unless Process.respond_to?(:fork)
+      multi = hydra.multi
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          hydra.release
+          writer.write(Typhoeus::Pool.send(:multis).include?(multi) ? "pooled" : "dropped")
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("dropped")
+      Process.wait(pid)
+      pid = nil
+      expect($?).to be_success
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
   end
 
   describe "#new" do

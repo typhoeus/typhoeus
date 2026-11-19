@@ -15,7 +15,8 @@
 * Add `Hydra#release`, which returns the native multi handle to a pool so the
   next hydra reuses its connection cache instead of paying for a new TLS
   handshake. `Typhoeus::Config.max_idle_multis` controls the pool (default 5,
-  `0` disables it).
+  `0` disables it). In a forked child, a hydra drops a handle it built before
+  the fork instead of pooling it, since Ethon rejects the parent's handle there.
   ([#832](https://github.com/typhoeus/typhoeus/issues/832))
 
 * Add `Response#certinfo`, the server's certificate chain when the request is
