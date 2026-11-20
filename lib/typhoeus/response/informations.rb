@@ -251,8 +251,7 @@ module Typhoeus
       #   response.certinfo
       #
       # @return [ Array<Array<String>>, nil ] The certificate chain, empty
-      #   when none was collected, nil for a stubbed response or with an
-      #   Ethon that doesn't mirror it.
+      #   when none was collected, nil for a stubbed response.
       def certinfo
         options[:certinfo]
       end

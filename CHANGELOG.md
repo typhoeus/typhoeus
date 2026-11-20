@@ -47,7 +47,8 @@ fork-safe hydra memoization. It requires Ethon 0.19.2 or newer.
   queued on that hydra, so the parent and child no longer both send them, and it
   no longer uses the parent's multi handle, which Ethon 0.19 rejects in the
   child. A server that forks workers after using libcurl can opt in with
-  `Ethon::Curl.allow_handles_after_fork!` in each worker.
+  `Ethon::Curl.allow_handles_after_fork!` in each worker before it creates a
+  handle (not supported on macOS).
   ([ethon#462](https://github.com/typhoeus/ethon/issues/462))
 
 ### Fixes and hardening
@@ -66,6 +67,9 @@ fork-safe hydra memoization. It requires Ethon 0.19.2 or newer.
   ([#836](https://github.com/typhoeus/typhoeus/pull/836))
 * Run the suite against Faraday 1.x as well.
   ([#834](https://github.com/typhoeus/typhoeus/pull/834))
+* Skip the memory-usage and leader-change specs on JRuby, where they cannot
+  assert the same thing.
+  ([#831](https://github.com/typhoeus/typhoeus/pull/831))
 
 ## 1.7.1
 
