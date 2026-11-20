@@ -1,5 +1,22 @@
 # Upgrade guide
 
+## 1.8
+
+### Ethon 0.19.2
+
+Typhoeus 1.8 requires Ethon `>= 0.19.2`, `< 0.20.0`. Ethon 0.19.2 mirrors
+`certinfo`, adds `Ethon::Multipart::Part`, and lets a forked child opt in to
+creating new handles with `Ethon::Curl.allow_handles_after_fork!`. The macOS
+restriction on that opt-in is covered in the README.
+
+### Faraday `on_data`
+
+A Faraday request that sets `on_data` now streams the response body to the
+callback, like Faraday's `net_http` adapter, and its `response.body` is empty.
+Before, Typhoeus buffered the body and ignored the callback. On Faraday 2.5+ the
+callback receives the response `env`, with the status and headers already set,
+as a third argument.
+
 ## 1.7
 
 ### Ethon 0.19

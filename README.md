@@ -41,7 +41,7 @@ Or install it directly:
 gem install typhoeus
 ```
 
-Typhoeus requires Ruby 2.6 or later and Ethon 0.19.
+Typhoeus requires Ruby 2.6 or later and Ethon 0.19.2 or later.
 
 ## Documentation
 
@@ -616,7 +616,7 @@ Ethon. Typhoeus releases the underlying easy handle before re-raising.
 
 ### Ethon 0.19
 
-Typhoeus requires Ethon 0.19. Ethon 0.19 makes several previously
+Typhoeus requires Ethon 0.19.2. Ethon 0.19 makes several previously
 silent errors visible:
 
 - Unknown enum and bitmask option values raise `Ethon::Errors::InvalidValue`,
